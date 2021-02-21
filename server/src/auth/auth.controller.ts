@@ -1,20 +1,30 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { RegisterUserDTO } from 'src/user/dto/register.dto';
+import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import { ErrorResponse } from '../app/interface/ErrorResponse';
+import { ApiResponse } from '../app/interface/ApiResponse';
+import { RegisterUserDTO, vRegisterUserDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+import { JoiValidatorPipe } from '../app/validator/validator.pipe';
 
 @Controller('auth')
 export class AuthController {
-      constructor(private readonly authService: AuthService) {}
+      constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
 
       @Post('/register')
-      async registerUser(@Body() body: RegisterUserDTO) {
-            const user = await this.authService.findOneUserByField('username', body.username);
+      @UsePipes(new JoiValidatorPipe(vRegisterUserDto))
+      async registerUser(@Body() body: RegisterUserDTO): Promise<ApiResponse<void>> {
+            const user = await this.userService.findOneUserByField('username', body.username);
+            if (user) throw ErrorResponse.send({ details: { username: 'Username or Password is not correct.' } }, 'BadRequestException');
+            if (body.password !== body.confirmPassword)
+                  throw ErrorResponse.send({ details: { confirmPassword: 'Confirm Password is not match.' } }, 'BadRequestException');
 
-            if (user) throw new BadRequestException('Username or Password is not correct.');
+            const newUser = new User();
+            newUser.username = body.username;
+            newUser.name = body.name;
+            newUser.password = body.password;
 
-            if (body.password !== body.confirmPassword) throw new BadRequestException('Password is not match.');
-
-            await this.authService.registerUser(body);
-            return 'Register success';
+            await this.authService.registerUser(newUser);
+            return { message: 'Register success' };
       }
 }
