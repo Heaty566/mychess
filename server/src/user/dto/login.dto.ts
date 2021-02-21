@@ -1,3 +1,1 @@
-export class LoginUserDTO {
-
-}
+export class LoginUserDTO {}

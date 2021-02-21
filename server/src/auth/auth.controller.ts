@@ -4,17 +4,17 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+      constructor(private readonly authService: AuthService) {}
 
-  @Post("/register")
-  async registerUser(@Body() body: RegisterUserDTO) {
-    const user = await this.authService.findOneUserByField("username", body.username);
+      @Post('/register')
+      async registerUser(@Body() body: RegisterUserDTO) {
+            const user = await this.authService.findOneUserByField('username', body.username);
 
-    if (user) throw new BadRequestException("Username or Password is not correct.");
+            if (user) throw new BadRequestException('Username or Password is not correct.');
 
-    if (body.password !== body.confirmPassword) throw new BadRequestException("Password is not match.");
+            if (body.password !== body.confirmPassword) throw new BadRequestException('Password is not match.');
 
-    await this.authService.registerUser(body);
-    return "Register success";
-  }
+            await this.authService.registerUser(body);
+            return 'Register success';
+      }
 }
