@@ -6,6 +6,7 @@ export class RepositoryService<T> extends Repository<T> {
             if (field === '_id' && typeof value === 'string') {
                   return await this.findOne({ [field]: new ObjectId(value) });
             }
+
             return await this.findOne({ [field]: value });
       }
 }
