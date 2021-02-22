@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../app/validator/validator.pipe';
+import { vLoginUserDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,9 +16,7 @@ export class AuthController {
       @UsePipes(new JoiValidatorPipe(vRegisterUserDto))
       async registerUser(@Body() body: RegisterUserDTO): Promise<ApiResponse<void>> {
             const user = await this.userService.findOneUserByField('username', body.username);
-            if (user) throw ErrorResponse.send({ details: { username: 'Username or Password is not correct.' } }, 'BadRequestException');
-            if (body.password !== body.confirmPassword)
-                  throw ErrorResponse.send({ details: { confirmPassword: 'Confirm Password is not match.' } }, 'BadRequestException');
+            if (user) throw ErrorResponse.send({ details: { username: 'is taken.' } }, 'BadRequestException');
 
             const newUser = new User();
             newUser.username = body.username;
