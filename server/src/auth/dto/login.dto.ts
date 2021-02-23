@@ -1,15 +1,17 @@
+import * as Joi from "joi";
+
+import { User } from "../../user/entities/user.entity";
+import { joiSchemaGenerator } from "../../app/validator";
 import { userJoiSchema } from '../../app/validator/user.validator';
-import { User } from '../../user/entities/user.entity';
-import { joiSchemaGenerator } from '../../app/validator';
-import Joi from 'joi';
 
 const { getJoiSchemas } = joiSchemaGenerator<User>(userJoiSchema);
 
-export class LoginUserDto {
-      username: string;
-      password: string;
+export class LoginUserDTO {
+    username: string;
+    password: string;
+    //isRemember: boolean;
 }
 
 export const vLoginUserDto = Joi.object({
-      ...getJoiSchemas(['username', 'password']),
-});
+    ...getJoiSchemas(["username", "password"])
+})
