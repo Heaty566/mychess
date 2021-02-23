@@ -7,6 +7,7 @@ export class RepositoryService<T> extends Repository<T> {
                   if (!ObjectId.isValid(value)) return null;
                   return await this.findOne({ [field]: new ObjectId(value) });
             }
+
             return await this.findOne({ [field]: value });
       }
 }

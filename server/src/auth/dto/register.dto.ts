@@ -11,6 +11,7 @@ export class RegisterUserDTO {
       password: string;
       confirmPassword: string;
 }
+
 export const vRegisterUserDto = Joi.object({
       ...getJoiSchemas(['username', 'password', 'name']),
       confirmPassword: getJoiSchema('password').valid(Joi.ref('password')),
