@@ -11,6 +11,7 @@ import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthToken } from './entities/authToken.entity';
 import { RefreshToken } from './entities/refreshToken.entity';
 
+
 @Controller('auth')
 export class AuthController {
       constructor(private readonly authService: AuthService, private readonly userService: UserService) { }
@@ -20,6 +21,7 @@ export class AuthController {
       async registerUser(@Body() body: RegisterUserDTO): Promise<ApiResponse<void>> {
             const user = await this.userService.findOneUserByField('username', body.username);
             if (user) throw ErrorResponse.send({ details: { username: 'Username is already exist.' } }, 'BadRequestException');
+
 
             const newUser = new User();
             newUser.username = body.username;
