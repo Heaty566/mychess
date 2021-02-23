@@ -13,4 +13,4 @@ import { RefreshTokenRepository } from './entities/refreshToken.repository';
       controllers: [AuthController],
       providers: [AuthService, UserService],
 })
-export class AuthModule { }
+export class AuthModule {}
