@@ -1,21 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterUserDTO } from 'src/user/dto/register.dto';
-import { User } from 'src/user/entities/user.entity';
-import { UserRepository } from 'src/user/entities/user.repository';
-import { ObjectId } from "mongodb";
+import { User } from '../user/entities/user.entity';
+import { UserRepository } from '../user/entities/user.repository';
+import { sign } from "jsonwebtoken";
+import { AuthTokenRepository } from './entities/authToken.repository';
+import { AuthToken } from './entities/authToken.entity';
+import { RefreshTokenRepository } from './entities/refreshToken.repository';
+import { RefreshToken } from './entities/refreshToken.entity';
 
 @Injectable()
 export class AuthService {
-    constructor(private userRepository: UserRepository) { }
+      constructor(private userRepository: UserRepository,
+            private authTokenRepository: AuthTokenRepository,
+            private refreshTokenRepository: RefreshTokenRepository
+      ) { }
 
-    async registerUser(input: RegisterUserDTO) {
-        return await this.userRepository.save(input);
-    }
+      async registerUser(input: User): Promise<User> {
+            return await this.userRepository.save(input);
+      }
 
-    async findOneUserByField(field: keyof User, value: any) {
-        if (field === "_id" && typeof value === "string")
-            return await this.userRepository.findOne({ _id: new ObjectId(value) });
+      createToken(tokenData: object) {
+            return sign(tokenData, process.env.JWT_SECRET_KEY)
+      }
 
-        return await this.userRepository.findOne({ [field]: value });
-    }
+      async saveAuthToken(input: AuthToken): Promise<AuthToken> {
+            return await this.authTokenRepository.save(input);
+      }
+
+      async saveRefreshToken(input: RefreshToken): Promise<RefreshToken> {
+            return await this.refreshTokenRepository.save(input);
+      }
 }
