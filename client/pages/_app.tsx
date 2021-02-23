@@ -5,11 +5,13 @@ import { useTranslation } from "react-i18next";
 import Cookies from "universal-cookie";
 import { Provider } from "react-redux";
 import "../i18n";
+import "../styles/tailwind.css";
 
 //* Import
 import { store } from "../store";
 import { authActions } from "../store/auth";
 import { apiActions } from "../store/api";
+import Navbar from "../components/navbar";
 export interface AppProps {
         Component: React.FunctionComponent;
         pageProps: any;
@@ -33,7 +35,10 @@ const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
 
         return (
                 <Provider store={store}>
-                        <Component {...pageProps} />
+                        <div className="h-screen flex">
+                                <Navbar />
+                                <Component {...pageProps} />
+                        </div>
                 </Provider>
         );
 };
