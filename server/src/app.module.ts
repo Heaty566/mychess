@@ -8,6 +8,7 @@ import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthToken } from './auth/entities/authToken.entity';
 import { RefreshToken } from './auth/entities/refreshToken.entity';
+import { RepositoryModule } from './repository/repository.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -25,7 +26,7 @@ const DBConfig = TypeOrmModule.forRoot({
 const JwtConfig = JwtModule.register({ secret: process.env.JWT_SECRET_KEY });
 
 @Module({
-      imports: [Config, DBConfig, JwtConfig, AuthModule],
+      imports: [Config, DBConfig, JwtConfig, AuthModule, RepositoryModule],
       controllers: [],
 })
-export class AppModule { }
+export class AppModule {}
