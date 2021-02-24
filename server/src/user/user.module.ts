@@ -3,10 +3,11 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from './entities/user.repository';
-import { SmailModule } from '../smail/smail.module';
+import { SmailModule } from '../providers/smail/smail.module';
+import { SmsModule } from '../providers/sms/sms.module';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([UserRepository]), SmailModule],
+      imports: [TypeOrmModule.forFeature([UserRepository])],
       controllers: [UserController],
       providers: [UserService],
 })

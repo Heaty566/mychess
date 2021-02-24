@@ -8,8 +8,10 @@ import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthToken } from './auth/entities/authToken.entity';
 import { RefreshToken } from './auth/entities/refreshToken.entity';
-import { SmailModule } from './smail/smail.module';
+import { SmailModule } from './providers/smail/smail.module';
 import { UserModule } from './user/user.module';
+import { SmsModule } from './providers/sms/sms.module';
+import { AwsModule } from './providers/aws/aws.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -27,7 +29,7 @@ const DBConfig = TypeOrmModule.forRoot({
 const JwtConfig = JwtModule.register({ secret: process.env.JWT_SECRET_KEY });
 
 @Module({
-      imports: [Config, DBConfig, JwtConfig, AuthModule, SmailModule, UserModule],
+      imports: [Config, DBConfig, JwtConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule],
       controllers: [],
 })
 export class AppModule {}

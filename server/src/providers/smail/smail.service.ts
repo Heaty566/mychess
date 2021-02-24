@@ -29,7 +29,11 @@ export class SmailService {
                   .then(() => {
                         return true;
                   })
-                  .catch(() => {
+                  .catch((error) => {
+                        if (process.env.NODE_ENV === 'development') {
+                              console.log(error);
+                        }
+
                         return false;
                   });
       }
