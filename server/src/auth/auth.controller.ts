@@ -12,6 +12,7 @@ import { AuthToken } from './entities/authToken.entity';
 import { RefreshToken } from './entities/refreshToken.entity';
 import { JwtModule } from '@nestjs/jwt';
 
+
 @Controller('auth')
 export class AuthController {
       constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
@@ -56,6 +57,7 @@ export class AuthController {
 
             // save refreshToken to db
             await this.authService.saveRefreshToken(refreshToken);
+
 
             return res.cookie('refresh-token', refreshToken.data).send({});
 
