@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../../../test/initTest';
 import { SmailService } from '../smail.service';
 
 describe('SmailService', () => {
