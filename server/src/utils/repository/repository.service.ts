@@ -27,7 +27,7 @@ export class RepositoryService<T> extends Repository<T> {
             });
       }
 
-      public onlyUnique(value, index, self) {
+      private onlyUnique(value: any, index: number, self: Array<any>) {
             return self.indexOf(value) === index;
       }
 

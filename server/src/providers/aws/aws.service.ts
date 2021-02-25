@@ -3,12 +3,13 @@ import { S3 } from 'aws-sdk';
 import * as path from 'path';
 import { FileDto } from './dto/File';
 import { ObjectId } from 'mongodb';
+import { LoggerService } from '../../utils/logger/logger.service';
 
 //* Internal import
 
 @Injectable()
 export class AwsService {
-      constructor(private readonly s3: S3) {}
+      constructor(private readonly s3: S3, private readonly LoggerService: LoggerService) {}
       checkFileExtension(file: FileDto, extend: string[] = []) {
             const acceptTypes = ['.jpeg', '.jpg', '.png', '.bmp', ...extend];
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
@@ -33,10 +34,7 @@ export class AwsService {
                         return locationFile;
                   })
                   .catch((error) => {
-                        if (process.env.NODE_ENV === 'development') {
-                              console.log(error);
-                        }
-
+                        this.LoggerService.print(error, 'error');
                         return null;
                   });
       }

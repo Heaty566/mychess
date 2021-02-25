@@ -1,7 +1,6 @@
-import { Body, Controller, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Body, Controller, Post, Res, UsePipes } from '@nestjs/common';
+import { Response } from 'express';
 import { ErrorResponse } from '../app/interface/ErrorResponse';
-import { ApiResponse } from '../app/interface/ApiResponse';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
@@ -9,7 +8,6 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../app/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthToken } from './entities/authToken.entity';
-import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -50,11 +48,5 @@ export class AuthController {
             });
 
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
-      }
-
-      @Post('/get')
-      @UseGuards(AuthGuard)
-      async getUser(@Req() req: Request) {
-            console.log(req['user']);
       }
 }

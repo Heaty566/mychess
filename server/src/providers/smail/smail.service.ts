@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { MailService, MailDataRequired } from '@sendgrid/mail';
-
+import { LoggerService } from '../../utils/logger/logger.service';
 @Injectable()
 export class SmailService {
-      constructor(private readonly mailService: MailService) {}
+      constructor(private readonly mailService: MailService, private readonly LoggerService: LoggerService) {}
 
       private sendMail(receiver: string, content: string, subject = 'MyGame') {
             const msg: MailDataRequired = {
@@ -30,9 +30,7 @@ export class SmailService {
                         return true;
                   })
                   .catch((error) => {
-                        if (process.env.NODE_ENV === 'development') {
-                              console.log(error);
-                        }
+                        this.LoggerService.print(error, 'error');
 
                         return false;
                   });

@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
 
             const decode = this.authService.decodeToken(token.data) as User;
 
-            req[`user`] = decode;
+            req.user = decode;
             return true;
       }
 }

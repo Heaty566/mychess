@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ObjectId } from 'mongodb';
 import { User } from 'src/user/entities/user.entity';
 import { UserRepository } from '../user/entities/user.repository';
 import { AuthToken } from './entities/authToken.entity';

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { LoggerService } from '../../utils/logger/logger.service';
 import { Twilio } from 'twilio';
 
 @Injectable()
 export class SmsService {
-      constructor(private readonly twilioService: Twilio) {}
+      constructor(private readonly twilioService: Twilio, private readonly LoggerService: LoggerService) {}
 
       private sendSms(phoneNumber: string, content: string): Promise<boolean> {
             return this.twilioService.messages
@@ -14,9 +15,7 @@ export class SmsService {
                   })
                   .then(() => true)
                   .catch((error) => {
-                        if (process.env.NODE_ENV === 'development') {
-                              console.log(error);
-                        }
+                        this.LoggerService.print(error, 'error');
                         return false;
                   });
       }
