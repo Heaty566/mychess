@@ -2,13 +2,22 @@ import { ObjectId } from 'mongodb';
 import { Repository, FindManyOptions } from 'typeorm';
 
 export class RepositoryService<T> extends Repository<T> {
-      public async getByField(field: keyof T, value: any) {
+      public async findOneByField(field: keyof T, value: any) {
             if (field === '_id' && typeof value === 'string') {
                   if (!ObjectId.isValid(value)) return null;
                   return await this.findOne({ [`${field}`]: new ObjectId(value) });
             }
 
             return await this.findOne({ [`${field}`]: value });
+      }
+
+      public async findManyByField(field: keyof T, value: any) {
+            if (field === '_id' && typeof value === 'string') {
+                  if (!ObjectId.isValid(value)) return null;
+                  return await this.find({ [`${field}`]: new ObjectId(value) });
+            }
+
+            return await this.find({ [`${field}`]: value });
       }
 
       private transformToArrayObjectId(value: Array<string>) {
@@ -18,7 +27,7 @@ export class RepositoryService<T> extends Repository<T> {
             });
       }
 
-      public async findManyByField(field: keyof T, value: Array<any>, options: FindManyOptions<T>) {
+      public async findManyByArrayValue(field: keyof T, value: Array<any>, options: FindManyOptions<T>) {
             if (!value.length) return [];
             if (field === '_id' && typeof value[0] === 'string') {
                   return await this.find({ where: { ['_id']: { $in: this.transformToArrayObjectId(value) } }, ...options });

@@ -18,7 +18,7 @@ describe('RepositoryService', () => {
             userRepository = module.get<UserRepository>(UserRepository);
       });
 
-      describe('getByField', () => {
+      describe('findOneByField', () => {
             let user: User;
 
             beforeEach(async () => {
@@ -27,18 +27,18 @@ describe('RepositoryService', () => {
             });
 
             it('Pass to be defined', async () => {
-                  const res = await userRepository.getByField('name', user.name);
+                  const res = await userRepository.findOneByField('name', user.name);
                   expect(res).toBeDefined();
             });
 
             it('Pass (_id to be defined)', async () => {
-                  const userData = await userRepository.getByField('name', user.name);
-                  const res = await userRepository.getByField('_id', userData._id);
+                  const userData = await userRepository.findOneByField('name', user.name);
+                  const res = await userRepository.findOneByField('_id', userData._id);
                   expect(res).toBeDefined();
             });
 
             it('Failed is not valid id', async () => {
-                  const res = await userRepository.getByField('_id', fakeData(10, 'lettersAndNumbers'));
+                  const res = await userRepository.findOneByField('_id', fakeData(10, 'lettersAndNumbers'));
                   expect(res).toBeNull();
             });
       });
