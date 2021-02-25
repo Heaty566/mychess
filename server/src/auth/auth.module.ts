@@ -6,11 +6,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from '../user/entities/user.repository';
 import { UserService } from '../user/user.service';
 import { AuthTokenRepository } from './entities/authToken.repository';
-import { RefreshTokenRepository } from './entities/refreshToken.repository';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([UserRepository, AuthTokenRepository, RefreshTokenRepository])],
+      imports: [TypeOrmModule.forFeature([AuthTokenRepository, UserRepository])],
       controllers: [AuthController],
-      providers: [AuthService, UserService],
+      providers: [
+            AuthService,
+            UserService,
+            {
+                  provide: JwtService,
+                  useFactory: () => {
+                        return new JwtService({ secret: process.env.JWT_SECRET_KEY });
+                  },
+            },
+      ],
+      exports: [AuthService],
 })
 export class AuthModule {}

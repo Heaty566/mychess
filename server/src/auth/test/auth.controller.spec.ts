@@ -64,11 +64,12 @@ describe('AuthController', () => {
 
             beforeEach(async () => {
                   const getUser = fakeUser();
-                  await authService.registerUser(getUser);
                   loginUserData = {
                         username: getUser.username,
                         password: getUser.password,
                   };
+                  getUser.password = await authService.hash(getUser.password);
+                  await authService.registerUser(getUser);
             });
 
             it('Pass', async () => {
