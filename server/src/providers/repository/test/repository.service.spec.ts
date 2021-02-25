@@ -33,7 +33,7 @@ describe('RepositoryService', () => {
 
             it('Pass (field is _id)', async () => {
                   const userData = await userRepository.findOneByField('name', user.name);
-                  const res = await userRepository.findOneByField('_id', userData._id);
+                  const res = await userRepository.findOneByField('_id', userData._id.toHexString());
                   expect(res).toBeDefined();
             });
 
@@ -58,7 +58,7 @@ describe('RepositoryService', () => {
 
             it('Pass (field is _id)', async () => {
                   const userData = await userRepository.findOneByField('name', user.name);
-                  const res = await userRepository.findManyByField('_id', userData._id);
+                  const res = await userRepository.findManyByField('_id', userData._id.toHexString());
                   expect(res[0]).toBeDefined();
             });
 
@@ -91,13 +91,14 @@ describe('RepositoryService', () => {
                   const userData1 = await userRepository.findOneByField('name', user1.name);
                   const userData2 = await userRepository.findOneByField('name', user2.name);
 
-                  value = [userData1._id, userData2._id];
+                  value = [userData1._id.toHexString(), fakeData(10, 'lettersAndNumbers'), userData2._id.toHexString()];
 
                   const res = await userRepository.findManyByArrayValue('_id', value, null);
                   expect(res[value.length - 1]).toBeDefined();
             });
 
             it('Failed (value is [])', async () => {
+                  value = [];
                   const res = await userRepository.findManyByArrayValue('name', value, null);
                   expect(res[0]).toBeUndefined();
             });
