@@ -1,4 +1,4 @@
-import { RepositoryService } from '../../providers/repository/repository.service';
+import { RepositoryService } from '../../utils/repository/repository.service';
 import { EntityRepository } from 'typeorm';
 import { RefreshToken } from './refreshToken.entity';
 

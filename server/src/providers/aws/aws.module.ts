@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { config, S3 } from 'aws-sdk';
-import { LoggerModule } from '../logger/logger.module';
+import { LoggerModule } from '../../utils/logger/logger.module';
 //* Internal import
 import { AwsService } from './aws.service';
 

@@ -3,7 +3,7 @@ import { S3 } from 'aws-sdk';
 import * as path from 'path';
 import { FileDto } from './dto/File';
 import { ObjectId } from 'mongodb';
-import { LoggerService } from '../logger/logger.service';
+import { LoggerService } from '../../utils/logger/logger.service';
 
 //* Internal import
 

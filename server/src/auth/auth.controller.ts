@@ -10,8 +10,6 @@ import { JoiValidatorPipe } from '../app/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthToken } from './entities/authToken.entity';
 import { RefreshToken } from './entities/refreshToken.entity';
-import { JwtModule } from '@nestjs/jwt';
-
 
 @Controller('auth')
 export class AuthController {
@@ -57,7 +55,6 @@ export class AuthController {
 
             // save refreshToken to db
             await this.authService.saveRefreshToken(refreshToken);
-
 
             return res.cookie('refresh-token', refreshToken.data).send({});
 

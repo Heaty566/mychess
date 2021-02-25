@@ -12,7 +12,7 @@ import { SmailModule } from './providers/smail/smail.module';
 import { UserModule } from './user/user.module';
 import { SmsModule } from './providers/sms/sms.module';
 import { AwsModule } from './providers/aws/aws.module';
-import { LoggerModule } from './providers/logger/logger.module';
+import { LoggerModule } from './utils/logger/logger.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
