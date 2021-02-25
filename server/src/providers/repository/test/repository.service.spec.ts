@@ -1,11 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../user/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
-import { User } from '../../user/entities/user.entity';
-import { fakeUser } from '../../../test/fakeEntity';
-import { fakeData } from '../../../test/fakeData';
+import { UserRepository } from '../../../user/entities/user.repository';
+import { initTestModule } from '../../../../test/initTest';
+import { User } from '../../../user/entities/user.entity';
+import { fakeUser } from '../../../../test/fakeEntity';
+import { fakeData } from '../../../../test/fakeData';
 
 describe('RepositoryService', () => {
       let app: INestApplication;
