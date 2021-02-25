@@ -27,8 +27,13 @@ export class RepositoryService<T> extends Repository<T> {
             });
       }
 
-      public async findManyByArrayValue(field: keyof T, value: Array<any>, options: FindManyOptions<T>) {
+      public onlyUnique(value, index, self) {
+            return self.indexOf(value) === index;
+      }
+
+      public async findManyByArrayValue(field: keyof T, value: Array<any>, options: FindManyOptions<T>, isUnique?: boolean) {
             if (!value.length) return [];
+            if (isUnique) value = value.filter(this.onlyUnique);
             if (field === '_id' && typeof value[0] === 'string') {
                   return await this.find({ where: { ['_id']: { $in: this.transformToArrayObjectId(value) } }, ...options });
             }

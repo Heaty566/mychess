@@ -6,6 +6,7 @@ import { initTestModule } from '../../../../test/initTest';
 import { User } from '../../../user/entities/user.entity';
 import { fakeUser } from '../../../../test/fakeEntity';
 import { fakeData } from '../../../../test/fakeData';
+import { asap } from 'rxjs';
 
 describe('RepositoryService', () => {
       let app: INestApplication;
@@ -87,6 +88,12 @@ describe('RepositoryService', () => {
                   expect(res[value.length - 1]).toBeDefined();
             });
 
+            it('Pass (isUnique = true)', async () => {
+                  value = [user1.name, user2.name, user2.name, user1.name];
+                  const res = await userRepository.findManyByArrayValue('name', value, null, true);
+                  expect(res[value.filter(userRepository.onlyUnique).length - 1]).toBeDefined();
+            });
+
             it('Pass (field is _id)', async () => {
                   const userData1 = await userRepository.findOneByField('name', user1.name);
                   const userData2 = await userRepository.findOneByField('name', user2.name);
@@ -94,7 +101,7 @@ describe('RepositoryService', () => {
                   value = [userData1._id.toHexString(), fakeData(10, 'lettersAndNumbers'), userData2._id.toHexString()];
 
                   const res = await userRepository.findManyByArrayValue('_id', value, null);
-                  expect(res[value.length - 1]).toBeDefined();
+                  expect(res[value.length - 2]).toBeDefined();
             });
 
             it('Failed (value is [])', async () => {
