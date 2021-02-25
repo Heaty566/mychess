@@ -7,6 +7,6 @@ export class UserService {
       constructor(private userRepository: UserRepository) {}
 
       async findOneUserByField(field: keyof User, value: any) {
-            return await this.userRepository.getByField(field, value);
+            return await this.userRepository.findOneByField(field, value);
       }
 }

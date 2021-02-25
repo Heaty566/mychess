@@ -8,6 +8,7 @@ import { User } from './user/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { AuthToken } from './auth/entities/authToken.entity';
 import { RefreshToken } from './auth/entities/refreshToken.entity';
+import { RepositoryModule } from './providers/repository/repository.module';
 import { SmailModule } from './providers/smail/smail.module';
 import { UserModule } from './user/user.module';
 import { SmsModule } from './providers/sms/sms.module';
@@ -29,7 +30,7 @@ const DBConfig = TypeOrmModule.forRoot({
 const JwtConfig = JwtModule.register({ secret: process.env.JWT_SECRET_KEY });
 
 @Module({
-      imports: [Config, DBConfig, JwtConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule],
+      imports: [Config, DBConfig, JwtConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule, RepositoryModule],
       controllers: [],
 })
 export class AppModule {}
