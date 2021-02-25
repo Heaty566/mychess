@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res, UsePipes } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { ErrorResponse } from '../app/interface/ErrorResponse';
 import { ApiResponse } from '../app/interface/ApiResponse';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/register.dto';
@@ -9,9 +9,7 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../app/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthToken } from './entities/authToken.entity';
-import { RefreshToken } from './entities/refreshToken.entity';
-import { JwtModule } from '@nestjs/jwt';
-
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,14 +17,14 @@ export class AuthController {
 
       @Post('/register')
       @UsePipes(new JoiValidatorPipe(vRegisterUserDto))
-      async registerUser(@Body() body: RegisterUserDTO): Promise<ApiResponse<void>> {
+      async registerUser(@Body() body: RegisterUserDTO) {
             const user = await this.userService.findOneUserByField('username', body.username);
             if (user) throw ErrorResponse.send({ details: { username: 'Username is already exist.' } }, 'BadRequestException');
 
             const newUser = new User();
             newUser.username = body.username;
             newUser.name = body.name;
-            newUser.password = body.password;
+            newUser.password = await this.authService.hash(body.password);
 
             await this.authService.registerUser(newUser);
             return { message: 'Register success' };
@@ -38,37 +36,25 @@ export class AuthController {
             const user = await this.userService.findOneUserByField('username', body.username);
             if (!user) throw ErrorResponse.send({ details: { username: 'Username or password is not correct.' } }, 'BadRequestException');
 
-            // Where hashing???
-            if (user.password !== body.password)
-                  throw ErrorResponse.send({ details: { password: 'Username or password is not correct.' } }, 'BadRequestException');
+            const isCorrect = await this.authService.comparePassword(body.password, user.password);
+            if (!isCorrect) throw ErrorResponse.send({ details: { password: 'Username or password is not correct.' } }, 'BadRequestException');
 
-            // authToken contain:  _id, jwt string(user ==> jwt string)
+            // Generate token
             let authToken = new AuthToken();
             authToken.data = this.authService.createToken({ user });
 
-            // save authToken to db
             authToken = await this.authService.saveAuthToken(authToken);
 
-            // refreshToken contain _id of authToken, create time, expired time
-            const refreshToken = new RefreshToken();
-            refreshToken.data = this.authService.createToken({
+            const refreshToken = this.authService.createToken({
                   authTokenId: authToken._id,
             });
 
-            // save refreshToken to db
-            await this.authService.saveRefreshToken(refreshToken);
+            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
+      }
 
-
-            return res.cookie('refresh-token', refreshToken.data).send({});
-
-            // tao refeshToken gom id, createTime, expiredTime
-            // gui refeshToken cho user
-
-            // const token = sign(
-            //       {
-            //             userId: user._id
-            //       }, process.env.JWT_SECRET_KEY);
-
-            //return res.cookie("name", token).send();
+      @Post('/get')
+      @UseGuards(AuthGuard)
+      async getUser(@Req() req: Request) {
+            console.log(req['user']);
       }
 }
