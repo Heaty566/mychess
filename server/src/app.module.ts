@@ -12,6 +12,7 @@ import { SmailModule } from './providers/smail/smail.module';
 import { UserModule } from './user/user.module';
 import { SmsModule } from './providers/sms/sms.module';
 import { AwsModule } from './providers/aws/aws.module';
+import { LoggerModule } from './providers/logger/logger.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -29,7 +30,7 @@ const DBConfig = TypeOrmModule.forRoot({
 const JwtConfig = JwtModule.register({ secret: process.env.JWT_SECRET_KEY });
 
 @Module({
-      imports: [Config, DBConfig, JwtConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule],
+      imports: [Config, DBConfig, JwtConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule, LoggerModule],
       controllers: [],
 })
 export class AppModule {}
