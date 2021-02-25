@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { MailService, MailDataRequired } from '@sendgrid/mail';
 import { LoggerService } from '../../utils/logger/logger.service';
 @Injectable()
