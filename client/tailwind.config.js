@@ -1,9 +1,16 @@
+const colors = require("tailwindcss/colors");
+
 module.exports = {
         purge: [],
         darkMode: false, // or 'media' or 'class'
         theme: {
                 extend: {
+                        width: {
+                                352: "22rem",
+                        },
                         colors: {
+                                coolGray: colors.coolGray,
+                                blueGray: colors.blueGray,
                                 "catskill-white": {
                                         DEFAULT: "#F5F7FA",
                                         50: "#FFFFFF",
