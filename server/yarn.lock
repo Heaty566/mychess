@@ -4258,6 +4258,13 @@ jmespath@0.15.0:
   resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
+joi-password@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/joi-password/-/joi-password-1.1.0.tgz#8aaefd97039c5780f6e774c0e60fc445b4fb1579"
+  integrity sha512-hVBNOC1m1X04mP9JuSeeP5ORILxqzq2Yaw6vqH7iRMNkcT9qXkIPF903i3E2leRNBpD2clZehzCnMwsOLuhvng==
+  dependencies:
+    joi "^17.4.0"
+
 joi@*, joi@^17.4.0:
   version "17.4.0"
   resolved "https://registry.yarnpkg.com/joi/-/joi-17.4.0.tgz#b5c2277c8519e016316e49ababd41a1908d9ef20"
