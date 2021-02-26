@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res, UsePipes } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { ErrorResponse } from '../app/interface/ErrorResponse';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
@@ -8,10 +8,46 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../app/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthToken } from './entities/authToken.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
       constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
+
+      // GOOGLE
+      @Get('/google')
+      @UseGuards(AuthGuard('google'))
+      googleAuth(@Req() req: Request) {}
+
+      @Get('/google/callback')
+      @UseGuards(AuthGuard('google'))
+      googleAuthRedirect(@Req() req: Request) {
+            return this.authService.googleLogin(req);
+      }
+
+      // FACEBOOK
+      @Get('/facebook')
+      @UseGuards(AuthGuard('facebook'))
+      facebookAuth(@Req() req: Request) {}
+
+      @Get('/facebook/callback')
+      @UseGuards(AuthGuard('facebook'))
+      facebookAuthRedirect(@Req() req: Request) {
+            return this.authService.facebookLogin(req);
+      }
+
+      // GITHUB
+      @Get('/github')
+      @UseGuards(AuthGuard('github'))
+      githubAuth(@Req() req: Request) {
+            console.log(123);
+      }
+
+      @Get('/github/callback')
+      @UseGuards(AuthGuard('github'))
+      githubAuthRedirect(@Req() req: Request) {
+            return this.authService.githubLogin(req);
+      }
 
       @Post('/register')
       @UsePipes(new JoiValidatorPipe(vRegisterUserDto))

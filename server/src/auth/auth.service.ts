@@ -5,10 +5,34 @@ import { UserRepository } from '../user/entities/user.repository';
 import { AuthToken } from './entities/authToken.entity';
 import { AuthTokenRepository } from './entities/authToken.repository';
 import * as bcrypt from 'bcrypt';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
       constructor(private userRepository: UserRepository, private authTokenRepository: AuthTokenRepository, private jwt: JwtService) {}
+
+      // GOOGLE
+      googleLogin(req: Request) {
+            if (!req['user']) {
+                  return 'No user';
+            }
+            return req['user'];
+      }
+
+      // FACEBOOK
+      facebookLogin(req: Request) {
+            if (!req['user']) {
+                  return 'No user';
+            }
+            return req['user'];
+      }
+
+      githubLogin(req: Request) {
+            if (!req['user']) {
+                  return 'No user';
+            }
+            return req['user'];
+      }
 
       async getDataFromRefreshToken(refreshToken: string) {
             const decode = this.decodeToken(refreshToken);
