@@ -6,16 +6,16 @@ import * as flat from 'flat';
 export class RedisService {
       constructor(@Inject('RedisClient') private readonly redisRepository: RedisClient) {}
 
-      deleteByKey(key: string) {
-            this.redisRepository.del(key);
-      }
-
       setObjectByKey(key: string, value: Record<string, any>) {
             const flatValue: Record<string, any> = flat(value);
             this.redisRepository.hmset(key, flatValue);
       }
 
-      getObjectByKey<T extends Record<string, string>>(key: string) {
+      deleteByKey(key: string) {
+            this.redisRepository.del(key);
+      }
+
+      getObjectByKey<T>(key: string) {
             return new Promise((res, rej) => {
                   this.redisRepository.hgetall(key, (err, data) => {
                         if (err) return rej(err);
@@ -27,7 +27,8 @@ export class RedisService {
 
       setByValue(key: string, value: number | string, expired?: number) {
             if (expired) {
-                  this.redisRepository.setex(key, expired * 6000, String(value));
+                  // expired (seconds)
+                  this.redisRepository.setex(key, expired * 60, String(value));
             } else {
                   this.redisRepository.set(key, String(value));
             }
