@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res, UsePipes } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Response, Request } from 'express';
 import { apiResponse } from '../app/interface/ApiResponse';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
@@ -8,10 +8,47 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthToken } from './entities/authToken.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
       constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
+
+      @Get('/google')
+      @UseGuards(AuthGuard('google'))
+      googleAuth() {}
+
+      @Get('/google/callback')
+      @UseGuards(AuthGuard('google'))
+      async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
+            const authToken = await this.authService.createAuthToken(req.user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
+            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+      }
+
+      @Get('/facebook')
+      @UseGuards(AuthGuard('facebook'))
+      facebookAuth() {}
+
+      @Get('/facebook/callback')
+      @UseGuards(AuthGuard('facebook'))
+      async facebookAuthRedirect(@Req() req: Request, @Res() res: Response) {
+            const authToken = await this.authService.createAuthToken(req.user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
+            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+      }
+
+      @Get('/github')
+      @UseGuards(AuthGuard('github'))
+      async githubAuth() {}
+
+      @Get('/github/callback')
+      @UseGuards(AuthGuard('github'))
+      async githubAuthRedirect(@Req() req: Request, @Res() res: Response) {
+            const authToken = await this.authService.createAuthToken(req.user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
+            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+      }
 
       @Post('/register')
       @UsePipes(new JoiValidatorPipe(vRegisterUserDto))
@@ -26,15 +63,8 @@ export class AuthController {
 
             const insertedUser = this.authService.registerUser(newUser);
 
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user: insertedUser });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
-
+            const authToken = await this.authService.createAuthToken(insertedUser);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Register success' });
       }
 
@@ -44,16 +74,8 @@ export class AuthController {
             const user = await this.userService.findOneUserByField('username', body.username);
             if (!user) throw apiResponse.sendError({ body: { details: { username: 'Username or password is not correct' } } });
 
-            // Generate token
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
-
+            const authToken = await this.authService.createAuthToken(user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
       }
 }

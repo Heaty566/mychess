@@ -32,4 +32,15 @@ export class User {
 
       @Column()
       createDate: Date = new Date();
+
+      constructor() {
+            this.avatarUrl = '';
+            this.facebookId = '';
+            this.githubId = '';
+            this.googleId = '';
+            this.name = '';
+            this.elo = 0;
+            this.password = '';
+            this.username = '';
+      }
 }
