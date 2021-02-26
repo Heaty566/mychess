@@ -6,6 +6,9 @@ import { apiResponse } from '../interface/ApiResponse';
 @Catch(InternalServerErrorException)
 export class RuntimeApiHandler implements ExceptionFilter {
       catch() {
-            return apiResponse.sendError({ data: null, message: 'Something went wrong, Please try again later.' }, 'InternalServerErrorException');
+            return apiResponse.sendError({
+                  body: { data: null, message: 'Something went wrong, Please try again later' },
+                  type: 'InternalServerErrorException',
+            });
       }
 }

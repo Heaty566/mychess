@@ -16,13 +16,13 @@ export class AuthGuard implements CanActivate {
             const refreshToken = req.cookies['refresh-token'] || '';
             let authToken = req.cookies['auth-token'] || '';
 
-            if (!refreshToken) throw apiResponse.sendError({ message: 'Invalid token' }, 'UnauthorizedException');
+            if (!refreshToken) throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
 
             let token = await this.authService.getDataFromAuthToken(authToken);
 
             if (!token) {
                   token = await this.authService.getDataFromRefreshToken(refreshToken);
-                  if (!token) throw apiResponse.sendError({ message: 'Invalid token' }, 'UnauthorizedException');
+                  if (!token) throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
 
                   authToken = String(token._id);
                   res.cookie('auth-token', authToken, { maxAge: 1000 * 60 * 5 });

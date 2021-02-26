@@ -17,7 +17,7 @@ export class AuthController {
       @UsePipes(new JoiValidatorPipe(vRegisterUserDto))
       async registerUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             const user = await this.userService.findOneUserByField('username', body.username);
-            if (user) throw apiResponse.sendError({ details: { username: 'Username is already exist.' } }, 'BadRequestException');
+            if (user) throw apiResponse.sendError({ body: { details: { username: 'Username is already exist' } } });
 
             const newUser = new User();
             newUser.username = body.username;
@@ -42,10 +42,7 @@ export class AuthController {
       @UsePipes(new JoiValidatorPipe(vLoginUserDto))
       async loginUser(@Body() body: LoginUserDTO, @Res() res: Response) {
             const user = await this.userService.findOneUserByField('username', body.username);
-            if (!user) throw apiResponse.sendError({ details: { username: 'Username or password is not correct.' } }, 'BadRequestException');
-
-            const isCorrect = await this.authService.comparePassword(body.password, user.password);
-            if (!isCorrect) throw apiResponse.sendError({ details: { password: 'Username or password is not correct.' } }, 'BadRequestException');
+            if (!user) throw apiResponse.sendError({ body: { details: { username: 'Username or password is not correct' } } });
 
             // Generate token
             let authToken = new AuthToken();
