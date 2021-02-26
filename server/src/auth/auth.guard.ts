@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { User } from '../user/entities/user.entity';
-import { ErrorResponse } from '../app/interface/ErrorResponse';
+import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
 
 @Injectable()
@@ -16,13 +16,13 @@ export class AuthGuard implements CanActivate {
             const refreshToken = req.cookies['refresh-token'] || '';
             let authToken = req.cookies['auth-token'] || '';
 
-            if (!refreshToken) throw ErrorResponse.send({ message: 'Invalid token' }, 'UnauthorizedException');
+            if (!refreshToken) throw apiResponse.sendError({ message: 'Invalid token' }, 'UnauthorizedException');
 
             let token = await this.authService.getDataFromAuthToken(authToken);
 
             if (!token) {
                   token = await this.authService.getDataFromRefreshToken(refreshToken);
-                  if (!token) throw ErrorResponse.send({ message: 'Invalid token' }, 'UnauthorizedException');
+                  if (!token) throw apiResponse.sendError({ message: 'Invalid token' }, 'UnauthorizedException');
 
                   authToken = String(token._id);
                   res.cookie('auth-token', authToken, { maxAge: 1000 * 60 * 5 });

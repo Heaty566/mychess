@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { createClient } from 'redis';
 import { AppModule } from './app.module';
-import { router } from './app/router';
+import { router } from './router';
 
 async function bootstrap() {
       const app = await NestFactory.create(AppModule);
