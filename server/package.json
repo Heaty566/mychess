@@ -37,6 +37,7 @@
             "helmet": "^4.4.1",
             "i18n": "^0.13.2",
             "joi": "^17.4.0",
+            "joi-password": "^1.1.0",
             "jsonwebtoken": "^8.5.1",
             "mongodb": "^3.6.4",
             "morgan": "^1.10.0",

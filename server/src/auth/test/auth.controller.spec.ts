@@ -7,7 +7,6 @@ import { UserRepository } from '../../user/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
 import { RegisterUserDTO } from '../dto/register.dto';
 import { LoginUserDTO } from '../dto/login.dto';
-import { User } from '../../user/entities/user.entity';
 
 import { AuthService } from '../auth.service';
 
@@ -40,8 +39,8 @@ describe('AuthController', () => {
             it('Pass', async () => {
                   const res = await reqApi(createUserData);
 
-                  expect(res.headers['set-cookie']).toBeDefined();
-                  expect(res.status).toBe(201);
+                  const token = res.headers['set-cookie'].join('');
+                  expect(token).toContain('refresh-token');
             });
 
             it('Failed (username is taken)', async () => {
