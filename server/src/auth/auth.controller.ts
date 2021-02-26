@@ -14,7 +14,6 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
       constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
 
-      // GOOGLE
       @Get('/google')
       @UseGuards(AuthGuard('google'))
       googleAuth() {}
@@ -22,18 +21,11 @@ export class AuthController {
       @Get('/google/callback')
       @UseGuards(AuthGuard('google'))
       async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user: req.user });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
+            const authToken = await this.authService.createAuthToken(req.user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 
-      // FACEBOOK
       @Get('/facebook')
       @UseGuards(AuthGuard('facebook'))
       facebookAuth() {}
@@ -41,18 +33,11 @@ export class AuthController {
       @Get('/facebook/callback')
       @UseGuards(AuthGuard('facebook'))
       async facebookAuthRedirect(@Req() req: Request, @Res() res: Response) {
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user: req.user });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
+            const authToken = await this.authService.createAuthToken(req.user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 
-      // GITHUB
       @Get('/github')
       @UseGuards(AuthGuard('github'))
       async githubAuth() {}
@@ -60,14 +45,8 @@ export class AuthController {
       @Get('/github/callback')
       @UseGuards(AuthGuard('github'))
       async githubAuthRedirect(@Req() req: Request, @Res() res: Response) {
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user: req.user });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
+            const authToken = await this.authService.createAuthToken(req.user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 
@@ -84,15 +63,8 @@ export class AuthController {
 
             const insertedUser = this.authService.registerUser(newUser);
 
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user: insertedUser });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
-
+            const authToken = await this.authService.createAuthToken(insertedUser);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Register success' });
       }
 
@@ -105,16 +77,8 @@ export class AuthController {
             const isCorrect = await this.authService.comparePassword(body.password, user.password);
             if (!isCorrect) throw apiResponse.sendError({ details: { password: 'Username or password is not correct.' } }, 'BadRequestException');
 
-            // Generate token
-            let authToken = new AuthToken();
-            authToken.data = this.authService.createToken({ user });
-
-            authToken = await this.authService.saveAuthToken(authToken);
-
-            const refreshToken = this.authService.createToken({
-                  authTokenId: authToken._id,
-            });
-
+            const authToken = await this.authService.createAuthToken(user);
+            const refreshToken = await this.authService.createRefreshToken(authToken._id);
             return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
       }
 }
