@@ -1,0 +1,24 @@
+version: "3"
+services:
+        redis:
+                image: "redis:alpine"
+                expose:
+                        - 6379
+        client:
+                build: ./client
+                image: heaty566/myquiz-v2-client:latest
+                expose:
+                        - 3000
+        server:
+                build: ./server
+                image: heaty566/myquiz-v2-server:latest
+                expose:
+                        - 4000
+                env_file:
+                        - ./data-test/config/server.env
+        nginx:
+                image: nginx:1.15-alpine
+                volumes:
+                        - ./data-test/nginx:/etc/nginx/conf.d
+                ports:
+                        - 80:80
