@@ -94,7 +94,7 @@ describe('AuthService', () => {
             });
       });
 
-      describe('createToken', () => {
+      describe('createJwtStringToken', () => {
             let user: Record<any, any>;
             let token: string;
 
@@ -103,7 +103,7 @@ describe('AuthService', () => {
             });
 
             it('Pass', () => {
-                  token = authService.createToken({ user });
+                  token = authService.createJwtStringToken({ user });
                   expect(token.length).toBeGreaterThan(20);
             });
       });
@@ -114,7 +114,7 @@ describe('AuthService', () => {
 
             beforeEach(() => {
                   user = fakeUser();
-                  token = authService.createToken({ user });
+                  token = authService.createJwtStringToken({ user });
             });
 
             it('Pass', () => {
@@ -129,9 +129,9 @@ describe('AuthService', () => {
             let refreshToken: string;
 
             beforeEach(async () => {
-                  authToken.data = authService.createToken({ user });
+                  authToken.data = authService.createJwtStringToken({ user });
                   authToken = await authService.saveAuthToken(authToken);
-                  refreshToken = authService.createToken({
+                  refreshToken = authService.createJwtStringToken({
                         authTokenId: authToken._id,
                   });
             });
@@ -147,13 +147,40 @@ describe('AuthService', () => {
             const user = fakeUser();
 
             beforeEach(async () => {
-                  authToken.data = authService.createToken({ user });
+                  authToken.data = authService.createJwtStringToken({ user });
                   authToken = await authService.saveAuthToken(authToken);
             });
 
             it('Pass', async () => {
                   const data = await authService.getDataFromAuthToken(String(authToken._id));
                   expect(data.data).toEqual(authToken.data);
+            });
+      });
+
+      describe('createAuthToken', () => {
+            let authToken: AuthToken;
+            beforeEach(() => {
+                  const user = fakeUser();
+                  authToken = new AuthToken();
+                  authToken.data = authService.createJwtStringToken({ user });
+            });
+
+            it('Pass', async () => {
+                  authToken = await authService.saveAuthToken(authToken);
+                  expect(authToken._id).toBeDefined();
+            });
+      });
+
+      describe('createRefreshToken', () => {
+            let user: User;
+            let authToken: AuthToken;
+            beforeEach(async () => {
+                  user = fakeUser();
+                  authToken = await authService.createAuthToken({ user });
+            });
+            it('Pass', async () => {
+                  const refreshToken = await authService.createRefreshToken(authToken._id);
+                  expect(refreshToken.length).toBeGreaterThan(20);
             });
       });
 
