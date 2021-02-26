@@ -4,6 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { router } from '../src/router';
 import { AppModule } from '../src/app.module';
 import { fakeUser } from './fakeEntity';
+import { UserRepository } from '../src/user/entities/user.repository';
+import { AuthService } from '../src/auth/auth.service';
 
 export const initTestModule = async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -11,14 +13,18 @@ export const initTestModule = async () => {
       }).compile();
 
       const configModule = module.createNestApplication();
-
+      //apply middleware
       router(configModule);
 
       const getApp = await configModule.init();
 
-      const user = fakeUser();
+      //create a fake user and token
+      let user = fakeUser();
+      const userRepository = module.get<UserRepository>(UserRepository);
+      const authService = module.get<AuthService>(AuthService);
 
-      //apply middleware
+      user = await userRepository.save(user);
+      const refreshToken = authService.createAuthToken(user);
 
-      return { getApp, module, reToken: [`re-token= Max-Age=15552000; Path=/;`], user };
+      return { getApp, module, reToken: [`re-token=${refreshToken} Max-Age=15552000; Path=/;`], user };
 };

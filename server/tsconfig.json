@@ -12,5 +12,11 @@
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
+    "plugins": [
+      {
+        "transform": "ts-auto-mock/transformer",
+        "cacheBetweenTests": false
+      }
+    ]
   }
 }

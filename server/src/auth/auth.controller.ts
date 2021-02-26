@@ -7,7 +7,6 @@ import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
-import { AuthToken } from './entities/authToken.entity';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
@@ -16,7 +15,9 @@ export class AuthController {
 
       @Get('/google')
       @UseGuards(AuthGuard('google'))
-      googleAuth() {}
+      googleAuth() {
+            //
+      }
 
       @Get('/google/callback')
       @UseGuards(AuthGuard('google'))
@@ -28,7 +29,9 @@ export class AuthController {
 
       @Get('/facebook')
       @UseGuards(AuthGuard('facebook'))
-      facebookAuth() {}
+      facebookAuth() {
+            //
+      }
 
       @Get('/facebook/callback')
       @UseGuards(AuthGuard('facebook'))
@@ -40,7 +43,9 @@ export class AuthController {
 
       @Get('/github')
       @UseGuards(AuthGuard('github'))
-      async githubAuth() {}
+      async githubAuth() {
+            //
+      }
 
       @Get('/github/callback')
       @UseGuards(AuthGuard('github'))
