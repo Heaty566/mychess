@@ -8,13 +8,13 @@ import * as helmet from 'helmet';
 import * as I18n from 'i18n';
 
 //* Internal import
-import { NotFoundApiHandler } from './exception/notfound.exception';
-import { RuntimeApiHandler } from './exception/runtime.exception';
-import * as doc from '../../swagger.json';
+import { NotFoundApiHandler } from './app/exception/notfound.exception';
+import { RuntimeApiHandler } from './app/exception/runtime.exception';
+import * as doc from '../swagger.json';
 
 I18n.configure({
       locales: ['en', 'vi'],
-      directory: `/locales`,
+      directory: `./src/utils/locales/dictionaries`,
       cookie: 'lang',
       defaultLocale: 'en',
 });
@@ -52,7 +52,7 @@ export function router(app: INestApplication) {
             //set header
             res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL);
             res.header('Access-Control-Allow-Methods', '*');
-            res.header('Access-Control-Allow-Headers', 're-token, auth-token, lang');
+            res.header('Access-Control-Allow-Headers', 'refresh-token, auth-token, lang');
 
             const lang = req.cookies['lang'] || '';
             if (!lang) {

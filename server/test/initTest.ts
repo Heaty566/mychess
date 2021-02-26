@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 //* Internal import
-import { router } from '../src/app/router';
+import { router } from '../src/router';
 import { AppModule } from '../src/app.module';
 import { fakeUser } from './fakeEntity';
 
