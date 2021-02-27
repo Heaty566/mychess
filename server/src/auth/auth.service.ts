@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
       constructor(private userRepository: UserRepository, private authTokenRepository: AuthTokenRepository, private jwt: JwtService) {}
 
-      async createAuthToken(data: any) {
+      private async createAuthToken(data: any) {
             let authToken = new AuthToken();
             authToken.data = this.createJwtStringToken({ user: data });
             authToken = await this.saveAuthToken(authToken);
@@ -18,7 +18,8 @@ export class AuthService {
       }
 
       async createRefreshToken(data: any) {
-            return this.createJwtStringToken({ authTokenId: data });
+            let authToken = await this.createAuthToken(data);
+            return this.createJwtStringToken({ authTokenId: authToken._id });
       }
 
       async getDataFromRefreshToken(refreshToken: string) {
