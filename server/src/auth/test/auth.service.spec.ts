@@ -176,7 +176,7 @@ describe('AuthService', () => {
             let authToken: AuthToken;
             beforeEach(async () => {
                   user = fakeUser();
-                  authToken = await authService.createAuthToken({ user });
+                  authToken = await authService['createAuthToken']({ user });
             });
             it('Pass', async () => {
                   const refreshToken = await authService.createRefreshToken(authToken._id);
