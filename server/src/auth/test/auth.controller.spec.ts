@@ -89,7 +89,7 @@ describe('AuthController', () => {
                   const res = await reqApi(createUserData);
 
                   const token = res.headers['set-cookie'].join('');
-                  expect(token).toContain('refresh-token');
+                  expect(token).toContain('re-token');
             });
 
             it('Failed (username is taken)', async () => {
@@ -124,7 +124,7 @@ describe('AuthController', () => {
                   const res = await reqApi(loginUserData);
 
                   const token = res.headers['set-cookie'].join('');
-                  expect(token).toContain('refresh-token');
+                  expect(token).toContain('re-token');
             });
 
             it('Failed (username is not correct)', async () => {
@@ -134,7 +134,7 @@ describe('AuthController', () => {
             });
 
             it('Failed (password is not correct)', async () => {
-                  loginUserData.password = 'update';
+                  loginUserData.password = '123AABBDASD';
                   const res = await reqApi(loginUserData);
                   expect(res.status).toBe(400);
             });
