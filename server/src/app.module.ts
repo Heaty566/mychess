@@ -6,8 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { User } from './user/entities/user.entity';
 
 import { AuthModule } from './auth/auth.module';
-import { AuthToken } from './auth/entities/authToken.entity';
-import { RefreshToken } from './auth/entities/refreshToken.entity';
+import { ReToken } from './auth/entities/re-token.entity';
 import { SmailModule } from './providers/smail/smail.module';
 import { UserModule } from './user/user.module';
 import { SmsModule } from './providers/sms/sms.module';
@@ -25,7 +24,7 @@ const DBConfig = TypeOrmModule.forRoot({
       synchronize: true,
       keepConnectionAlive: true,
       useUnifiedTopology: true,
-      entities: [User, AuthToken, RefreshToken],
+      entities: [User, ReToken],
 });
 
 const JwtConfig = JwtModule.register({ secret: process.env.JWT_SECRET_KEY });

@@ -31,7 +31,7 @@ export class User {
       elo: number;
 
       @Column()
-      createDate: Date = new Date();
+      createDate: Date;
 
       constructor() {
             this.avatarUrl = '';
@@ -42,5 +42,8 @@ export class User {
             this.elo = 0;
             this.password = '';
             this.username = '';
+            this.createDate = new Date();
       }
 }
+
+export default User;

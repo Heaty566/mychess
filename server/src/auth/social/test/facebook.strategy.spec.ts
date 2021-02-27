@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { AuthService } from '../../auth.service';
-import { AuthTokenRepository } from '../../entities/authToken.repository';
+import { ReTokenRepository } from '../../entities/re-token.repository';
 import { UserRepository } from '../../../user/entities/user.repository';
 import { initTestModule } from '../../../../test/initTest';
 import { FacebookStrategy } from '../facebook.strategy';
@@ -12,7 +12,7 @@ import { fakeData } from '../../../../test/fakeData';
 describe('FacebookStrategy', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
-      let authTokenRepository: AuthTokenRepository;
+      let authTokenRepository: ReTokenRepository;
       let authService: AuthService;
       let faceBook: FacebookStrategy;
       let userService: UserService;
@@ -21,7 +21,7 @@ describe('FacebookStrategy', () => {
             app = getApp;
 
             userRepository = module.get<UserRepository>(UserRepository);
-            authTokenRepository = module.get<AuthTokenRepository>(AuthTokenRepository);
+            authTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             authService = module.get<AuthService>(AuthService);
             userService = module.get<UserService>(UserService);
             faceBook = new FacebookStrategy(authService, userService);

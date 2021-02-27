@@ -1,9 +1,5 @@
-import { User } from './src/user/entities/user.entity';
-
-declare global {
-      namespace Express {
-            export interface Request {
-                  user?: User;
-            }
+declare namespace Express {
+      export interface Request {
+            user?: import('./src/user/entities/user.entity').User;
       }
 }

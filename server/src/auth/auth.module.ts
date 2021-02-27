@@ -4,14 +4,15 @@ import { AuthController } from './auth.controller';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
-import { AuthTokenRepository } from './entities/authToken.repository';
+import { ReTokenRepository } from './entities/re-token.repository';
 import { JwtService } from '@nestjs/jwt';
 import { GoogleStrategy } from './social/google.strategy';
 import { FacebookStrategy } from './social/facebook.strategy';
 import { GithubStrategy } from './social/github.strategy';
+import { RedisModule } from '../utils/redis/redis.module';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([AuthTokenRepository]), UserModule],
+      imports: [TypeOrmModule.forFeature([ReTokenRepository]), UserModule, RedisModule],
       controllers: [AuthController],
       providers: [
             AuthService,
