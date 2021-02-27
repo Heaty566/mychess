@@ -18,7 +18,7 @@ export class AuthService {
       }
 
       async createRefreshToken(data: any) {
-            let authToken = await this.createAuthToken(data);
+            const authToken = await this.createAuthToken(data);
             return this.createJwtStringToken({ authTokenId: authToken._id });
       }
 
