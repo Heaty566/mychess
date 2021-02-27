@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { User } from '../user/entities/user.entity';
+
 import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
 
@@ -13,24 +13,24 @@ export class AuthGuard implements CanActivate {
             const res: Response = context.switchToHttp().getResponse();
 
             // get refreshToken and authToken
-            const refreshToken = req.cookies['refresh-token'] || '';
-            let authToken = req.cookies['auth-token'] || '';
+
+            const refreshToken = req.cookies['re-token'] || '';
+            const authToken = req.cookies['auth-token'] || '';
 
             if (!refreshToken) throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
+            if (authToken) {
+                  const user = await this.authService.getDataFromAuthToken(authToken);
+                  if (!user) throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
 
-            let token = await this.authService.getDataFromAuthToken(authToken);
+                  req.user = user;
+            } else {
+                  const authTokenId = await this.authService.getAuthTokenFromReToken(refreshToken);
+                  if (!authTokenId) throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
+                  res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
 
-            if (!token) {
-                  token = await this.authService.getDataFromRefreshToken(refreshToken);
-                  if (!token) throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
-
-                  authToken = String(token._id);
-                  res.cookie('auth-token', authToken, { maxAge: 1000 * 60 * 5 });
+                  req.user = await this.authService.getDataFromAuthToken(authTokenId);
             }
 
-            const decode = this.authService.decodeToken(token.data) as User;
-
-            req.user = decode;
             return true;
       }
 }

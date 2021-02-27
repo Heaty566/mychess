@@ -6,9 +6,12 @@ import * as flat from 'flat';
 export class RedisService {
       constructor(@Inject('RedisClient') private readonly redisRepository: RedisClient) {}
 
-      setObjectByKey(key: string, value: Record<string, any>) {
+      setObjectByKey(key: string, value: Record<string, any>, expired?: number) {
             const flatValue: Record<string, any> = flat(value);
             this.redisRepository.hmset(key, flatValue);
+            if (expired) {
+                  this.redisRepository.expire(key, expired * 60);
+            }
       }
 
       deleteByKey(key: string) {
