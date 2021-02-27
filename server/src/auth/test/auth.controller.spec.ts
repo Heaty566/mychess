@@ -1,5 +1,8 @@
 import * as supertest from 'supertest';
+import 'jest-ts-auto-mock';
 import { INestApplication } from '@nestjs/common';
+import { createMock } from 'ts-auto-mock';
+import { Request, Response } from 'express';
 
 //* Internal import
 import { fakeUser } from '../../../test/fakeEntity';
@@ -7,20 +10,66 @@ import { UserRepository } from '../../user/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
 import { RegisterUserDTO } from '../dto/register.dto';
 import { LoginUserDTO } from '../dto/login.dto';
-
+import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 
 describe('AuthController', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
       let authService: AuthService;
-
+      let authController: AuthController;
       beforeAll(async () => {
             const { getApp, module } = await initTestModule();
             app = getApp;
 
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
+            authController = module.get<AuthController>(AuthController);
+      });
+
+      describe('googleAuth | facebookAuth | githubAuth', () => {
+            it('googleAuth', async () => {
+                  const res = await authController.googleAuth();
+                  expect(res).toBeUndefined();
+            });
+            it('facebookAuth', async () => {
+                  const res = await authController.facebookAuth();
+                  expect(res).toBeUndefined();
+            });
+            it('githubAuth', async () => {
+                  const res = await authController.githubAuth();
+                  expect(res).toBeUndefined();
+            });
+      });
+
+      describe('googleAuthRedirect | facebookAuthRedirect | githubAuthRedirect', () => {
+            let req: Request;
+            let res: Response;
+
+            beforeEach(() => {
+                  req = createMock<Request>();
+                  req.user = fakeUser();
+                  res = createMock<Response>();
+                  res.cookie = jest.fn().mockReturnValue({
+                        redirect: (url) => url,
+                  });
+            });
+
+            it('googleAuthRedirect', async () => {
+                  const output = await authController.googleAuthRedirect(req, res);
+
+                  expect(output).toBe(process.env.CLIENT_URL);
+            });
+            it('facebookAuthRedirect', async () => {
+                  const output = await authController.facebookAuthRedirect(req, res);
+
+                  expect(output).toBe(process.env.CLIENT_URL);
+            });
+            it('githubAuthRedirect', async () => {
+                  const output = await authController.githubAuthRedirect(req, res);
+
+                  expect(output).toBe(process.env.CLIENT_URL);
+            });
       });
 
       describe('POST /register', () => {

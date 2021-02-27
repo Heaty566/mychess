@@ -6,11 +6,6 @@ import { apiResponse } from '../interface/ApiResponse';
 @Catch(NotFoundException)
 export class NotFoundApiHandler implements ExceptionFilter {
       catch() {
-            return apiResponse.sendError(
-                  {
-                        message: 'This method is undefined',
-                  },
-                  'NotFoundException',
-            );
+            return apiResponse.sendError({ body: { message: 'This method is undefined' }, type: 'NotFoundException' });
       }
 }
