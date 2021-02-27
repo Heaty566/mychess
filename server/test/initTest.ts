@@ -24,7 +24,7 @@ export const initTestModule = async () => {
       const authService = module.get<AuthService>(AuthService);
 
       user = await userRepository.save(user);
-      const refreshToken = authService.createAuthToken(user);
+      const refreshToken = authService.createRefreshToken(user);
 
       return { getApp, module, reToken: [`re-token=${refreshToken} Max-Age=15552000; Path=/;`], user };
 };
