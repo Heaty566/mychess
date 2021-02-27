@@ -83,13 +83,11 @@ describe('RedisService', () => {
                   expect(res).toBeDefined();
             });
 
-            // it('Pass (expired = 0.01 minutes)', async () => {
-            //       redisService.setByValue(key, value, 1);
-
-            //       redisRepository.TTL(key, (data) => {
-            //             console.log(data);
-            //       });
-            // });
+            it('Pass (expired = 0.01 minutes)', async () => {
+                  redisService.setByValue(key, value, 60);
+                  const output = redisService.getByKey(key);
+                  expect(output).toBeDefined();
+            });
       });
 
       describe('getByKey', () => {
