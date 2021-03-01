@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ROUTER } from "../../constant/routerConstant";
 import { MyGameLogoIcon } from "./common/icon";
 import NavbarItem from "./navbarItem";
+
 export interface NavbarProps {}
 
 const Navbar: React.FunctionComponent<NavbarProps> = () => {
@@ -11,7 +12,7 @@ const Navbar: React.FunctionComponent<NavbarProps> = () => {
                         {/* Main Logo -------------- Start */}
                         <div className="mb-4  flex justify-center items-center">
                                 <Link href={ROUTER.home.url}>
-                                        <a href={ROUTER.home.url} title={ROUTER.home.label} aria-label={ROUTER.home.label}>
+                                        <a title={ROUTER.home.label} aria-label={ROUTER.home.label}>
                                                 {MyGameLogoIcon}
                                         </a>
                                 </Link>
@@ -23,7 +24,12 @@ const Navbar: React.FunctionComponent<NavbarProps> = () => {
                                 <nav>
                                         <h1 className="screen_reader">Our games</h1>
                                         <ul>
-                                                <NavbarItem label="Tic Tac Toe" icon="XTicTacToeIcon" url="/" customStyle="text-blue-600 " />
+                                                <NavbarItem
+                                                        label="Tic Tac Toe"
+                                                        icon="XTicTacToeIcon"
+                                                        url={ROUTER.ticTacToe.url}
+                                                        customStyle="text-blue-600"
+                                                />
                                         </ul>
                                 </nav>
                         </div>
