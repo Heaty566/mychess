@@ -1,7 +1,6 @@
 //* Internal import
 import { User } from '../src/user/entities/user.entity';
 import { fakeData } from './fakeData';
-import { AuthToken } from '../src/auth/entities/authToken.entity';
 
 export const fakeUser = () => {
       const user = new User();
@@ -13,11 +12,4 @@ export const fakeUser = () => {
       user.githubId = fakeData(10, 'lettersAndNumbersLowerCase');
 
       return user;
-};
-
-export const fakeAuthToken = () => {
-      const authToken = new AuthToken();
-      authToken.data = fakeData(10, 'lettersAndNumbers');
-
-      return authToken;
 };

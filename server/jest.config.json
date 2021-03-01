@@ -1,0 +1,24 @@
+{
+      "moduleFileExtensions": ["js", "json", "ts"],
+      "rootDir": "src",
+      "testRegex": ".*\\.spec\\.ts$",
+      "transform": {
+            "^.+\\.(t|j)s$": "ts-jest",
+            ".(ts|tsx)": "ts-jest"
+      },
+      "collectCoverageFrom": ["**/*.(t|j)s"],
+      "globals": {
+            "ts-jest": {
+                  "compiler": "ttypescript"
+            }
+      },
+      "coverageDirectory": "../coverage",
+      "testEnvironment": "node",
+      "coveragePathIgnorePatterns": [
+            "<rootDir>/main.ts",
+            "<rootDir>/router.ts",
+            "<rootDir>/app/interface/ApiResponse.ts",
+            "<rootDir>/app/exception",
+            "<rootDir>/utils/logger"
+      ]
+}
