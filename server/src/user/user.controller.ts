@@ -11,8 +11,7 @@ export class UserController {
       @Get('/')
       @UseGuards(AuthGuard)
       async getUser(@Req() req: Request) {
-            console.log(req.user);
-            // const user = await this.userService.getOneUserByField('_id', req.user._id);
-            // return user;
+            const user = await this.userService.getOneUserByField('_id', req.user._id);
+            return user;
       }
 }
