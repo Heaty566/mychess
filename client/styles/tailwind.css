@@ -1,5 +1,42 @@
 @tailwind base;
 @tailwind components;
+
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 500;
+        src: url("/asset/fonts/SF-Pro-Text-Medium.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Medium.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 400;
+        src: url("/asset/fonts/SF-Pro-Text-Regular.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Regular.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 600;
+        src: url("/asset/fonts/SF-Pro-Text-Semibold.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Semibold.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 300;
+        src: url("/asset/fonts/SF-Pro-Text-Light.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Light.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 800;
+        src: url("/asset/fonts/SF-Pro-Text-Bold.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Bold.woff2") format("woff2");
+}
+
 @tailwind utilities;
 
 .screen_reader {
@@ -19,4 +56,8 @@
         margin: 0;
         overflow: visible;
         position: static;
+}
+
+.test {
+        font-family: "SFTEXT";
 }

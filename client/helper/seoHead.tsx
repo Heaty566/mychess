@@ -1,13 +1,14 @@
 import * as React from "react";
 import Head from "next/head";
+import { Dictionary, translate } from "./i18n.helper";
 
 export interface HeadProps {
-        title: string;
-        description?: string;
+        title: Dictionary;
+        description?: Dictionary;
         isIndexPage?: boolean;
         isFollowPage?: boolean;
         canonical: string;
-        keyword?: string;
+        keyword?: Dictionary;
         imageUrl?: string;
 }
 
@@ -24,7 +25,7 @@ export const seoHead = ({
         const metaIsFollowPage = isFollowPage ? "follow" : "nofollow";
         const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
         const canonicalLink = process.env.DOMAIN + canonical;
-        const pageTitle = title === "Home" ? "MyGame" : `${title} | MyGame`;
+        const pageTitle = title === "Home" ? "MyGame" : `${translate(title)} | MyGame`;
 
         return (
                 <Head>
@@ -34,19 +35,19 @@ export const seoHead = ({
                         <meta name="google-site-verification" content="BWOjVaLMrQlDDZSMNRtScpbtQTBOWSuuZLoFe6IwjV4" />
                         {/* common header */}
                         <title>{pageTitle}</title>
-                        <meta name="description" content={description} />
+                        <meta name="description" content={translate(description)} />
                         <meta name="robots" content={metaRobots} />
-                        <meta name="keywords" content={keyword} />
+                        <meta name="keywords" content={translate(keyword)} />
                         <link href={canonicalLink} rel="canonical" />
                         {/* google header */}
                         <meta property="og:type" content="article" />
                         <meta property="og:title" content={pageTitle} />
-                        <meta property="og:description" content={description} />
+                        <meta property="og:description" content={translate(description)} />
                         <meta property="og:image" content={imageUrl} />
                         <meta property="fb:app_id" content={process.env.FB_APP_ID} />
                         {/* twitter header */}
                         <meta name="twitter:title" content={pageTitle} />
-                        <meta name="twitter:description" content={description} />
+                        <meta name="twitter:description" content={translate(description)} />
                         <meta name="twitter:image" content={imageUrl} />
                         <meta name="twitter:card" content="summary_large_image" />
                 </Head>
