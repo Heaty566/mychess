@@ -9,4 +9,8 @@ export class UserService {
       async findOneUserByField(field: keyof User, value: any) {
             return await this.userRepository.findOneByField(field, value);
       }
+
+      async getOneUserByField(field: keyof User, value: any) {
+            return await this.userRepository.getUserByField(field, value);
+      }
 }
