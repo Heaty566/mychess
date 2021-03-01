@@ -9,7 +9,7 @@ export const HomePage: React.FunctionComponent<IndexProps> = () => {
                 <>
                         {seoHead({ title: "Home", isIndexPage: true, isFollowPage: true, canonical: "/" })}
                         <main>
-                                <h1>tet</h1>
+                                <h1></h1>
                         </main>
                 </>
         );
