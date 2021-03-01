@@ -1,5 +1,5 @@
-import * as React from 'react';
-import Head from 'next/head';
+import * as React from "react";
+import Head from "next/head";
 
 export interface HeadProps {
         title: string;
@@ -12,19 +12,19 @@ export interface HeadProps {
 }
 
 export const seoHead = ({
-        title = 'MyQuiz',
+        title = "MyGame",
         isIndexPage = false,
         isFollowPage = true,
-        description = 'My Quiz is an awesome platform to make Your Awesome Quiz And Become Your Most Unstoppable Self',
-        canonical = '/',
-        keyword = 'myquiz, quiz, exam, study, learning',
-        imageUrl = '/asset/share/banner.png',
+        description = "hello user",
+        canonical = "/",
+        keyword = "game, tic tac toe",
+        imageUrl = "/asset/share/banner.png",
 }: HeadProps) => {
-        const metaIndexPage = isIndexPage ? 'index' : 'noindex';
-        const metaIsFollowPage = isFollowPage ? 'follow' : 'nofollow';
+        const metaIndexPage = isIndexPage ? "index" : "noindex";
+        const metaIsFollowPage = isFollowPage ? "follow" : "nofollow";
         const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
         const canonicalLink = process.env.DOMAIN + canonical;
-        const pageTitle = title === 'Home' ? 'MyQuiz' : `${title} | MyQuiz`;
+        const pageTitle = title === "Home" ? "MyGame" : `${title} | MyGame`;
 
         return (
                 <Head>

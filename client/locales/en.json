@@ -1,5 +1,7 @@
 {
         "translation": {
-                "hello": "Welcome to React and react-i18next"
+                "Tic Tac Toe": "Tic Tac Toe",
+                "Login": "Login",
+                "Register": "Register"
         }
 }
