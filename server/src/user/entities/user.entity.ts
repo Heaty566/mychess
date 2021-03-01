@@ -1,5 +1,6 @@
 import { Entity, ObjectIdColumn, Column } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { UserRole } from './user.userRole.enum';
 
 @Entity()
 export class User {
@@ -32,6 +33,12 @@ export class User {
 
       @Column()
       createDate: Date;
+
+      @Column()
+      role: UserRole;
+
+      @Column()
+      isDisabled: boolean;
 
       constructor() {
             this.avatarUrl = '';
