@@ -1,5 +1,22 @@
 {
         "translation": {
-                "hello": "xin chao"
+                "Tic Tac Toe": "Cờ Caro",
+                "Login": "Đăng Nhập",
+                "Register": "Đăng Ký",
+                "Sign In": "Đăng Nhập",
+                "Sign Up": "Đăng Ký",
+                "Or Log In With": "Hoặc Tiếp Tục Với",
+                "You have your own account?": "Bạn đã có tài khoản?",
+                "Sign In Here": "Tại đây",
+                "Continue with Google": "Liên kết với Google",
+                "Continue with Facebook": "Liên kết với  Facebook",
+                "Continue with Github": "Liên kết với  Github",
+                "Create a MyGame account?": "Tạo tài khoản mới?",
+                "Name": "Name",
+                "Username": "Username",
+                "Password": "Mật Khẩu",
+                "Confirm Password": "Nhập Lại Mật Khẩu",
+                "Forgot Your Password?": "Quên Mật Khẩu?",
+                "Sign Up here": "Tại Đây"
         }
 }
