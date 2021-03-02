@@ -8,4 +8,7 @@ export class ReToken {
 
       @Column()
       data: string;
+
+      @Column()
+      userId: ObjectId;
 }
