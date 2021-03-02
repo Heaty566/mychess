@@ -18,6 +18,12 @@ export class AuthService {
             private readonly redisService: RedisService,
       ) {}
 
+      async createOTPRedisKey(user: User, expired: number) {
+            const redisKey = String(new ObjectId());
+            await this.redisService.setObjectByKey(redisKey, user, expired);
+            return redisKey;
+      }
+
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
             const authTokenId = new ObjectId();

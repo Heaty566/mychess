@@ -123,6 +123,14 @@ describe('AuthService', () => {
             });
       });
 
+      describe('createOTPRedisKey', () => {
+            it('Pass', async () => {
+                  const user = fakeUser();
+                  const redisKey = authService.createOTPRedisKey(user, 2);
+                  expect(redisKey).toBeDefined();
+            });
+      });
+
       afterAll(async () => {
             await reTokenRepository.clear();
             await userRepository.clear();

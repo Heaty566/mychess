@@ -40,12 +40,20 @@ export class User {
       @Column()
       isDisabled: boolean;
 
+      @Column()
+      email: string;
+
+      @Column()
+      phoneNumber: string;
+
       constructor() {
             this.avatarUrl = '';
             this.facebookId = '';
             this.githubId = '';
             this.googleId = '';
             this.name = '';
+            this.email = '';
+            this.phoneNumber = '';
             this.elo = 0;
             this.password = '';
             this.username = '';
