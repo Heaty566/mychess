@@ -16,7 +16,7 @@ const TextFieldPassword: React.FunctionComponent<TextFieldProps> = ({ label, pla
         return (
                 <div className={customStyle}>
                         <label htmlFor={name} className="font-semibold capitalize text-white">
-                                {translate(label)}
+                                {translate({ content: label })}
                         </label>
                         <div className="relative">
                                 <input
@@ -37,7 +37,9 @@ const TextFieldPassword: React.FunctionComponent<TextFieldProps> = ({ label, pla
                         </div>
 
                         {error.length !== 0 && (
-                                <p className="text-sm font-medium text-torch-red-500 capitalize-first fade-in">{translate(label) + " " + error}</p>
+                                <p className="text-sm font-medium text-torch-red-500 capitalize-first fade-in">
+                                        {translate({ content: label }) + " " + error}
+                                </p>
                         )}
                 </div>
         );

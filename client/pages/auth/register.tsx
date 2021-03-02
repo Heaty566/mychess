@@ -77,7 +77,7 @@ const RegisterUser: React.FunctionComponent = () => {
 
                                                 <Btn label="register" />
                                         </form>
-                                        <p className="text-sm text-white capitalize mb-3 text-center">{translate("or log in with")}</p>
+                                        <p className="text-sm text-white capitalize mb-3 text-center">{translate({ content: "or log in with" })}</p>
 
                                         <LoginSocial />
 

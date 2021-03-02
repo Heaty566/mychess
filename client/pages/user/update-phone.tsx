@@ -24,9 +24,9 @@ const UpdatePhoneNumber: React.FunctionComponent = () => {
                                                 <FormTitle label="update phone number" />
 
                                                 <p className="text-sm text-white  my-9 font-thin ">
-                                                        {capitalizeFirst(translate("please enter your phone number")) +
+                                                        {translate({ content: "please enter your phone number" }) +
                                                                 ". " +
-                                                                capitalizeFirst(translate("we will send you OTP code"))}
+                                                                translate({ content: "we will send you OTP code" })}
                                                 </p>
                                                 <TextField
                                                         name="phone"

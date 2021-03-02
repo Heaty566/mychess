@@ -13,4 +13,5 @@ export const ROUTER: Record<string, RouterItem> = {
         forgotPassword: { url: "/auth/forgot-password", label: "tic tac toe" },
         updatePhone: { url: "/tictactoe", label: "tic tac toe" },
         forgotPasswordPhone: { url: "/auth/forgot-password-phone", label: "or log in with" },
+        verifyPhoneNumber: { label: "---------------comment--------", url: "??" },
 };
