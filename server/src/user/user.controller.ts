@@ -3,6 +3,8 @@ import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { Request } from 'express';
+import { apiResponse } from '../app/interface/ApiResponse';
+import User from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -12,6 +14,7 @@ export class UserController {
       @UseGuards(AuthGuard)
       async getUser(@Req() req: Request) {
             const user = await this.userService.getOneUserByField('_id', req.user._id);
-            return user;
+
+            return apiResponse.send<User>({ body: { data: user } });
       }
 }

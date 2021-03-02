@@ -2,19 +2,19 @@ import { BadGatewayException, BadRequestException, InternalServerErrorException,
 import { Dictionary, LocalesService } from '../../utils/locales/locales.service';
 
 type ErrorType = 'BadGatewayException' | 'BadRequestException' | 'InternalServerErrorException' | 'UnauthorizedException' | 'NotFoundException';
-interface IApiResponse<T> {
+export interface IApiResponse<T> {
       message?: Dictionary;
       data?: T;
       details?: Record<string, Dictionary>;
 }
 
-interface IApiBase {
-      body: IApiResponse<void>;
+export interface IApiBase<T> {
+      body: IApiResponse<T>;
       isTranslate?: boolean;
       context?: Record<string, string>;
 }
 
-interface IApiError extends IApiBase {
+export interface IApiError extends IApiBase<void> {
       type?: ErrorType;
 }
 class ApiResponse {
@@ -38,7 +38,7 @@ class ApiResponse {
             }
       }
 
-      public send({ body, isTranslate, context }: IApiBase) {
+      public send<T>({ body, isTranslate, context }: IApiBase<T>) {
             if (isTranslate && body.message) {
                   body.message = this.localeService.translate(body.message, { ...context });
             }
