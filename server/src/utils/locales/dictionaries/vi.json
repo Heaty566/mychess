@@ -17,5 +17,7 @@
       "boolean.base": "should be a boolean",
       "array.length": "should be length equal",
       "confirmPassword": "confirmPassword",
-      "password": "password"
+      "password": "password",
+      "Email is not found": "Email này không tồn tại",
+      "Problem occurs when sending email": "Xảy ra lỗi trong lúc gửi mail"
 }

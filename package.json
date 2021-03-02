@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "flat": "^5.0.2",
     "husky": "^5.0.9"
   }
 }

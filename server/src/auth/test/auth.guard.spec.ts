@@ -7,7 +7,7 @@ import { AuthService } from '../auth.service';
 import { User } from '../../user/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { Request, Response } from 'express';
-import { AuthGuard } from '../auth.guard';
+import { MyAuthGuard } from '../auth.guard';
 import { createMock } from 'ts-auto-mock';
 import { RedisService } from '../../utils/redis/redis.service';
 
@@ -16,7 +16,7 @@ describe('AuthService', () => {
       let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
       let authService: AuthService;
-      let authGuard: AuthGuard;
+      let authGuard: MyAuthGuard;
       let reToken: string;
       let user: User;
       let context: (cookies) => ExecutionContext;
@@ -31,7 +31,7 @@ describe('AuthService', () => {
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             redisService = module.get<RedisService>(RedisService);
-            authGuard = new AuthGuard(authService);
+            authGuard = new MyAuthGuard(authService);
 
             context = (cookies) =>
                   createMock<ExecutionContext>({
