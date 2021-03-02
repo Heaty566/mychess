@@ -26,6 +26,18 @@ describe('SmailService', () => {
             });
       });
 
+      describe('sendOTPMail', () => {
+            it('Pass', async () => {
+                  const res = await smailService.sendOTPMail('heaty566@gmail.com', 'code test');
+                  expect(res).toBeTruthy();
+            });
+
+            it('Failed to send', async () => {
+                  const res = await smailService.sendOTPMail('heaty566', 'code test');
+                  expect(res).toBeFalsy();
+            });
+      });
+
       afterAll(async () => {
             await app.close();
       });

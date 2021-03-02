@@ -5,8 +5,7 @@ import { LoggerService } from '../../utils/logger/logger.service';
 export class SmailService {
       constructor(private readonly mailService: MailService, private readonly LoggerService: LoggerService) {}
 
-      // private
-      sendMail(receiver: string, content: string, subject = 'MyGame') {
+      private sendMail(receiver: string, content: string, subject = 'MyGame') {
             const msg: MailDataRequired = {
                   to: receiver,
                   from: 'MyGame<noreply@heaty566.com>',
@@ -35,5 +34,20 @@ export class SmailService {
 
                         return false;
                   });
+      }
+
+      async sendOTPMail(receiver: string, OTP: string) {
+            return await this.sendMail(
+                  receiver,
+                  `
+            <div>
+                  <h2>Hello</h2>
+                  <p>You receiving this email because we received a password request for your account.</p>
+                  </br>
+                  <p>Please click this link:<a>http://localhost:4000/api/auth/reset-password/${OTP}</a>
+                  </p>
+                  </br>
+            </div>`,
+            );
       }
 }
