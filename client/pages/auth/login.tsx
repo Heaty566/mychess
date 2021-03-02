@@ -11,6 +11,7 @@ import { translate } from "../../helper/i18n.helper";
 import FormBottomLink from "../../components/form/common/FormBottomLink";
 import FormTitle from "../../components/form/common/formTitle";
 import FormSideLink from "../../components/form/common/FormSideLink";
+import { RouterHOC } from "../../HOC/routerHOC";
 
 const LoginUser: React.FunctionComponent = () => {
         return (
@@ -23,7 +24,7 @@ const LoginUser: React.FunctionComponent = () => {
                                 description: ROUTER.login.label,
                         })}
                         <div className="w-full  grid place-items-center">
-                                <main className="w-352 bg-warmGray-700 px-8 py-16 rounded-sm">
+                                <main className="w-352 bg-warmGray-700 px-8 py-16 rounded-sm fade-in">
                                         <form className="mb-6">
                                                 <FormTitle label="sign in" />
                                                 <TextField
@@ -56,4 +57,5 @@ const LoginUser: React.FunctionComponent = () => {
         );
 };
 
-export default LoginUser;
+const LoginUserRouter = (props: any) => RouterHOC({ Component: LoginUser, props: { ...props } });
+export default LoginUserRouter;

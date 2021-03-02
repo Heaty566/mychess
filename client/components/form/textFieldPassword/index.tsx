@@ -37,7 +37,7 @@ const TextFieldPassword: React.FunctionComponent<TextFieldProps> = ({ label, pla
                         </div>
 
                         {error.length !== 0 && (
-                                <p className="text-sm font-medium text-torch-red-500 capitalize-first ">{translate(label) + " " + error}</p>
+                                <p className="text-sm font-medium text-torch-red-500 capitalize-first fade-in">{translate(label) + " " + error}</p>
                         )}
                 </div>
         );
