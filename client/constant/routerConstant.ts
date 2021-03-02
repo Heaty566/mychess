@@ -6,9 +6,9 @@ interface RouterItem {
 }
 
 export const ROUTER: Record<string, RouterItem> = {
-        login: { url: "/user/login", label: "login" },
+        login: { url: "/auth/login", label: "login" },
         home: { url: "/", label: "MyGame" },
-        register: { url: "/user/register", label: "register" },
+        register: { url: "/auth/register", label: "register" },
         ticTacToe: { url: "/tictactoe", label: "tic tac toe" },
         forgotPassword: { url: "/auth/forgot-password", label: "tic tac toe" },
         updatePhone: { url: "/tictactoe", label: "tic tac toe" },

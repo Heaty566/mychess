@@ -16,6 +16,7 @@ import FormBottomLink from "../../components/form/common/FormBottomLink";
 import FormTitle from "../../components/form/common/formTitle";
 import { useSelector } from "react-redux";
 import { ApiState } from "../../store/api";
+import { RouterHOC } from "../../HOC/routerHOC";
 
 const defaultValues: RegisterUserDto = {
         username: "",
@@ -48,7 +49,7 @@ const RegisterUser: React.FunctionComponent = () => {
                                 description: ROUTER.register.label,
                         })}
                         <div className="w-full  grid place-items-center">
-                                <main className="w-352 bg-warmGray-700 px-8 py-16 rounded-sm">
+                                <main className="w-352 bg-warmGray-700 px-8 py-16 rounded-sm fade-in">
                                         <form className="mb-6" onSubmit={handleSubmit(handleOnSubmit)}>
                                                 <FormTitle label="sign up" />
                                                 <TextField name="name" label="name" register={register} error={errors.name} customStyle="mb-4" />
@@ -87,4 +88,5 @@ const RegisterUser: React.FunctionComponent = () => {
         );
 };
 
-export default RegisterUser;
+const RegisterUserRouter = (props: any) => RouterHOC({ Component: RegisterUser, props: { ...props } });
+export default RegisterUserRouter;
