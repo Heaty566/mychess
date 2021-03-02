@@ -25,7 +25,7 @@ const Navbar: React.FunctionComponent<NavbarProps> = () => {
                                         <h1 className="screen_reader">Our games</h1>
                                         <ul>
                                                 <NavbarItem
-                                                        label="Tic Tac Toe"
+                                                        label="tic tac toe"
                                                         icon="XTicTacToeIcon"
                                                         url={ROUTER.ticTacToe.url}
                                                         customStyle="text-blue-600"
@@ -40,8 +40,8 @@ const Navbar: React.FunctionComponent<NavbarProps> = () => {
                                 <nav>
                                         <h1 className="screen_reader">User</h1>
                                         <ul>
-                                                <NavbarItem label="Login" icon="LoginUserIcon" url={ROUTER.login.url} />
-                                                <NavbarItem label="Register" icon="RegisterUserIcon" url={ROUTER.register.url} />
+                                                <NavbarItem label="login" icon="LoginUserIcon" url={ROUTER.login.url} />
+                                                <NavbarItem label="register" icon="RegisterUserIcon" url={ROUTER.register.url} />
                                         </ul>
                                 </nav>
                         </div>

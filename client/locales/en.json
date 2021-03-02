@@ -6,7 +6,12 @@
                 "username": "username",
                 "password": "password",
                 "confirm password": "confirm password",
-
+                "OTP": "OTP",
+                "continue": "continue",
+                "verify phone number": "verify phone number",
+                "change other phone number": "change other phone number",
+                "send an another OTP key in": "send an another OTP key in",
+                "an OTP has been sent to your phone, please check and click continue": "an OTP has been sent to your phone, please check and click continue",
                 "--------------comment-----------": "Label",
                 "forgot your password": "forgot your password",
                 "login": "login",
