@@ -68,4 +68,20 @@ export class AuthService {
       async comparePassword(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
       }
+
+      private generateOtp(length: number) {
+            let result = '';
+            const characters = '0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+      }
+
+      generateKeyForSms(user: User, expired: number) {
+            const otpKey = this.generateOtp(6);
+            this.redisService.setObjectByKey(otpKey, user, expired);
+            return otpKey;
+      }
 }

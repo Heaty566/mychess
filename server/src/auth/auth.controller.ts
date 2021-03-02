@@ -8,10 +8,13 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { OtpSmsDTO } from './dto/otpSms.dto';
+import { AwsInstance } from 'twilio/lib/rest/accounts/v1/credential/aws';
+import { SmsService } from '../providers/sms/sms.service';
 
 @Controller('auth')
 export class AuthController {
-      constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
+      constructor(private readonly authService: AuthService, private readonly userService: UserService, private readonly smsService: SmsService) {}
 
       @Get('/google')
       @UseGuards(AuthGuard('google'))
@@ -79,5 +82,17 @@ export class AuthController {
 
             const refreshToken = await this.authService.createReToken(user);
             return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
+      }
+
+      @Post('/otp-sms')
+      async sepSms(@Body() body: OtpSmsDTO) {
+            const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
+            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not correct' } } });
+
+            const otpKey = this.authService.generateKeyForSms(user, 5);
+
+            const res = await this.smsService.sendOtp(user.phoneNumber, otpKey);
+            if (!res) throw apiResponse.sendError({ body: { message: 'Please, try again later' } });
+            // return apiResponse.send({ body: { message: 'An otp has been sent to your phone number' } });
       }
 }

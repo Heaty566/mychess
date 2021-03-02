@@ -40,6 +40,9 @@ export class User {
       @Column()
       isDisabled: boolean;
 
+      @Column()
+      phoneNumber: string;
+
       constructor() {
             this.avatarUrl = '';
             this.facebookId = '';
@@ -50,6 +53,7 @@ export class User {
             this.password = '';
             this.username = '';
             this.createDate = new Date();
+            this.phoneNumber = '';
       }
 }
 

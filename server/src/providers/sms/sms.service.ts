@@ -19,4 +19,10 @@ export class SmsService {
                         return false;
                   });
       }
+
+      public async sendOtp(phoneNumber: string, otpKey: string) {
+            const content = `Your verification code is : ${otpKey}, this code will be invalid in 5 minutes.`;
+
+            return await this.sendSms(phoneNumber, content);
+      }
 }
