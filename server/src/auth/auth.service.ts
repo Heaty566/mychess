@@ -22,7 +22,7 @@ export class AuthService {
             const encryptUser = this.encryptToken(user);
             const authTokenId = new ObjectId();
 
-            this.redisService.setByValue(String(authTokenId), encryptUser, 5);
+            this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
             return String(authTokenId);
       }
 
@@ -30,6 +30,8 @@ export class AuthService {
             const authTokenId = await this.createAuthToken(data);
             const reToken = new ReToken();
             reToken.data = authTokenId;
+            reToken.userId = data._id;
+            await this.reTokenRepository.delete({ userId: data._id });
             const insertedReToken = await this.reTokenRepository.save(reToken);
 
             return String(insertedReToken._id);
@@ -38,6 +40,15 @@ export class AuthService {
       async getAuthTokenFromReToken(refreshToken: string) {
             const reToken = await this.reTokenRepository.findOneByField('_id', refreshToken);
             if (!reToken) return null;
+
+            const isStillExit = await this.redisService.getByKey(reToken.data);
+            if (!isStillExit) {
+                  const user = await this.userRepository.getUserByField('_id', reToken.userId);
+                  const newReToken = await this.createAuthToken(user);
+                  reToken.data = newReToken;
+                  const updateReToken = await this.reTokenRepository.save(reToken);
+                  return updateReToken.data;
+            }
 
             return reToken.data;
       }
