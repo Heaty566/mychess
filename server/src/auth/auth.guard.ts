@@ -5,7 +5,7 @@ import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class MyAuthGuard implements CanActivate {
       constructor(private authService: AuthService) {}
 
       async canActivate(context: ExecutionContext) {

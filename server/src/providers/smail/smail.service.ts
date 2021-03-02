@@ -5,7 +5,8 @@ import { LoggerService } from '../../utils/logger/logger.service';
 export class SmailService {
       constructor(private readonly mailService: MailService, private readonly LoggerService: LoggerService) {}
 
-      private sendMail(receiver: string, content: string, subject = 'MyGame') {
+      // private
+      sendMail(receiver: string, content: string, subject = 'MyGame') {
             const msg: MailDataRequired = {
                   to: receiver,
                   from: 'MyGame<noreply@heaty566.com>',

@@ -8,10 +8,23 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { MyAuthGuard } from './auth.guard';
+import { SmailService } from '../providers/smail/smail.service';
 
 @Controller('auth')
 export class AuthController {
-      constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
+      constructor(
+            private readonly authService: AuthService,
+            private readonly userService: UserService,
+            private readonly smailService: SmailService,
+      ) {}
+
+      @Post('/resetPassword')
+      @UseGuards(MyAuthGuard)
+      async sendEmailToResetPassword(@Req() req: Request, @Res() res: Response) {
+            await this.smailService.sendMail('haicao2805@gmail.com', '<div><a>link</a></div>');
+            return res.send({});
+      }
 
       @Get('/google')
       @UseGuards(AuthGuard('google'))
