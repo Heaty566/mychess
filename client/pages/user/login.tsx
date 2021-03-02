@@ -8,61 +8,48 @@ import TextFieldPassword from "../../components/form/textFieldPassword";
 import { ROUTER } from "../../constant/routerConstant";
 import { seoHead } from "../../helper/seoHead";
 import { translate } from "../../helper/i18n.helper";
+import FormBottomLink from "../../components/form/common/FormBottomLink";
+import FormTitle from "../../components/form/common/formTitle";
+import FormSideLink from "../../components/form/common/FormSideLink";
 
 const LoginUser: React.FunctionComponent = () => {
         return (
                 <>
                         {seoHead({
-                                title: "Login",
+                                title: "login",
                                 isIndexPage: false,
                                 isFollowPage: false,
                                 canonical: ROUTER.login.url,
                                 description: ROUTER.login.label,
                         })}
                         <div className="w-full  grid place-items-center">
-                                <main className="w-352 bg-scarpa-flow-500 px-8 py-16 rounded-sm">
+                                <main className="w-352 bg-warmGray-700 px-8 py-16 rounded-sm">
                                         <form className="mb-6">
-                                                <h1 className="text-4xl text-center font-bold test mb-4 text-white">{translate("Sign In")}</h1>
+                                                <FormTitle label="sign in" />
                                                 <TextField
                                                         name="username"
-                                                        label="Username"
+                                                        label="username"
                                                         register={() => console.log("hello")}
                                                         error=""
                                                         customStyle="mb-4"
                                                 />
                                                 <TextFieldPassword
                                                         name="password"
-                                                        label="Password"
+                                                        label="password"
                                                         register={() => console.log("hello")}
                                                         error=""
                                                         customStyle="mb-4"
                                                 />
                                                 <div className="text-right mb-4">
-                                                        <Link href={ROUTER.forgotPassword.url}>
-                                                                <a
-                                                                        href={ROUTER.forgotPassword.url}
-                                                                        className="text-white text-sm font-thin hover:text-indigo-200  duration-300"
-                                                                >
-                                                                        {translate("Forgot Your Password?")}
-                                                                </a>
-                                                        </Link>
+                                                        <FormSideLink label="forgot your password" url={ROUTER.forgotPassword.url} />
                                                 </div>
-                                                <Btn label="Login" />
+                                                <Btn label="login" />
                                         </form>
-                                        <p className="text-sm text-white  mb-3 text-center">{translate("Or Log In With")}</p>
+                                        <p className="text-sm text-white capitalize mb-3 text-center">{translate("or log in with")}</p>
 
                                         <LoginSocial />
 
-                                        <div className="mt-6 text-center">
-                                                <p className="text-white text-sm font-thin ">
-                                                        {translate("Create a MyGame account?")}
-                                                        <Link href={ROUTER.register.url}>
-                                                                <a className="font-medium ml-1 hover:text-indigo-200  duration-300">
-                                                                        {translate("Sign Up here")}
-                                                                </a>
-                                                        </Link>
-                                                </p>
-                                        </div>
+                                        <FormBottomLink label="create a MyGame account" labelLink="sign up here" url={ROUTER.register.url} />
                                 </main>
                         </div>
                 </>

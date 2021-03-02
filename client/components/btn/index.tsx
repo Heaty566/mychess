@@ -13,14 +13,18 @@ export interface BtnLinkProps {
 const Btn: React.FunctionComponent<BtnLinkProps> = ({ label, type = "submit", link = "", func, customStyle }) => {
         return type === "link" ? (
                 <Link href={link}>
-                        <a href={link} type={type} className={`bg-indigo-600 py-1.5 px-6  font-medium text-white rounded-sm w-full ${customStyle}`}>
+                        <a
+                                href={link}
+                                type={type}
+                                className={`bg-indigo-600 py-1.5 px-6  capitalize font-medium text-white rounded-sm w-full ${customStyle}`}
+                        >
                                 {translate(label)}
                         </a>
                 </Link>
         ) : (
                 <button
                         type={type}
-                        className={`bg-indigo-600 py-1.5 px-6  font-medium text-white rounded-sm w-full focus:outline-none hover:bg-indigo-500 duration-300 ${customStyle}`}
+                        className={`bg-indigo-600 py-1.5 px-6  font-medium capitalize text-white rounded-sm w-full focus:outline-none hover:bg-indigo-500 duration-300 ${customStyle}`}
                         onClick={type === "button" ? func : null}
                 >
                         {translate(label)}
