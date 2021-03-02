@@ -1,5 +1,6 @@
 import { Entity, ObjectIdColumn, Column } from 'typeorm';
 import { ObjectId } from 'mongodb';
+import { UserRole } from './user.userRole.enum';
 
 @Entity()
 export class User {
@@ -31,7 +32,13 @@ export class User {
       elo: number;
 
       @Column()
-      createDate: Date = new Date();
+      createDate: Date;
+
+      @Column()
+      role: UserRole;
+
+      @Column()
+      isDisabled: boolean;
 
       constructor() {
             this.avatarUrl = '';
@@ -42,5 +49,8 @@ export class User {
             this.elo = 0;
             this.password = '';
             this.username = '';
+            this.createDate = new Date();
       }
 }
+
+export default User;

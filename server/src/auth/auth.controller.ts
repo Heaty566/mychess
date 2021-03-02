@@ -22,9 +22,8 @@ export class AuthController {
       @Get('/google/callback')
       @UseGuards(AuthGuard('google'))
       async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-            const authToken = await this.authService.createAuthToken(req.user);
-            const refreshToken = await this.authService.createRefreshToken(authToken._id);
-            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+            const refreshToken = await this.authService.createReToken(req.user);
+            return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 
       @Get('/facebook')
@@ -36,9 +35,8 @@ export class AuthController {
       @Get('/facebook/callback')
       @UseGuards(AuthGuard('facebook'))
       async facebookAuthRedirect(@Req() req: Request, @Res() res: Response) {
-            const authToken = await this.authService.createAuthToken(req.user);
-            const refreshToken = await this.authService.createRefreshToken(authToken._id);
-            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+            const refreshToken = await this.authService.createReToken(req.user);
+            return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 
       @Get('/github')
@@ -50,9 +48,8 @@ export class AuthController {
       @Get('/github/callback')
       @UseGuards(AuthGuard('github'))
       async githubAuthRedirect(@Req() req: Request, @Res() res: Response) {
-            const authToken = await this.authService.createAuthToken(req.user);
-            const refreshToken = await this.authService.createRefreshToken(authToken._id);
-            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+            const refreshToken = await this.authService.createReToken(req.user);
+            return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 
       @Post('/register')
@@ -65,12 +62,10 @@ export class AuthController {
             newUser.username = body.username;
             newUser.name = body.name;
             newUser.password = await this.authService.hash(body.password);
+            const insertedUser = await this.authService.registerUser(newUser);
 
-            const insertedUser = this.authService.registerUser(newUser);
-
-            const authToken = await this.authService.createAuthToken(insertedUser);
-            const refreshToken = await this.authService.createRefreshToken(authToken._id);
-            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Register success' });
+            const refreshToken = await this.authService.createReToken(insertedUser);
+            return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Register success' });
       }
 
       @Post('/login')
@@ -79,8 +74,10 @@ export class AuthController {
             const user = await this.userService.findOneUserByField('username', body.username);
             if (!user) throw apiResponse.sendError({ body: { details: { username: 'Username or password is not correct' } } });
 
-            const authToken = await this.authService.createAuthToken(user);
-            const refreshToken = await this.authService.createRefreshToken(authToken._id);
-            return res.cookie('refresh-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
+            const isCorrect = await this.authService.comparePassword(body.password, user.password);
+            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'Username or password is not correct' } } });
+
+            const refreshToken = await this.authService.createReToken(user);
+            return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
       }
 }

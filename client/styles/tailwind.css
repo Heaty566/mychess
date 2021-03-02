@@ -1,7 +1,63 @@
 @tailwind base;
 @tailwind components;
+
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 500;
+        src: url("/asset/fonts/SF-Pro-Text-Medium.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Medium.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 400;
+        src: url("/asset/fonts/SF-Pro-Text-Regular.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Regular.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 600;
+        src: url("/asset/fonts/SF-Pro-Text-Semibold.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Semibold.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 300;
+        src: url("/asset/fonts/SF-Pro-Text-Light.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Light.woff2") format("woff2");
+}
+@font-face {
+        font-family: "SFTEXT";
+        font-style: normal;
+        font-weight: 800;
+        src: url("/asset/fonts/SF-Pro-Text-Bold.woff2");
+        src: url("/asset/fonts/SF-Pro-Text-Bold.woff2") format("woff2");
+}
+
 @tailwind utilities;
 
-.bg__form {
-        @apply min-w-full min-h-screen flex items-center justify-center;
+.screen_reader {
+        border: 0;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+}
+.screen_reader:active,
+.screen_reader:focus {
+        clip: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        position: static;
+}
+
+.capitalize-first::first-letter {
+        text-transform: capitalize;
 }

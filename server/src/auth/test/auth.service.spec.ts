@@ -5,23 +5,26 @@ import { UserRepository } from '../../user/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
 import { AuthService } from '../auth.service';
 import { User } from '../../user/entities/user.entity';
-import { fakeUser, fakeAuthToken } from '../../../test/fakeEntity';
-import { AuthToken } from '../entities/authToken.entity';
-import { AuthTokenRepository } from '../entities/authToken.repository';
+import { fakeUser } from '../../../test/fakeEntity';
+import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
+import { RedisService } from '../../utils/redis/redis.service';
 
 describe('AuthService', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
-      let authTokenRepository: AuthTokenRepository;
+      let reTokenRepository: ReTokenRepository;
       let authService: AuthService;
+      let userDb: User;
+      let redisService: RedisService;
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getUser, getApp, module } = await initTestModule();
             app = getApp;
-
+            userDb = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
-            authTokenRepository = module.get<AuthTokenRepository>(AuthTokenRepository);
+            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
+            redisService = module.get<RedisService>(RedisService);
       });
       describe('registerUser', () => {
             let input: User;
@@ -46,146 +49,82 @@ describe('AuthService', () => {
             });
       });
 
-      describe('saveAuthToken', () => {
-            let input: AuthToken;
-
-            beforeEach(() => {
-                  input = fakeAuthToken();
-            });
-
-            it('Pass', async () => {
-                  const res = await authService.saveAuthToken(input);
-
-                  expect(res).toBeDefined();
-            });
-            it('Pass', async () => {
-                  await authService.saveAuthToken(input);
-                  const res = await authTokenRepository.findOne({ data: input.data });
-
-                  expect(res).toBeDefined();
-                  expect(res.data).toBe(input.data);
-            });
-      });
-
-      describe('hash', () => {
-            let data: string;
-
-            beforeEach(() => {
-                  data = fakeData(10);
-            });
-
-            it('Pass', async () => {
-                  const hash = await authService.hash(data);
-                  expect(hash.length).toBeGreaterThan(10);
-            });
-      });
-
-      describe('comparePassword', () => {
-            let data: string, hash: string;
-
-            beforeEach(async () => {
-                  data = fakeData(10);
-                  hash = await authService.hash(data);
-            });
-
-            it('Pass', async () => {
-                  const isCorrect = await authService.comparePassword(data, hash);
-                  expect(isCorrect).toBe(true);
-            });
-      });
-
-      describe('createJwtStringToken', () => {
-            let user: Record<any, any>;
-            let token: string;
-
-            beforeEach(() => {
-                  user = fakeUser;
-            });
-
-            it('Pass', () => {
-                  token = authService.createJwtStringToken({ user });
-                  expect(token.length).toBeGreaterThan(20);
-            });
-      });
-
-      describe('decodeToken', () => {
-            let user: Record<any, any>;
-            let token: string;
-
-            beforeEach(() => {
-                  user = fakeUser();
-                  token = authService.createJwtStringToken({ user });
-            });
-
-            it('Pass', () => {
-                  const decodeToken = authService.decodeToken(token);
-                  expect(decodeToken['user'].username).toEqual(user.username);
-            });
-      });
-
       describe('getDataFromRefreshToken', () => {
-            let authToken = new AuthToken();
-            const user = fakeUser();
-            let refreshToken: string;
+            let reToken: string;
 
             beforeEach(async () => {
-                  authToken.data = authService.createJwtStringToken({ user });
-                  authToken = await authService.saveAuthToken(authToken);
-                  refreshToken = authService.createJwtStringToken({
-                        authTokenId: authToken._id,
-                  });
+                  reToken = await authService.createReToken(userDb);
             });
 
             it('Pass', async () => {
-                  const data = await authService.getDataFromRefreshToken(refreshToken);
-                  expect(data.data).toEqual(authToken.data);
+                  const authTokenId = await authService.getAuthTokenFromReToken(reToken);
+                  const encryptedUser = await redisService.getByKey(authTokenId);
+                  const userInformation = await authService.decodeToken<User>(encryptedUser);
+                  expect(userInformation).toBeDefined();
+                  expect(userInformation.username).toBe(userInformation.username);
+            });
+
+            it('Failed', async () => {
+                  const userInformation = await authService.getAuthTokenFromReToken(fakeData(12));
+                  expect(userInformation).toBeNull();
+            });
+            it('Failed', async () => {
+                  const userInformation = await authService.getAuthTokenFromReToken(fakeData(5));
+                  expect(userInformation).toBeNull();
             });
       });
 
       describe('getDataFromAuthToken', () => {
-            let authToken = new AuthToken();
-            const user = fakeUser();
+            let authToken: string;
 
             beforeEach(async () => {
-                  authToken.data = authService.createJwtStringToken({ user });
-                  authToken = await authService.saveAuthToken(authToken);
+                  authToken = await authService[`createAuthToken`](userDb);
             });
 
             it('Pass', async () => {
-                  const data = await authService.getDataFromAuthToken(String(authToken._id));
-                  expect(data.data).toEqual(authToken.data);
+                  const userInformation = await authService.getDataFromAuthToken(authToken);
+                  expect(userInformation).toBeDefined();
+                  expect(userInformation.username).toBe(userInformation.username);
+            });
+
+            it('Failed', async () => {
+                  const userInformation = await authService.getDataFromAuthToken(fakeData(12));
+                  expect(userInformation).toBeNull();
+            });
+            it('Failed', async () => {
+                  const userInformation = await authService.getDataFromAuthToken(fakeData(5));
+                  expect(userInformation).toBeNull();
             });
       });
 
       describe('createAuthToken', () => {
-            let authToken: AuthToken;
-            beforeEach(() => {
-                  const user = fakeUser();
-                  authToken = new AuthToken();
-                  authToken.data = authService.createJwtStringToken({ user });
-            });
-
             it('Pass', async () => {
-                  authToken = await authService.saveAuthToken(authToken);
-                  expect(authToken._id).toBeDefined();
+                  const authToken = await authService[`createAuthToken`](userDb);
+                  const encryptedUser = await redisService.getByKey(authToken);
+                  const userInformation = await authService.decodeToken<User>(encryptedUser);
+
+                  expect(userInformation).toBeDefined();
+                  expect(userInformation.username).toBe(userInformation.username);
             });
       });
 
       describe('createRefreshToken', () => {
-            let user: User;
-            let authToken: AuthToken;
+            let reToken: string;
             beforeEach(async () => {
-                  user = fakeUser();
-                  authToken = await authService.createAuthToken({ user });
+                  reToken = await authService.createReToken(userDb);
             });
             it('Pass', async () => {
-                  const refreshToken = await authService.createRefreshToken(authToken._id);
-                  expect(refreshToken.length).toBeGreaterThan(20);
+                  const refreshToken = await reTokenRepository.findOneByField('_id', reToken);
+                  const encryptedUser = await redisService.getByKey(refreshToken.data);
+                  const userInformation = await authService.decodeToken<User>(encryptedUser);
+
+                  expect(userInformation).toBeDefined();
+                  expect(userInformation.username).toBe(userInformation.username);
             });
       });
 
       afterAll(async () => {
-            await authTokenRepository.clear();
+            await reTokenRepository.clear();
             await userRepository.clear();
             await app.close();
       });

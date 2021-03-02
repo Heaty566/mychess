@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import TextField from "../components/form/textField";
 //* Import
 import { seoHead } from "../helper/seoHead";
 
@@ -8,9 +8,7 @@ export const HomePage: React.FunctionComponent<IndexProps> = () => {
         return (
                 <>
                         {seoHead({ title: "Home", isIndexPage: true, isFollowPage: true, canonical: "/" })}
-                        <main>
-                                <h1>tet</h1>
-                        </main>
+                        <main className="bg-gray-cus-500 w-full p-10"></main>
                 </>
         );
 };

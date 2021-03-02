@@ -1,5 +1,40 @@
 {
         "translation": {
-                "hello": "Welcome to React and react-i18next"
+                "---------------comment--------": "Field",
+                "name": "name",
+                "email": "email",
+                "username": "username",
+                "password": "password",
+                "confirm password": "confirm password",
+
+                "--------------comment-----------": "Label",
+                "forgot your password": "forgot your password",
+                "login": "login",
+                "sign in": "sign in",
+                "sign up": "sign up",
+                "register": "register",
+                "tic tac toe": "tic tac toe",
+                "not found": "not found",
+                "continue with": "continue with",
+                "or log in with": "or log in with",
+                "you have your own account": "you have your own account",
+                "create a MyGame account": "create a MyGame account",
+                "sign in here": "sign in here",
+                "sign up here": "sign up here",
+                "update phone number": "update phone number",
+                "phone number": "phone number",
+                "please enter your phone number": "please enter your phone number",
+                "we will send you OTP code": "we will send you OTP code",
+                "send to phone": "send to phone",
+                "click here": "click here",
+                "or email verification": "or email verification",
+                "or phone verification": "or phone verification",
+                "send to email": "send to email",
+                "please enter your email address": "please enter your email address",
+                "you will receive a link to reset your password": "you will receive a link to reset your password",
+
+                "-------------comment------------": "Content",
+                "MyGame": "MyGame",
+                "Home": "Home"
         }
 }
