@@ -14,6 +14,7 @@ module.exports = {
                         colors: {
                                 coolGray: colors.coolGray,
                                 blueGray: colors.blueGray,
+                                warmGray: colors.warmGray,
                                 "torch-red": {
                                         DEFAULT: "#F5222D",
                                         50: "#FFFEFE",

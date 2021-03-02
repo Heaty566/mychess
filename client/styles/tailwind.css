@@ -58,6 +58,6 @@
         position: static;
 }
 
-.test {
-        font-family: "SFTEXT";
+.capitalize-first::first-letter {
+        text-transform: capitalize;
 }
