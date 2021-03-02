@@ -1,6 +1,7 @@
 import * as React from "react";
 import Head from "next/head";
 import { Dictionary, translate } from "./i18n.helper";
+import { capitalize } from "../helper/capitalize";
 
 export interface HeadProps {
         title: Dictionary;
@@ -16,16 +17,16 @@ export const seoHead = ({
         title = "MyGame",
         isIndexPage = false,
         isFollowPage = true,
-        description = "hello user",
+        description = "---------------comment--------",
         canonical = "/",
-        keyword = "game, tic tac toe",
+        keyword = "---------------comment--------",
         imageUrl = "/asset/share/banner.png",
 }: HeadProps) => {
         const metaIndexPage = isIndexPage ? "index" : "noindex";
         const metaIsFollowPage = isFollowPage ? "follow" : "nofollow";
         const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
         const canonicalLink = process.env.DOMAIN + canonical;
-        const pageTitle = title === "Home" ? "MyGame" : `${translate(title)} | MyGame`;
+        const pageTitle = title === "Home" ? "MyGame" : `${capitalize(translate(title))} | MyGame`;
 
         return (
                 <Head>
