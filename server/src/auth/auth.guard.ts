@@ -12,6 +12,7 @@ export class MyAuthGuard implements CanActivate {
 
       private async updateAuthToken(res: Response, reToken: string) {
             const authTokenId = await this.authService.getAuthTokenFromReToken(reToken);
+
             if (!authTokenId) {
                   // res.cookie('auth-token', '', { maxAge: 0 });
                   // res.cookie('re-token', '', { maxAge: 0 });
