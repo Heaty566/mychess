@@ -19,5 +19,7 @@ export function userJoiSchema(field: keyof User) {
                         .required();
             case 'username':
                   return Joi.string().max(32).min(5).lowercase().trim().alphanum().required();
+            case 'phoneNumber':
+                  return Joi.string().max(11).min(10).trim().required();
       }
 }

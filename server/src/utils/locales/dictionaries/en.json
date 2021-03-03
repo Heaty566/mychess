@@ -1,8 +1,10 @@
 {
+      "is not correct": "is not correct",
+      "Please, try again later": "Please, try again later",
+      "An otp has been sent to your phone number": "An otp has been sent to your phone number",
       "hello": "123",
       "hell": "hello {{name}}",
       "Invalid token": "Invalid token",
-      "action is not allowed": "action is not allowed",
       "Invalid input": "Invalid input",
       "Something went wrong, Please try again later": "Something went wrong, Please try again later",
       "Username or password is not correct": "Username or password is not correct",
@@ -27,5 +29,6 @@
       "password.minOfNumeric": "password.minOfNumeric",
       "object.unknown": "object.unknown",
       "Email is not found": "Email is not found",
+      "action is not allowed": "action is not allowed",
       "Problem occurs when sending email": "Problem occurs when sending email"
 }
