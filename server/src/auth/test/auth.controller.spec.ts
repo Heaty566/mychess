@@ -12,6 +12,8 @@ import { RegisterUserDTO } from '../dto/register.dto';
 import { LoginUserDTO } from '../dto/login.dto';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
+import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
+import { ChangePasswordDTO } from '../dto/changePassword.dto';
 
 describe('AuthController', () => {
       let app: INestApplication;
@@ -25,6 +27,61 @@ describe('AuthController', () => {
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             authController = module.get<AuthController>(AuthController);
+      });
+
+      describe('resetPassword', () => {
+            const user = fakeUser();
+            let redisKey: string;
+            let body: ChangePasswordDTO;
+            beforeEach(async () => {
+                  user.email = 'heaty566@gmail.com';
+                  await authService.registerUser(user);
+                  redisKey = await authService.createOTPRedisKey(user, 2);
+                  body = {
+                        newPassword: 'Password123',
+                        confirmNewPassword: 'Password123',
+                  };
+            });
+
+            it('Pass', async () => {
+                  const user = await authController.resetPassword(redisKey, body);
+                  const isMatch = await authService.comparePassword(body.newPassword, user.password);
+                  expect(isMatch).toBeTruthy();
+            });
+      });
+
+      describe('sendOTPMail', () => {
+            const user = fakeUser();
+            beforeEach(async () => {
+                  user.email = 'heaty566@gmail.com';
+                  await authService.registerUser(user);
+            });
+            it('Pass', async () => {
+                  const body: EmailForChangePasswordDTO = { email: 'heaty566@gmail.com' };
+                  const res = await authController.sendOTPMail(body);
+                  expect(res.isSent).toBeTruthy();
+            });
+
+            it('Failed(Email not found)', async () => {
+                  let body: EmailForChangePasswordDTO = { email: 'heaty5@gmail.com' };
+                  try {
+                        await authController.sendOTPMail(body);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
+
+            it('Failed(Not send)', async () => {
+                  user.email = 'heaty566';
+                  await authService.registerUser(user);
+
+                  let body: EmailForChangePasswordDTO = { email: 'heaty566' };
+                  try {
+                        await authController.sendOTPMail(body);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
       });
 
       describe('googleAuth | facebookAuth | githubAuth', () => {

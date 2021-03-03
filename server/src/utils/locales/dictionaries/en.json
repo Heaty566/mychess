@@ -27,5 +27,9 @@
       "password.minOfUppercase": "password.minOfUppercase",
       "password.minOfLowercase": "password.minOfLowercase",
       "password.minOfNumeric": "password.minOfNumeric",
-      "object.unknown": "object.unknown"
+      "object.unknown": "object.unknown",	
+	"Email is not found": "Email is not found",
+	"Problem occurs when sending email": "Problem occurs when sending email"
 }
+
+

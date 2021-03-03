@@ -13,8 +13,8 @@ export interface TextFieldProps {
 const TextField: React.FunctionComponent<TextFieldProps> = ({ label, placeHolder = "", name, register, error = "", customStyle = "" }) => {
         return (
                 <div className={customStyle}>
-                        <label htmlFor={name} className="font-semibold text-white">
-                                {translate(label)}
+                        <label htmlFor={name} className="font-semibold text-white capitalize">
+                                {translate({ content: label })}
                         </label>
                         <input
                                 placeholder={placeHolder}
@@ -24,7 +24,11 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, placeHolder
                                 className="rounded-sm bg-white block px-2 py-1 focus:outline-none w-full "
                         />
 
-                        {error.length !== 0 && <p className="text-sm font-semibold text-torch-red-500 ">{error}</p>}
+                        {error.length !== 0 && (
+                                <p className="text-sm font-medium text-torch-red-500 capitalize-first fade-in">
+                                        {translate({ content: label }) + " " + error}
+                                </p>
+                        )}
                 </div>
         );
 };

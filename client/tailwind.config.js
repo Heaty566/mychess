@@ -6,7 +6,7 @@ module.exports = {
         theme: {
                 extend: {
                         width: {
-                                352: "22rem",
+                                88: "22rem",
                         },
                         fontFamily: {
                                 sans: ["SFTEXT", "Helvetica", "Arial", "sans-serif"],
@@ -14,6 +14,7 @@ module.exports = {
                         colors: {
                                 coolGray: colors.coolGray,
                                 blueGray: colors.blueGray,
+                                warmGray: colors.warmGray,
                                 "torch-red": {
                                         DEFAULT: "#F5222D",
                                         50: "#FFFEFE",

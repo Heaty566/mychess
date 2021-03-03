@@ -58,6 +58,20 @@
         position: static;
 }
 
-.test {
-        font-family: "SFTEXT";
+.capitalize-first::first-letter {
+        text-transform: capitalize;
+}
+
+@keyframes FadeIn {
+        0% {
+                opacity: 0;
+        }
+
+        100% {
+                opacity: 1;
+        }
+}
+
+.fade-in {
+        animation: FadeIn 0.3s ease-in;
 }

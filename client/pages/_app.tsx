@@ -35,7 +35,7 @@ const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
 
         return (
                 <Provider store={store}>
-                        <div className="h-screen flex bg-white">
+                        <div className="h-screen flex flex-col sm:flex-row bg-white">
                                 <Navbar />
                                 <Component {...pageProps} />
                         </div>

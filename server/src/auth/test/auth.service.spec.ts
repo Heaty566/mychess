@@ -9,6 +9,7 @@ import { fakeUser } from '../../../test/fakeEntity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
 import { RedisService } from '../../utils/redis/redis.service';
+import { ObjectId } from 'mongodb';
 
 describe('AuthService', () => {
       let app: INestApplication;
@@ -108,6 +109,29 @@ describe('AuthService', () => {
             });
       });
 
+      describe('getAuthTokenFromReToken', () => {
+            it('Pass', async () => {
+                  const reToken = await authService.createReToken(userDb);
+                  const authToken = await authService.getAuthTokenFromReToken(reToken);
+                  const isExist = await redisService.getByKey(authToken);
+
+                  expect(isExist).toBeDefined();
+            });
+            it('Failed Still get', async () => {
+                  const reToken = await authService.createReToken(userDb);
+                  const getReToken = await reTokenRepository.findOne({ where: { _id: new ObjectId(reToken) } });
+                  getReToken.data = 'hello';
+                  await reTokenRepository.save(getReToken);
+                  const authToken = await authService.getAuthTokenFromReToken(reToken);
+                  const isExist = await redisService.getByKey(authToken);
+                  const decodeUser = authService.decodeToken<User>(isExist);
+
+                  expect(userDb.username).toBe(decodeUser.username);
+                  expect(isExist).toBeDefined();
+                  expect(authToken).toBeDefined();
+            });
+      });
+
       describe('createRefreshToken', () => {
             let reToken: string;
             beforeEach(async () => {
@@ -120,6 +144,14 @@ describe('AuthService', () => {
 
                   expect(userInformation).toBeDefined();
                   expect(userInformation.username).toBe(userInformation.username);
+            });
+      });
+
+      describe('createOTPRedisKey', () => {
+            it('Pass', async () => {
+                  const user = fakeUser();
+                  const redisKey = authService.createOTPRedisKey(user, 2);
+                  expect(redisKey).toBeDefined();
             });
       });
 

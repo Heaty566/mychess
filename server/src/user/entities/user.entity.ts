@@ -41,6 +41,9 @@ export class User {
       isDisabled: boolean;
 
       @Column()
+      email: string;
+
+      @Column()
       phoneNumber: string;
 
       constructor() {
@@ -49,11 +52,12 @@ export class User {
             this.githubId = '';
             this.googleId = '';
             this.name = '';
+            this.email = '';
+            this.phoneNumber = '';
             this.elo = 0;
             this.password = '';
             this.username = '';
             this.createDate = new Date();
-            this.phoneNumber = '';
       }
 }
 

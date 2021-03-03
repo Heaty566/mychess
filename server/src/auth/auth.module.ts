@@ -10,10 +10,11 @@ import { GoogleStrategy } from './social/google.strategy';
 import { FacebookStrategy } from './social/facebook.strategy';
 import { GithubStrategy } from './social/github.strategy';
 import { RedisModule } from '../utils/redis/redis.module';
+import { SmailModule } from '../providers/smail/smail.module';
 import { SmsModule } from '../providers/sms/sms.module';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([ReTokenRepository]), UserModule, RedisModule, SmsModule],
+      imports: [TypeOrmModule.forFeature([ReTokenRepository]), UserModule, RedisModule, SmailModule, SmsModule],
       controllers: [AuthController],
       providers: [
             AuthService,

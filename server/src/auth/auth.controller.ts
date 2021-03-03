@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { apiResponse } from '../app/interface/ApiResponse';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/register.dto';
@@ -8,13 +8,44 @@ import { User } from '../user/entities/user.entity';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { SmailService } from '../providers/smail/smail.service';
+import { EmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
+import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
+import { RedisService } from '../utils/redis/redis.service';
+import { ObjectId } from 'mongodb';
 import { OtpSmsDTO } from './dto/otpSms.dto';
-import { AwsInstance } from 'twilio/lib/rest/accounts/v1/credential/aws';
 import { SmsService } from '../providers/sms/sms.service';
 
 @Controller('auth')
 export class AuthController {
-      constructor(private readonly authService: AuthService, private readonly userService: UserService, private readonly smsService: SmsService) {}
+      constructor(
+            private readonly authService: AuthService,
+            private readonly userService: UserService,
+            private readonly smailService: SmailService,
+            private readonly redisService: RedisService,
+            private readonly smsService: SmsService,
+      ) {}
+
+      @Post('/reset-password/:otp')
+      async resetPassword(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO) {
+            const redisUser = await this.redisService.getObjectByKey(otp);
+            let user = await this.userService.findOneUserByField('email', redisUser['email']);
+            user.password = await this.authService.hash(body.newPassword);
+            user = await this.authService.registerUser(user); // co nen doi ten ham registerUser khong
+            return user;
+      }
+
+      @Post('/otp-email')
+      async sendOTPMail(@Body() body: EmailForChangePasswordDTO) {
+            const user = await this.userService.findOneUserByField('email', body.email);
+            if (!user) {
+                  throw apiResponse.sendError({ body: { details: { email: 'Email is not found' } } });
+            }
+            const redisKey = await this.authService.createOTPRedisKey(user, 2);
+            const isSent = await this.smailService.sendOTPMail(user.email, redisKey);
+            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'Problem occurs when sending email' } } });
+            return { redisKey: redisKey, isSent: isSent };
+      }
 
       @Get('/google')
       @UseGuards(AuthGuard('google'))
@@ -93,6 +124,6 @@ export class AuthController {
 
             const res = await this.smsService.sendOtp(user.phoneNumber, otpKey);
             if (!res) throw apiResponse.sendError({ body: { message: 'Please, try again later' } });
-            // return apiResponse.send({ body: { message: 'An otp has been sent to your phone number' } });
+            return apiResponse.send({ body: { message: 'An otp has been sent to your phone number' } });
       }
 }
