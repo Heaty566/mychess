@@ -24,8 +24,8 @@ const OtpPhone: React.FunctionComponent = () => {
                                 canonical: ROUTER.verifyPhoneNumber.url,
                                 description: ROUTER.verifyPhoneNumber.label,
                         })}
-                        <div className="w-full  grid place-items-center">
-                                <main className=" bg-warmGray-700 px-8 py-16 rounded-sm fade-in">
+                        <div className="w-full flex-1 flex justify-center items-center">
+                                <main className="w-full h-full sm:h-auto sm:w-88 bg-warmGray-700 px-8 py-16 sm:rounded-sm fade-in">
                                         <form className="mb-6 max-w-sm">
                                                 <FormTitle label="verify phone number" />
                                                 <p className="text-sm text-white  my-9 font-thin ">
