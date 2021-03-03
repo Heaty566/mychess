@@ -30,7 +30,7 @@ describe('AuthController', () => {
       });
 
       describe('resetPassword', () => {
-            let user = fakeUser();
+            const user = fakeUser();
             let redisKey: string;
             let body: ChangePasswordDTO;
             beforeEach(async () => {
@@ -44,7 +44,7 @@ describe('AuthController', () => {
             });
 
             it('Pass', async () => {
-                  let user = await authController.resetPassword(redisKey, body);
+                  const user = await authController.resetPassword(redisKey, body);
                   const isMatch = await authService.comparePassword(body.newPassword, user.password);
                   expect(isMatch).toBeTruthy();
             });
@@ -57,8 +57,8 @@ describe('AuthController', () => {
                   await authService.registerUser(user);
             });
             it('Pass', async () => {
-                  let body: EmailForChangePasswordDTO = { email: 'heaty566@gmail.com' };
-                  let res = await authController.sendOTPMail(body);
+                  const body: EmailForChangePasswordDTO = { email: 'heaty566@gmail.com' };
+                  const res = await authController.sendOTPMail(body);
                   expect(res.isSent).toBeTruthy();
             });
 
