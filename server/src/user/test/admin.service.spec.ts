@@ -42,7 +42,7 @@ describe('AdminService', () => {
             });
 
             it('Pass Change to Admin', async () => {
-                  const user = await adminService.changeUserRole(testUser, UserRole.ADMIN);
+                  const user = await adminService.toggleUserRole(testUser);
                   const getUser = await userRepository.findOneByField('_id', user._id);
 
                   expect(getUser.username).toBe(testUser.username);
@@ -50,7 +50,7 @@ describe('AdminService', () => {
                   expect(getUser.role).toBe(UserRole.ADMIN);
             });
             it('Pass Change to User', async () => {
-                  const user = await adminService.changeUserRole(testUser, UserRole.USER);
+                  const user = await adminService.toggleUserRole(testUser);
                   const getUser = await userRepository.findOneByField('_id', testUser._id);
 
                   expect(getUser.username).toBe(testUser.username);
@@ -65,40 +65,25 @@ describe('AdminService', () => {
                   testUser = fakeUser();
                   testUser = await userRepository.save(testUser);
             });
-
-            it('Pass Change to false', async () => {
-                  const user = await adminService.toggleUserStatus(testUser, false);
-                  const getUser = await userRepository.findOneByField('_id', user._id);
-
-                  expect(getUser.username).toBe(testUser.username);
-                  expect(user.isDisabled).toBeFalsy();
-                  expect(getUser.isDisabled).toBeFalsy();
-            });
             it('Pass Change to true', async () => {
-                  const user = await adminService.toggleUserStatus(testUser, true);
+                  const user = await adminService.toggleUserStatus(testUser);
                   const getUser = await userRepository.findOneByField('_id', testUser._id);
 
                   expect(getUser.username).toBe(testUser.username);
                   expect(user.role).toBeTruthy();
                   expect(getUser.role).toBeTruthy();
             });
-      });
-      describe('updateOneUserField', () => {
-            let testUser: User;
-            beforeAll(async () => {
-                  testUser = fakeUser();
-                  testUser = await userRepository.save(testUser);
-            });
 
-            it('Pass Change to 123', async () => {
-                  const user = await adminService.updateOneUserField(testUser, 'avatarUrl', 123);
+            it('Pass Change to false', async () => {
+                  const user = await adminService.toggleUserStatus(testUser);
                   const getUser = await userRepository.findOneByField('_id', user._id);
 
                   expect(getUser.username).toBe(testUser.username);
-                  expect(user.avatarUrl).toBe(123);
-                  expect(getUser.avatarUrl).toBe(123);
+                  expect(user.isDisabled).toBeFalsy();
+                  expect(getUser.isDisabled).toBeFalsy();
             });
       });
+
       describe('getAllUsers', () => {
             it('Pass Change to Admin', async () => {
                   const users = await adminService.getAllUsers();

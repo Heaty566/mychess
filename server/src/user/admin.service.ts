@@ -7,19 +7,14 @@ import { UserRole } from './entities/user.userRole.enum';
 export class AdminService {
       constructor(private readonly userRepository: UserRepository) {}
 
-      async changeUserRole(user: User, userRole: UserRole) {
-            user.role = userRole;
+      async toggleUserRole(user: User) {
+            user.role = user.role === UserRole.USER ? UserRole.ADMIN : UserRole.USER;
             const updateUser = await this.userRepository.save(user);
             return updateUser;
       }
 
-      async toggleUserStatus(user: User, newStatus: boolean) {
-            user.isDisabled = newStatus;
-            const updateUser = await this.userRepository.save(user);
-            return updateUser;
-      }
-      async updateOneUserField(user: User, field: keyof User, value: any) {
-            user[`${field}`] = value;
+      async toggleUserStatus(user: User) {
+            user.isDisabled = !user.isDisabled;
             const updateUser = await this.userRepository.save(user);
             return updateUser;
       }

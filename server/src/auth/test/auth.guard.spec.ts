@@ -67,7 +67,6 @@ describe('AuthService', () => {
       describe('canActivate', () => {
             it('Pass', async () => {
                   const contextTracker = context({ 're-token': reToken });
-
                   const res = await authGuard.canActivate(contextTracker);
                   const getUser = contextTracker.switchToHttp().getRequest().user;
 
