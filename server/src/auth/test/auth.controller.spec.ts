@@ -62,11 +62,26 @@ describe('AuthController', () => {
                   expect(res.isSent).toBeTruthy();
             });
 
-            // it('Failed(Email not found)', async () => {
-            //       let body: EmailForChangePasswordDTO = { email: 'heaty566' };
-            //       let res = await authController.sendOTPMail(body);
-            //       expect(res).toBeFalsy();
-            // });
+            it('Failed(Email not found)', async () => {
+                  let body: EmailForChangePasswordDTO = { email: 'heaty5@gmail.com' };
+                  try {
+                        await authController.sendOTPMail(body);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
+
+            it('Failed(Not send)', async () => {
+                  user.email = 'heaty566';
+                  await authService.registerUser(user);
+
+                  let body: EmailForChangePasswordDTO = { email: 'heaty566' };
+                  try {
+                        await authController.sendOTPMail(body);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
       });
 
       describe('googleAuth | facebookAuth | githubAuth', () => {
