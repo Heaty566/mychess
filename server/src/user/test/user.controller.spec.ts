@@ -21,7 +21,7 @@ describe('UserController', () => {
       });
 
       describe('GET /', () => {
-            const reqApi = () => supertest(app.getHttpServer()).get('/api/user/').set('Cookie', cookieData).send();
+            const reqApi = () => supertest(app.getHttpServer()).get('/api/user/').set({ cookie: cookieData }).send();
 
             it('Pass', async () => {
                   const res = await reqApi();
