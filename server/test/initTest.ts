@@ -26,5 +26,5 @@ export const initTestModule = async () => {
       user = await userRepository.save(user);
       const reToken = await authService.createReToken(user);
 
-      return { getApp, module, cookie: [`re-token=${reToken} Max-Age=15552000; Path=/;`], getUser: user, getReToken: reToken };
+      return { getApp, module, cookie: [`re-token=${reToken};`], getUser: user, getReToken: reToken };
 };

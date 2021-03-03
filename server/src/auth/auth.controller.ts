@@ -13,6 +13,8 @@ import { EmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { RedisService } from '../utils/redis/redis.service';
 import { ObjectId } from 'mongodb';
+import { OtpSmsDTO } from './dto/otpSms.dto';
+import { SmsService } from '../providers/sms/sms.service';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +23,7 @@ export class AuthController {
             private readonly userService: UserService,
             private readonly smailService: SmailService,
             private readonly redisService: RedisService,
+            private readonly smsService: SmsService,
       ) {}
 
       @Post('/reset-password/:otp')
@@ -110,5 +113,17 @@ export class AuthController {
 
             const refreshToken = await this.authService.createReToken(user);
             return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
+      }
+
+      @Post('/otp-sms')
+      async sepSms(@Body() body: OtpSmsDTO) {
+            const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
+            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not correct' } } });
+
+            const otpKey = this.authService.generateKeyForSms(user, 5);
+
+            const res = await this.smsService.sendOtp(user.phoneNumber, otpKey);
+            if (!res) throw apiResponse.sendError({ body: { message: 'Please, try again later' } });
+            return apiResponse.send({ body: { message: 'An otp has been sent to your phone number' } });
       }
 }
