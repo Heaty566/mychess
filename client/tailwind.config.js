@@ -6,7 +6,7 @@ module.exports = {
         theme: {
                 extend: {
                         width: {
-                                352: "22rem",
+                                88: "22rem",
                         },
                         fontFamily: {
                                 sans: ["SFTEXT", "Helvetica", "Arial", "sans-serif"],
