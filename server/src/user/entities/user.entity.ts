@@ -57,6 +57,7 @@ export class User {
             this.elo = 0;
             this.password = '';
             this.username = '';
+            this.role = UserRole.USER;
             this.createDate = new Date();
       }
 }
