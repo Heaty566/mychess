@@ -48,8 +48,8 @@ const RegisterUser: React.FunctionComponent = () => {
                                 canonical: ROUTER.register.url,
                                 description: ROUTER.register.label,
                         })}
-                        <div className="w-full  grid place-items-center">
-                                <main className="w-352 bg-warmGray-700 px-8 py-16 rounded-sm fade-in">
+                        <div className="w-full flex-1 flex justify-center items-center">
+                                <main className="w-full h-full sm:h-auto sm:w-88 bg-warmGray-700 px-8 py-16 sm:rounded-sm fade-in">
                                         <form className="mb-6" onSubmit={handleSubmit(handleOnSubmit)}>
                                                 <FormTitle label="sign up" />
                                                 <TextField name="name" label="name" register={register} error={errors.name} customStyle="mb-4" />
