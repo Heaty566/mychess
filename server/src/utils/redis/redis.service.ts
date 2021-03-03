@@ -28,9 +28,9 @@ export class RedisService {
             });
       }
 
+      // how many minutes to expired
       setByValue(key: string, value: number | string, expired?: number) {
             if (expired) {
-                  // expired (seconds)
                   this.redisRepository.setex(key, expired * 60, String(value));
             } else {
                   this.redisRepository.set(key, String(value));
