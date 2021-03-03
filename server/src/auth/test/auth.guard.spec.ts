@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { MyAuthGuard } from '../auth.guard';
 import { createMock } from 'ts-auto-mock';
 import { RedisService } from '../../utils/redis/redis.service';
+import { Reflector } from '@nestjs/core';
 
 describe('AuthService', () => {
       let app: INestApplication;
@@ -31,7 +32,7 @@ describe('AuthService', () => {
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             redisService = module.get<RedisService>(RedisService);
-            authGuard = new MyAuthGuard(authService);
+            authGuard = new MyAuthGuard(authService, new Reflector());
 
             context = (cookies) =>
                   createMock<ExecutionContext>({
