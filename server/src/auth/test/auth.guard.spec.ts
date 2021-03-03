@@ -54,6 +54,15 @@ describe('AuthService', () => {
                   expect(getUser.username).toBe(user.username);
                   expect(res).toBeTruthy();
             });
+            it('Pass has re-token but invalid auth-token', async () => {
+                  const contextTracker = context({ 're-token': reToken, 'auth-token': '123' });
+
+                  const res = await authGuard.canActivate(contextTracker);
+                  const getUser = contextTracker.switchToHttp().getRequest().user;
+
+                  expect(getUser.username).toBe(user.username);
+                  expect(res).toBeTruthy();
+            });
 
             it('Pass have auth-token', async () => {
                   const reTokenId = await authService.createReToken(user);
