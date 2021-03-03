@@ -1,4 +1,5 @@
 //* Internal import
+import { UserRole } from '../src/user/entities/user.userRole.enum';
 import { User } from '../src/user/entities/user.entity';
 import { fakeData } from './fakeData';
 
@@ -10,6 +11,7 @@ export const fakeUser = () => {
       user.googleId = fakeData(10, 'lettersAndNumbersLowerCase');
       user.facebookId = fakeData(10, 'lettersAndNumbersLowerCase');
       user.githubId = fakeData(10, 'lettersAndNumbersLowerCase');
+      user.role = UserRole.USER;
 
       return user;
 };

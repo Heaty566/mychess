@@ -63,7 +63,7 @@ describe('AuthController', () => {
             });
 
             it('Failed(Email not found)', async () => {
-                  let body: EmailForChangePasswordDTO = { email: 'heaty5@gmail.com' };
+                  const body: EmailForChangePasswordDTO = { email: 'heaty5@gmail.com' };
                   try {
                         await authController.sendOTPMail(body);
                   } catch (err) {
@@ -75,7 +75,7 @@ describe('AuthController', () => {
                   user.email = 'heaty566';
                   await authService.registerUser(user);
 
-                  let body: EmailForChangePasswordDTO = { email: 'heaty566' };
+                  const body: EmailForChangePasswordDTO = { email: 'heaty566' };
                   try {
                         await authController.sendOTPMail(body);
                   } catch (err) {
@@ -191,7 +191,7 @@ describe('AuthController', () => {
             });
 
             it('Failed (password is not correct)', async () => {
-                  loginUserData.password = '123AABBDASD';
+                  loginUserData.password = '123AABBDASDaa';
                   const res = await reqApi(loginUserData);
                   expect(res.status).toBe(400);
             });

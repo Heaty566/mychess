@@ -49,7 +49,7 @@ export class AuthService {
 
             const isStillExit = await this.redisService.getByKey(reToken.data);
             if (!isStillExit) {
-                  const user = await this.userRepository.getUserByField('_id', reToken.userId);
+                  const user = await this.userRepository.findOneByField('_id', reToken.userId);
                   const newReToken = await this.createAuthToken(user);
                   reToken.data = newReToken;
                   const updateReToken = await this.reTokenRepository.save(reToken);

@@ -24,7 +24,6 @@ export class MyAuthGuard implements CanActivate {
       async canActivate(context: ExecutionContext) {
             const req: Request = context.switchToHttp().getRequest();
             const res: Response = context.switchToHttp().getResponse();
-            console.log(this.reflector);
             const role = this.reflector.get<UserRole>('role', context.getHandler());
 
             // get refreshToken and authToken

@@ -119,9 +119,9 @@ describe('AuthService', () => {
             });
             it('Failed Still get', async () => {
                   const reToken = await authService.createReToken(userDb);
-                  const getReToken = await reTokenRepository.findOne({ where: { _id: new ObjectId(reToken) } });
+                  let getReToken = await reTokenRepository.findOne({ where: { _id: new ObjectId(reToken) } });
                   getReToken.data = 'hello';
-                  await reTokenRepository.save(getReToken);
+                  getReToken = await reTokenRepository.save(getReToken);
                   const authToken = await authService.getAuthTokenFromReToken(reToken);
                   const isExist = await redisService.getByKey(authToken);
                   const decodeUser = authService.decodeToken<User>(isExist);
