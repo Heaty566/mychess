@@ -10,6 +10,8 @@ import { Request, Response } from 'express';
 import { MyAuthGuard } from '../auth.guard';
 import { createMock } from 'ts-auto-mock';
 import { RedisService } from '../../utils/redis/redis.service';
+import { Reflector } from '@nestjs/core';
+import { UserRole } from '../../user/entities/user.userRole.enum';
 
 describe('AuthService', () => {
       let app: INestApplication;
@@ -21,6 +23,7 @@ describe('AuthService', () => {
       let user: User;
       let context: (cookies) => ExecutionContext;
       let redisService: RedisService;
+
       beforeAll(async () => {
             const { getApp, module, getReToken, getUser } = await initTestModule();
             app = getApp;
@@ -31,7 +34,8 @@ describe('AuthService', () => {
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             redisService = module.get<RedisService>(RedisService);
-            authGuard = new MyAuthGuard(authService);
+            const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.USER) });
+            authGuard = new MyAuthGuard(authService, reflector);
 
             context = (cookies) =>
                   createMock<ExecutionContext>({
@@ -43,17 +47,33 @@ describe('AuthService', () => {
                         }),
                   });
       });
+      describe('canActivate Admin Role', () => {
+            let authGuardAdmin: MyAuthGuard;
 
+            beforeAll(async () => {
+                  const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.ADMIN) });
+                  authGuardAdmin = new MyAuthGuard(authService, reflector);
+            });
+
+            it('Failed with role Admin', async () => {
+                  const contextTracker = context({ 're-token': reToken });
+                  try {
+                        await authGuardAdmin.canActivate(contextTracker);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
+      });
       describe('canActivate', () => {
             it('Pass', async () => {
                   const contextTracker = context({ 're-token': reToken });
-
                   const res = await authGuard.canActivate(contextTracker);
                   const getUser = contextTracker.switchToHttp().getRequest().user;
 
                   expect(getUser.username).toBe(user.username);
                   expect(res).toBeTruthy();
             });
+
             it('Pass has re-token but invalid auth-token', async () => {
                   const contextTracker = context({ 're-token': reToken, 'auth-token': '123' });
 

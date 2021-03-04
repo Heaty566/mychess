@@ -1,7 +1,20 @@
-import { BadGatewayException, BadRequestException, InternalServerErrorException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+      BadGatewayException,
+      BadRequestException,
+      InternalServerErrorException,
+      UnauthorizedException,
+      NotFoundException,
+      ForbiddenException,
+} from '@nestjs/common';
 import { Dictionary, LocalesService } from '../../utils/locales/locales.service';
 
-type ErrorType = 'BadGatewayException' | 'BadRequestException' | 'InternalServerErrorException' | 'UnauthorizedException' | 'NotFoundException';
+type ErrorType =
+      | 'BadGatewayException'
+      | 'BadRequestException'
+      | 'InternalServerErrorException'
+      | 'UnauthorizedException'
+      | 'NotFoundException'
+      | 'ForbiddenException';
 export interface IApiResponse<T> {
       message?: Dictionary;
       data?: T;
@@ -35,6 +48,8 @@ class ApiResponse {
                         return new UnauthorizedException(body);
                   case 'NotFoundException':
                         return new NotFoundException(body);
+                  case 'ForbiddenException':
+                        return new ForbiddenException(body);
             }
       }
 

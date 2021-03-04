@@ -27,9 +27,10 @@
       "password.minOfUppercase": "password.minOfUppercase",
       "password.minOfLowercase": "password.minOfLowercase",
       "password.minOfNumeric": "password.minOfNumeric",
-      "object.unknown": "object.unknown",	
-	"Email is not found": "Email is not found",
-	"Problem occurs when sending email": "Problem occurs when sending email"
+      "object.unknown": "object.unknown",
+      "Email is not found": "Email is not found",
+      "action is not allowed": "action is not allowed",
+      "user with the given Id was not found": "user with the given Id was not found",
+      "update user success": "update user success",
+      "Problem occurs when sending email": "Problem occurs when sending email"
 }
-
-
