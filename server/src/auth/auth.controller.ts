@@ -12,7 +12,6 @@ import { SmailService } from '../providers/smail/smail.service';
 import { EmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { RedisService } from '../utils/redis/redis.service';
-import { ObjectId } from 'mongodb';
 import { OtpSmsDTO } from './dto/otpSms.dto';
 import { SmsService } from '../providers/sms/sms.service';
 
@@ -39,11 +38,11 @@ export class AuthController {
       async sendOTPMail(@Body() body: EmailForChangePasswordDTO) {
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user) {
-                  throw apiResponse.sendError({ body: { details: { email: 'Email is not found' } } });
+                  throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
             }
             const redisKey = await this.authService.createOTPRedisKey(user, 2);
             const isSent = await this.smailService.sendOTPMail(user.email, redisKey);
-            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'Problem occurs when sending email' } } });
+            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'problem occurs when sending email' } } });
             return { redisKey: redisKey, isSent: isSent };
       }
 
@@ -90,7 +89,7 @@ export class AuthController {
       @UsePipes(new JoiValidatorPipe(vRegisterUserDto))
       async registerUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             const user = await this.userService.findOneUserByField('username', body.username);
-            if (user) throw apiResponse.sendError({ body: { details: { username: 'Username is already exist' } } });
+            if (user) throw apiResponse.sendError({ body: { details: { username: 'username is already exist' } } });
 
             const newUser = new User();
             newUser.username = body.username;
@@ -106,10 +105,10 @@ export class AuthController {
       @UsePipes(new JoiValidatorPipe(vLoginUserDto))
       async loginUser(@Body() body: LoginUserDTO, @Res() res: Response) {
             const user = await this.userService.findOneUserByField('username', body.username);
-            if (!user) throw apiResponse.sendError({ body: { details: { username: 'Username or password is not correct' } } });
+            if (!user) throw apiResponse.sendError({ body: { details: { username: 'username or password is not correct' } } });
 
             const isCorrect = await this.authService.comparePassword(body.password, user.password);
-            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'Username or password is not correct' } } });
+            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'username or password is not correct' } } });
 
             const refreshToken = await this.authService.createReToken(user);
             return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
@@ -123,7 +122,7 @@ export class AuthController {
             const otpKey = this.authService.generateKeyForSms(user, 5);
 
             const res = await this.smsService.sendOtp(user.phoneNumber, otpKey);
-            if (!res) throw apiResponse.sendError({ body: { message: 'Please, try again later' }, type: 'InternalServerErrorException' });
-            return apiResponse.send({ body: { message: 'An otp has been sent to your phone number' } });
+            if (!res) throw apiResponse.sendError({ body: { message: 'please, try again later' }, type: 'InternalServerErrorException' });
+            return apiResponse.send({ body: { message: 'an OTP has been sent to your phone number' } });
       }
 }

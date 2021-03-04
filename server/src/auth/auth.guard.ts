@@ -16,7 +16,7 @@ export class MyAuthGuard implements CanActivate {
             if (!authTokenId) {
                   res.cookie('auth-token', '', { maxAge: 0 });
                   res.cookie('re-token', '', { maxAge: 0 });
-                  throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
+                  throw apiResponse.sendError({ body: { message: 'invalid token' }, type: 'UnauthorizedException' });
             }
             res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
             return await this.authService.getDataFromAuthToken(authTokenId);
@@ -33,7 +33,7 @@ export class MyAuthGuard implements CanActivate {
 
             if (!refreshToken) {
                   res.cookie('re-token', '', { maxAge: 0 });
-                  throw apiResponse.sendError({ body: { message: 'Invalid token' }, type: 'UnauthorizedException' });
+                  throw apiResponse.sendError({ body: { message: 'invalid token' }, type: 'UnauthorizedException' });
             }
             if (authToken) {
                   const user = await this.authService.getDataFromAuthToken(authToken);

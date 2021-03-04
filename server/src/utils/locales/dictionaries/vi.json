@@ -1,7 +1,7 @@
 {
       "hell": "hell",
       "hello": "hello {{name}}",
-      "Invalid input": "Invalid input",
+      "invalid input": "invalid input",
       "string.base": "should be a string",
       "string.min": "should contain at least {{limit}} characters",
       "string.max": "should contain less than or equal {{limit}} characters",
@@ -18,6 +18,6 @@
       "array.length": "should be length equal",
       "confirmPassword": "confirmPassword",
       "password": "password",
-      "Email is not found": "Email này không tồn tại",
-      "Problem occurs when sending email": "Xảy ra lỗi trong lúc gửi mail"
+      "email is not found": "email này không tồn tại",
+      "problem occurs when sending email": "xảy ra lỗi trong lúc gửi mail"
 }
