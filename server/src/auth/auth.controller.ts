@@ -123,7 +123,7 @@ export class AuthController {
             const otpKey = this.authService.generateKeyForSms(user, 5);
 
             const res = await this.smsService.sendOtp(user.phoneNumber, otpKey);
-            if (!res) throw apiResponse.sendError({ body: { message: 'Please, try again later' } });
+            if (!res) throw apiResponse.sendError({ body: { message: 'Please, try again later' }, type: 'InternalServerErrorException' });
             return apiResponse.send({ body: { message: 'An otp has been sent to your phone number' } });
       }
 }

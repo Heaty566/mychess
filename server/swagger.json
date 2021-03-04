@@ -37,6 +37,54 @@
             }
       ],
       "paths": {
+            "/api/auth/otp-sms": {
+                  "post": {
+                        "tags": ["auth"],
+                        "summary": "receive phone number form user and send otp to this phone number",
+                        "requestBody": {
+                              "content": {
+                                    "application/json": {
+                                          "schema": {
+                                                "$ref": "#/components/schemas/OtpSmsDTO"
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/BadRequestApi"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "phone number is not correct",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/BadRequestApi"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "please, try again later",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/BadRequestApi"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
             "/api/auth/register": {
                   "post": {
                         "tags": ["auth"],
@@ -829,6 +877,15 @@
                               "password": {
                                     "type": "string",
                                     "example": "12345678AaK"
+                              }
+                        }
+                  },
+                  "OtpSmsDTO": {
+                        "type": "object",
+                        "properties": {
+                              "phoneNumber": {
+                                    "type": "string",
+                                    "example": "0848888142"
                               }
                         }
                   },
