@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { MyAuthGuard } from '../auth/auth.guard';
@@ -16,5 +16,10 @@ export class UserController {
             const user = await this.userService.getOneUserByField('_id', req.user._id);
 
             return apiResponse.send<User>({ body: { data: user } });
+      }
+
+      @Post('/otp-sms')
+      async checkOtpSms() {
+            return;
       }
 }
