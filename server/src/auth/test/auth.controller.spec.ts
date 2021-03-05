@@ -1,5 +1,19 @@
 import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
+let mockPromise = Promise.resolve();
+import { defuse } from '../../../test/testHelper';
+
+class TwilioMock {
+      constructor() {
+            //
+      }
+
+      public messages = {
+            create() {
+                  return mockPromise;
+            },
+      };
+}
 import { INestApplication } from '@nestjs/common';
 import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
@@ -16,6 +30,12 @@ import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
 import { OtpSmsDTO } from '../dto/otpSms.dto';
 import { User } from '../../user/entities/user.entity';
 import { fakeData } from '../../../test/fakeData';
+
+jest.mock('twilio', () => {
+      return {
+            Twilio: TwilioMock,
+      };
+});
 
 describe('AuthController', () => {
       let app: INestApplication;
@@ -191,11 +211,16 @@ describe('AuthController', () => {
 
             it('Pass', async () => {
                   const res = await reqApi(otpSmsDTO);
-                  expect(res.status).toBe(200);
+                  expect(res.status).toBe(201);
             });
 
             it('Failed (error of sms service)', async () => {
-                  const res = await reqApi(otpSmsDTO);
+                  mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
+                  try {
+                        await reqApi(otpSmsDTO);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
             });
 
             it('Failed (phone number is not correct)', async () => {

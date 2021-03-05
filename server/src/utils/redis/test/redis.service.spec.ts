@@ -6,7 +6,7 @@ import { fakeUser } from '../../../../test/fakeEntity';
 import { fakeData } from '../../../../test/fakeData';
 import { User } from '../../../user/entities/user.entity';
 import { RedisService } from '../redis.service';
-import { RedisClient, createClient } from 'redis';
+import { RedisClient, createClient, Callback } from 'redis';
 
 describe('RedisService', () => {
       let app: INestApplication;
