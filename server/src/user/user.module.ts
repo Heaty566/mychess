@@ -8,9 +8,10 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { LoggerModule } from '../utils/logger/logger.module';
 import { RedisModule } from '../utils/redis/redis.module';
+import { SmsModule } from '../providers/sms/sms.module';
 
 @Module({
-      imports: [TypeOrmModule.forFeature([UserRepository]), forwardRef(() => AuthModule), LoggerModule, RedisModule],
+      imports: [TypeOrmModule.forFeature([UserRepository]), forwardRef(() => AuthModule), LoggerModule, RedisModule, SmsModule],
       controllers: [UserController, AdminController],
       providers: [UserService, AdminService],
       exports: [UserService, TypeOrmModule],
