@@ -24,8 +24,6 @@ export class UserController {
 
             return apiResponse.send<User>({ body: { data: user } });
       }
-<<<<<<< HEAD
-=======
 
       @Put('/reset-password/:otp')
       async resetPassword(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO) {
@@ -39,5 +37,4 @@ export class UserController {
 
             return apiResponse.send<void>({ body: { message: 'update user success' } });
       }
->>>>>>> 18f53829d84e8443c87d62a0360aa51f87899bb4
 }
