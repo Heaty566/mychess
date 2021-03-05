@@ -17,9 +17,4 @@ export class UserController {
 
             return apiResponse.send<User>({ body: { data: user } });
       }
-
-      @Post('/otp-sms')
-      async checkOtpSms() {
-            return;
-      }
 }

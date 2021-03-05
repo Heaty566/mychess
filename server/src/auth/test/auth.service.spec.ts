@@ -155,6 +155,23 @@ describe('AuthService', () => {
             });
       });
 
+      describe('generateOtp', () => {
+            let length: number;
+
+            it('Pass', () => {
+                  length = 6;
+                  const otp = authService[`generateOtp`](length);
+                  expect(otp).toBeDefined();
+                  expect(otp.length).toBe(length);
+            });
+      });
+
+      // describe('generateKeyForSms', () => {
+      //       it('Pass', async () => {
+
+      //       })
+      // })
+
       afterAll(async () => {
             await reTokenRepository.clear();
             await userRepository.clear();
