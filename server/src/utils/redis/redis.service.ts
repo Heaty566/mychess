@@ -19,7 +19,7 @@ export class RedisService {
       }
 
       getObjectByKey<T>(key: string) {
-            return new Promise((res, rej) => {
+            return new Promise<T>((res, rej) => {
                   this.redisRepository.hgetall(key, (err, data) => {
                         if (err) return rej(err);
 
