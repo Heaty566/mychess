@@ -35,14 +35,14 @@ describe('AuthService', () => {
             });
 
             it('Pass', async () => {
-                  const res = await authService.registerUser(input);
+                  const res = await authService.saveUser(input);
 
                   expect(res).toBeDefined();
             });
             it('Pass', async () => {
-                  await authService.registerUser(input);
+                  await authService.saveUser(input);
                   input.username = 'update';
-                  await authService.registerUser(input);
+                  await authService.saveUser(input);
                   const res = await userRepository.findOne({ username: 'update' });
 
                   expect(res).toBeDefined();
