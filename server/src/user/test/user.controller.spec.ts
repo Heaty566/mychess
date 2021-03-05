@@ -10,21 +10,25 @@ import { ChangePasswordDTO } from '../dto/changePassword.dto';
 import { AuthService } from '../../auth/auth.service';
 import { RedisService } from '../../utils/redis/redis.service';
 import User from '../entities/user.entity';
+import { UpdateUserDto } from '../dto/updateUser.dto';
+import { fakeData } from '../../../test/fakeData';
 
 describe('UserController', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
-      let userController: UserController;
+
       let authService: AuthService;
       let redisService: RedisService;
       let cookieData: Array<string>;
+      let user: User;
       beforeAll(async () => {
-            const { getApp, module, cookie } = await initTestModule();
+            const { getApp, module, cookie, getUser } = await initTestModule();
             app = getApp;
+            user = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
-            userController = module.get<UserController>(UserController);
+
             cookieData = cookie;
       });
 
@@ -66,6 +70,27 @@ describe('UserController', () => {
                   const res = await reqApi(body, 123456);
 
                   expect(res.status).toBe(403);
+            });
+      });
+
+      describe('Put /api/user/', () => {
+            let body: UpdateUserDto;
+            const reqApi = (body: UpdateUserDto) => supertest(app.getHttpServer()).put(`/api/user`).set({ cookie: cookieData }).send(body);
+
+            beforeEach(() => {
+                  body = {
+                        name: fakeData(10, 'letters'),
+                  };
+            });
+
+            it('Pass', async () => {
+                  const res = await reqApi(body);
+
+                  const getUser = await userRepository.findOneByField('_id', user._id);
+
+                  expect(getUser.name.toLocaleLowerCase()).toBe(body.name.toLocaleLowerCase());
+                  expect(getUser.username).toBe(user.username);
+                  expect(res.status).toBe(200);
             });
       });
 
