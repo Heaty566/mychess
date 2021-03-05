@@ -74,7 +74,7 @@ export class AuthService {
             return this.jwtService.decode(tokenData) as T;
       }
 
-      async registerUser(input: User): Promise<User> {
+      async saveUser(input: User): Promise<User> {
             return await this.userRepository.save(input);
       }
 

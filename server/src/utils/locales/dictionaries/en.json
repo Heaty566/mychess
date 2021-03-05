@@ -30,7 +30,7 @@
       "object.unknown": "object.unknown",
       "email is not found": "email is not found",
       "action is not allowed": "action is not allowed",
-      "user with the given id was not found": "user with the given id was not found",
+      "user with the given ID was not found": "user with the given ID was not found",
       "update user success": "update user success",
       "problem occurs when sending email": "problem occurs when sending email"
 }

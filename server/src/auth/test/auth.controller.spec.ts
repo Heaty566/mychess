@@ -13,7 +13,7 @@ import { LoginUserDTO } from '../dto/login.dto';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
-import { ChangePasswordDTO } from '../dto/changePassword.dto';
+import { ChangePasswordDTO } from '../../user/dto/changePassword.dto';
 
 describe('AuthController', () => {
       let app: INestApplication;
@@ -29,32 +29,11 @@ describe('AuthController', () => {
             authController = module.get<AuthController>(AuthController);
       });
 
-      describe('resetPassword', () => {
-            const user = fakeUser();
-            let redisKey: string;
-            let body: ChangePasswordDTO;
-            beforeEach(async () => {
-                  user.email = 'heaty566@gmail.com';
-                  await authService.registerUser(user);
-                  redisKey = await authService.createOTPRedisKey(user, 2);
-                  body = {
-                        newPassword: 'Password123',
-                        confirmNewPassword: 'Password123',
-                  };
-            });
-
-            it('Pass', async () => {
-                  const user = await authController.resetPassword(redisKey, body);
-                  const isMatch = await authService.comparePassword(body.newPassword, user.password);
-                  expect(isMatch).toBeTruthy();
-            });
-      });
-
       describe('sendOTPMail', () => {
             const user = fakeUser();
             beforeEach(async () => {
                   user.email = 'heaty566@gmail.com';
-                  await authService.registerUser(user);
+                  await authService.saveUser(user);
             });
             it('Pass', async () => {
                   const body: EmailForChangePasswordDTO = { email: 'heaty566@gmail.com' };
@@ -73,7 +52,7 @@ describe('AuthController', () => {
 
             it('Failed(Not send)', async () => {
                   user.email = 'heaty566';
-                  await authService.registerUser(user);
+                  await authService.saveUser(user);
 
                   const body: EmailForChangePasswordDTO = { email: 'heaty566' };
                   try {
@@ -174,7 +153,7 @@ describe('AuthController', () => {
                         password: getUser.password,
                   };
                   getUser.password = await authService.hash(getUser.password);
-                  await authService.registerUser(getUser);
+                  await authService.saveUser(getUser);
             });
 
             it('Pass', async () => {

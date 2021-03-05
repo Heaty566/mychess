@@ -7,7 +7,7 @@ import { apiResponse } from '../interface/ApiResponse';
 export class RuntimeApiHandler implements ExceptionFilter {
       catch() {
             return apiResponse.sendError({
-                  body: { data: null, message: 'Something went wrong, Please try again later' },
+                  body: { data: null, message: 'something went wrong, please try again later' },
                   type: 'InternalServerErrorException',
             });
       }

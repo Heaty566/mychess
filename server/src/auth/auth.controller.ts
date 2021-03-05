@@ -10,7 +10,6 @@ import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SmailService } from '../providers/smail/smail.service';
 import { EmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
-import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { RedisService } from '../utils/redis/redis.service';
 import { OtpSmsDTO } from './dto/otpSms.dto';
 import { SmsService } from '../providers/sms/sms.service';
@@ -24,15 +23,6 @@ export class AuthController {
             private readonly redisService: RedisService,
             private readonly smsService: SmsService,
       ) {}
-
-      @Post('/reset-password/:otp')
-      async resetPassword(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO) {
-            const redisUser = await this.redisService.getObjectByKey(otp);
-            let user = await this.userService.findOneUserByField('email', redisUser['email']);
-            user.password = await this.authService.hash(body.newPassword);
-            user = await this.authService.registerUser(user); // co nen doi ten ham registerUser khong
-            return user;
-      }
 
       @Post('/otp-email')
       async sendOTPMail(@Body() body: EmailForChangePasswordDTO) {
@@ -95,7 +85,7 @@ export class AuthController {
             newUser.username = body.username;
             newUser.name = body.name;
             newUser.password = await this.authService.hash(body.password);
-            const insertedUser = await this.authService.registerUser(newUser);
+            const insertedUser = await this.authService.saveUser(newUser);
 
             const refreshToken = await this.authService.createReToken(insertedUser);
             return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Register success' });
