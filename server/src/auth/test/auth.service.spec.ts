@@ -166,11 +166,13 @@ describe('AuthService', () => {
             });
       });
 
-      // describe('generateKeyForSms', () => {
-      //       it('Pass', async () => {
-
-      //       })
-      // })
+      describe('generateKeyForSms', () => {
+            it('Pass', async () => {
+                  const user = fakeUser();
+                  const res = authService.generateKeyForSms(user, 5);
+                  expect(res).toBeDefined();
+            });
+      });
 
       afterAll(async () => {
             await reTokenRepository.clear();
