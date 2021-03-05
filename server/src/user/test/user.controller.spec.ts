@@ -1,6 +1,17 @@
 import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
+class TwilioMock {
+      constructor() {
+            //
+      }
+
+      public messages = {
+            create() {
+                  return mockPromise;
+            },
+      };
+}
 //* Internal import
 import { fakeUser } from '../../../test/fakeEntity';
 import { UserRepository } from '../../user/entities/user.repository';
@@ -11,9 +22,17 @@ import { AuthService } from '../../auth/auth.service';
 import { RedisService } from '../../utils/redis/redis.service';
 import { User } from '../entities/user.entity';
 import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
-import User from '../entities/user.entity';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 import { fakeData } from '../../../test/fakeData';
+
+let mockPromise = Promise.resolve();
+import { defuse } from '../../../test/testHelper';
+
+jest.mock('twilio', () => {
+      return {
+            Twilio: TwilioMock,
+      };
+});
 
 describe('UserController', () => {
       let app: INestApplication;
@@ -52,18 +71,20 @@ describe('UserController', () => {
                         phoneNumber: fakeData(10, 'number'),
                   };
                   const res = await reqApi(otpSmsDTO);
-                  console.log(res.body);
                   expect(res.status).toBe(201);
             });
 
-            // it('Failed (error of sms service)', async () => {
-            //       mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
-            //       try {
-            //             await reqApi(otpSmsDTO);
-            //       } catch (err) {
-            //             expect(err.status).toBe(500);
-            //       }
-            // });
+            it('Failed (error of sms service)', async () => {
+                  otpSmsDTO = {
+                        phoneNumber: fakeData(10, 'number'),
+                  };
+                  mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
+                  try {
+                        await reqApi(otpSmsDTO);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
+            });
 
             it('Failed (phone number is already exist)', async () => {
                   const res = await reqApi(otpSmsDTO);

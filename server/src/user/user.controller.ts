@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Param, Body, Put, UsePipes } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Param, Body, Put, Post } from '@nestjs/common';
 
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
@@ -13,7 +13,6 @@ import { OtpSmsDTO } from '../auth/dto/otpSms.dto';
 import { SmsService } from '../providers/sms/sms.service';
 
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateUser.dto';
-
 
 @Controller('user')
 export class UserController {
@@ -45,7 +44,6 @@ export class UserController {
             return apiResponse.send<void>({ body: { message: 'update user success' } });
       }
 
-
       @Post('/otp-update-phone')
       @UseGuards(MyAuthGuard)
       async otpUpdatePhone(@Body() body: OtpSmsDTO, @Req() req: Request) {
@@ -73,6 +71,7 @@ export class UserController {
             user.phoneNumber = redisUser.phoneNumber;
             await this.authService.saveUser(user);
             this.redisService.deleteByKey(otp);
+      }
 
       @Put('/')
       @UseGuards(MyAuthGuard)
@@ -80,7 +79,6 @@ export class UserController {
             const user = await this.userService.findOneUserByField('_id', req.user._id);
             user.name = body.name;
             await this.authService.saveUser(user);
-
 
             return apiResponse.send<void>({ body: { message: 'update user success' } });
       }
