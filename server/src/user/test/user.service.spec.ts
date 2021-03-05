@@ -24,12 +24,20 @@ describe('UserService', () => {
                   const res = await userService.findOneUserByField('_id', userDb._id);
                   expect(res).toBeDefined();
             });
+            it('Pass', async () => {
+                  const res = await userService.findOneUserByField('_id', '1233213');
+                  expect(res).toBeNull();
+            });
       });
 
       describe('getOneUserByField', () => {
             it('Pass', async () => {
                   const res = await userService.getOneUserByField('_id', userDb._id);
                   expect(res).toBeDefined();
+            });
+            it('Pass', async () => {
+                  const res = await userService.getOneUserByField('_id', '1233213');
+                  expect(res).toBeNull();
             });
       });
 

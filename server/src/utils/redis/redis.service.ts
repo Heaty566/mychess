@@ -1,10 +1,11 @@
 import { RedisClient } from 'redis';
 import { Injectable, Inject } from '@nestjs/common';
 import * as flat from 'flat';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class RedisService {
-      constructor(@Inject('RedisClient') private readonly redisRepository: RedisClient) {}
+      constructor(@Inject('RedisClient') private readonly redisRepository: RedisClient, private readonly logger: LoggerService) {}
 
       setObjectByKey(key: string, value: Record<string, any>, expired?: number) {
             const flatValue: Record<string, any> = flat(value);
@@ -21,7 +22,10 @@ export class RedisService {
       getObjectByKey<T>(key: string) {
             return new Promise<T>((res, rej) => {
                   this.redisRepository.hgetall(key, (err, data) => {
-                        if (err) return rej(err);
+                        if (err) {
+                              this.logger.print(err, 'error');
+                              return rej(null);
+                        }
 
                         res(flat.unflatten(data) as T);
                   });
@@ -41,7 +45,10 @@ export class RedisService {
       getByKey(key: string): Promise<string> {
             return new Promise((res, rej) => {
                   this.redisRepository.get(key, (err, data) => {
-                        if (err) return rej(err);
+                        if (err) {
+                              this.logger.print(err, 'error');
+                              return rej(null);
+                        }
 
                         res(data);
                   });

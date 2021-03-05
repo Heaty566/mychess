@@ -28,7 +28,7 @@ describe('UserController', () => {
             cookieData = cookie;
       });
 
-      describe('resetPassword', () => {
+      describe('Put /api/user/reset-password/:otp', () => {
             let user: User;
             let redisKey: string;
             let body: ChangePasswordDTO;
