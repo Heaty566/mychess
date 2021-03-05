@@ -16,7 +16,7 @@ export class AdminController {
       @Roles(UserRole.ADMIN)
       async cChangeUserRole(@Param('id') id: string) {
             const user = await this.userService.findOneUserByField('_id', id);
-            if (!user) throw apiResponse.sendError({ body: { message: 'user with the given Id was not found' } });
+            if (!user) throw apiResponse.sendError({ body: { message: 'user with the given ID was not found' } });
             await this.adminService.toggleUserRole(user);
 
             return apiResponse.send<void>({ body: { message: 'update user success' } });
@@ -26,7 +26,7 @@ export class AdminController {
       @Roles(UserRole.ADMIN)
       async cToggleUserStatus(@Param('id') id: string) {
             const user = await this.userService.findOneUserByField('_id', id);
-            if (!user) throw apiResponse.sendError({ body: { message: 'user with the given Id was not found' } });
+            if (!user) throw apiResponse.sendError({ body: { message: 'user with the given ID was not found' } });
             await this.adminService.toggleUserStatus(user);
 
             return apiResponse.send<void>({ body: { message: 'update user success' } });
