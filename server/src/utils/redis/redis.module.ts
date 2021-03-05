@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import { createClient } from 'redis';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
+      imports: [LoggerModule],
       controllers: [],
       providers: [
             RedisService,
