@@ -13,17 +13,20 @@ import { LoginUserDTO } from '../dto/login.dto';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
 import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
-import { ChangePasswordDTO } from '../../user/dto/changePassword.dto';
+import { OtpSmsDTO } from '../dto/otpSms.dto';
+import { User } from '../../user/entities/user.entity';
+import { fakeData } from '../../../test/fakeData';
 
 describe('AuthController', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
       let authService: AuthService;
       let authController: AuthController;
+      let user: User;
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getApp, module, getUser } = await initTestModule();
             app = getApp;
-
+            user = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             authController = module.get<AuthController>(AuthController);
@@ -172,6 +175,34 @@ describe('AuthController', () => {
             it('Failed (password is not correct)', async () => {
                   loginUserData.password = '123AABBDASDaa';
                   const res = await reqApi(loginUserData);
+                  expect(res.status).toBe(400);
+            });
+      });
+
+      describe('POST /otp-sms', () => {
+            let otpSmsDTO: OtpSmsDTO;
+            const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-sms').send(input);
+
+            beforeEach(async () => {
+                  otpSmsDTO = {
+                        phoneNumber: user.phoneNumber,
+                  };
+            });
+
+            it('Pass', async () => {
+                  const res = await reqApi(otpSmsDTO);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Failed (error of sms service)', async () => {
+                  const res = await reqApi(otpSmsDTO);
+            });
+
+            it('Failed (phone number is not correct)', async () => {
+                  otpSmsDTO = {
+                        phoneNumber: fakeData(10, 'number'),
+                  };
+                  const res = await reqApi(otpSmsDTO);
                   expect(res.status).toBe(400);
             });
       });

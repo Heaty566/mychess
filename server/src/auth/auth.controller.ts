@@ -105,7 +105,7 @@ export class AuthController {
       }
 
       @Post('/otp-sms')
-      async sepSms(@Body() body: OtpSmsDTO) {
+      async sendSms(@Body() body: OtpSmsDTO) {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
             if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not correct' } } });
 
