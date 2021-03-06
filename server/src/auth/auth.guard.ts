@@ -41,6 +41,9 @@ export class MyAuthGuard implements CanActivate {
                   else req.user = user;
             } else req.user = await this.updateAuthToken(res, refreshToken);
 
+            //checking isDisabled user
+            if (req.user.isDisabled) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'action is not allowed' } });
+
             //checking role
             if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN)
                   throw apiResponse.sendError({ body: { message: 'action is not allowed' }, type: 'ForbiddenException' });
