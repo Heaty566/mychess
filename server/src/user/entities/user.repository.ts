@@ -1,10 +1,16 @@
 import { EntityRepository } from 'typeorm';
+import { ObjectId } from 'mongodb';
+
 import { RepositoryService } from '../../utils/repository/repository.service';
 import { User } from './user.entity';
-import { ObjectId } from 'mongodb';
 
 @EntityRepository(User)
 export class UserRepository extends RepositoryService<User> {
+      /**
+       *
+       *
+       * @description get with common information (not include password, email, or phone)
+       */
       public async getUserByField(field: keyof User, value: any) {
             if (field === '_id' && typeof value === 'string') {
                   if (!ObjectId.isValid(value)) return null;

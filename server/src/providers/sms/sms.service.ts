@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { LoggerService } from '../../utils/logger/logger.service';
 import { Twilio } from 'twilio';
+
+import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()
 export class SmsService {
@@ -20,7 +21,7 @@ export class SmsService {
                   });
       }
 
-      public async sendOtp(phoneNumber: string, otpKey: string) {
+      public async sendOTP(phoneNumber: string, otpKey: string) {
             const content = `Your verification code is : ${otpKey}, this code will be invalid in 5 minutes.`;
 
             return await this.sendSms(phoneNumber, content);

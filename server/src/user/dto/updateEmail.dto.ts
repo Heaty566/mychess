@@ -6,10 +6,10 @@ import { userJoiSchema } from '../../utils/validator/schema/user.validator';
 
 const { getJoiSchemas } = ValidatorService.joiSchemaGenerator<User>(userJoiSchema);
 
-export class EmailForChangePasswordDTO {
+export class UpdateEmailDTO {
       email: string;
 }
 
-export const vEmailForChangePasswordDTO = Joi.object({
+export const vUpdateEmailDTO = Joi.object({
       ...getJoiSchemas(['email']),
 });

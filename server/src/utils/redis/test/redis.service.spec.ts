@@ -6,12 +6,11 @@ import { fakeUser } from '../../../../test/fakeEntity';
 import { fakeData } from '../../../../test/fakeData';
 import { User } from '../../../user/entities/user.entity';
 import { RedisService } from '../redis.service';
-import { RedisClient, createClient, Callback } from 'redis';
+import { createClient } from 'redis';
 
 describe('RedisService', () => {
       let app: INestApplication;
       let redisService: RedisService;
-      let redisRepository: RedisClient;
 
       beforeAll(async () => {
             const { getApp, module } = await initTestModule();
@@ -20,7 +19,6 @@ describe('RedisService', () => {
             const redisPort = Number(process.env.REDIS_PORT) || 7000;
             const redis = createClient({ port: redisPort, host: process.env.REDIS_HOST || '' });
             redis.select(process.env.REDIS_DB_NUMBER || 1);
-            redisRepository = redis;
 
             redisService = module.get<RedisService>(RedisService);
       });

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
+
 import { UserService } from '../../user/user.service';
 import { User } from '../../user/entities/user.entity';
 
@@ -22,7 +23,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
                         user = new User();
                         user.googleId = profile.id;
                         user.name = profile.displayName;
-                        user.avatarUrl = profile.photos[0].value; // avatar??
+                        user.avatarUrl = profile.photos[0].value;
                         user.email = profile._json.email;
                         user = await this.userService.saveUser(user);
                   }

@@ -7,6 +7,10 @@ import { LoggerService } from '../logger/logger.service';
 export class RedisService {
       constructor(@Inject('RedisClient') private readonly redisRepository: RedisClient, private readonly logger: LoggerService) {}
 
+      /**
+       *
+       * @param expired amount time for redis value to be expired( 1 = 60s )
+       */
       setObjectByKey(key: string, value: Record<string, any>, expired?: number) {
             const flatValue: Record<string, any> = flat(value);
             this.redisRepository.hmset(key, flatValue);
@@ -35,7 +39,6 @@ export class RedisService {
       /**
        *
        * @param expired amount time for redis value to be expired( 1 = 60s )
-       * @description desc
        */
       setByValue(key: string, value: number | string, expired?: number) {
             if (expired) {

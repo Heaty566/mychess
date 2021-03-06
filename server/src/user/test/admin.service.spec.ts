@@ -1,19 +1,20 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
-import { User } from '../entities/user.entity';
 import { fakeUser } from '../../../test/fakeEntity';
-import { ReTokenRepository } from '../../auth/entities/re-token.repository';
 
-import { UserRole } from '../entities/user.userRole.enum';
+import { UserRepository } from '../entities/user.repository';
+
+import { User } from '../entities/user.entity';
+
 import { AdminService } from '../admin.service';
+import { UserRole } from '../entities/user.userRole.enum';
 
 describe('AdminService', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
-      let reTokenRepository: ReTokenRepository;
+
       let adminService: AdminService;
 
       beforeAll(async () => {
@@ -23,8 +24,6 @@ describe('AdminService', () => {
             userRepository = module.get<UserRepository>(UserRepository);
 
             adminService = module.get<AdminService>(AdminService);
-
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
       });
 
       describe('changeUserRole', () => {
@@ -88,7 +87,6 @@ describe('AdminService', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.clear();
             await userRepository.clear();
             await app.close();
       });

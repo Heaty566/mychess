@@ -17,8 +17,9 @@ describe('AdminController', () => {
             const { getApp, module, adminCookie, getUser } = await initTestModule();
             app = getApp;
             UserDb = getUser;
-            userRepository = module.get<UserRepository>(UserRepository);
             cookieData = adminCookie;
+
+            userRepository = module.get<UserRepository>(UserRepository);
       });
 
       describe('GET api/admin/users', () => {

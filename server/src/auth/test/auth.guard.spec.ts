@@ -13,27 +13,32 @@ import { RedisService } from '../../utils/redis/redis.service';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '../../user/entities/user.userRole.enum';
 
-describe('AuthService', () => {
+describe('MyAuthGuard', () => {
       let app: INestApplication;
+      let user: User;
+
       let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
+
       let authService: AuthService;
+      let redisService: RedisService;
+
       let authGuard: MyAuthGuard;
       let reToken: string;
-      let user: User;
       let context: (cookies) => ExecutionContext;
-      let redisService: RedisService;
 
       beforeAll(async () => {
             const { getApp, module, getReToken, getUser } = await initTestModule();
             app = getApp;
-            reToken = getReToken;
             user = getUser;
+            reToken = getReToken;
+
             userRepository = module.get<UserRepository>(UserRepository);
+            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
+
             authService = module.get<AuthService>(AuthService);
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             redisService = module.get<RedisService>(RedisService);
+
             const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.USER) });
             authGuard = new MyAuthGuard(authService, reflector);
 
@@ -47,6 +52,7 @@ describe('AuthService', () => {
                         }),
                   });
       });
+
       describe('canActivate Admin Role', () => {
             let authGuardAdmin: MyAuthGuard;
 
@@ -64,7 +70,8 @@ describe('AuthService', () => {
                   }
             });
       });
-      describe('canActivate', () => {
+
+      describe('canActivate common case', () => {
             it('Pass', async () => {
                   const contextTracker = context({ 're-token': reToken });
                   const res = await authGuard.canActivate(contextTracker);
@@ -127,7 +134,7 @@ describe('AuthService', () => {
             });
 
             it('Failed re-token no provide', async () => {
-                  const authToken = await authService.getAuthTokenFromReToken(reToken);
+                  const authToken = await authService.getAuthTokenByReToken(reToken);
                   const contextTracker = context({
                         'auth-token': authToken,
                   });

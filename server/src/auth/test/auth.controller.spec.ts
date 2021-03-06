@@ -21,17 +21,22 @@ import { Request, Response } from 'express';
 
 //* Internal import
 import { fakeUser } from '../../../test/fakeEntity';
-import { UserRepository } from '../../user/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
-import { RegisterUserDTO } from '../dto/registerUser.dto';
-import { LoginUserDTO } from '../dto/loginUser.dto';
-import { AuthController } from '../auth.controller';
-import { AuthService } from '../auth.service';
-import { EmailForChangePasswordDTO } from '../../user/dto/emailForChangePassword.dto';
-import { OtpSmsDTO } from '../dto/otpSms.dto';
-import { User } from '../../user/entities/user.entity';
 import { fakeData } from '../../../test/fakeData';
+import { initTestModule } from '../../../test/initTest';
+
+import { UserRepository } from '../../user/entities/user.repository';
+
+import { AuthController } from '../auth.controller';
+
+import { AuthService } from '../auth.service';
 import { UserService } from '../../user/user.service';
+
+import { LoginUserDTO } from '../dto/loginUser.dto';
+import { RegisterUserDTO } from '../dto/registerUser.dto';
+import { UpdateEmailDTO } from '../../user/dto/updateEmail.dto';
+import { OtpSmsDTO } from '../dto/otpSms.dto';
+
+import { User } from '../../user/entities/user.entity';
 
 jest.mock('twilio', () => {
       return {
@@ -41,205 +46,217 @@ jest.mock('twilio', () => {
 
 describe('AuthController', () => {
       let app: INestApplication;
+      let userDB: User;
+
       let userRepository: UserRepository;
+
       let authService: AuthService;
-      let authController: AuthController;
-      let mailService: SmailService;
-      let user: User;
       let userService: UserService;
+      let mailService: SmailService;
+      let authController: AuthController;
       beforeAll(async () => {
             const { getApp, module, getUser } = await initTestModule();
             app = getApp;
-            user = getUser;
+            userDB = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
-            authService = module.get<AuthService>(AuthService);
+
             authController = module.get<AuthController>(AuthController);
+
+            authService = module.get<AuthService>(AuthService);
             mailService = module.get<SmailService>(SmailService);
             userService = module.get<UserService>(UserService);
       });
 
-      describe('googleAuth | facebookAuth | githubAuth', () => {
-            it('googleAuth', async () => {
-                  const res = await authController.googleAuth();
-                  expect(res).toBeUndefined();
-            });
-            it('facebookAuth', async () => {
-                  const res = await authController.facebookAuth();
-                  expect(res).toBeUndefined();
-            });
-            it('githubAuth', async () => {
-                  const res = await authController.githubAuth();
-                  expect(res).toBeUndefined();
-            });
-      });
-
-      describe('googleAuthRedirect | facebookAuthRedirect | githubAuthRedirect', () => {
-            let req: Request;
-            let res: Response;
-
-            beforeEach(() => {
-                  req = createMock<Request>();
-                  req.user = fakeUser();
-                  res = createMock<Response>();
-                  res.cookie = jest.fn().mockReturnValue({
-                        redirect: (url) => url,
+      describe('3rd Authentication', () => {
+            describe('googleAuth | facebookAuth | githubAuth', () => {
+                  it('googleAuth', async () => {
+                        const res = await authController.cGoogleAuth();
+                        expect(res).toBeUndefined();
+                  });
+                  it('facebookAuth', async () => {
+                        const res = await authController.cFacebookAuth();
+                        expect(res).toBeUndefined();
+                  });
+                  it('githubAuth', async () => {
+                        const res = await authController.cGithubAuth();
+                        expect(res).toBeUndefined();
                   });
             });
 
-            it('googleAuthRedirect', async () => {
-                  const output = await authController.googleAuthRedirect(req, res);
+            describe('googleAuthRedirect | facebookAuthRedirect | githubAuthRedirect', () => {
+                  let req: Request;
+                  let res: Response;
 
-                  expect(output).toBe(process.env.CLIENT_URL);
-            });
-            it('facebookAuthRedirect', async () => {
-                  const output = await authController.facebookAuthRedirect(req, res);
+                  beforeEach(() => {
+                        req = createMock<Request>();
+                        req.user = fakeUser();
+                        res = createMock<Response>();
+                        res.cookie = jest.fn().mockReturnValue({
+                              redirect: (url) => url,
+                        });
+                  });
 
-                  expect(output).toBe(process.env.CLIENT_URL);
-            });
-            it('githubAuthRedirect', async () => {
-                  const output = await authController.githubAuthRedirect(req, res);
+                  it('googleAuthRedirect', async () => {
+                        const output = await authController.cGoogleAuthRedirect(req, res);
 
-                  expect(output).toBe(process.env.CLIENT_URL);
-            });
-      });
+                        expect(output).toBe(process.env.CLIENT_URL);
+                  });
+                  it('facebookAuthRedirect', async () => {
+                        const output = await authController.cFacebookAuthRedirect(req, res);
 
-      describe('POST /register', () => {
-            let createUserData: RegisterUserDTO;
-            const reqApi = (input: RegisterUserDTO) => supertest(app.getHttpServer()).post('/api/auth/register').send(input);
+                        expect(output).toBe(process.env.CLIENT_URL);
+                  });
+                  it('githubAuthRedirect', async () => {
+                        const output = await authController.cGithubAuthRedirect(req, res);
 
-            beforeEach(() => {
-                  const getUser = fakeUser();
-                  createUserData = {
-                        name: getUser.name,
-                        username: getUser.username,
-                        password: getUser.password,
-                        confirmPassword: getUser.password,
-                  };
-            });
-            it('Pass', async () => {
-                  const res = await reqApi(createUserData);
-
-                  const token = res.headers['set-cookie'].join('');
-                  expect(token).toContain('re-token');
-            });
-
-            it('Failed (username is taken)', async () => {
-                  await reqApi(createUserData);
-                  const res = await reqApi(createUserData);
-                  expect(res.status).toBe(400);
-            });
-
-            it('Failed (confirmPassword does not match)', async () => {
-                  createUserData.confirmPassword = '12345678';
-                  const res = await reqApi(createUserData);
-
-                  expect(res.status).toBe(400);
+                        expect(output).toBe(process.env.CLIENT_URL);
+                  });
             });
       });
 
-      describe('POST /login', () => {
-            let loginUserData: LoginUserDTO;
-            const reqApi = (input: LoginUserDTO) => supertest(app.getHttpServer()).post('/api/auth/login').send(input);
+      describe('Common Authentication', () => {
+            describe('POST /register', () => {
+                  let createUserData: RegisterUserDTO;
+                  const reqApi = (input: RegisterUserDTO) => supertest(app.getHttpServer()).post('/api/auth/register').send(input);
 
-            beforeEach(async () => {
-                  const getUser = fakeUser();
-                  loginUserData = {
-                        username: getUser.username,
-                        password: getUser.password,
-                  };
-                  getUser.password = await authService.hash(getUser.password);
-                  await userService.saveUser(getUser);
+                  beforeEach(() => {
+                        const getUser = fakeUser();
+                        createUserData = {
+                              name: getUser.name,
+                              username: getUser.username,
+                              password: getUser.password,
+                              confirmPassword: getUser.password,
+                        };
+                  });
+                  it('Pass', async () => {
+                        const res = await reqApi(createUserData);
+
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).toContain('re-token');
+                  });
+
+                  it('Failed (username is taken)', async () => {
+                        await reqApi(createUserData);
+                        const res = await reqApi(createUserData);
+                        expect(res.status).toBe(400);
+                  });
+
+                  it('Failed (confirmPassword does not match)', async () => {
+                        createUserData.confirmPassword = '12345678';
+                        const res = await reqApi(createUserData);
+
+                        expect(res.status).toBe(400);
+                  });
             });
 
-            it('Pass', async () => {
-                  const res = await reqApi(loginUserData);
+            describe('POST /login', () => {
+                  let loginUserData: LoginUserDTO;
+                  const reqApi = (input: LoginUserDTO) => supertest(app.getHttpServer()).post('/api/auth/login').send(input);
 
-                  const token = res.headers['set-cookie'].join('');
-                  expect(token).toContain('re-token');
-            });
+                  beforeEach(async () => {
+                        const getUser = fakeUser();
+                        loginUserData = {
+                              username: getUser.username,
+                              password: getUser.password,
+                        };
+                        getUser.password = await authService.encryptString(getUser.password);
+                        await userService.saveUser(getUser);
+                  });
 
-            it('Failed (username is not correct)', async () => {
-                  loginUserData.username = 'update';
-                  const res = await reqApi(loginUserData);
-                  expect(res.status).toBe(400);
-            });
+                  it('Pass', async () => {
+                        const res = await reqApi(loginUserData);
 
-            it('Failed (password is not correct)', async () => {
-                  loginUserData.password = '123AABBDASDaa';
-                  const res = await reqApi(loginUserData);
-                  expect(res.status).toBe(400);
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).toContain('re-token');
+                  });
+
+                  it('Failed (username is not correct)', async () => {
+                        loginUserData.username = 'update';
+                        const res = await reqApi(loginUserData);
+                        expect(res.status).toBe(400);
+                  });
+
+                  it('Failed (password is not correct)', async () => {
+                        loginUserData.password = '123AABBDASDaa';
+                        const res = await reqApi(loginUserData);
+                        expect(res.status).toBe(400);
+                  });
             });
       });
 
-      describe('POST /otp-sms', () => {
-            let otpSmsDTO: OtpSmsDTO;
-            const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-sms').send(input);
+      describe('OTP sms and email', () => {
+            describe('POST /otp-sms', () => {
+                  let otpSmsDTO: OtpSmsDTO;
+                  const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-sms').send(input);
 
-            beforeEach(async () => {
-                  otpSmsDTO = {
-                        phoneNumber: user.phoneNumber,
-                  };
+                  beforeEach(async () => {
+                        otpSmsDTO = {
+                              phoneNumber: userDB.phoneNumber,
+                        };
+                  });
+
+                  it('Pass', async () => {
+                        const res = await reqApi(otpSmsDTO);
+
+                        expect(res.status).toBe(201);
+                  });
+
+                  it('Failed (error of sms service)', async () => {
+                        mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
+                        try {
+                              await reqApi(otpSmsDTO);
+                        } catch (err) {
+                              expect(err.status).toBe(500);
+                        }
+                  });
+
+                  it('Failed (phone number is not correct)', async () => {
+                        otpSmsDTO = {
+                              phoneNumber: fakeData(10, 'number'),
+                        };
+                        const res = await reqApi(otpSmsDTO);
+
+                        expect(res.status).toBe(400);
+                  });
             });
 
-            it('Pass', async () => {
-                  const res = await reqApi(otpSmsDTO);
-                  expect(res.status).toBe(201);
-            });
+            describe('POST /otp-email', () => {
+                  let otpMail: UpdateEmailDTO;
+                  const reqApi = (input: UpdateEmailDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-email').send(input);
 
-            it('Failed (error of sms service)', async () => {
-                  mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
-                  try {
-                        await reqApi(otpSmsDTO);
-                  } catch (err) {
-                        expect(err.status).toBe(500);
-                  }
-            });
+                  beforeEach(() => {
+                        otpMail = {
+                              email: userDB.email,
+                        };
+                  });
 
-            it('Failed (phone number is not correct)', async () => {
-                  otpSmsDTO = {
-                        phoneNumber: fakeData(10, 'number'),
-                  };
-                  const res = await reqApi(otpSmsDTO);
-                  expect(res.status).toBe(400);
-            });
-      });
+                  it('Pass', async () => {
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(201);
+                  });
 
-      describe('POST /otp-email', () => {
-            let otpMail: EmailForChangePasswordDTO;
-            const reqApi = (input: EmailForChangePasswordDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-email').send(input);
+                  it('Failed (error of smail)', async () => {
+                        otpMail = {
+                              email: userDB.email,
+                        };
 
-            beforeEach(() => {
-                  otpMail = {
-                        email: user.email,
-                  };
-            });
+                        const mySpy = jest.spyOn(mailService, 'sendOTP').mockImplementation(() => Promise.resolve(false));
 
-            it('Pass', async () => {
-                  const res = await reqApi(otpMail);
-                  expect(res.status).toBe(201);
-            });
+                        try {
+                              await reqApi(otpMail);
+                        } catch (err) {
+                              expect(err.status).toBe(500);
+                        }
+                        mySpy.mockClear();
+                  });
 
-            it('Failed (error of smail)', async () => {
-                  otpMail = {
-                        email: user.email,
-                  };
-
-                  const mySpy = jest.spyOn(mailService, 'sendOTPMail').mockImplementation(() => Promise.resolve(false));
-
-                  try {
-                        await reqApi(otpMail);
-                  } catch (err) {
-                        expect(err.status).toBe(500);
-                  }
-                  mySpy.mockClear();
-            });
-
-            it('Failed (email is not found in database)', async () => {
-                  otpMail = {
-                        email: fakeData(10, 'lettersLowerCase') + '@gmail.com',
-                  };
-                  const res = await reqApi(otpMail);
-                  expect(res.status).toBe(400);
+                  it('Failed (email does not exist)', async () => {
+                        otpMail = {
+                              email: fakeData(10, 'lettersLowerCase') + '@gmail.com',
+                        };
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(400);
+                  });
             });
       });
 

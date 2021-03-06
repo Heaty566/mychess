@@ -22,6 +22,7 @@ export const initTestModule = async () => {
       //create a fake user and token
       let user = fakeUser();
       user.email = 'haicao2805@gmail.com';
+      user.phoneNumber = '1313425502';
       let adminUser = fakeUser();
       adminUser.role = UserRole.ADMIN;
       const userRepository = module.get<UserRepository>(UserRepository);

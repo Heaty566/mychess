@@ -52,7 +52,7 @@ describe('UserService', () => {
 
                   expect(res).toBeDefined();
             });
-            it('Pass', async () => {
+            it('Pass (the same id)', async () => {
                   await userService.saveUser(userDb);
                   userDb.username = 'update';
                   await userService.saveUser(userDb);

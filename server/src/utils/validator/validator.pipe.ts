@@ -1,8 +1,7 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
 import { ObjectSchema } from 'joi';
-import { LocalesService } from '../locales/locales.service';
-//* Internal import
 
+import { LocalesService } from '../locales/locales.service';
 import { apiResponse } from '../../app/interface/ApiResponse';
 
 @Injectable()

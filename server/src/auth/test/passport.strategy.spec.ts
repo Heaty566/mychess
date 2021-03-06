@@ -3,20 +3,25 @@ import { Profile as FaceBookProfile } from 'passport-facebook';
 import { Profile as GitHubProfile } from 'passport-github';
 import { Profile as GoogleProfile } from 'passport-google-oauth20';
 
+import { initTestModule } from '../../../test/initTest';
+import { fakeData } from '../../../test/fakeData';
+
 import { GithubStrategy } from '../passport/github.strategy';
 import { GoogleStrategy } from '../passport/google.strategy';
 import { FacebookStrategy } from '../passport/facebook.strategy';
+
 import { UserRepository } from '../../user/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+
 import { UserService } from '../../user/user.service';
-import { fakeData } from '../../../test/fakeData';
 
 describe('FacebookStrategy', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
+
+      let userService: UserService;
+
       let faceBookStrategy: FacebookStrategy;
       let githubStrategy: GithubStrategy;
-      let userService: UserService;
       let googleStrategy: GoogleStrategy;
 
       beforeAll(async () => {

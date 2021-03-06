@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+
 import { LoggerService } from '../utils/logger/logger.service';
-import User from './entities/user.entity';
 import { UserRepository } from './entities/user.repository';
 import { UserRole } from './entities/user.userRole.enum';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class AdminService {

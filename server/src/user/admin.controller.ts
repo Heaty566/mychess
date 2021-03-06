@@ -1,11 +1,12 @@
 import { Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
-import { AdminService } from './admin.service';
-import { UserRole } from './entities/user.userRole.enum';
-import { Roles } from '../auth/roles.decorator';
-import { MyAuthGuard } from '../auth/auth.guard';
-import { UserService } from './user.service';
+
 import { apiResponse } from '../app/interface/ApiResponse';
-import User from './entities/user.entity';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from './entities/user.userRole.enum';
+import { MyAuthGuard } from '../auth/auth.guard';
+import { AdminService } from './admin.service';
+import { UserService } from './user.service';
+import { User } from './entities/user.entity';
 
 @Controller('admin')
 @UseGuards(MyAuthGuard)
@@ -22,7 +23,7 @@ export class AdminController {
 
       @Put('/user-admin/:id')
       @Roles(UserRole.ADMIN)
-      async cChangeUserRole(@Param('id') id: string) {
+      async cToggleUserRole(@Param('id') id: string) {
             const user = await this.userService.findOneUserByField('_id', id);
             if (!user) throw apiResponse.sendError({ body: { message: 'user with the given ID was not found' } });
             await this.adminService.toggleUserRole(user);

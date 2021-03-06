@@ -6,6 +6,7 @@ import {
       NotFoundException,
       ForbiddenException,
 } from '@nestjs/common';
+
 import { Dictionary, LocalesService } from '../../utils/locales/locales.service';
 
 type ErrorType =
@@ -57,6 +58,10 @@ class ApiResponse {
             }
       }
 
+      /**
+       *
+       * @description allow translate message before send back to client
+       */
       public send<T>({ body, isTranslate, context }: IApiBase<T>) {
             if (isTranslate && body.message) {
                   body.message = this.localeService.translate(body.message, { ...context });

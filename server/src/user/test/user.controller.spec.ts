@@ -1,6 +1,4 @@
-import * as supertest from 'supertest';
-import { INestApplication } from '@nestjs/common';
-
+let mockPromise = Promise.resolve();
 class TwilioMock {
       constructor() {
             //
@@ -12,20 +10,22 @@ class TwilioMock {
             },
       };
 }
+
+import * as supertest from 'supertest';
+import { INestApplication } from '@nestjs/common';
+
 //* Internal import
 import { fakeUser } from '../../../test/fakeEntity';
 import { UserRepository } from '../../user/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
-import { UserController } from '../user.controller';
-import { ChangePasswordDTO } from '../dto/changePassword.dto';
 import { AuthService } from '../../auth/auth.service';
 import { RedisService } from '../../utils/redis/redis.service';
 import { User } from '../entities/user.entity';
-import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
-import { UpdateUserDto } from '../dto/updateUser.dto';
 import { fakeData } from '../../../test/fakeData';
-import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
-let mockPromise = Promise.resolve();
+import { ChangePasswordDTO } from '../dto/changePassword.dto';
+import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
+import { UpdateUserDto } from '../dto/updateBasicUser.dto';
+import { UpdateEmailDTO } from '../dto/updateEmail.dto';
 import { defuse } from '../../../test/testHelper';
 import { UserService } from '../user.service';
 import { SmailService } from '../../providers/smail/smail.service';
@@ -38,220 +38,30 @@ jest.mock('twilio', () => {
 
 describe('UserController', () => {
       let app: INestApplication;
+
       let userRepository: UserRepository;
 
       let authService: AuthService;
       let redisService: RedisService;
-      let cookieData: Array<string>;
-      let user: User;
       let userService: UserService;
       let mailService: SmailService;
+
+      let cookieData: Array<string>;
+      let user: User;
 
       beforeAll(async () => {
             const { getApp, module, cookie, getUser } = await initTestModule();
             app = getApp;
             user = getUser;
+            user = getUser;
+            cookieData = cookie;
+
             userRepository = module.get<UserRepository>(UserRepository);
+
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
             userService = module.get<UserService>(UserService);
             mailService = module.get<SmailService>(SmailService);
-
-            cookieData = cookie;
-            user = getUser;
-      });
-
-      describe('POST /otp-sms', () => {
-            let otpSmsDTO: OtpSmsDTO;
-            const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/user/otp-sms').set({ cookie: cookieData }).send(input);
-
-            beforeEach(async () => {
-                  otpSmsDTO = {
-                        phoneNumber: user.phoneNumber,
-                  };
-            });
-
-            it('Pass', async () => {
-                  otpSmsDTO = {
-                        phoneNumber: fakeData(10, 'number'),
-                  };
-                  const res = await reqApi(otpSmsDTO);
-                  expect(res.status).toBe(201);
-            });
-
-            it('Failed (error of sms service)', async () => {
-                  otpSmsDTO = {
-                        phoneNumber: fakeData(10, 'number'),
-                  };
-                  mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
-                  try {
-                        await reqApi(otpSmsDTO);
-                  } catch (err) {
-                        expect(err.status).toBe(500);
-                  }
-            });
-
-            it('Failed (phone number is already exist)', async () => {
-                  const res = await reqApi(otpSmsDTO);
-                  expect(res.status).toBe(400);
-            });
-      });
-
-      describe('PUT /api/user/phone/:otp', () => {
-            let redisKey: string;
-            const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/phone/${redisKey}`).set({ cookie: cookieData }).send();
-
-            beforeAll(async () => {
-                  redisKey = await authService.generateKeyForSms(user, 2);
-            });
-
-            it('Pass', async () => {
-                  const beforeRedisKey = await redisService.getObjectByKey(redisKey);
-                  const res = await reqApi(redisKey);
-                  const afterRedisKey = await redisService.getObjectByKey(redisKey);
-                  expect(res.status).toBe(200);
-                  expect(beforeRedisKey).toBeDefined();
-                  expect(afterRedisKey).toBeNull();
-            });
-
-            it('Failed redis key is used', async () => {
-                  const res = await reqApi(redisKey);
-
-                  expect(res.status).toBe(403);
-            });
-            it('Failed redis expired', async () => {
-                  const res = await reqApi(123456);
-
-                  expect(res.status).toBe(403);
-            });
-      });
-
-      describe('PUT /api/user/password/:otp', () => {
-            let user: User;
-            let redisKey: string;
-            let body: ChangePasswordDTO;
-            const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/password/${redisKey}`).send(body);
-
-            beforeAll(async () => {
-                  user = fakeUser();
-                  user.email = 'heaty566@gmail.com';
-                  await userService.saveUser(user);
-                  redisKey = await authService.createOTPRedisKey(user, 2);
-                  body = {
-                        newPassword: 'Password123',
-                        confirmNewPassword: 'Password123',
-                  };
-            });
-
-            it('Pass', async () => {
-                  const beforeRedisKey = await redisService.getObjectByKey(redisKey);
-                  const res = await reqApi(body, redisKey);
-                  const getUser = await userRepository.findOneByField('_id', user._id);
-                  const isMatch = await authService.comparePassword(body.newPassword, getUser.password);
-                  const afterRedisKey = await redisService.getObjectByKey(redisKey);
-                  expect(res.status).toBe(200);
-                  expect(beforeRedisKey).toBeDefined();
-                  expect(afterRedisKey).toBeNull();
-                  expect(isMatch).toBeTruthy();
-            });
-
-            it('Failed redis key is used', async () => {
-                  const res = await reqApi(body, redisKey);
-
-                  expect(res.status).toBe(403);
-            });
-            it('Failed redis expired', async () => {
-                  const res = await reqApi(body, 123456);
-
-                  expect(res.status).toBe(403);
-            });
-      });
-
-      describe('Put /api/user/', () => {
-            let body: UpdateUserDto;
-            const reqApi = (body: UpdateUserDto) => supertest(app.getHttpServer()).put(`/api/user`).set({ cookie: cookieData }).send(body);
-
-            beforeEach(() => {
-                  body = {
-                        name: fakeData(10, 'letters'),
-                  };
-            });
-
-            it('Pass', async () => {
-                  const res = await reqApi(body);
-
-                  const getUser = await userRepository.findOneByField('_id', user._id);
-
-                  expect(getUser.name.toLocaleLowerCase()).toBe(body.name.toLocaleLowerCase());
-                  expect(getUser.username).toBe(user.username);
-                  expect(res.status).toBe(200);
-            });
-      });
-
-      describe('POST /otp-email', () => {
-            let otpMail: EmailForChangePasswordDTO;
-
-            const reqApi = (input: EmailForChangePasswordDTO) =>
-                  supertest(app.getHttpServer()).post('/api/user/otp-email').set({ cookie: cookieData }).send(input);
-
-            it('Failed (email is taken)', async () => {
-                  otpMail = {
-                        email: 'haicao2805@gmail.com',
-                  };
-                  const res = await reqApi(otpMail);
-                  expect(res.status).toBe(400);
-            });
-
-            it('Pass', async () => {
-                  otpMail = {
-                        email: `${fakeData(10)}@gmail.com`,
-                  };
-                  const res = await reqApi(otpMail);
-                  expect(res.status).toBe(201);
-            });
-
-            it('Failed (error of smail)', async () => {
-                  otpMail = {
-                        email: `${fakeData(10)}@gmail.com`,
-                  };
-                  const mySpy = jest.spyOn(mailService, 'sendOTPMailUpdateEmail').mockImplementation(() => Promise.resolve(false));
-                  try {
-                        await reqApi(otpMail);
-                  } catch (err) {
-                        expect(err.status).toBe(500);
-                  }
-                  mySpy.mockClear();
-            });
-      });
-
-      describe('PUT /email/:otp', () => {
-            let redisKey: string;
-            const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/email/${redisKey}`).set({ cookie: cookieData }).send();
-
-            beforeAll(async () => {
-                  redisKey = await authService.generateKeyForSms(user, 2);
-            });
-
-            it('Pass', async () => {
-                  const beforeRedisKey = await redisService.getObjectByKey(redisKey);
-                  const res = await reqApi(redisKey);
-                  const afterRedisKey = await redisService.getObjectByKey(redisKey);
-                  expect(res.status).toBe(200);
-                  expect(beforeRedisKey).toBeDefined();
-                  expect(afterRedisKey).toBeNull();
-            });
-
-            it('Failed (redis key is used)', async () => {
-                  const res = await reqApi(123456);
-
-                  expect(res.status).toBe(403);
-            });
-
-            it('Failed (redis expired)', async () => {
-                  const res = await reqApi(redisKey);
-
-                  expect(res.status).toBe(403);
-            });
       });
 
       describe('GET /', () => {
@@ -260,6 +70,202 @@ describe('UserController', () => {
             it('Pass', async () => {
                   const res = await reqApi();
                   expect(res.body.data).toBeDefined();
+            });
+      });
+
+      describe('create otp by user', () => {
+            describe('POST /otp-sms', () => {
+                  let otpSmsDTO: OtpSmsDTO;
+                  const reqApi = (input: OtpSmsDTO) =>
+                        supertest(app.getHttpServer()).post('/api/user/otp-sms').set({ cookie: cookieData }).send(input);
+
+                  beforeEach(async () => {
+                        otpSmsDTO = {
+                              phoneNumber: user.phoneNumber,
+                        };
+                  });
+
+                  it('Pass', async () => {
+                        otpSmsDTO = {
+                              phoneNumber: fakeData(10, 'number'),
+                        };
+                        const res = await reqApi(otpSmsDTO);
+                        expect(res.status).toBe(201);
+                  });
+
+                  it('Failed (error of sms service)', async () => {
+                        otpSmsDTO = {
+                              phoneNumber: fakeData(10, 'number'),
+                        };
+                        mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
+                        try {
+                              await reqApi(otpSmsDTO);
+                        } catch (err) {
+                              expect(err.status).toBe(500);
+                        }
+                  });
+
+                  it('Failed (phone number is already exist)', async () => {
+                        const res = await reqApi(otpSmsDTO);
+                        expect(res.status).toBe(400);
+                  });
+            });
+
+            describe('POST /otp-email', () => {
+                  let otpMail: UpdateEmailDTO;
+
+                  const reqApi = (input: UpdateEmailDTO) =>
+                        supertest(app.getHttpServer()).post('/api/user/otp-email').set({ cookie: cookieData }).send(input);
+
+                  it('Failed (email is taken)', async () => {
+                        otpMail = {
+                              email: 'haicao2805@gmail.com',
+                        };
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(400);
+                  });
+
+                  it('Pass', async () => {
+                        otpMail = {
+                              email: `${fakeData(10)}@gmail.com`,
+                        };
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(201);
+                  });
+
+                  it('Failed (error of smail)', async () => {
+                        otpMail = {
+                              email: `${fakeData(10)}@gmail.com`,
+                        };
+                        const mySpy = jest.spyOn(mailService, 'sendOTPForUpdateEmail').mockImplementation(() => Promise.resolve(false));
+                        try {
+                              await reqApi(otpMail);
+                        } catch (err) {
+                              expect(err.status).toBe(500);
+                        }
+                        mySpy.mockClear();
+                  });
+            });
+      });
+
+      describe('update field of user', () => {
+            describe('Put /api/user', () => {
+                  let body: UpdateUserDto;
+                  const reqApi = (body: UpdateUserDto) => supertest(app.getHttpServer()).put(`/api/user`).set({ cookie: cookieData }).send(body);
+
+                  beforeEach(() => {
+                        body = {
+                              name: fakeData(10, 'letters'),
+                        };
+                  });
+
+                  it('Pass', async () => {
+                        const res = await reqApi(body);
+
+                        const getUser = await userRepository.findOneByField('_id', user._id);
+
+                        expect(getUser.name.toLocaleLowerCase()).toBe(body.name.toLocaleLowerCase());
+                        expect(getUser.username).toBe(user.username);
+                        expect(res.status).toBe(200);
+                  });
+            });
+
+            describe('PUT /api/user/phone/:otp', () => {
+                  let redisKey: string;
+                  const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/phone/${redisKey}`).set({ cookie: cookieData }).send();
+
+                  beforeAll(async () => {
+                        redisKey = await authService.generateOTP(user, 2, 'sms');
+                  });
+
+                  it('Pass', async () => {
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(redisKey);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                  });
+
+                  it('Failed redis key is used', async () => {
+                        const res = await reqApi(redisKey);
+
+                        expect(res.status).toBe(403);
+                  });
+                  it('Failed redis expired', async () => {
+                        const res = await reqApi(123456);
+
+                        expect(res.status).toBe(403);
+                  });
+            });
+            describe('PUT /api/user/email/:otp', () => {
+                  let redisKey: string;
+                  const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/email/${redisKey}`).set({ cookie: cookieData }).send();
+
+                  beforeAll(async () => {
+                        redisKey = await authService.generateOTP(user, 2, 'email');
+                  });
+
+                  it('Pass', async () => {
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(redisKey);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                  });
+
+                  it('Failed (redis key is used)', async () => {
+                        const res = await reqApi(123456);
+
+                        expect(res.status).toBe(403);
+                  });
+
+                  it('Failed (redis expired)', async () => {
+                        const res = await reqApi(redisKey);
+
+                        expect(res.status).toBe(403);
+                  });
+            });
+            describe('PUT /api/user/password/:otp', () => {
+                  let user: User;
+                  let redisKey: string;
+                  let body: ChangePasswordDTO;
+                  const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/password/${redisKey}`).send(body);
+
+                  beforeAll(async () => {
+                        user = fakeUser();
+                        user.email = 'heaty566@gmail.com';
+                        await userService.saveUser(user);
+                        redisKey = await authService.generateOTP(user, 2, 'email');
+                        body = {
+                              newPassword: 'Password123',
+                              confirmNewPassword: 'Password123',
+                        };
+                  });
+
+                  it('Pass', async () => {
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(body, redisKey);
+                        const getUser = await userRepository.findOneByField('_id', user._id);
+                        const isMatch = await authService.decryptString(body.newPassword, getUser.password);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                        expect(isMatch).toBeTruthy();
+                  });
+
+                  it('Failed redis key is used', async () => {
+                        const res = await reqApi(body, redisKey);
+
+                        expect(res.status).toBe(403);
+                  });
+                  it('Failed redis expired', async () => {
+                        const res = await reqApi(body, 123456);
+
+                        expect(res.status).toBe(403);
+                  });
             });
       });
 
