@@ -59,6 +59,7 @@ export class User {
             this.username = '';
             this.role = UserRole.USER;
             this.createDate = new Date();
+            this.isDisabled = false;
       }
 }
 

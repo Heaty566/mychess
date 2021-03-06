@@ -32,7 +32,11 @@ export class RedisService {
             });
       }
 
-      // how many minutes to expired
+      /**
+       *
+       * @param expired amount time for redis value to be expired( 1 = 60s )
+       * @description desc
+       */
       setByValue(key: string, value: number | string, expired?: number) {
             if (expired) {
                   this.redisRepository.setex(key, expired * 60, String(value));
@@ -41,7 +45,6 @@ export class RedisService {
             }
       }
 
-      // *todo take a note if it goes wrong
       getByKey(key: string): Promise<string> {
             return new Promise((res, rej) => {
                   this.redisRepository.get(key, (err, data) => {

@@ -3,13 +3,10 @@ import { INestApplication } from '@nestjs/common';
 //* Internal import
 import { UserRepository } from '../entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
-import { AuthService } from '../../auth/auth.service';
 import { User } from '../entities/user.entity';
 import { fakeUser } from '../../../test/fakeEntity';
 import { ReTokenRepository } from '../../auth/entities/re-token.repository';
-import { fakeData } from '../../../test/fakeData';
-import { RedisService } from '../../utils/redis/redis.service';
-import { ObjectId } from 'mongodb';
+
 import { UserRole } from '../entities/user.userRole.enum';
 import { AdminService } from '../admin.service';
 
@@ -18,18 +15,14 @@ describe('AdminService', () => {
       let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
       let adminService: AdminService;
-      let authService: AuthService;
-      let userDb: User;
-      let redisService: RedisService;
-      let token: string;
+
       beforeAll(async () => {
             const { getUser, getApp, module } = await initTestModule();
             app = getApp;
             getUser.role = UserRole.ADMIN;
             userRepository = module.get<UserRepository>(UserRepository);
-            userDb = await userRepository.save(getUser);
+
             adminService = module.get<AdminService>(AdminService);
-            authService = module.get<AuthService>(AuthService);
 
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
       });

@@ -23,14 +23,15 @@ import { Request, Response } from 'express';
 import { fakeUser } from '../../../test/fakeEntity';
 import { UserRepository } from '../../user/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
-import { RegisterUserDTO } from '../dto/register.dto';
-import { LoginUserDTO } from '../dto/login.dto';
+import { RegisterUserDTO } from '../dto/registerUser.dto';
+import { LoginUserDTO } from '../dto/loginUser.dto';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
+import { EmailForChangePasswordDTO } from '../../user/dto/emailForChangePassword.dto';
 import { OtpSmsDTO } from '../dto/otpSms.dto';
 import { User } from '../../user/entities/user.entity';
 import { fakeData } from '../../../test/fakeData';
+import { UserService } from '../../user/user.service';
 
 jest.mock('twilio', () => {
       return {
@@ -45,6 +46,7 @@ describe('AuthController', () => {
       let authController: AuthController;
       let mailService: SmailService;
       let user: User;
+      let userService: UserService;
       beforeAll(async () => {
             const { getApp, module, getUser } = await initTestModule();
             app = getApp;
@@ -53,6 +55,7 @@ describe('AuthController', () => {
             authService = module.get<AuthService>(AuthService);
             authController = module.get<AuthController>(AuthController);
             mailService = module.get<SmailService>(SmailService);
+            userService = module.get<UserService>(UserService);
       });
 
       describe('googleAuth | facebookAuth | githubAuth', () => {
@@ -145,7 +148,7 @@ describe('AuthController', () => {
                         password: getUser.password,
                   };
                   getUser.password = await authService.hash(getUser.password);
-                  await authService.saveUser(getUser);
+                  await userService.saveUser(getUser);
             });
 
             it('Pass', async () => {
@@ -201,10 +204,9 @@ describe('AuthController', () => {
             });
       });
 
-      describe('POST /otp-email/updatePassword', () => {
+      describe('POST /otp-email', () => {
             let otpMail: EmailForChangePasswordDTO;
-            const reqApi = (input: EmailForChangePasswordDTO) =>
-                  supertest(app.getHttpServer()).post('/api/auth/otp-email/updatePassword').send(input);
+            const reqApi = (input: EmailForChangePasswordDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-email').send(input);
 
             beforeEach(() => {
                   otpMail = {

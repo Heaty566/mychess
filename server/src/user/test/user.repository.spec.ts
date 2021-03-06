@@ -1,5 +1,5 @@
-//* Internal import
 import { INestApplication } from '@nestjs/common';
+
 import { UserRepository } from '../../user/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
 import { User } from '../../user/entities/user.entity';

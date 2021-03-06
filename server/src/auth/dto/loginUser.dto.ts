@@ -9,7 +9,6 @@ const { getJoiSchemas } = ValidatorService.joiSchemaGenerator<User>(userJoiSchem
 export class LoginUserDTO {
       username: string;
       password: string;
-      //isRemember: boolean;
 }
 
 export const vLoginUserDto = Joi.object({

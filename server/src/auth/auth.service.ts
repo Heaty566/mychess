@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
-import { UserRepository } from '../user/entities/user.repository';
-
-import { ReTokenRepository } from './entities/re-token.repository';
+import { ObjectId } from 'mongodb';
 import * as bcrypt from 'bcrypt';
+
+import { UserRepository } from '../user/entities/user.repository';
+import { ReTokenRepository } from './entities/re-token.repository';
+import { User } from '../user/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
 import { RedisService } from '../utils/redis/redis.service';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class AuthService {
@@ -72,10 +72,6 @@ export class AuthService {
 
       decodeToken<T>(tokenData: string) {
             return this.jwtService.decode(tokenData) as T;
-      }
-
-      async saveUser(input: User): Promise<User> {
-            return await this.userRepository.save(input);
       }
 
       async hash(data: string): Promise<string> {

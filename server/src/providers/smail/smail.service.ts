@@ -50,4 +50,18 @@ export class SmailService {
             </div>`,
             );
       }
+
+      async sendOTPMailUpdateEmail(receiver: string, OTP: string) {
+            return await this.sendMail(
+                  receiver,
+                  `
+            <div>
+                  <h2>Hello</h2>
+                  <p>You receiving this email because we received a password request for your account.</p>
+                  </br>
+                  <p>Please click this link:</p><a>http://localhost:4000/api/user/updateEmail/${OTP}</a>
+                  </br>
+            </div>`,
+            );
+      }
 }

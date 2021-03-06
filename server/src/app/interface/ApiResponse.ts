@@ -33,6 +33,10 @@ export interface IApiError extends IApiBase<void> {
 class ApiResponse {
       constructor(private readonly localeService: LocalesService) {}
 
+      /**
+       *
+       * @description allow translate message before send back to client
+       */
       public sendError({ body, isTranslate = true, type = 'BadRequestException', context = {} }: IApiError) {
             if (isTranslate && body.message) {
                   body.message = this.localeService.translate(body.message, { ...context });

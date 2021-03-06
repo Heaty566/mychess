@@ -173,6 +173,17 @@ describe('AuthService', () => {
                         expect(getUser).toBeNull();
                   }
             });
+
+            it('Failed (isDisable user)', async () => {
+                  user.isDisabled = true;
+                  const reToken = await authService.createReToken(user);
+                  const contextTracker = context({ 're-token': reToken });
+                  try {
+                        await authGuard.canActivate(contextTracker);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
       });
 
       afterAll(async () => {

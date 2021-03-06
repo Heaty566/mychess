@@ -10,6 +10,7 @@ import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
 import { RedisService } from '../../utils/redis/redis.service';
 import { ObjectId } from 'mongodb';
+import { UserService } from '../../user/user.service';
 
 describe('AuthService', () => {
       let app: INestApplication;
@@ -18,6 +19,7 @@ describe('AuthService', () => {
       let authService: AuthService;
       let userDb: User;
       let redisService: RedisService;
+      let userService: UserService;
       beforeAll(async () => {
             const { getUser, getApp, module } = await initTestModule();
             app = getApp;
@@ -26,28 +28,7 @@ describe('AuthService', () => {
             authService = module.get<AuthService>(AuthService);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             redisService = module.get<RedisService>(RedisService);
-      });
-      describe('registerUser', () => {
-            let input: User;
-
-            beforeEach(() => {
-                  input = fakeUser();
-            });
-
-            it('Pass', async () => {
-                  const res = await authService.saveUser(input);
-
-                  expect(res).toBeDefined();
-            });
-            it('Pass', async () => {
-                  await authService.saveUser(input);
-                  input.username = 'update';
-                  await authService.saveUser(input);
-                  const res = await userRepository.findOne({ username: 'update' });
-
-                  expect(res).toBeDefined();
-                  expect(res.username).toBe('update');
-            });
+            userService = module.get<UserService>(UserService);
       });
 
       describe('getDataFromRefreshToken', () => {

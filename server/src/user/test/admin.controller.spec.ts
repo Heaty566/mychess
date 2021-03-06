@@ -1,34 +1,23 @@
 import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
-import { fakeUser } from '../../../test/fakeEntity';
 import { UserRepository } from '../entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
-import { UserController } from '../user.controller';
-import { ChangePasswordDTO } from '../dto/changePassword.dto';
-import { AuthService } from '../../auth/auth.service';
-import { RedisService } from '../../utils/redis/redis.service';
-import User from '../entities/user.entity';
 import { UserRole } from '../entities/user.userRole.enum';
+import { initTestModule } from '../../../test/initTest';
 import { fakeData } from '../../../test/fakeData';
+import User from '../entities/user.entity';
 
-describe('UserController', () => {
+describe('AdminController', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
-      let userController: UserController;
-      let authService: AuthService;
-      let redisService: RedisService;
       let cookieData: Array<string>;
-      let user: User;
+      let UserDb: User;
+
       beforeAll(async () => {
             const { getApp, module, adminCookie, getUser } = await initTestModule();
             app = getApp;
-            user = getUser;
+            UserDb = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
-            authService = module.get<AuthService>(AuthService);
-            redisService = module.get<RedisService>(RedisService);
-            userController = module.get<UserController>(UserController);
             cookieData = adminCookie;
       });
 
@@ -45,15 +34,15 @@ describe('UserController', () => {
             const reqApi = (cookie, userId: string) => supertest(app.getHttpServer()).put(`/api/admin/user-admin/${userId}`).set({ cookie }).send();
 
             it('Pass to be ADMIN', async () => {
-                  await reqApi(cookieData, String(user._id));
+                  await reqApi(cookieData, String(UserDb._id));
 
-                  const getUser = await userRepository.findOneByField('_id', user._id);
+                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
                   expect(getUser.role).toBe(UserRole.ADMIN);
             });
             it('Pass to be USER', async () => {
-                  await reqApi(cookieData, String(user._id));
+                  await reqApi(cookieData, String(UserDb._id));
 
-                  const getUser = await userRepository.findOneByField('_id', user._id);
+                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
                   expect(getUser.role).toBe(UserRole.USER);
             });
             it('Failed not found', async () => {
@@ -65,15 +54,15 @@ describe('UserController', () => {
             const reqApi = (cookie, userId: string) => supertest(app.getHttpServer()).put(`/api/admin/user-status/${userId}`).set({ cookie }).send();
 
             it('Pass to be false', async () => {
-                  await reqApi(cookieData, String(user._id));
+                  await reqApi(cookieData, String(UserDb._id));
 
-                  const getUser = await userRepository.findOneByField('_id', user._id);
+                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
                   expect(getUser.isDisabled).toBeTruthy();
             });
             it('Pass to be true', async () => {
-                  await reqApi(cookieData, String(user._id));
+                  await reqApi(cookieData, String(UserDb._id));
 
-                  const getUser = await userRepository.findOneByField('_id', user._id);
+                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
                   expect(getUser.isDisabled).toBeFalsy();
             });
 

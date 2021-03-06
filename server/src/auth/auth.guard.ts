@@ -10,7 +10,7 @@ import { AuthService } from './auth.service';
 export class MyAuthGuard implements CanActivate {
       constructor(private authService: AuthService, private readonly reflector: Reflector) {}
 
-      private async updateAuthToken(res: Response, reToken: string) {
+      private async getAuthToken(res: Response, reToken: string) {
             const authTokenId = await this.authService.getAuthTokenFromReToken(reToken);
 
             if (!authTokenId) {
@@ -37,9 +37,13 @@ export class MyAuthGuard implements CanActivate {
             }
             if (authToken) {
                   const user = await this.authService.getDataFromAuthToken(authToken);
-                  if (!user) req.user = await this.updateAuthToken(res, refreshToken);
+                  if (!user) req.user = await this.getAuthToken(res, refreshToken);
                   else req.user = user;
-            } else req.user = await this.updateAuthToken(res, refreshToken);
+            } else req.user = await this.getAuthToken(res, refreshToken);
+
+            //checking isDisabled user
+            if (req.user.isDisabled)
+                  throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'you is blocked by an administrator' } });
 
             //checking role
             if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN)

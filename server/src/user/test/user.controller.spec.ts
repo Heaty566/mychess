@@ -24,9 +24,11 @@ import { User } from '../entities/user.entity';
 import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 import { fakeData } from '../../../test/fakeData';
-
+import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
 let mockPromise = Promise.resolve();
 import { defuse } from '../../../test/testHelper';
+import { UserService } from '../user.service';
+import { SmailService } from '../../providers/smail/smail.service';
 
 jest.mock('twilio', () => {
       return {
@@ -42,6 +44,8 @@ describe('UserController', () => {
       let redisService: RedisService;
       let cookieData: Array<string>;
       let user: User;
+      let userService: UserService;
+      let mailService: SmailService;
 
       beforeAll(async () => {
             const { getApp, module, cookie, getUser } = await initTestModule();
@@ -50,15 +54,16 @@ describe('UserController', () => {
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
+            userService = module.get<UserService>(UserService);
+            mailService = module.get<SmailService>(SmailService);
 
             cookieData = cookie;
             user = getUser;
       });
 
-      describe('POST /otp-update-phone', () => {
+      describe('POST /otp-sms', () => {
             let otpSmsDTO: OtpSmsDTO;
-            const reqApi = (input: OtpSmsDTO) =>
-                  supertest(app.getHttpServer()).post('/api/user/otp-update-phone').set({ cookie: cookieData }).send(input);
+            const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/user/otp-sms').set({ cookie: cookieData }).send(input);
 
             beforeEach(async () => {
                   otpSmsDTO = {
@@ -92,9 +97,9 @@ describe('UserController', () => {
             });
       });
 
-      describe('PUT /api/user/update-phone/:otp', () => {
+      describe('PUT /api/user/phone/:otp', () => {
             let redisKey: string;
-            const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/update-phone/${redisKey}`).set({ cookie: cookieData }).send();
+            const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/phone/${redisKey}`).set({ cookie: cookieData }).send();
 
             beforeAll(async () => {
                   redisKey = await authService.generateKeyForSms(user, 2);
@@ -121,16 +126,16 @@ describe('UserController', () => {
             });
       });
 
-      describe('PUT /api/user/reset-password/:otp', () => {
+      describe('PUT /api/user/password/:otp', () => {
             let user: User;
             let redisKey: string;
             let body: ChangePasswordDTO;
-            const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/reset-password/${redisKey}`).send(body);
+            const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/password/${redisKey}`).send(body);
 
             beforeAll(async () => {
                   user = fakeUser();
                   user.email = 'heaty566@gmail.com';
-                  await authService.saveUser(user);
+                  await userService.saveUser(user);
                   redisKey = await authService.createOTPRedisKey(user, 2);
                   body = {
                         newPassword: 'Password123',
@@ -180,6 +185,72 @@ describe('UserController', () => {
                   expect(getUser.name.toLocaleLowerCase()).toBe(body.name.toLocaleLowerCase());
                   expect(getUser.username).toBe(user.username);
                   expect(res.status).toBe(200);
+            });
+      });
+
+      describe('POST /otp-email', () => {
+            let otpMail: EmailForChangePasswordDTO;
+
+            const reqApi = (input: EmailForChangePasswordDTO) =>
+                  supertest(app.getHttpServer()).post('/api/user/otp-email').set({ cookie: cookieData }).send(input);
+
+            it('Failed (email is taken)', async () => {
+                  otpMail = {
+                        email: 'haicao2805@gmail.com',
+                  };
+                  const res = await reqApi(otpMail);
+                  expect(res.status).toBe(400);
+            });
+
+            it('Pass', async () => {
+                  otpMail = {
+                        email: `${fakeData(10)}@gmail.com`,
+                  };
+                  const res = await reqApi(otpMail);
+                  expect(res.status).toBe(201);
+            });
+
+            it('Failed (error of smail)', async () => {
+                  otpMail = {
+                        email: `${fakeData(10)}@gmail.com`,
+                  };
+                  const mySpy = jest.spyOn(mailService, 'sendOTPMailUpdateEmail').mockImplementation(() => Promise.resolve(false));
+                  try {
+                        await reqApi(otpMail);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
+                  mySpy.mockClear();
+            });
+      });
+
+      describe('PUT /email/:otp', () => {
+            let redisKey: string;
+            const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/email/${redisKey}`).set({ cookie: cookieData }).send();
+
+            beforeAll(async () => {
+                  redisKey = await authService.generateKeyForSms(user, 2);
+            });
+
+            it('Pass', async () => {
+                  const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                  const res = await reqApi(redisKey);
+                  const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                  expect(res.status).toBe(200);
+                  expect(beforeRedisKey).toBeDefined();
+                  expect(afterRedisKey).toBeNull();
+            });
+
+            it('Failed (redis key is used)', async () => {
+                  const res = await reqApi(123456);
+
+                  expect(res.status).toBe(403);
+            });
+
+            it('Failed (redis expired)', async () => {
+                  const res = await reqApi(redisKey);
+
+                  expect(res.status).toBe(403);
             });
       });
 

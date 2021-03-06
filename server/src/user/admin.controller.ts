@@ -12,6 +12,14 @@ import User from './entities/user.entity';
 export class AdminController {
       constructor(private readonly adminService: AdminService, private readonly userService: UserService) {}
 
+      @Get('/users')
+      @Roles(UserRole.ADMIN)
+      async cGetAllUsers() {
+            const users = await this.adminService.getAllUsers();
+
+            return apiResponse.send<Array<User>>({ body: { data: users } });
+      }
+
       @Put('/user-admin/:id')
       @Roles(UserRole.ADMIN)
       async cChangeUserRole(@Param('id') id: string) {
@@ -19,7 +27,7 @@ export class AdminController {
             if (!user) throw apiResponse.sendError({ body: { message: 'user with the given ID was not found' } });
             await this.adminService.toggleUserRole(user);
 
-            return apiResponse.send<void>({ body: { message: 'update user success' } });
+            return apiResponse.send<void>({ body: { message: 'update user successfully' } });
       }
 
       @Put('/user-status/:id')
@@ -29,14 +37,6 @@ export class AdminController {
             if (!user) throw apiResponse.sendError({ body: { message: 'user with the given ID was not found' } });
             await this.adminService.toggleUserStatus(user);
 
-            return apiResponse.send<void>({ body: { message: 'update user success' } });
-      }
-
-      @Get('/users')
-      @Roles(UserRole.ADMIN)
-      async cGetAllUsers() {
-            const users = await this.adminService.getAllUsers();
-
-            return apiResponse.send<Array<User>>({ body: { data: users } });
+            return apiResponse.send<void>({ body: { message: 'update user successfully' } });
       }
 }

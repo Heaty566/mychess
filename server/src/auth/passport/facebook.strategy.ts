@@ -1,30 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Profile, Strategy } from 'passport-github';
+import { Strategy, Profile } from 'passport-facebook';
 import { UserService } from '../../user/user.service';
 import { User } from '../../user/entities/user.entity';
-import { AuthService } from '../auth.service';
 
 @Injectable()
-export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-      constructor(private authService: AuthService, private userService: UserService) {
+export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
+      constructor(private userService: UserService) {
             super({
-                  clientID: process.env.GITHUB_CLIENT_ID,
-                  clientSecret: process.env.GITHUB_SECRET,
-                  callbackURL: `${process.env.SERVER_URL}/api/auth/github/callback`,
+                  clientID: process.env.FACEBOOK_CLIENT_ID,
+                  clientSecret: process.env.FACEBOOK_SECRET,
+                  callbackURL: `${process.env.SERVER_URL}/api/auth/facebook/callback`,
                   scope: ['email', 'profile'],
             });
       }
-
       async validate(accessToken: string, refreshToken: string, profile: Profile, done: (error: any, user?: any, info?: any) => void) {
             try {
-                  let user = await this.userService.findOneUserByField('githubId', profile.id);
+                  let user = await this.userService.findOneUserByField('facebookId', profile.id);
                   if (!user) {
                         user = new User();
-                        user.githubId = profile.id;
+                        user.facebookId = profile.id;
                         user.name = profile.displayName;
                         user.avatarUrl = profile.photos[0].value; // avatar??
-                        user = await this.authService.saveUser(user);
+                        user = await this.userService.saveUser(user);
                   }
                   done(null, user);
             } catch (err) {
