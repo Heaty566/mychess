@@ -17,7 +17,7 @@ class TwilioMock {
 
 import { INestApplication } from '@nestjs/common';
 import { createMock } from 'ts-auto-mock';
-import { Request, Response } from 'express';
+import { Request, response, Response } from 'express';
 
 //* Internal import
 import { fakeUser } from '../../../test/fakeEntity';
@@ -27,7 +27,7 @@ import { RegisterUserDTO } from '../dto/register.dto';
 import { LoginUserDTO } from '../dto/login.dto';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
-import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
+import { OTPEmail } from '../dto/otpEmail';
 import { OtpSmsDTO } from '../dto/otpSms.dto';
 import { User } from '../../user/entities/user.entity';
 import { fakeData } from '../../../test/fakeData';
@@ -202,9 +202,8 @@ describe('AuthController', () => {
       });
 
       describe('POST /otp-email/updatePassword', () => {
-            let otpMail: EmailForChangePasswordDTO;
-            const reqApi = (input: EmailForChangePasswordDTO) =>
-                  supertest(app.getHttpServer()).post('/api/auth/otp-email/updatePassword').send(input);
+            let otpMail: OTPEmail;
+            const reqApi = (input: OTPEmail) => supertest(app.getHttpServer()).post('/api/auth/otp-email/updatePassword').send(input);
 
             beforeEach(() => {
                   otpMail = {
@@ -222,7 +221,7 @@ describe('AuthController', () => {
                         email: user.email,
                   };
 
-                  const mySpy = jest.spyOn(mailService, 'sendOTPMail').mockImplementation(() => Promise.resolve(false));
+                  const mySpy = jest.spyOn(mailService, 'sendOTPMailUpdatePassword').mockImplementation(() => Promise.resolve(false));
 
                   try {
                         await reqApi(otpMail);
@@ -240,7 +239,27 @@ describe('AuthController', () => {
                   expect(res.status).toBe(400);
             });
       });
+      /*
+      describe('POST /otp-email/updateEmail', () => {
+            let otpMail: OTPEmail;
 
+            const reqApi = (input: OTPEmail) => supertest(app.getHttpServer()).post('/api/auth/otp-email/updateEmail').send(input);
+
+            beforeEach(() => {
+                  const mySpy = jest
+                        .spyOn(authController, 'loginUser')
+                        .mockImplementation(() => Promise.resolve(response.cookie('re-token', fakeData(20)).send()));
+            });
+
+            it('Pass', async () => {
+                  otpMail = {
+                        email: 'haicao2805@gmail.com',
+                  };
+                  const res = await reqApi(otpMail);
+                  console.log(res.body);
+            });
+      });
+      */
       afterAll(async () => {
             await userRepository.clear();
             await app.close();

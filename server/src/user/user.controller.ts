@@ -31,6 +31,21 @@ export class UserController {
             return apiResponse.send<User>({ body: { data: user } });
       }
 
+      @Put('/updateEmail/:otp')
+      async updateEmail(@Param('otp') otp: string) {
+            const redisUser = await this.redisService.getObjectByKey<User>(otp);
+            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'action is not allowed' } });
+
+            const user = await this.userService.findOneUserByField('username', redisUser.username);
+            user.email = redisUser.email;
+
+            await this.authService.saveUser(user);
+
+            this.redisService.deleteByKey(otp);
+
+            return apiResponse.send<void>({ body: { message: 'update user success' } });
+      }
+
       @Put('/reset-password/:otp')
       async resetPassword(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO) {
             const redisUser = await this.redisService.getObjectByKey<User>(otp);

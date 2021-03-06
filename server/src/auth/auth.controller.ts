@@ -9,11 +9,12 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SmailService } from '../providers/smail/smail.service';
-import { EmailForChangePasswordDTO, vEmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
+import { OTPEmail, vOTPEmail } from './dto/otpEmail';
 import { RedisService } from '../utils/redis/redis.service';
 import { OtpSmsDTO } from './dto/otpSms.dto';
 import { SmsService } from '../providers/sms/sms.service';
 import { type } from 'os';
+import { MyAuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -21,22 +22,42 @@ export class AuthController {
             private readonly authService: AuthService,
             private readonly userService: UserService,
             private readonly smailService: SmailService,
-            private readonly redisService: RedisService,
             private readonly smsService: SmsService,
       ) {}
 
-      // viet lại send to update password
-      // viet update email
+      @Post('/otp-email/updateEmail')
+      @UseGuards(MyAuthGuard)
+      @UsePipes(new JoiValidatorPipe(vOTPEmail))
+      async sendOTPMailUpdateEmail(@Body() body: OTPEmail, @Req() req: Request) {
+            console.log('pass the guard');
+            let user = await this.userService.findOneUserByField('email', body.email);
+            if (user) {
+                  throw apiResponse.sendError({ body: { details: { email: 'email is taken' } } });
+            }
+
+            user = req.user;
+            user.email = body.email;
+
+            const redisKey = await this.authService.createOTPRedisKey(user, 2);
+            const isSent = await this.smailService.sendOTPMailUpdateEmail(user.email, redisKey);
+            if (!isSent)
+                  throw apiResponse.sendError({
+                        body: { details: { email: 'problem occurs when sending email' } },
+                        type: 'InternalServerErrorException',
+                  });
+
+            return apiResponse.send({ body: { message: 'a mail has been sent to you email' } });
+      }
 
       @Post('/otp-email/updatePassword')
-      @UsePipes(new JoiValidatorPipe(vEmailForChangePasswordDTO))
-      async sendOTPMail(@Body() body: EmailForChangePasswordDTO) {
+      @UsePipes(new JoiValidatorPipe(vOTPEmail))
+      async sendOTPMailUpdatePassword(@Body() body: OTPEmail) {
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user) {
                   throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
             }
             const redisKey = await this.authService.createOTPRedisKey(user, 2);
-            const isSent = await this.smailService.sendOTPMail(user.email, redisKey);
+            const isSent = await this.smailService.sendOTPMailUpdatePassword(user.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({
                         body: { details: { email: 'problem occurs when sending email' } },
