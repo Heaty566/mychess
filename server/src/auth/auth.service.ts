@@ -18,11 +18,17 @@ export class AuthService {
             private readonly redisService: RedisService,
       ) {}
 
+      async createOTPRedisKey(user: User, expired: number) {
+            const redisKey = String(new ObjectId());
+            await this.redisService.setObjectByKey(redisKey, user, expired);
+            return redisKey;
+      }
+
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
             const authTokenId = new ObjectId();
 
-            this.redisService.setByValue(String(authTokenId), encryptUser, 5);
+            this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
             return String(authTokenId);
       }
 
@@ -30,6 +36,8 @@ export class AuthService {
             const authTokenId = await this.createAuthToken(data);
             const reToken = new ReToken();
             reToken.data = authTokenId;
+            reToken.userId = data._id;
+            await this.reTokenRepository.delete({ userId: data._id });
             const insertedReToken = await this.reTokenRepository.save(reToken);
 
             return String(insertedReToken._id);
@@ -38,6 +46,15 @@ export class AuthService {
       async getAuthTokenFromReToken(refreshToken: string) {
             const reToken = await this.reTokenRepository.findOneByField('_id', refreshToken);
             if (!reToken) return null;
+
+            const isStillExit = await this.redisService.getByKey(reToken.data);
+            if (!isStillExit) {
+                  const user = await this.userRepository.findOneByField('_id', reToken.userId);
+                  const newReToken = await this.createAuthToken(user);
+                  reToken.data = newReToken;
+                  const updateReToken = await this.reTokenRepository.save(reToken);
+                  return updateReToken.data;
+            }
 
             return reToken.data;
       }
@@ -57,7 +74,7 @@ export class AuthService {
             return this.jwtService.decode(tokenData) as T;
       }
 
-      async registerUser(input: User): Promise<User> {
+      async saveUser(input: User): Promise<User> {
             return await this.userRepository.save(input);
       }
 
@@ -67,5 +84,21 @@ export class AuthService {
 
       async comparePassword(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
+      }
+
+      private generateOtp(length: number) {
+            let result = '';
+            const characters = '0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+      }
+
+      generateKeyForSms(user: User, expired: number) {
+            const otpKey = this.generateOtp(6);
+            this.redisService.setObjectByKey(otpKey, user, expired);
+            return otpKey;
       }
 }

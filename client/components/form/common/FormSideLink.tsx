@@ -10,7 +10,9 @@ export interface FormSideLinkProps {
 const FormSideLink: React.FunctionComponent<FormSideLinkProps> = ({ label, url }) => {
         return (
                 <Link href={url}>
-                        <a className="text-white text-sm font-thin capitalize hover:text-indigo-200  duration-300">{translate(label) + "?"}</a>
+                        <a className="text-white text-sm font-thin capitalize hover:text-indigo-200  duration-300">
+                                {translate({ content: label }) + "?"}
+                        </a>
                 </Link>
         );
 };

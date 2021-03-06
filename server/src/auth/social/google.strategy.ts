@@ -24,7 +24,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
                         user.googleId = profile.id;
                         user.name = profile.displayName;
                         user.avatarUrl = profile.photos[0].value; // avatar??
-                        user = await this.authService.registerUser(user);
+                        user.email = profile._json.email;
+                        user = await this.authService.saveUser(user);
                   }
                   done(null, user);
             } catch (err) {

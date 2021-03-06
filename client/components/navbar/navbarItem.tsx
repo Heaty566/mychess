@@ -8,15 +8,19 @@ export interface NavbarItemProps {
         icon: keyof typeof Icons;
         url: string;
         customStyle?: string;
+        handleOnClickItem(): void;
 }
 
-const NavbarItem: React.FunctionComponent<NavbarItemProps> = ({ label, icon, url, customStyle = "text-gray-700" }) => {
+const NavbarItem: React.FunctionComponent<NavbarItemProps> = ({ label, icon, url, customStyle = "text-gray-700", handleOnClickItem }) => {
         return (
                 <li className="my-1">
                         <Link href={url}>
-                                <a className={`flex items-center font-bold duration-300 px-2 py-2 hover:bg-blue-100 ${customStyle}`}>
+                                <a
+                                        className={`flex items-center font-bold duration-300 px-2 capitalize py-2 hover:bg-blue-100 navbar-inside ${customStyle}`}
+                                        onClick={() => handleOnClickItem()}
+                                >
                                         <span className="mr-2">{Icons[icon]}</span>
-                                        {translate(label)}
+                                        {translate({ content: label })}
                                 </a>
                         </Link>
                 </li>

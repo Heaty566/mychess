@@ -18,7 +18,7 @@ const Btn: React.FunctionComponent<BtnLinkProps> = ({ label, type = "submit", li
                                 type={type}
                                 className={`bg-indigo-600 py-1.5 px-6  capitalize font-medium text-white rounded-sm w-full ${customStyle}`}
                         >
-                                {translate(label)}
+                                {translate({ content: label })}
                         </a>
                 </Link>
         ) : (
@@ -27,7 +27,7 @@ const Btn: React.FunctionComponent<BtnLinkProps> = ({ label, type = "submit", li
                         className={`bg-indigo-600 py-1.5 px-6  font-medium capitalize text-white rounded-sm w-full focus:outline-none hover:bg-indigo-500 duration-300 ${customStyle}`}
                         onClick={type === "button" ? func : null}
                 >
-                        {translate(label)}
+                        {translate({ content: label })}
                 </button>
         );
 };

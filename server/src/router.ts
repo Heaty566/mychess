@@ -52,7 +52,7 @@ export function router(app: INestApplication) {
             //set header
             res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL);
             res.header('Access-Control-Allow-Methods', '*');
-            res.header('Access-Control-Allow-Headers', 'refresh-token, auth-token, lang');
+            res.header('Access-Control-Allow-Headers', '*');
 
             const lang = req.cookies['lang'] || '';
             if (!lang) {

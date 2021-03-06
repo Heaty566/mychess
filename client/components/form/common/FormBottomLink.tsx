@@ -13,9 +13,11 @@ const BottomLink: React.FunctionComponent<BottomLinkProps> = ({ label, labelLink
         return (
                 <div className="mt-6 text-center">
                         <p className="text-white text-sm font-thin capitalize-first">
-                                {translate(label) + "?"}
+                                {translate({ content: label }) + "?"}
                                 <Link href={url}>
-                                        <a className="font-medium ml-1 hover:text-indigo-200 capitalize duration-300">{translate(labelLink)}</a>
+                                        <a className="font-medium ml-1 hover:text-indigo-200 capitalize duration-300">
+                                                {translate({ content: labelLink })}
+                                        </a>
                                 </Link>
                         </p>
                 </div>
