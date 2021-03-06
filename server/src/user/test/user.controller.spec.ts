@@ -121,6 +121,36 @@ describe('UserController', () => {
             });
       });
 
+      describe('PUT /updateEmail/:otp', () => {
+            let redisKey: string;
+            const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/updateEmail/${redisKey}`).set({ cookie: cookieData }).send();
+
+            beforeAll(async () => {
+                  redisKey = await authService.generateKeyForSms(user, 2);
+            });
+
+            it('Pass', async () => {
+                  const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                  const res = await reqApi(redisKey);
+                  const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                  expect(res.status).toBe(200);
+                  expect(beforeRedisKey).toBeDefined();
+                  expect(afterRedisKey).toBeNull();
+            });
+
+            it('Failed (redis key is used)', async () => {
+                  const res = await reqApi(123456);
+
+                  expect(res.status).toBe(403);
+            });
+
+            it('Failed (redis expired)', async () => {
+                  const res = await reqApi(redisKey);
+
+                  expect(res.status).toBe(403);
+            });
+      });
+
       describe('PUT /api/user/reset-password/:otp', () => {
             let user: User;
             let redisKey: string;

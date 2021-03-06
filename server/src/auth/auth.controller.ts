@@ -29,7 +29,6 @@ export class AuthController {
       @UseGuards(MyAuthGuard)
       @UsePipes(new JoiValidatorPipe(vOTPEmail))
       async sendOTPMailUpdateEmail(@Body() body: OTPEmail, @Req() req: Request) {
-            console.log('pass the guard');
             let user = await this.userService.findOneUserByField('email', body.email);
             if (user) {
                   throw apiResponse.sendError({ body: { details: { email: 'email is taken' } } });

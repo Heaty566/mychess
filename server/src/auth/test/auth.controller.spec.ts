@@ -45,14 +45,17 @@ describe('AuthController', () => {
       let authController: AuthController;
       let mailService: SmailService;
       let user: User;
+      let cookieData: Array<string>;
+
       beforeAll(async () => {
-            const { getApp, module, getUser } = await initTestModule();
+            const { getApp, module, getUser, cookie } = await initTestModule();
             app = getApp;
             user = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             authController = module.get<AuthController>(AuthController);
             mailService = module.get<SmailService>(SmailService);
+            cookieData = cookie;
       });
 
       describe('googleAuth | facebookAuth | githubAuth', () => {
@@ -239,27 +242,43 @@ describe('AuthController', () => {
                   expect(res.status).toBe(400);
             });
       });
-      /*
+
       describe('POST /otp-email/updateEmail', () => {
             let otpMail: OTPEmail;
 
-            const reqApi = (input: OTPEmail) => supertest(app.getHttpServer()).post('/api/auth/otp-email/updateEmail').send(input);
+            const reqApi = (input: OTPEmail) =>
+                  supertest(app.getHttpServer()).post('/api/auth/otp-email/updateEmail').set({ cookie: cookieData }).send(input);
 
-            beforeEach(() => {
-                  const mySpy = jest
-                        .spyOn(authController, 'loginUser')
-                        .mockImplementation(() => Promise.resolve(response.cookie('re-token', fakeData(20)).send()));
-            });
-
-            it('Pass', async () => {
+            it('Failed (email is taken)', async () => {
                   otpMail = {
                         email: 'haicao2805@gmail.com',
                   };
                   const res = await reqApi(otpMail);
-                  console.log(res.body);
+                  expect(res.status).toBe(400);
+            });
+
+            it('Pass', async () => {
+                  otpMail = {
+                        email: 'heaty566@gmail.com',
+                  };
+                  const res = await reqApi(otpMail);
+                  expect(res.status).toBe(201);
+            });
+
+            it('Failed (error of smail)', async () => {
+                  otpMail = {
+                        email: 'heaty566@gmail.com',
+                  };
+                  const mySpy = jest.spyOn(mailService, 'sendOTPMailUpdateEmail').mockImplementation(() => Promise.resolve(false));
+                  try {
+                        const res = await reqApi(otpMail);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
+                  mySpy.mockClear();
             });
       });
-      */
+
       afterAll(async () => {
             await userRepository.clear();
             await app.close();
