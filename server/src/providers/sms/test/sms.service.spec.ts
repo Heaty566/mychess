@@ -46,6 +46,13 @@ describe('TokenService', () => {
             });
       });
 
+      describe('sendOtp', () => {
+            it('Pass', async () => {
+                  const res = await smsService.sendOtp(fakeData(10), fakeData(6));
+                  expect(res).toBeDefined();
+            });
+      });
+
       afterAll(async () => {
             await app.close();
       });

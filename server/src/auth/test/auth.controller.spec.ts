@@ -1,5 +1,20 @@
 import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
+let mockPromise = Promise.resolve();
+import { defuse } from '../../../test/testHelper';
+import { SmailService } from '../../providers/smail/smail.service';
+class TwilioMock {
+      constructor() {
+            //
+      }
+
+      public messages = {
+            create() {
+                  return mockPromise;
+            },
+      };
+}
+
 import { INestApplication } from '@nestjs/common';
 import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
@@ -12,19 +27,32 @@ import { RegisterUserDTO } from '../dto/register.dto';
 import { LoginUserDTO } from '../dto/login.dto';
 import { AuthController } from '../auth.controller';
 import { AuthService } from '../auth.service';
+import { EmailForChangePasswordDTO } from '../dto/emailForChangePassword.dto';
+import { OtpSmsDTO } from '../dto/otpSms.dto';
+import { User } from '../../user/entities/user.entity';
+import { fakeData } from '../../../test/fakeData';
+
+jest.mock('twilio', () => {
+      return {
+            Twilio: TwilioMock,
+      };
+});
 
 describe('AuthController', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
       let authService: AuthService;
       let authController: AuthController;
+      let mailService: SmailService;
+      let user: User;
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getApp, module, getUser } = await initTestModule();
             app = getApp;
-
+            user = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             authController = module.get<AuthController>(AuthController);
+            mailService = module.get<SmailService>(SmailService);
       });
 
       describe('googleAuth | facebookAuth | githubAuth', () => {
@@ -117,7 +145,7 @@ describe('AuthController', () => {
                         password: getUser.password,
                   };
                   getUser.password = await authService.hash(getUser.password);
-                  await authService.registerUser(getUser);
+                  await authService.saveUser(getUser);
             });
 
             it('Pass', async () => {
@@ -134,8 +162,81 @@ describe('AuthController', () => {
             });
 
             it('Failed (password is not correct)', async () => {
-                  loginUserData.password = '123AABBDASD';
+                  loginUserData.password = '123AABBDASDaa';
                   const res = await reqApi(loginUserData);
+                  expect(res.status).toBe(400);
+            });
+      });
+
+      describe('POST /otp-sms', () => {
+            let otpSmsDTO: OtpSmsDTO;
+            const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-sms').send(input);
+
+            beforeEach(async () => {
+                  otpSmsDTO = {
+                        phoneNumber: user.phoneNumber,
+                  };
+            });
+
+            it('Pass', async () => {
+                  const res = await reqApi(otpSmsDTO);
+                  expect(res.status).toBe(201);
+            });
+
+            it('Failed (error of sms service)', async () => {
+                  mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
+                  try {
+                        await reqApi(otpSmsDTO);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
+            });
+
+            it('Failed (phone number is not correct)', async () => {
+                  otpSmsDTO = {
+                        phoneNumber: fakeData(10, 'number'),
+                  };
+                  const res = await reqApi(otpSmsDTO);
+                  expect(res.status).toBe(400);
+            });
+      });
+
+      describe('POST /otp-email/updatePassword', () => {
+            let otpMail: EmailForChangePasswordDTO;
+            const reqApi = (input: EmailForChangePasswordDTO) =>
+                  supertest(app.getHttpServer()).post('/api/auth/otp-email/updatePassword').send(input);
+
+            beforeEach(() => {
+                  otpMail = {
+                        email: user.email,
+                  };
+            });
+
+            it('Pass', async () => {
+                  const res = await reqApi(otpMail);
+                  expect(res.status).toBe(201);
+            });
+
+            it('Failed (error of smail)', async () => {
+                  otpMail = {
+                        email: user.email,
+                  };
+
+                  const mySpy = jest.spyOn(mailService, 'sendOTPMail').mockImplementation(() => Promise.resolve(false));
+
+                  try {
+                        await reqApi(otpMail);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
+                  mySpy.mockClear();
+            });
+
+            it('Failed (email is not found in database)', async () => {
+                  otpMail = {
+                        email: fakeData(10, 'lettersLowerCase') + '@gmail.com',
+                  };
+                  const res = await reqApi(otpMail);
                   expect(res.status).toBe(400);
             });
       });

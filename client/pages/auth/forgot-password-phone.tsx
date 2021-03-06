@@ -8,6 +8,7 @@ import Link from "next/link";
 import FormBottomLink from "../../components/form/common/FormBottomLink";
 import FormTitle from "../../components/form/common/formTitle";
 import { capitalizeFirst } from "../../helper/capitalize";
+import { RouterHOC } from "../../HOC/routerHOC";
 
 const UpdatePhoneNumber: React.FunctionComponent = () => {
         return (
@@ -19,14 +20,14 @@ const UpdatePhoneNumber: React.FunctionComponent = () => {
                                 canonical: ROUTER.forgotPassword.url,
                                 description: ROUTER.forgotPassword.label,
                         })}
-                        <div className="w-full  grid place-items-center">
-                                <main className=" bg-warmGray-700 px-8 py-16 rounded-sm">
+                        <div className="w-full flex-1 flex justify-center items-center">
+                                <main className="w-full h-full sm:h-auto sm:w-88 bg-warmGray-700 px-8 py-16 sm:rounded-sm fade-in">
                                         <form className="mb-6 max-w-sm">
                                                 <FormTitle label="forgot your password" />
                                                 <p className="text-sm text-white  my-9 font-thin ">
-                                                        {capitalizeFirst(translate("please enter your phone number")) +
+                                                        {translate({ content: "please enter your phone number", capitalizeOption: "first" }) +
                                                                 ". " +
-                                                                translate("we will send you OTP code")}
+                                                                translate({ content: "we will send you OTP code" })}
                                                 </p>
                                                 <TextField
                                                         name="phoneNumber"
@@ -45,4 +46,5 @@ const UpdatePhoneNumber: React.FunctionComponent = () => {
         );
 };
 
-export default UpdatePhoneNumber;
+const UpdatePhoneNumberRouter = (props: any) => RouterHOC({ Component: UpdatePhoneNumber, props: { ...props } });
+export default UpdatePhoneNumberRouter;

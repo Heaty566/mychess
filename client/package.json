@@ -51,8 +51,6 @@
                 "webpack": "^5.24.0"
         },
         "husky": {
-                "hooks": {
-                        "pre-commit": "git rm */.env.* --cached"
-                }
+                "hooks": {}
         }
 }

@@ -36,7 +36,7 @@ const LoginSocial: React.FunctionComponent = () => {
                                                 className={`font-medium text-white flex px-4 py-1.5 capitalize bg-blueGray-800 rounded-sm hover:bg-blueGray-700 duration-300 mb-3`}
                                         >
                                                 <span className="mr-2">{Icons[item.icon]}</span>
-                                                <p>{translate("continue with") + " " + item.brand} </p>
+                                                <p>{translate({ content: "continue with" }) + " " + item.brand} </p>
                                         </a>
                                 );
                         })}
