@@ -44,7 +44,7 @@ export class SmailService {
                   <h2>Hello</h2>
                   <p>You receiving this email because we received a password request for your account.</p>
                   </br>
-                  <p>Please click this link:<a>http://localhost:4000/api/auth/reset-password/${OTP}</a>
+                  <p>Please click this link:<a>http://localhost:4000/api/user/reset-password/${OTP}</a>
                   </p>
                   </br>
             </div>`,

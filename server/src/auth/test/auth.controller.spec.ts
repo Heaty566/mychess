@@ -2,7 +2,7 @@ import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
 let mockPromise = Promise.resolve();
 import { defuse } from '../../../test/testHelper';
-
+import { SmailService } from '../../providers/smail/smail.service';
 class TwilioMock {
       constructor() {
             //
@@ -14,6 +14,7 @@ class TwilioMock {
             },
       };
 }
+
 import { INestApplication } from '@nestjs/common';
 import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
@@ -42,6 +43,7 @@ describe('AuthController', () => {
       let userRepository: UserRepository;
       let authService: AuthService;
       let authController: AuthController;
+      let mailService: SmailService;
       let user: User;
       beforeAll(async () => {
             const { getApp, module, getUser } = await initTestModule();
@@ -50,40 +52,7 @@ describe('AuthController', () => {
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             authController = module.get<AuthController>(AuthController);
-      });
-
-      describe('sendOTPMail', () => {
-            const user = fakeUser();
-            beforeEach(async () => {
-                  user.email = 'heaty566@gmail.com';
-                  await authService.saveUser(user);
-            });
-            it('Pass', async () => {
-                  const body: EmailForChangePasswordDTO = { email: 'heaty566@gmail.com' };
-                  const res = await authController.sendOTPMail(body);
-                  expect(res.isSent).toBeTruthy();
-            });
-
-            it('Failed(Email not found)', async () => {
-                  const body: EmailForChangePasswordDTO = { email: 'heaty5@gmail.com' };
-                  try {
-                        await authController.sendOTPMail(body);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  }
-            });
-
-            it('Failed(Not send)', async () => {
-                  user.email = 'heaty566';
-                  await authService.saveUser(user);
-
-                  const body: EmailForChangePasswordDTO = { email: 'heaty566' };
-                  try {
-                        await authController.sendOTPMail(body);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  }
-            });
+            mailService = module.get<SmailService>(SmailService);
       });
 
       describe('googleAuth | facebookAuth | githubAuth', () => {
@@ -228,6 +197,46 @@ describe('AuthController', () => {
                         phoneNumber: fakeData(10, 'number'),
                   };
                   const res = await reqApi(otpSmsDTO);
+                  expect(res.status).toBe(400);
+            });
+      });
+
+      describe('POST /otp-email/updatePassword', () => {
+            let otpMail: EmailForChangePasswordDTO;
+            const reqApi = (input: EmailForChangePasswordDTO) =>
+                  supertest(app.getHttpServer()).post('/api/auth/otp-email/updatePassword').send(input);
+
+            beforeEach(() => {
+                  otpMail = {
+                        email: user.email,
+                  };
+            });
+
+            it('Pass', async () => {
+                  const res = await reqApi(otpMail);
+                  expect(res.status).toBe(201);
+            });
+
+            it('Failed (error of smail)', async () => {
+                  otpMail = {
+                        email: user.email,
+                  };
+
+                  const mySpy = jest.spyOn(mailService, 'sendOTPMail').mockImplementation(() => Promise.resolve(false));
+
+                  try {
+                        await reqApi(otpMail);
+                  } catch (err) {
+                        expect(err.status).toBe(500);
+                  }
+                  mySpy.mockClear();
+            });
+
+            it('Failed (email is not found in database)', async () => {
+                  otpMail = {
+                        email: fakeData(10, 'lettersLowerCase') + '@gmail.com',
+                  };
+                  const res = await reqApi(otpMail);
                   expect(res.status).toBe(400);
             });
       });
