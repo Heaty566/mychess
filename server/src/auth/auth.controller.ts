@@ -9,10 +9,11 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { LoginUserDTO, vLoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { SmailService } from '../providers/smail/smail.service';
-import { EmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
+import { EmailForChangePasswordDTO, vEmailForChangePasswordDTO } from './dto/emailForChangePassword.dto';
 import { RedisService } from '../utils/redis/redis.service';
 import { OtpSmsDTO } from './dto/otpSms.dto';
 import { SmsService } from '../providers/sms/sms.service';
+import { type } from 'os';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +25,11 @@ export class AuthController {
             private readonly smsService: SmsService,
       ) {}
 
-      @Post('/otp-email')
+      // viet lại send to update password
+      // viet update email
+
+      @Post('/otp-email/updatePassword')
+      @UsePipes(new JoiValidatorPipe(vEmailForChangePasswordDTO))
       async sendOTPMail(@Body() body: EmailForChangePasswordDTO) {
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user) {
@@ -32,8 +37,13 @@ export class AuthController {
             }
             const redisKey = await this.authService.createOTPRedisKey(user, 2);
             const isSent = await this.smailService.sendOTPMail(user.email, redisKey);
-            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'problem occurs when sending email' } } });
-            return { redisKey: redisKey, isSent: isSent };
+            if (!isSent)
+                  throw apiResponse.sendError({
+                        body: { details: { email: 'problem occurs when sending email' } },
+                        type: 'InternalServerErrorException',
+                  });
+
+            return apiResponse.send({ body: { message: 'a mail has been sent to you email' } });
       }
 
       @Get('/google')

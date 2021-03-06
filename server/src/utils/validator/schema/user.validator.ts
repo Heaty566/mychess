@@ -21,5 +21,7 @@ export function userJoiSchema(field: keyof User) {
                   return Joi.string().max(32).min(5).lowercase().trim().alphanum().required();
             case 'phoneNumber':
                   return Joi.string().max(11).min(10).trim().required();
+            case 'email':
+                  return Joi.string().min(5).max(255).email();
       }
 }
