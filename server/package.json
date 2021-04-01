@@ -54,7 +54,6 @@
             "swagger-ui-express": "^4.1.6",
             "twilio": "^3.56.0",
             "typeorm": "^0.2.31",
-            "win-node-env": "^0.4.0",
             "winston": "^3.3.3"
       },
       "devDependencies": {

@@ -11,3 +11,5 @@ FROM node:12-alpine
 WORKDIR /app
 COPY --from=builder /app ./
 CMD ["yarn", "run", "start:prod"]
+
+

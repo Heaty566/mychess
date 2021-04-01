@@ -1,2 +1,3 @@
 #!/bin/sh
-yarn run test
+echo "----------- Run test before commit -------------"
+yarn run precommit
