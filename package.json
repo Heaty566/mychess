@@ -3,6 +3,7 @@
                 "husky": "^6.0.0"
         },
         "scripts": {
+                "postinstall": "husky install",
                 "build": "cp ./data/config/client.env ./client/config/.env.production && docker-compose up --build",
                 "build:test": "cp ./data-dev/config/client.env ./client/config/.env.production && docker-compose -f docker-compose-build-test.yml up --build",
                 "server:dev": "docker-compose --file ./dev/docker-compose-server-dev.yml up -d",
@@ -13,5 +14,8 @@
         "main": "index.js",
         "repository": "https://github.com/Heaty566/MyGame-NEXT-NEST.git",
         "author": "heaty566 <heaty566@gmail.com>",
-        "license": "MIT"
+        "license": "MIT",
+        "hooks": {
+                "pre-commit": "jest"
+        }
 }
