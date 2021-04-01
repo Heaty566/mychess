@@ -106,7 +106,8 @@ describe('RedisService', () => {
             });
       });
 
-      afterAll(async () => {
+      afterAll(async (done) => {
             await app.close();
+            done();
       });
 });

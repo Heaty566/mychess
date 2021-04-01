@@ -83,8 +83,9 @@ describe('UserController', () => {
             });
       });
 
-      afterAll(async () => {
+      afterAll(async (done) => {
             await userRepository.clear();
             await app.close();
+            done();
       });
 });

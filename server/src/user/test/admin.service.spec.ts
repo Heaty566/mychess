@@ -94,9 +94,10 @@ describe('AdminService', () => {
             });
       });
 
-      afterAll(async () => {
+      afterAll(async (done) => {
             await reTokenRepository.clear();
             await userRepository.clear();
             await app.close();
+            done();
       });
 });

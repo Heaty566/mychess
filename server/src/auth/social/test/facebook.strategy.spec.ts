@@ -78,9 +78,10 @@ describe('FacebookStrategy', () => {
             });
       });
 
-      afterAll(async () => {
+      afterAll(async (done) => {
             await authTokenRepository.clear();
             await userRepository.clear();
             await app.close();
+            done();
       });
 });
