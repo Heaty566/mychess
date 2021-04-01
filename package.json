@@ -7,7 +7,8 @@
                 "build": "cp ./data/config/client.env ./client/config/.env.production && docker-compose up --build",
                 "build:test": "cp ./data-dev/config/client.env ./client/config/.env.production && docker-compose -f docker-compose-build-test.yml up --build",
                 "server:dev": "docker-compose --file ./dev/docker-compose-server-dev.yml up -d",
-                "client:dev": "docker-compose --file ./dev/docker-compose-client-dev.yml up -d"
+                "client:dev": "docker-compose --file ./dev/docker-compose-client-dev.yml up -d",
+                "test": "hello"
         },
         "name": "mygame-next-nest",
         "version": "1.0.0",
