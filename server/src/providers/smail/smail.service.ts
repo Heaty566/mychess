@@ -32,7 +32,7 @@ export class SmailService {
                   })
                   .catch((error) => {
                         this.LoggerService.print(error, 'error');
-
+                        console.log(error.response.body.errors);
                         return false;
                   });
       }
