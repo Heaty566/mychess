@@ -4,9 +4,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { router } from '../src/router';
 import { AppModule } from '../src/app.module';
 import { fakeUser } from './fakeEntity';
-import { UserRepository } from '../src/user/entities/user.repository';
+import { UserRepository } from '../src/models/users/entities/user.repository';
 import { AuthService } from '../src/auth/auth.service';
-import { UserRole } from '../src/user/entities/user.userRole.enum';
+import { UserRole } from '../src/models/users/entities/user.userRole.enum';
 
 export const initTestModule = async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +22,7 @@ export const initTestModule = async () => {
       //create a fake user and token
       let user = fakeUser();
       user.email = 'haicao2805@gmail.com';
+      user.phoneNumber = '1313425502';
       let adminUser = fakeUser();
       adminUser.role = UserRole.ADMIN;
       const userRepository = module.get<UserRepository>(UserRepository);

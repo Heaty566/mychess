@@ -182,6 +182,7 @@ describe('AuthController', () => {
 
                   it('Pass', async () => {
                         const res = await reqApi(otpMail);
+
                         expect(res.status).toBe(201);
                   });
 
