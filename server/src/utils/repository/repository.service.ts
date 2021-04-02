@@ -5,7 +5,7 @@ export class RepositoryService<T> extends Repository<T> {
       public async findOneByField(field: keyof T, value: any) {
             if (field === '_id' && typeof value === 'string') {
                   if (!ObjectId.isValid(value)) return null;
-                  return await this.findOne({ [`${field}`]: new ObjectId(value) });
+                  value = new ObjectId(value);
             }
 
             return await this.findOne({ [`${field}`]: value });
@@ -14,7 +14,7 @@ export class RepositoryService<T> extends Repository<T> {
       public async findManyByField(field: keyof T, value: any) {
             if (field === '_id' && typeof value === 'string') {
                   if (!ObjectId.isValid(value)) return null;
-                  return await this.find({ [`${field}`]: new ObjectId(value) });
+                  value = new ObjectId(value);
             }
 
             return await this.find({ [`${field}`]: value });
@@ -27,6 +27,10 @@ export class RepositoryService<T> extends Repository<T> {
             });
       }
 
+      /**
+       *
+       * @description return a array of unique value
+       */
       private onlyUnique(value: any, index: number, self: Array<any>) {
             return self.indexOf(value) === index;
       }

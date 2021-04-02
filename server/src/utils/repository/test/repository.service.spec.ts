@@ -1,12 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../../user/entities/user.repository';
 import { initTestModule } from '../../../../test/initTest';
-import { User } from '../../../user/entities/user.entity';
 import { fakeUser } from '../../../../test/fakeEntity';
 import { fakeData } from '../../../../test/fakeData';
+
+import { UserRepository } from '../../../models/users/entities/user.repository';
 import { RepositoryService } from '../repository.service';
+import { User } from '../../../models/users/entities/user.entity';
 
 describe('RepositoryService', () => {
       let app: INestApplication;
@@ -68,6 +69,7 @@ describe('RepositoryService', () => {
                   expect(res).toBeNull();
             });
       });
+
       describe('findManyByField', () => {
             let user: User;
 
@@ -92,6 +94,7 @@ describe('RepositoryService', () => {
                   expect(res).toBeNull();
             });
       });
+
       describe('onlyUnique', () => {
             it('Pass ', () => {
                   const output = userRepository['onlyUnique'](1, 0, [1, 2, 3, 1]);
@@ -102,6 +105,7 @@ describe('RepositoryService', () => {
                   expect(output).toBeFalsy();
             });
       });
+
       describe('transformToArrayObjectId', () => {
             let input: Array<any>;
             beforeEach(() => {
@@ -158,9 +162,8 @@ describe('RepositoryService', () => {
             });
       });
 
-      afterAll(async (done) => {
+      afterAll(async () => {
             await userRepository.clear();
             await app.close();
-            done();
       });
 });

@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { Request, Response } from 'express';
-import { UserRole } from '../user/entities/user.userRole.enum';
+import { Reflector } from '@nestjs/core';
 
+import { UserRole } from '../models/users/entities/user.userRole.enum';
 import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
 
@@ -10,16 +10,20 @@ import { AuthService } from './auth.service';
 export class MyAuthGuard implements CanActivate {
       constructor(private authService: AuthService, private readonly reflector: Reflector) {}
 
-      private async updateAuthToken(res: Response, reToken: string) {
-            const authTokenId = await this.authService.getAuthTokenFromReToken(reToken);
+      private async deleteAllAuthToken(res: Response) {
+            res.cookie('auth-token', '', { maxAge: 0 });
+            res.cookie('re-token', '', { maxAge: 0 });
+      }
+
+      private async getAuthToken(res: Response, reToken: string) {
+            const authTokenId = await this.authService.getAuthTokenByReToken(reToken);
 
             if (!authTokenId) {
-                  res.cookie('auth-token', '', { maxAge: 0 });
-                  res.cookie('re-token', '', { maxAge: 0 });
+                  this.deleteAllAuthToken(res);
                   throw apiResponse.sendError({ body: { message: 'invalid token' }, type: 'UnauthorizedException' });
             }
             res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
-            return await this.authService.getDataFromAuthToken(authTokenId);
+            return await this.authService.getUserByAuthToken(authTokenId);
       }
 
       async canActivate(context: ExecutionContext) {
@@ -36,14 +40,22 @@ export class MyAuthGuard implements CanActivate {
                   throw apiResponse.sendError({ body: { message: 'invalid token' }, type: 'UnauthorizedException' });
             }
             if (authToken) {
-                  const user = await this.authService.getDataFromAuthToken(authToken);
-                  if (!user) req.user = await this.updateAuthToken(res, refreshToken);
+                  const user = await this.authService.getUserByAuthToken(authToken);
+                  if (!user) req.user = await this.getAuthToken(res, refreshToken);
                   else req.user = user;
-            } else req.user = await this.updateAuthToken(res, refreshToken);
+            } else req.user = await this.getAuthToken(res, refreshToken);
+
+            //checking isDisabled user
+            if (req.user.isDisabled) {
+                  this.deleteAllAuthToken(res);
+                  throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'you is blocked by an administrator' } });
+            }
 
             //checking role
-            if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN)
+            if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN) {
+                  this.deleteAllAuthToken(res);
                   throw apiResponse.sendError({ body: { message: 'action is not allowed' }, type: 'ForbiddenException' });
+            }
 
             return true;
       }

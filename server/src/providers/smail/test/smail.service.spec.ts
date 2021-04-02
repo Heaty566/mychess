@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
 import { initTestModule } from '../../../../test/initTest';
 import { SmailService } from '../smail.service';
 
@@ -28,18 +27,17 @@ describe('SmailService', () => {
 
       describe('sendOTPMail', () => {
             it('Pass', async () => {
-                  const res = await smailService.sendOTPMail('heaty566@gmail.com', 'code test');
+                  const res = await smailService.sendOTP('heaty566@gmail.com', 'code test');
                   expect(res).toBeTruthy();
             });
 
             it('Failed to send', async () => {
-                  const res = await smailService.sendOTPMail('heaty566', 'code test');
+                  const res = await smailService.sendOTP('heaty566', 'code test');
                   expect(res).toBeFalsy();
             });
       });
 
-      afterAll(async (done) => {
+      afterAll(async () => {
             await app.close();
-            done();
       });
 });

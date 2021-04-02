@@ -10,7 +10,7 @@ import * as I18n from 'i18n';
 //* Internal import
 import { NotFoundApiHandler } from './app/exception/notfound.exception';
 import { RuntimeApiHandler } from './app/exception/runtime.exception';
-import * as doc from '../swagger.json';
+import * as doc from './public/swagger.json';
 
 I18n.configure({
       locales: ['en', 'vi'],
@@ -37,10 +37,6 @@ export function router(app: INestApplication) {
       //for developer
       if (process.env.NODE_ENV === 'development') {
             app.use(morgan('dev'));
-      }
-
-      //allow document for frontend
-      if (process.env.DOC === 'active') {
             app.use('/doc', swagger.serve, swagger.setup(doc));
       }
 

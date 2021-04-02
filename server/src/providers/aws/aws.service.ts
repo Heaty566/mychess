@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import * as path from 'path';
-import { FileDto } from './dto/File';
 import { ObjectId } from 'mongodb';
 import { LoggerService } from '../../utils/logger/logger.service';
 
@@ -10,19 +9,19 @@ import { LoggerService } from '../../utils/logger/logger.service';
 @Injectable()
 export class AwsService {
       constructor(private readonly s3: S3, private readonly LoggerService: LoggerService) {}
-      checkFileExtension(file: FileDto, extend: string[] = []) {
+      checkFileExtension(file: Express.Multer.File, extend: string[] = []) {
             const acceptTypes = ['.jpeg', '.jpg', '.png', '.bmp', ...extend];
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
 
             return acceptTypes.includes(fileType);
       }
 
-      checkFileSize(file: FileDto, limit: number) {
+      checkFileSize(file: Express.Multer.File, limit: number) {
             const limitSize = limit * 1024 * 1024;
             return file.size < limitSize;
       }
 
-      async uploadFile(file: FileDto, awsPath: string, prefix: 'user' | 'system') {
+      async uploadFile(file: Express.Multer.File, awsPath: string, prefix: 'user' | 'system') {
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
             const id = new ObjectId();
             const locationFile = `${prefix}/${awsPath}/${id}${fileType}`;

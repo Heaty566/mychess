@@ -1,10 +1,6 @@
 import * as Joi from 'joi';
-import { ValidationError } from 'joi';
-import { LocalesService } from '../locales/locales.service';
 
 export class ValidatorService {
-      constructor(private readonly localesService: LocalesService) {}
-
       /**
        *
        * @param cb must be an switch case function return Joi.schema
@@ -27,15 +23,6 @@ export class ValidatorService {
 
             return { getJoiSchema, getJoiSchemas };
       }
-
-      public joiErrorMapper(err: ValidationError) {
-            const errorObj = {};
-            for (const item of err.details) {
-                  errorObj[item.context.key] = this.localesService.mapJoiError(item.type, item.context);
-            }
-
-            return errorObj;
-      }
 }
 
-export const validatorService = new ValidatorService(new LocalesService());
+export const validatorService = new ValidatorService();

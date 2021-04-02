@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
-import { UserRepository } from '../user/entities/user.repository';
-
-import { ReTokenRepository } from './entities/re-token.repository';
-import * as bcrypt from 'bcrypt';
-import { ReToken } from './entities/re-token.entity';
-import { RedisService } from '../utils/redis/redis.service';
 import { ObjectId } from 'mongodb';
+import * as bcrypt from 'bcrypt';
+
+import { UserRepository } from '../models/users/entities/user.repository';
+import { ReTokenRepository } from './entities/re-token.repository';
+import { User } from '../models/users/entities/user.entity';
+import { ReToken } from './entities/re-token.entity';
+import { RedisService } from '../providers/redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -18,19 +18,30 @@ export class AuthService {
             private readonly redisService: RedisService,
       ) {}
 
-      async createOTPRedisKey(user: User, expired: number) {
-            const redisKey = String(new ObjectId());
-            await this.redisService.setObjectByKey(redisKey, user, expired);
-            return redisKey;
+      //-------------------------------OTP Service --------------------------------------
+
+      private generateOtpKey(length: number, type: 'sms' | 'email') {
+            const pattern = {
+                  sms: '0123456789',
+                  email: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+            };
+
+            let result = '';
+            const characters = pattern[type];
+            const charactersLength = pattern[type].length;
+            for (let i = 0; i < length; i++) {
+                  result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
       }
 
-      private async createAuthToken(user: User) {
-            const encryptUser = this.encryptToken(user);
-            const authTokenId = new ObjectId();
-
-            this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
-            return String(authTokenId);
+      generateOTP(user: User, expired: number, type: 'sms' | 'email') {
+            const otpKey = this.generateOtpKey(type === 'email' ? 50 : 6, type);
+            this.redisService.setObjectByKey(otpKey, user, expired);
+            return otpKey;
       }
+
+      //-------------------------------Token Service --------------------------------------
 
       async createReToken(data: User) {
             const authTokenId = await this.createAuthToken(data);
@@ -43,8 +54,16 @@ export class AuthService {
             return String(insertedReToken._id);
       }
 
-      async getAuthTokenFromReToken(refreshToken: string) {
-            const reToken = await this.reTokenRepository.findOneByField('_id', refreshToken);
+      private async createAuthToken(user: User) {
+            const encryptUser = this.encryptToken(user);
+            const authTokenId = new ObjectId();
+
+            this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
+            return String(authTokenId);
+      }
+
+      async getAuthTokenByReToken(reTokenId: string) {
+            const reToken = await this.reTokenRepository.findOneByField('_id', reTokenId);
             if (!reToken) return null;
 
             const isStillExit = await this.redisService.getByKey(reToken.data);
@@ -59,12 +78,18 @@ export class AuthService {
             return reToken.data;
       }
 
-      async getDataFromAuthToken(authTokenId: string) {
+      async getUserByAuthToken(authTokenId: string) {
             const authToken = await this.redisService.getByKey(authTokenId);
             if (!authToken) return null;
 
             return await this.decodeToken<User>(authToken);
       }
+
+      async clearToken(userId: string | ObjectId) {
+            return await this.reTokenRepository.delete({ userId: new ObjectId(userId) });
+      }
+
+      //--------------------------------Encrypt Decrypt Service -------------------------------
 
       encryptToken(tokenData: Record<any, any>) {
             return this.jwtService.sign(JSON.stringify(tokenData));
@@ -74,31 +99,11 @@ export class AuthService {
             return this.jwtService.decode(tokenData) as T;
       }
 
-      async saveUser(input: User): Promise<User> {
-            return await this.userRepository.save(input);
-      }
-
-      async hash(data: string): Promise<string> {
+      async encryptString(data: string): Promise<string> {
             return await bcrypt.hash(data, 5);
       }
 
-      async comparePassword(data: string, encryptedPassword: string): Promise<boolean> {
+      async decryptString(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
-      }
-
-      private generateOtp(length: number) {
-            let result = '';
-            const characters = '0123456789';
-            const charactersLength = characters.length;
-            for (let i = 0; i < length; i++) {
-                  result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            return result;
-      }
-
-      generateKeyForSms(user: User, expired: number) {
-            const otpKey = this.generateOtp(6);
-            this.redisService.setObjectByKey(otpKey, user, expired);
-            return otpKey;
       }
 }

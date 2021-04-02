@@ -1,39 +1,44 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../user/entities/user.repository';
+import { UserRepository } from '../../models/users/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
 import { AuthService } from '../auth.service';
-import { User } from '../../user/entities/user.entity';
+import { User } from '../../models/users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { Request, Response } from 'express';
 import { MyAuthGuard } from '../auth.guard';
 import { createMock } from 'ts-auto-mock';
-import { RedisService } from '../../utils/redis/redis.service';
+import { RedisService } from '../../providers/redis/redis.service';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../../user/entities/user.userRole.enum';
+import { UserRole } from '../../models/users/entities/user.userRole.enum';
 
-describe('AuthService', () => {
+describe('MyAuthGuard', () => {
       let app: INestApplication;
+      let user: User;
+
       let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
+
       let authService: AuthService;
+      let redisService: RedisService;
+
       let authGuard: MyAuthGuard;
       let reToken: string;
-      let user: User;
       let context: (cookies) => ExecutionContext;
-      let redisService: RedisService;
 
       beforeAll(async () => {
             const { getApp, module, getReToken, getUser } = await initTestModule();
             app = getApp;
-            reToken = getReToken;
             user = getUser;
+            reToken = getReToken;
+
             userRepository = module.get<UserRepository>(UserRepository);
+            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
+
             authService = module.get<AuthService>(AuthService);
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             redisService = module.get<RedisService>(RedisService);
+
             const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.USER) });
             authGuard = new MyAuthGuard(authService, reflector);
 
@@ -47,6 +52,7 @@ describe('AuthService', () => {
                         }),
                   });
       });
+
       describe('canActivate Admin Role', () => {
             let authGuardAdmin: MyAuthGuard;
 
@@ -64,7 +70,8 @@ describe('AuthService', () => {
                   }
             });
       });
-      describe('canActivate', () => {
+
+      describe('canActivate common case', () => {
             it('Pass', async () => {
                   const contextTracker = context({ 're-token': reToken });
                   const res = await authGuard.canActivate(contextTracker);
@@ -127,7 +134,7 @@ describe('AuthService', () => {
             });
 
             it('Failed re-token no provide', async () => {
-                  const authToken = await authService.getAuthTokenFromReToken(reToken);
+                  const authToken = await authService.getAuthTokenByReToken(reToken);
                   const contextTracker = context({
                         'auth-token': authToken,
                   });
@@ -173,12 +180,22 @@ describe('AuthService', () => {
                         expect(getUser).toBeNull();
                   }
             });
+
+            it('Failed (isDisable user)', async () => {
+                  user.isDisabled = true;
+                  const reToken = await authService.createReToken(user);
+                  const contextTracker = context({ 're-token': reToken });
+                  try {
+                        await authGuard.canActivate(contextTracker);
+                  } catch (err) {
+                        expect(err).toBeDefined();
+                  }
+            });
       });
 
-      afterAll(async (done) => {
+      afterAll(async () => {
             await reTokenRepository.clear();
             await userRepository.clear();
             await app.close();
-            done();
       });
 });

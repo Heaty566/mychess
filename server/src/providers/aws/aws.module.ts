@@ -19,6 +19,6 @@ import { AwsService } from './aws.service';
                   },
             },
       ],
-      exports: [AwsService, S3],
+      exports: [AwsService],
 })
 export class AwsModule {}

@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MailService, MailDataRequired } from '@sendgrid/mail';
+
 import { LoggerService } from '../../utils/logger/logger.service';
 @Injectable()
 export class SmailService {
@@ -8,7 +9,7 @@ export class SmailService {
       private sendMail(receiver: string, content: string, subject = 'MyGame') {
             const msg: MailDataRequired = {
                   to: receiver,
-                  from: 'MyGame<noreply@heaty566.com>',
+                  from: process.env.SENDGIRD_MAIL,
                   subject: subject,
                   html: `
                         <div>
@@ -36,7 +37,7 @@ export class SmailService {
                   });
       }
 
-      async sendOTPMail(receiver: string, OTP: string) {
+      async sendOTP(receiver: string, OTP: string) {
             return await this.sendMail(
                   receiver,
                   `
@@ -44,8 +45,22 @@ export class SmailService {
                   <h2>Hello</h2>
                   <p>You receiving this email because we received a password request for your account.</p>
                   </br>
-                  <p>Please click this link:<a>http://localhost:4000/api/user/reset-password/${OTP}</a>
+                  <p>Please click this link:<a href="${process.env.CLIENT_URL}/user/reset-password/${OTP}">Click here</a>
                   </p>
+                  </br>
+            </div>`,
+            );
+      }
+
+      async sendOTPForUpdateEmail(receiver: string, OTP: string) {
+            return await this.sendMail(
+                  receiver,
+                  `
+            <div>
+                  <h2>Hello</h2>
+                  <p>You receiving this email because we received update email request for your account.</p>
+                  </br>
+                  <p>Please click this link:</p><a href="${process.env.CLIENT_URL}/user/update-email/${OTP}">Click here</a>
                   </br>
             </div>`,
             );

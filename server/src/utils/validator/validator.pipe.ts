@@ -1,18 +1,16 @@
-import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import { Injectable, PipeTransform } from '@nestjs/common';
 import { ObjectSchema } from 'joi';
 
-//* Internal import
-
+import { LocalesService } from '../locales/locales.service';
 import { apiResponse } from '../../app/interface/ApiResponse';
-import { validatorService } from './validator.service';
 
 @Injectable()
 export class JoiValidatorPipe implements PipeTransform {
       constructor(private readonly schema: ObjectSchema) {}
 
-      transform(input: any, metaData: ArgumentMetadata) {
+      transform(input: any) {
             const { error, value } = this.schema.validate(input, { abortEarly: false });
-            if (error) throw apiResponse.sendError({ body: { details: validatorService.joiErrorMapper(error), message: 'invalid input' } });
+            if (error) throw apiResponse.sendError({ body: { details: LocalesService.mapJoiError(error), message: 'invalid input' } });
 
             return value;
       }

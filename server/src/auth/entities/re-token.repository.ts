@@ -1,5 +1,6 @@
-import { RepositoryService } from '../../utils/repository/repository.service';
 import { EntityRepository } from 'typeorm';
+
+import { RepositoryService } from '../../utils/repository/repository.service';
 import { ReToken } from './re-token.entity';
 
 @EntityRepository(ReToken)

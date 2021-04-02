@@ -1,0 +1,812 @@
+{
+      "openapi": "3.0.0",
+      "info": {
+            "title": "MyGame-V1",
+            "description": "a board game build base on NestJs and NextJs",
+            "contact": {
+                  "name": "pham vinh nhan",
+                  "email": "heaty566@gmail.com"
+            },
+            "license": {
+                  "name": "Apache 2.0",
+                  "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            },
+            "version": "0.0.1"
+      },
+      "tags": [
+            {
+                  "name": "auth",
+                  "description": "handle authentication"
+            },
+            {
+                  "name": "user",
+                  "description": "service for user"
+            },
+            {
+                  "name": "admin",
+                  "description": "service for administrator, have to login and with role is ADMIN"
+            }
+      ],
+      "paths": {
+            "/api/auth/login": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "login user with username and password",
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/LoginUserDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/components/responses/reTokenKey"
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/logout": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "logout user",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "delete user token",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  },
+                  "put": {
+                        "tags": ["user"],
+                        "description": "update basic user information",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/UpdateBasicUserDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "user update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/register": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "register user with basic information",
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/RegisterUserDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/components/responses/reTokenKey"
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/otp-email": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "create new otp key and send to email",
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/UpdateEmailDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "500": {
+                                    "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/otp-sms": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "create new otp key and send to phone",
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/OtpSmsDTO"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "500": {
+                                    "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/google": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "login with google redirect to home page if login success",
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/components/responses/reTokenKey"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/github": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "login with github redirect to home page if login success",
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/components/responses/reTokenKey"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/facebook": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "login with facebook redirect to home page if login success",
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/components/responses/reTokenKey"
+                              }
+                        }
+                  }
+            },
+
+            "/api/user": {
+                  "get": {
+                        "tags": ["user"],
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "return user information without some sensitive fields",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  },
+                  "put": {
+                        "tags": ["user"],
+                        "description": "update basic user information",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/UpdateBasicUserDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "user update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              }
+                        }
+                  }
+            },
+            "/api/user/avatar": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "upload user avatar image",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/UpdateAvatarDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "user update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "500": {
+                                    "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+            "/api/user/password/:otp": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "reset password with otp key",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  }
+            },
+            "/api/user/email/:otp": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "update email with otp key",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  }
+            },
+            "/api/user/phone/:otp": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "update phone with otp key",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  }
+            },
+            "/api/user/otp-sms": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "create new otp key and send to phone number",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/OtpSmsDTO"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "500": {
+                                    "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+            "/api/user/otp-email": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "create new otp key and send to email",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/UpdateEmailDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "500": {
+                                    "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+
+            "/api/admin/users": {
+                  "get": {
+                        "tags": ["admin"],
+                        "description": "get all users information except some sensitive information",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "return array of user information",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              }
+                        }
+                  }
+            },
+            "/api/admin/user-admin/:id": {
+                  "put": {
+                        "tags": ["admin"],
+                        "description": "toggle user role from USER to ADMIN and vice versa",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/userId" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user role successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/admin/user-status/:id": {
+                  "put": {
+                        "tags": ["admin"],
+                        "description": "toggle user status from true to false and vice versa (block user)",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/userId" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user status successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            }
+      },
+      "components": {
+            "responses": {
+                  "401": {
+                        "description": "user has not a re-token",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "#/components/schemas/CommonApiResponse"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "invalid body input",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "#/components/schemas/CommonApiResponse"
+                                    }
+                              }
+                        }
+                  },
+                  "500": {
+                        "description": "some went wrong( 3rd shutdown or server errors)",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "#/components/schemas/CommonApiResponse"
+                                    }
+                              }
+                        }
+                  },
+                  "403": {
+                        "description": "user has to be an administrator",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "#/components/schemas/CommonApiResponse"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "entity does not exist in database",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "#/components/schemas/CommonApiResponse"
+                                    }
+                              }
+                        }
+                  },
+                  "reTokenKey": {
+                        "description": "re-token key",
+                        "content": {
+                              "header": {
+                                    "schema": {
+                                          "type": "string",
+                                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                    }
+                              }
+                        }
+                  }
+            },
+            "schemas": {
+                  "CommonApiResponse": {
+                        "type": "object",
+                        "properties": {
+                              "data": {
+                                    "type": "object",
+                                    "description": "it type any base on your api"
+                              },
+                              "message": {
+                                    "type": "string",
+                                    "example": "this is an error message"
+                              },
+                              "details": {
+                                    "type": "object",
+                                    "properties": {
+                                          "field": {
+                                                "type": "string",
+                                                "description": "field will be the name of invalid field",
+                                                "example": "should not be empty"
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "UserEntity": {
+                        "type": "object",
+                        "properties": {
+                              "username": {
+                                    "type": "string",
+                                    "example": "username"
+                              },
+                              "name": {
+                                    "type": "string",
+                                    "example": "my name"
+                              },
+                              "password": {
+                                    "type": "string",
+                                    "example": "my password"
+                              },
+                              "_id": {
+                                    "type": "string",
+                                    "example": "1321r3121421421res"
+                              },
+                              "avatarUrl": {
+                                    "type": "string",
+                                    "example": "/user/2132132132/hello.png"
+                              },
+                              "googleId": {
+                                    "type": "string",
+                                    "example": "1232142142"
+                              },
+                              "facebookId": {
+                                    "type": "string",
+                                    "example": "1232142142"
+                              },
+                              "githubId": {
+                                    "type": "string",
+                                    "example": "1232142142"
+                              },
+                              "createDate": {
+                                    "type": "string",
+                                    "example": "10/20/2000"
+                              },
+                              "elo": {
+                                    "type": "integer",
+                                    "example": 1000
+                              },
+                              "isDisabled": {
+                                    "type": "string",
+                                    "example": "username"
+                              },
+                              "email": {
+                                    "type": "string",
+                                    "example": "username"
+                              },
+                              "phoneNumber": {
+                                    "type": "string",
+                                    "example": "username"
+                              }
+                        }
+                  }
+            },
+            "requestBodies": {
+                  "UpdateBasicUserDto": {
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "name": {
+                                                      "type": "string",
+                                                      "example": "who am i"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "description": "user basic information is not include some sensitive fields",
+                        "required": true
+                  },
+                  "UpdateAvatarDto": {
+                        "description": "put avatar image here",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "avatar": {
+                                                      "type": "string",
+                                                      "example": "/hello.png"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "OtpSmsDTO": {
+                        "description": "provide phone number to send an otp key",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "phoneNumber": {
+                                                      "type": "string",
+                                                      "example": "+20401230312"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "UpdateEmailDto": {
+                        "description": "provide an email to send an otp key",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "phoneNumber": {
+                                                      "type": "string",
+                                                      "example": "hello@gmail.com"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "LoginUserDto": {
+                        "description": "login user information",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "username": {
+                                                      "type": "string",
+                                                      "example": "username"
+                                                },
+                                                "password": {
+                                                      "type": "string",
+                                                      "example": "password"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "RegisterUserDto": {
+                        "description": "register user information",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "name": {
+                                                      "type": "string",
+                                                      "example": "my name"
+                                                },
+                                                "username": {
+                                                      "type": "string",
+                                                      "example": "username"
+                                                },
+                                                "password": {
+                                                      "type": "string",
+                                                      "example": "password"
+                                                },
+                                                "confirmPassword": {
+                                                      "type": "string",
+                                                      "example": "password"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  }
+            },
+
+            "parameters": {
+                  "token": {
+                        "name": "token",
+                        "in": "cookie",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                              "type": "object",
+                              "properties": {
+                                    "re-token": {
+                                          "type": "string",
+                                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                    },
+                                    "auth-token": {
+                                          "type": "string",
+                                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                    }
+                              }
+                        }
+                  },
+                  "userId": {
+                        "name": "id",
+                        "description": "user id",
+                        "in": "query",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                              "type": "string",
+                              "example": "123456789aa"
+                        }
+                  },
+                  "OTPkey": {
+                        "name": "id",
+                        "description": "otp key",
+                        "in": "query",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                              "type": "string",
+                              "example": "123456789aa"
+                        }
+                  }
+            }
+      }
+}

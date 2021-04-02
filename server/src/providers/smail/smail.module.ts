@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { SmailService } from './smail.service';
 import { MailService } from '@sendgrid/mail';
 import * as mail from '@sendgrid/mail';
+
 import { LoggerModule } from '../../utils/logger/logger.module';
 @Module({
       imports: [LoggerModule],

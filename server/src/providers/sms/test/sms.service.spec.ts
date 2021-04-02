@@ -1,8 +1,4 @@
-import { INestApplication } from '@nestjs/common';
-import { fakeData } from '../../../../test/fakeData';
-
 let mockPromise = Promise.resolve();
-
 class TwilioMock {
       constructor() {
             //
@@ -15,7 +11,9 @@ class TwilioMock {
       };
 }
 
-//* Internal import
+import { INestApplication } from '@nestjs/common';
+
+import { fakeData } from '../../../../test/fakeData';
 import { initTestModule } from '../../../../test/initTest';
 import { SmsService } from '../sms.service';
 
@@ -48,13 +46,12 @@ describe('TokenService', () => {
 
       describe('sendOtp', () => {
             it('Pass', async () => {
-                  const res = await smsService.sendOtp(fakeData(10), fakeData(6));
+                  const res = await smsService.sendOTP(fakeData(10), fakeData(6));
                   expect(res).toBeDefined();
             });
       });
 
-      afterAll(async (done) => {
+      afterAll(async () => {
             await app.close();
-            done();
       });
 });

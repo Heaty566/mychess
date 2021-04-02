@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { createClient } from 'redis';
+
 import { AppModule } from './app.module';
 import { router } from './router';
 

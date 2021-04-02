@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import { FileDto } from '../dto/File';
 
 const mockS3Object = jest.fn();
 jest.mock('aws-sdk', () => {
@@ -15,6 +14,7 @@ jest.mock('aws-sdk', () => {
 import { initTestModule } from '../../../../test/initTest';
 import { AwsService } from '../aws.service';
 import { Buffer } from 'buffer';
+import { Readable } from 'stream';
 describe('TokenService', () => {
       let app: INestApplication;
       let awsService: AwsService;
@@ -25,8 +25,8 @@ describe('TokenService', () => {
       });
 
       describe('checkFileExtension', () => {
-            let file: FileDto;
-
+            let file: Express.Multer.File;
+            const readable = new Readable();
             beforeEach(() => {
                   file = {
                         buffer: Buffer.from('ok'),
@@ -35,6 +35,10 @@ describe('TokenService', () => {
                         encoding: '7bit',
                         mimetype: 'image/jpeg',
                         size: 593518,
+                        destination: '',
+                        filename: '',
+                        path: '',
+                        stream: readable,
                   };
             });
 
@@ -65,8 +69,8 @@ describe('TokenService', () => {
             });
       });
       describe('checkFileSize', () => {
-            let file: FileDto;
-
+            let file: Express.Multer.File;
+            const readable = new Readable();
             beforeEach(() => {
                   file = {
                         buffer: Buffer.from('ok'),
@@ -75,6 +79,10 @@ describe('TokenService', () => {
                         encoding: '7bit',
                         mimetype: 'image/jpeg',
                         size: 593518,
+                        destination: '',
+                        filename: '',
+                        path: '',
+                        stream: readable,
                   };
             });
 
@@ -92,8 +100,8 @@ describe('TokenService', () => {
       });
 
       describe('uploadFile', () => {
-            let file: FileDto;
-
+            let file: Express.Multer.File;
+            const readable = new Readable();
             beforeEach(() => {
                   file = {
                         buffer: Buffer.from('ok'),
@@ -102,6 +110,10 @@ describe('TokenService', () => {
                         encoding: '7bit',
                         mimetype: 'image/jpeg',
                         size: 593518,
+                        destination: '',
+                        filename: '',
+                        path: '',
+                        stream: readable,
                   };
             });
 
@@ -131,8 +143,7 @@ describe('TokenService', () => {
             });
       });
 
-      afterAll(async (done) => {
+      afterAll(async () => {
             await app.close();
-            done();
       });
 });
