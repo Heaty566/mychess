@@ -1,6 +1,5 @@
-//* Internal import
-import { UserRole } from '../src/user/entities/user.userRole.enum';
-import { User } from '../src/user/entities/user.entity';
+import { UserRole } from '../src/models/users/entities/user.userRole.enum';
+import { User } from '../src/models/users/entities/user.entity';
 import { fakeData } from './fakeData';
 
 export const fakeUser = () => {

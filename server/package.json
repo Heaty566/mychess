@@ -72,6 +72,7 @@
             "@types/joi": "^17.2.3",
             "@types/mongodb": "^3.6.8",
             "@types/morgan": "^1.9.2",
+            "@types/multer": "^1.4.5",
             "@types/node": "^14.14.6",
             "@types/passport-facebook": "^2.1.10",
             "@types/passport-github": "^1.1.5",
