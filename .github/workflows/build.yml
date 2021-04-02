@@ -22,7 +22,7 @@ jobs:
                           uses: docker/build-push-action@v2
                           id: docker_build
                           with:
-                                  context: ./
+                                  context: ./server
                                   file: ./server/Dockerfile
                                   builder: ${{steps.buildx.outputs.name}}
                                   push: true
