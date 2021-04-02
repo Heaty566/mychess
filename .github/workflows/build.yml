@@ -8,6 +8,19 @@ jobs:
         test:
                 runs-on: ubuntu-latest
                 steps:
+                        - name: Check out code
+                          uses: actions/checkout@v2
+                        - name: Set up node
+                          uses: actions/setup-node@v1
+                        - name: run test
+                          run: |
+                                  yarn install
+                                  yarn run test
+
+        build-push:
+                needs: test
+                runs-on: ubuntu-latest
+                steps:
                         - name: Checkout
                           uses: actions/checkout@v2
                         - name: Login Docker Hub
