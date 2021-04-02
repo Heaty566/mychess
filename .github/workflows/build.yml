@@ -29,15 +29,15 @@ jobs:
                                   tags: heaty566/my-game-server:latest
                         - name: Build and Push for Client
                           uses: docker/build-push-action@v2
-                          id: docker_build_server
+                          id: docker_build_client
                           with:
                                   context: ./client
                                   file: ./client/Dockerfile
                                   builder: ${{steps.buildx.outputs.name}}
                                   push: true
-                                  tags: heaty566/my-game-server:latest
+                                  tags: heaty566/my-game-client:latest
                         - name: Verify
                           run: |
                                   echo ${{steps.docker_build_server.outputs.digest}}
-                                  echo ${{steps.client.outputs.digest}}
+                                  echo ${{steps.docker_build_client.outputs.digest}}
                                   echo 'Build done, ready to deploy'
