@@ -37,8 +37,9 @@ export function router(app: INestApplication) {
       //for developer
       if (process.env.NODE_ENV === 'development') {
             app.use(morgan('dev'));
-            app.use('/doc', swagger.serve, swagger.setup(doc));
       }
+
+      if (process.env.DOC === 'active') app.use('/doc', swagger.serve, swagger.setup(doc));
 
       //global exception handler
       //global interceptor handler
