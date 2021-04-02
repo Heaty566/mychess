@@ -7,7 +7,7 @@
                 "prepare": "husky install",
                 "postinstall": "husky install",
                 "precommit": "yarn run server:dev && cd server && yarn run format && yarn run test",
-                "test": "yarn run server:dev && cd server && yarn run test",
+                "test": "yarn run server:dev && cd server && yarn install && yarn run test",
                 "deploy": "yarn run docker-build && yarn run docker-push",
                 "docker-build": "yarn run docker-build:server && yarn run docker-build:client",
                 "docker-build:server": "cd server && docker build . -t heaty566/my-game-server:latest",
