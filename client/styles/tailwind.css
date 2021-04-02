@@ -2,3 +2,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.semantic {
+    padding: 0;
+    margin: 0;
+    height: 0;
+    width: 0;
+    border: none;
+    outline: none;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.test {
+    box-shadow: 0 0 12px #000000;
+}

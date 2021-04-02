@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 # Installing dependencies
 
 COPY package*.json ./
+RUN yarn global add cross-env
 RUN yarn install
 # Copying source files
 COPY . .
