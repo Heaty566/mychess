@@ -114,6 +114,14 @@ export class AuthController {
             return res.cookie('re-token', refreshToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send({ message: 'Login success' });
       }
 
+      @Post('/logout')
+      @UseGuards(MyAuthGuard)
+      async cLogout(@Req() req: Request, @Res() res: Response) {
+            await this.authService.clearToken(req.user._id);
+
+            return res.cookie('re-token', '', { maxAge: -999 }).cookie('auth-token', '', { maxAge: -999 }).send();
+      }
+      
       @Post('/otp-sms')
       async sendSms(@Body() body: OtpSmsDTO) {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
