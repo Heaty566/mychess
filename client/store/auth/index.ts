@@ -1,49 +1,39 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
+import { IAuthState } from './interface';
+import authApi from '../../api/auth';
 
-//* Import
-import { registerUser } from "./action";
-
-export interface UserInfo {
-        username: string;
-        fullName: string;
-        email: string;
-        avatarUrl: string;
-        isPremium: boolean;
-        role: string;
-}
-
-export interface AuthState extends UserInfo {
-        isLogin: boolean;
-}
-
-const initialState: AuthState = {
-        email: "",
-        fullName: "",
-        avatarUrl: "",
-        isLogin: false,
-        isPremium: false,
-        role: "USER",
-        username: "",
+const initialState: IAuthState = {
+    email: '',
+    name: '',
+    avatarUrl: '',
+    isLogin: false,
+    isPremium: false,
+    role: 'USER',
+    username: '',
 };
 
-const auth = createSlice({
-        name: "auth",
-        initialState,
-        reducers: {
-                resetAuth: () => {
-                        return initialState;
-                },
+const reducer = createSlice({
+    name: 'auth',
+    initialState,
+    reducers: {
+        resetAuth: () => {
+            return { ...initialState };
         },
-        extraReducers: (builder) => {
-                builder.addCase(registerUser.fulfilled, (state) => {
-                        state.isLogin = true;
-                        return state;
-                });
-        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(authApi.loginUser.fulfilled, (state) => {
+            const newState = { ...state };
+            newState.isLogin = true;
+            return newState;
+        });
+        builder.addCase(authApi.registerUser.fulfilled, (state) => {
+            const newState = { ...state };
+            newState.isLogin = true;
+            return newState;
+        });
+    },
 });
-
 export const authActions = {
-        registerUser,
-        resetAuth: auth.actions.resetAuth,
+    ...reducer.actions,
 };
-export const authReducer = auth.reducer;
+export const authReducer = reducer.reducer;

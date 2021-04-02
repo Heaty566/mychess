@@ -1,45 +1,49 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { JoiError } from "./dto";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IJoiError, IApiState } from './interface';
 
-export interface ApiState {
-        isLoading: boolean;
-        errorDetails: JoiError;
-        isError: boolean;
-        message: string;
-}
-const initialState: ApiState = {
-        isLoading: false,
-        errorDetails: {},
-        isError: false,
-        message: "",
+import authApi from '../../api/auth';
+
+const initialState: IApiState = {
+    isLoading: false,
+    errorDetails: {},
+    isError: false,
+    message: '',
 };
 
 const reducer = createSlice({
-        name: "api",
-        initialState,
-        reducers: {
-                initReq: (state) => {
-                        state.isLoading = true;
-                },
-                resetState: (state) => {
-                        const newState = { ...state };
-                        newState.isLoading = false;
-                        newState.errorDetails = initialState.errorDetails;
-                        newState.isError = initialState.isError;
-                        newState.message = "";
-                        return newState;
-                },
-                updateErrorDetails: (state, { payload }: PayloadAction<JoiError>) => {
-                        const newState = { ...state };
-                        newState.errorDetails = payload;
-                        newState.isError = true;
-                        return newState;
-                },
+    name: 'api',
+    initialState,
+    reducers: {
+        initReq: (state) => {
+            state.isLoading = true;
         },
-        extraReducers: (builder) => {},
+        resetState: (state) => {
+            return { ...state };
+        },
+        updateErrorDetails: (state, { payload }: PayloadAction<IJoiError>) => {
+            const newState = { ...state };
+            newState.errorDetails = payload;
+            newState.isError = true;
+            return newState;
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(authApi.forgotPasswordCreate.fulfilled, (state, { payload }) => {
+            const newState = { ...state };
+            newState.message = payload.message;
+
+            return newState;
+        });
+        builder.addCase(authApi.forgotPasswordUpdate.fulfilled, (state, { payload }) => {
+            const newState = { ...state };
+            newState.message = payload.message;
+
+            return newState;
+        });
+    },
 });
 
 export const apiActions = {
-        ...reducer.actions,
+    ...reducer.actions,
 };
 export const apiReducer = reducer.reducer;
