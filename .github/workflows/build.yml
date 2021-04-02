@@ -26,7 +26,7 @@ jobs:
                                   file: ./Dockerfile
                                   builder: ${{steps.buildx.outputs.name}}
                                   push: true
-                                  tags: ${{ secrets.DOCKER_USERNAME }}/my-game-server:latest
+                                  tags: user/my-game-server:latest
 
                         - name: Verify
                           run: echo ${{steps.docker_build.outputs.digest}}
