@@ -130,7 +130,7 @@ describe('UserController E2E', () => {
 
                   it('Pass', async () => {
                         otpMail = {
-                              email: `${fakeData(10)}@gmail.com`,
+                              email: `heaty566ex@gmail.com`,
                         };
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(201);
@@ -138,7 +138,7 @@ describe('UserController E2E', () => {
 
                   it('Failed (error of smail)', async () => {
                         otpMail = {
-                              email: `${fakeData(10)}@gmail.com`,
+                              email: `heaty566ex@gmail.com`,
                         };
                         const mySpy = jest.spyOn(mailService, 'sendOTPForUpdateEmail').mockImplementation(() => Promise.resolve(false));
                         try {
