@@ -15,10 +15,11 @@ jobs:
                                     echo 'ready to deploy'
                                   else 
                                     echo 'not ready'
-                                    exit
+                                    return false
                                   fi
         test:
                 runs-on: ubuntu-latest
+                needs: hello
                 steps:
                         - name: executing remote ssh commands using ssh key
                           uses: appleboy/ssh-action@master
