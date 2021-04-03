@@ -5,10 +5,10 @@ on:
                 branches:
                         - "main"
 jobs:
-        hello:
+        build-check:
                 runs-on: ubuntu-latest
                 steps:
-                        - name: executing remote ssh commands using ssh key
+                        - name: checking allow to build
                           run: |
                                   if [ ${{secrets.BUILD}} == ACTIVE ] 
                                   then
@@ -17,9 +17,9 @@ jobs:
                                     echo 'not ready'
                                     exit 1
                                   fi
-        test:
+        deploy:
                 runs-on: ubuntu-latest
-                needs: hello
+                needs: build-check
                 steps:
                         - name: executing remote ssh commands using ssh key
                           uses: appleboy/ssh-action@master
@@ -29,4 +29,6 @@ jobs:
                                   password: ${{ secrets.PASSWORD }}
                                   port: ${{ secrets.PORT }}
                                   script: |
-                                          ls
+                                          cd app
+                                          docker-compose pull 
+                                          docker-compose up -d
