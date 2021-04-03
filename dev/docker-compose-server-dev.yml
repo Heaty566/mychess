@@ -4,3 +4,11 @@ services:
                 image: redis
                 ports:
                         - 7000:6379
+        client:
+                image: heaty566/my-game-client:latest
+                ports:
+                        - 3000:3000
+        admin:
+                image: heaty566/my-game-admin:latest
+                ports:
+                        - 3001:3001

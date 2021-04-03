@@ -1,10 +1,15 @@
 const colors = require('tailwindcss/colors');
+const theme = require('tailwindcss/defaultTheme');
 
 module.exports = {
         purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
         darkMode: false, // or 'media' or 'class'
         theme: {
-                extend: {},
+                extend: {
+                        gridTemplateRows: {
+                                max: '100%',
+                        },
+                },
                 colors: {
                         ...colors,
                         woodsmoke: {
@@ -33,8 +38,66 @@ module.exports = {
                                 800: '#7B7771',
                                 900: '#605D59',
                         },
+                        'cotton-seed': {
+                                DEFAULT: '#B8B6B4',
+                                50: '#FFFFFF',
+                                100: '#FFFFFF',
+                                200: '#FFFFFF',
+                                300: '#EAE9E8',
+                                400: '#D1D0CE',
+                                500: '#B8B6B4',
+                                600: '#9F9D9A',
+                                700: '#868380',
+                                800: '#6C6A67',
+                                900: '#52504E',
+                        },
+                        tuna: {
+                                DEFAULT: '#32353C',
+                                50: '#A2A7B2',
+                                100: '#9499A6',
+                                200: '#787F8F',
+                                300: '#606674',
+                                400: '#494E58',
+                                500: '#32353C',
+                                600: '#1B1C20',
+                                700: '#040404',
+                                800: '#000000',
+                                900: '#000000',
+                        },
+                        mercury: {
+                                DEFAULT: '#E9E9E9',
+                                50: '#FFFFFF',
+                                100: '#FFFFFF',
+                                200: '#FFFFFF',
+                                300: '#FFFFFF',
+                                400: '#FFFFFF',
+                                500: '#E9E9E9',
+                                600: '#D0D0D0',
+                                700: '#B6B6B6',
+                                800: '#9D9D9D',
+                                900: '#838383',
+                        },
+                        malibu: {
+                                DEFAULT: '#66C0F4',
+                                50: '#FFFFFF',
+                                100: '#FFFFFF',
+                                200: '#F5FBFE',
+                                300: '#C5E7FB',
+                                400: '#96D4F7',
+                                500: '#66C0F4',
+                                600: '#36ACF1',
+                                700: '#1096E4',
+                                800: '#0D77B4',
+                                900: '#0A5784',
+                        },
                 },
+                backgroundImage: {
+                        ...theme.backgroundImage,
+                        'btn-1': '  linear-gradient( to right, #47bfff 5%, #1a44c2 60%);',
+                },
+
                 boxShadow: {
+                        ...theme.boxShadow,
                         menu: '0 0 12px #000000',
                 },
         },
