@@ -15,7 +15,7 @@ jobs:
                                     echo 'ready to deploy'
                                   else 
                                     echo 'not ready'
-                                    exit
+                                    exit 1
                                   fi
         test:
                 runs-on: ubuntu-latest
