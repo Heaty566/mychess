@@ -18,21 +18,8 @@ jobs:
                                     exit 1
                                   fi
 
-        test:
-                runs-on: ubuntu-latest
-                needs: build-check
-                steps:
-                        - name: Check out code
-                          uses: actions/checkout@v2
-                        - name: Set up node
-                          uses: actions/setup-node@v1
-                        - name: run test
-                          run: |
-                                  yarn install
-                                  yarn run test
-
         build-push:
-                needs: test
+                needs: build-check
                 runs-on: ubuntu-latest
                 steps:
                         - name: Checkout
