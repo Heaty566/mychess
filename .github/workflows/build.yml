@@ -10,7 +10,7 @@ jobs:
                 steps:
                         - name: executing remote ssh commands using ssh key
                           run: |
-                                  if [ ${{secrets.BUILD}} == ACTIVE] 
+                                  if [ ${{secrets.BUILD}} == ACTIVE ] 
                                   then
                                     echo 'ready to deploy'
                                   else 
