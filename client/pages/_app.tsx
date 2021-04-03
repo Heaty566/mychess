@@ -29,7 +29,7 @@ const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
 
         return (
                 <Provider store={store}>
-                        <div className="h-screen flex flex-col  bg-gray-700">
+                        <div className="min-h-screen flex flex-col bg-gray-700">
                                 <Navbar />
                                 <Component {...pageProps} />
                         </div>
