@@ -10,33 +10,42 @@ import LoginSocial from '../../components/form/loginSocial';
 import { RootState, store } from '../../store';
 import authApi from '../../api/auth';
 
-import { UserLoginDto } from '../../api/auth/dto';
+import { UserLoginDto, UserRegisterDto } from '../../api/auth/dto';
 import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
 
-const defaultValues: UserLoginDto = {
+const defaultValues: UserRegisterDto = {
+    name: '',
     password: '',
     username: '',
+    confirmPassword: '',
 };
 
-const Login: React.FunctionComponent = () => {
-    const { register, handleSubmit } = useForm<UserLoginDto>({ defaultValues });
+const Register: React.FunctionComponent = () => {
+    const { register, handleSubmit } = useForm<UserRegisterDto>({ defaultValues });
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
-    const errors = useFormError<UserLoginDto>(defaultValues);
+    const errors = useFormError<UserRegisterDto>(defaultValues);
 
-    const onSubmit = (data: UserLoginDto) => store.dispatch(authApi.loginUser(data));
+    const onSubmit = (data: UserRegisterDto) => store.dispatch(authApi.registerUser(data));
 
     return (
         <>
-            <SeoHead title="Register" description="he" canonical="/" />
+            <SeoHead title="Login" description="he" canonical="/" />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <form
-                    className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in "
+                    className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in "
                     onSubmit={handleSubmit(onSubmit)}
                 >
-                    <h1 className="text-center text-4xl text-white mb-7">Login Account</h1>
+                    <h1 className="text-center text-4xl text-white mb-7">Register Account</h1>
                     <div className="space-y-2">
+                        <TextField
+                            name="name"
+                            label="Name"
+                            error={errors.name}
+                            register={register}
+                            type="text"
+                        />
                         <TextField
                             name="username"
                             label="Username"
@@ -51,27 +60,27 @@ const Login: React.FunctionComponent = () => {
                             register={register}
                             type="password"
                         />
+                        <TextField
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            error={errors.confirmPassword}
+                            register={register}
+                            type="password"
+                        />
                     </div>
                     <div className="mt-4 mb-7">
                         <SideLink
-                            label="Sign Up Instead"
+                            label="Sign In Instead"
                             position="text-right"
-                            href={routers.register.link}
+                            href={routers.login.link}
                         />
                     </div>
-                    {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign In" />}
+                    {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign Up" />}
                     <p className="text-center my-4 text-mercury">Or continue with</p>
                     <LoginSocial />
-                    <div className="mt-4">
-                        <SideLink
-                            label="Forgot Your Password?"
-                            position="text-center"
-                            href={routers.forgotPassword.link}
-                        />
-                    </div>
                 </form>
             </div>
         </>
     );
 };
-export default Login;
+export default Register;

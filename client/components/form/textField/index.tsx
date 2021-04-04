@@ -6,15 +6,22 @@ export interface TextFieldProps {
     label: string;
     error: string;
     register: UseFormRegister<any>;
+    type: 'text' | 'password';
 }
 
-const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register }) => (
+const TextField: React.FunctionComponent<TextFieldProps> = ({
+    label,
+    name,
+    error,
+    register,
+    type,
+}) => (
     <div className="space-y-1.5 text-sm">
         <label htmlFor={name} className="block text-cotton-seed ">
             {label}
         </label>
         <input
-            type="text"
+            type={type}
             id={name}
             className="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
             {...register(name)}

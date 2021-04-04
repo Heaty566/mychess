@@ -8,13 +8,13 @@ export interface SideLinkProps {
 }
 
 const SideLink: React.FunctionComponent<SideLinkProps> = ({ href, label, position }) => (
-    <Link href={href}>
-        <div className={position}>
+    <div className={position}>
+        <Link href={href}>
             <a href={href} className="text-mercury text-sm duration-300 hover:text-malibu">
                 {label}
             </a>
-        </div>
-    </Link>
+        </Link>
+    </div>
 );
 
 export default SideLink;

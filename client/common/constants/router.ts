@@ -2,7 +2,14 @@ interface IRouter {
     link: string;
 }
 
-type TRouters = 'register' | 'login' | 'home' | 'community' | 'about' | 'support';
+type TRouters =
+    | 'register'
+    | 'login'
+    | 'home'
+    | 'community'
+    | 'about'
+    | 'support'
+    | 'forgotPassword';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -21,7 +28,10 @@ const config: Record<TRouters, IRouter> = {
         link: '/auth/login',
     },
     register: {
-        link: '/auth/login',
+        link: '/auth/register',
+    },
+    forgotPassword: {
+        link: '/auth/register',
     },
 };
 
