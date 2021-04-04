@@ -1,12 +1,12 @@
-import { Entity, ObjectIdColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
 import { ObjectId } from 'mongodb';
 
 import { UserRole } from './user.userRole.enum';
 
 @Entity()
 export class User {
-      @ObjectIdColumn()
-      _id: ObjectId;
+      @PrimaryGeneratedColumn('uuid')
+      id: string;
 
       @Column()
       username: string;

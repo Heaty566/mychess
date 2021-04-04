@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, ObjectIdColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class ReToken {
-      @ObjectIdColumn()
-      _id: ObjectId;
+      @PrimaryGeneratedColumn('uuid')
+      id: string;
 
       @Column()
       data: string;
