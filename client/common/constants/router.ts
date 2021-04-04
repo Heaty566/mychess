@@ -9,7 +9,8 @@ type TRouters =
     | 'community'
     | 'about'
     | 'support'
-    | 'forgotPassword';
+    | 'forgotPasswordEmail'
+    | 'forgotPasswordPhone';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -30,8 +31,11 @@ const config: Record<TRouters, IRouter> = {
     register: {
         link: '/auth/register',
     },
-    forgotPassword: {
-        link: '/auth/register',
+    forgotPasswordEmail: {
+        link: '/auth/reset-mail',
+    },
+    forgotPasswordPhone: {
+        link: '/auth/reset-phone',
     },
 };
 

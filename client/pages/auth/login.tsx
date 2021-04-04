@@ -66,7 +66,7 @@ const Login: React.FunctionComponent = () => {
                         <SideLink
                             label="Forgot Your Password?"
                             position="text-center"
-                            href={routers.forgotPassword.link}
+                            href={routers.forgotPasswordEmail.link}
                         />
                     </div>
                 </form>

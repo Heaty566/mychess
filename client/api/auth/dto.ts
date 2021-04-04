@@ -10,7 +10,7 @@ export interface UserRegisterDto {
     confirmPassword: string;
 }
 
-export interface ForgotPasswordDto {
+export interface ForgotPasswordEmailDto {
     email: string;
 }
 export interface ForgotPasswordUpdateDto {

@@ -3,7 +3,12 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AxiosStatic } from 'axios';
 //* Import
 
-import { UserLoginDto, UserRegisterDto, ForgotPasswordDto, ForgotPasswordUpdateDto } from './dto';
+import {
+    UserLoginDto,
+    UserRegisterDto,
+    ForgotPasswordEmailDto,
+    ForgotPasswordUpdateDto,
+} from './dto';
 import { IApiResponse } from '../../store/api/interface';
 
 class AuthApi {
@@ -21,10 +26,10 @@ class AuthApi {
         return null;
     });
 
-    forgotPasswordCreate = createAsyncThunk<IApiResponse<void>, ForgotPasswordDto>(
+    forgotPasswordCreate = createAsyncThunk<IApiResponse<void>, ForgotPasswordEmailDto>(
         'forgotPasswordCreate',
         async (input) => {
-            const res = await this.apiCall.post<IApiResponse<void>>('/reset-password', input);
+            const res = await this.apiCall.post<IApiResponse<void>>('/otp-email', input);
             return res.data;
         },
     );
