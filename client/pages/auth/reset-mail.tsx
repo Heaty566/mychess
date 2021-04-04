@@ -6,14 +6,16 @@ import TextField from '../../components/form/textField';
 import SideLink from '../../components/link/sidelink';
 import routers from '../../common/constants/router';
 import BtnForm from '../../components/btn/btnForm';
-import LoginSocial from '../../components/form/loginSocial';
+
 import { RootState, store } from '../../store';
 import authApi from '../../api/auth';
+import { useTimer } from '../../common/hooks/useTimer';
 
 import { ForgotPasswordEmailDto } from '../../api/auth/dto';
 import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
+import { apiActions } from '../../store/api';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -24,11 +26,23 @@ const ResetEmail: React.FunctionComponent = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordEmailDto>(defaultValues);
     const [isSubmit, setIsSubmit] = React.useState(false);
+    const [timer, isDone, setTimerStatus] = useTimer(60, false);
 
     const onSubmit = (data: ForgotPasswordEmailDto) => {
         store.dispatch(authApi.forgotPasswordCreate(data));
-        setIsSubmit(isSubmit);
+        setIsSubmit(true);
+        if (isSubmit) setTimerStatus(true);
     };
+
+    const onReset = () => {
+        store.dispatch(apiActions.resetState());
+        setTimerStatus(false);
+        setIsSubmit(false);
+    };
+
+    React.useEffect(() => {
+        if (apiState.isError) setIsSubmit(false);
+    }, [apiState.isError]);
 
     return (
         <>
@@ -42,13 +56,18 @@ const ResetEmail: React.FunctionComponent = () => {
                     <p className="text-mercury-800 py-2">
                         Please enter your email, you will receive an mail to reset your password
                     </p>
+
                     {isSubmit && !apiState.isError && (
                         <>
                             <div className=" flex space-x-2">
                                 <p className="text-mercury-800">Send me an another email.</p>
-                                <button className="duration-300 hover:text-malibu text-white ">
-                                    Click Here
-                                </button>
+                                {!isDone ? (
+                                    <button className="duration-300 hover:text-malibu text-white focus:outline-none">
+                                        Click Here
+                                    </button>
+                                ) : (
+                                    <p className="text-white">{timer}s</p>
+                                )}
                             </div>
                         </>
                     )}
@@ -70,7 +89,7 @@ const ResetEmail: React.FunctionComponent = () => {
                             <BtnForm
                                 label="Change Another Email"
                                 type="button"
-                                handleOnClick={() => setIsSubmit(false)}
+                                handleOnClick={onReset}
                             />
                         ) : apiState.isLoading ? (
                             <WaveLoading />
