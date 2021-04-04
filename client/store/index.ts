@@ -5,16 +5,16 @@ import { authReducer } from './auth';
 import { IAuthState } from './auth/interface';
 
 export interface RootState {
-        api: IApiState;
-        auth: IAuthState;
+    api: IApiState;
+    auth: IAuthState;
 }
 
 const reducers = combineReducers<RootState>({
-        api: apiReducer,
-        auth: authReducer,
+    api: apiReducer,
+    auth: authReducer,
 });
 
 export const store = configureStore({
-        reducer: reducers,
-        devTools: process.env.NODE_ENV === 'production',
+    reducer: reducers,
+    devTools: process.env.NODE_ENV !== 'production',
 });

@@ -4,18 +4,31 @@
 @tailwind utilities;
 
 .semantic {
-        padding: 0;
-        margin: 0;
-        height: 0;
-        width: 0;
-        border: none;
-        outline: none;
-        visibility: hidden;
-        opacity: 0;
+    padding: 0;
+    margin: 0;
+    height: 0;
+    width: 0;
+    border: none;
+    outline: none;
+    visibility: hidden;
+    opacity: 0;
 }
 
 .chess-bg {
-        background: url('/asset/images/chess-board.jpg');
-        background-repeat: no-repeat;
-        background-size: cover;
+    background: url('/asset/images/chess-board.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+@keyframes FadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: FadeIn 0.3s;
 }

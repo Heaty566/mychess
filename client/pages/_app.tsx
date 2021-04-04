@@ -11,30 +11,30 @@ import { apiActions } from '../store/api';
 import Navbar from '../components/navbar';
 
 export interface AppProps {
-        Component: React.FunctionComponent;
-        pageProps: any;
+    Component: React.FunctionComponent;
+    pageProps: any;
 }
 
 const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
-        const cookies = new Cookies();
-        const reToken = cookies.get('re-token');
+    const cookies = new Cookies();
+    const reToken = cookies.get('re-token');
 
-        useEffect(() => {}, []);
+    useEffect(() => {}, []);
 
-        useEffect(() => {
-                store.dispatch(apiActions.resetState());
-        }, [Component]);
+    useEffect(() => {
+        store.dispatch(apiActions.resetState());
+    }, [Component]);
 
-        useEffect(() => {}, [reToken]);
+    useEffect(() => {}, [reToken]);
 
-        return (
-                <Provider store={store}>
-                        <div className="min-h-screen flex flex-col bg-gray-700">
-                                <Navbar />
-                                <Component {...pageProps} />
-                        </div>
-                </Provider>
-        );
+    return (
+        <Provider store={store}>
+            <div className="min-h-screen flex flex-col bg-gray-700">
+                <Navbar />
+                <Component {...pageProps} />
+            </div>
+        </Provider>
+    );
 };
 
 export default App;
