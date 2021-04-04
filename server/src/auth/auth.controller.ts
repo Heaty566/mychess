@@ -62,7 +62,7 @@ export class AuthController {
       @Post('/logout')
       @UseGuards(MyAuthGuard)
       async cLogout(@Req() req: Request, @Res() res: Response) {
-            await this.authService.clearToken(req.user._id);
+            await this.authService.clearToken(req.user.id);
 
             return res.cookie('re-token', '', { maxAge: -999 }).cookie('auth-token', '', { maxAge: -999 }).send();
       }

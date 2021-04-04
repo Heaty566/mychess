@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { Column, Entity, ObjectIdColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class ReToken {
@@ -10,5 +10,5 @@ export class ReToken {
       data: string;
 
       @Column()
-      userId: ObjectId;
+      userId: string;
 }

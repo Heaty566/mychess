@@ -30,11 +30,7 @@ const DBConfig = TypeOrmModule.forRoot({
 });
 
 @Module({
-      imports: [
-            Config,
-            DBConfig,
-            // AuthModule, SmailModule, UserModule, SmsModule, AwsModule, LoggerModule, RedisModule
-      ],
+      imports: [Config, DBConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule, LoggerModule, RedisModule],
       controllers: [],
 })
 export class AppModule {}

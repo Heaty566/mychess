@@ -47,11 +47,11 @@ export class AuthService {
             const authTokenId = await this.createAuthToken(data);
             const reToken = new ReToken();
             reToken.data = authTokenId;
-            reToken.userId = data._id;
-            await this.reTokenRepository.delete({ userId: data._id });
+            reToken.userId = data.id;
+            await this.reTokenRepository.delete({ userId: data.id });
             const insertedReToken = await this.reTokenRepository.save(reToken);
 
-            return String(insertedReToken._id);
+            return String(insertedReToken.id);
       }
 
       private async createAuthToken(user: User) {
@@ -63,12 +63,12 @@ export class AuthService {
       }
 
       async getAuthTokenByReToken(reTokenId: string) {
-            const reToken = await this.reTokenRepository.findOneByField('_id', reTokenId);
+            const reToken = await this.reTokenRepository.findOneByField('id', reTokenId);
             if (!reToken) return null;
 
             const isStillExit = await this.redisService.getByKey(reToken.data);
             if (!isStillExit) {
-                  const user = await this.userRepository.findOneByField('_id', reToken.userId);
+                  const user = await this.userRepository.findOneByField('id', reToken.userId);
                   const newReToken = await this.createAuthToken(user);
                   reToken.data = newReToken;
                   const updateReToken = await this.reTokenRepository.save(reToken);
@@ -85,8 +85,8 @@ export class AuthService {
             return await this.decodeToken<User>(authToken);
       }
 
-      async clearToken(userId: string | ObjectId) {
-            return await this.reTokenRepository.delete({ userId: new ObjectId(userId) });
+      async clearToken(userId: string) {
+            return await this.reTokenRepository.delete({ userId });
       }
 
       //--------------------------------Encrypt Decrypt Service -------------------------------
