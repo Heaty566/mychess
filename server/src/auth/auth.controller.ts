@@ -30,11 +30,11 @@ export class AuthController {
       async cLoginUser(@Body() body: LoginUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (!isUserExist) throw apiResponse.sendError({ body: { details: { username: 'username or password is not correct' } } });
+            if (!isUserExist) throw apiResponse.sendError({ body: { details: { username: 'or password is not correct' } } });
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
-            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'username or password is not correct' } } });
+            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'or password is not correct' } } });
 
             //return token
             const reToken = await this.authService.createReToken(isUserExist);
@@ -46,7 +46,7 @@ export class AuthController {
       async cRegisterUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (isUserExist) throw apiResponse.sendError({ body: { details: { username: 'username is already exist' } } });
+            if (isUserExist) throw apiResponse.sendError({ body: { details: { username: 'is already exist' } } });
 
             const newUser = new User();
             newUser.username = body.username;
@@ -73,12 +73,12 @@ export class AuthController {
       async cSendOTPByMail(@Body() body: UpdateEmailDTO) {
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user) {
-                  throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
+                  throw apiResponse.sendError({ body: { details: { email: 'is not found' } } });
             }
 
             const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
             if (!canSendMore) {
-                  throw apiResponse.sendError({ body: { details: { email: 'wait 30 minutes' } } });
+                  throw apiResponse.sendError({ body: { details: { email: 'is requested too many times, please try again after 30 minutes' } } });
             }
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
@@ -89,18 +89,20 @@ export class AuthController {
                         type: 'InternalServerErrorException',
                   });
 
-            return apiResponse.send({ body: { message: 'a mail has been sent to you email' } });
+            return apiResponse.send({ body: { message: 'an email has been sent to your email' } });
       }
 
       @Post('/otp-sms')
       @UsePipes(new JoiValidatorPipe(vOtpSmsDTO))
       async cSendOTPBySms(@Body() body: OtpSmsDTO) {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not correct' } } });
+            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not found' } } });
 
             const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 5, 60);
             if (!canSendMore) {
-                  throw apiResponse.sendError({ body: { details: { phoneNumber: 'wait 60 minutes' } } });
+                  throw apiResponse.sendError({
+                        body: { details: { phoneNumber: 'is requested too many times, please try again after 60 minutes' } },
+                  });
             }
 
             const otpKey = this.authService.generateOTP(user, 5, 'sms');

@@ -143,7 +143,7 @@ export class UserController {
       @UsePipes(new JoiValidatorPipe(vUpdateEmailDTO))
       async cCreateOtpByEmailWithGuard(@Body() body: UpdateEmailDTO, @Req() req: Request) {
             let user = await this.userService.findOneUserByField('email', body.email);
-            if (user) throw apiResponse.sendError({ body: { details: { email: 'email is taken' } } });
+            if (user) throw apiResponse.sendError({ body: { details: { email: 'is already exist' } } });
 
             user = req.user;
             user.email = body.email;
@@ -156,6 +156,6 @@ export class UserController {
                         type: 'InternalServerErrorException',
                   });
 
-            return apiResponse.send({ body: { message: 'a mail has been sent to you email' } });
+            return apiResponse.send({ body: { message: 'an email has been sent to your email' } });
       }
 }

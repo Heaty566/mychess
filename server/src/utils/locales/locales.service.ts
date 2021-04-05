@@ -20,6 +20,7 @@ export class LocalesService {
       static mapJoiError(errors: ValidationError) {
             const errorObj = {};
             for (const item of errors.details) {
+                  console.log(item.context);
                   errorObj[item.context.key] = i18n.__(item.type, { ...item.context });
             }
 
