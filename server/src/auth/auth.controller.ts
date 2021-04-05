@@ -76,7 +76,7 @@ export class AuthController {
                   throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
             }
 
-            const canSendMore = await this.authService.limitSendingEmail(user.email, 5, 1); // 30 instead 1, 1 for test
+            const canSendMore = await this.authService.limitSendingEmail(user.email, 5, 30);
             if (!canSendMore) {
                   throw apiResponse.sendError({ body: { details: { email: 'wait 30 minutes' } } });
             }
