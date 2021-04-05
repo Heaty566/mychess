@@ -76,7 +76,7 @@ export class AuthController {
                   throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
             }
 
-            const canSendMore = await this.authService.limitSendingEmail(user.email, 5, 30);
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
             if (!canSendMore) {
                   throw apiResponse.sendError({ body: { details: { email: 'wait 30 minutes' } } });
             }
@@ -98,10 +98,19 @@ export class AuthController {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
             if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not correct' } } });
 
-            const otpKey = this.authService.generateOTP(user, 5, 'sms');
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 5, 60);
+            if (!canSendMore) {
+                  throw apiResponse.sendError({ body: { details: { phoneNumber: 'wait 60 minutes' } } });
+            }
 
-            const res = await this.smsService.sendOTP(user.phoneNumber, otpKey);
-            if (!res) throw apiResponse.sendError({ body: { message: 'please, try again later' }, type: 'InternalServerErrorException' });
+            const otpKey = this.authService.generateOTP(user, 5, 'sms');
+            const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
+            if (!isSent)
+                  throw apiResponse.sendError({
+                        body: { details: { phoneNumber: 'please, try again later' } },
+                        type: 'InternalServerErrorException',
+                  });
+
             return apiResponse.send({ body: { message: 'an OTP has been sent to your phone number' } });
       }
 

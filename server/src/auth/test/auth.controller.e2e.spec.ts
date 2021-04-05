@@ -146,9 +146,12 @@ describe('AuthController', () => {
                   });
 
                   it('Pass', async () => {
-                        const res = await reqApi(otpSmsDTO);
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(true));
 
+                        const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(201);
+
+                        mySpy.mockClear();
                   });
 
                   it('Failed (error of sms service)', async () => {
@@ -158,6 +161,22 @@ describe('AuthController', () => {
                         } catch (err) {
                               expect(err.status).toBe(500);
                         }
+                  });
+
+                  it('Failed (spam sms', async () => {
+                        otpSmsDTO = {
+                              phoneNumber: userDB.phoneNumber,
+                        };
+
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+
+                        try {
+                              await reqApi(otpSmsDTO);
+                        } catch (err) {
+                              expect(err.status).toBe(400);
+                        }
+
+                        mySpy.mockClear();
                   });
 
                   it('Failed (phone number is not correct)', async () => {
@@ -181,9 +200,12 @@ describe('AuthController', () => {
                   });
 
                   it('Pass', async () => {
-                        const res = await reqApi(otpMail);
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(true));
 
+                        const res = await reqApi(otpMail);
                         expect(res.status).toBe(201);
+
+                        mySpy.mockClear();
                   });
 
                   it('Failed (error of smail)', async () => {
@@ -198,6 +220,22 @@ describe('AuthController', () => {
                         } catch (err) {
                               expect(err.status).toBe(500);
                         }
+                        mySpy.mockClear();
+                  });
+
+                  it('Failed (spam email)', async () => {
+                        otpMail = {
+                              email: userDB.email,
+                        };
+
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+
+                        try {
+                              await reqApi(otpMail);
+                        } catch (err) {
+                              expect(err.status).toBe(400);
+                        }
+
                         mySpy.mockClear();
                   });
 

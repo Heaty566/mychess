@@ -42,14 +42,14 @@ export class AuthService {
             return otpKey;
       }
 
-      async limitSendingEmail(email: string, maxSent: number, expiredTime: number) {
-            const isExist = await this.redisService.getByKey(email);
+      async limitSendingEmailOrSms(emailOrPhoneNumber: string, maxSent: number, expiredTime: number) {
+            const isExist = await this.redisService.getByKey(emailOrPhoneNumber);
             if (isExist) {
-                  const count = Number(await this.redisService.getByKey(email));
+                  const count = Number(await this.redisService.getByKey(emailOrPhoneNumber));
                   if (count === maxSent) return false;
-                  await this.redisService.setByValue(email, count + 1, expiredTime);
+                  await this.redisService.setByValue(emailOrPhoneNumber, count + 1, expiredTime);
             } else {
-                  await this.redisService.setByValue(email, 1, expiredTime);
+                  await this.redisService.setByValue(emailOrPhoneNumber, 1, expiredTime);
             }
             return true;
       }
