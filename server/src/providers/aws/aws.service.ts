@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import * as path from 'path';
-import { ObjectId } from 'mongodb';
+import { v4 as uuidv4 } from 'uuid';
 import { LoggerService } from '../../utils/logger/logger.service';
 
 //* Internal import
@@ -23,7 +23,7 @@ export class AwsService {
 
       async uploadFile(file: Express.Multer.File, awsPath: string, prefix: 'user' | 'system') {
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
-            const id = new ObjectId();
+            const id = uuidv4();
             const locationFile = `${prefix}/${awsPath}/${id}${fileType}`;
 
             return await this.s3

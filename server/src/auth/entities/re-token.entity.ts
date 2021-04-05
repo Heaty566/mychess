@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -6,9 +5,9 @@ export class ReToken {
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
-      @Column()
+      @Column({ nullable: false })
       data: string;
 
-      @Column()
+      @Column({ nullable: false })
       userId: string;
 }

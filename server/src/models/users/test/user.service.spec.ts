@@ -5,7 +5,7 @@ import { initTestModule } from '../../../../test/initTest';
 import { User } from '../entities/user.entity';
 import { fakeData } from '../../../../test/fakeData';
 import { UserService } from '../user.service';
-
+import { v4 as uuidv4 } from 'uuid';
 describe('UserService', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
@@ -22,23 +22,27 @@ describe('UserService', () => {
 
       describe('findOneUserByField', () => {
             it('Pass', async () => {
-                  const res = await userService.findOneUserByField('_id', userDb._id);
+                  const res = await userService.findOneUserByField('id', userDb.id);
+
                   expect(res).toBeDefined();
             });
             it('Failed user does not exist', async () => {
-                  const res = await userService.findOneUserByField('_id', '1233213');
-                  expect(res).toBeNull();
+                  const res = await userService.findOneUserByField('id', uuidv4());
+                  expect(res).toBeUndefined();
             });
       });
 
       describe('getOneUserByField', () => {
             it('Pass', async () => {
-                  const res = await userService.getOneUserByField('_id', userDb._id);
+                  const res = await userService.getOneUserByField('id', userDb.id);
+
                   expect(res).toBeDefined();
             });
             it('Failed user does not exist', async () => {
-                  const res = await userService.getOneUserByField('_id', '1233213');
-                  expect(res).toBeNull();
+                  const id = uuidv4();
+                  const res = await userService.getOneUserByField('id', id);
+
+                  expect(res).toBeUndefined();
             });
       });
 

@@ -8,7 +8,6 @@ import { User } from '../../models/users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
 import { RedisService } from '../../providers/redis/redis.service';
-import { ObjectId } from 'mongodb';
 
 describe('AuthService', () => {
       let app: INestApplication;
@@ -100,7 +99,7 @@ describe('AuthService', () => {
             });
             it('Failed Still get', async () => {
                   const reToken = await authService.createReToken(userDb);
-                  let getReToken = await reTokenRepository.findOne({ where: { _id: new ObjectId(reToken) } });
+                  let getReToken = await reTokenRepository.findOne({ where: { id: reToken } });
                   getReToken.data = 'hello';
                   getReToken = await reTokenRepository.save(getReToken);
                   const authToken = await authService.getAuthTokenByReToken(reToken);
@@ -119,7 +118,7 @@ describe('AuthService', () => {
                   reToken = await authService.createReToken(userDb);
             });
             it('Pass', async () => {
-                  const refreshToken = await reTokenRepository.findOneByField('_id', reToken);
+                  const refreshToken = await reTokenRepository.findOneByField('id', reToken);
                   const encryptedUser = await redisService.getByKey(refreshToken.data);
                   const userInformation = await authService.decodeToken<User>(encryptedUser);
 

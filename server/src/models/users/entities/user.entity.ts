@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
-import { ObjectId } from 'mongodb';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 import { UserRole } from './user.userRole.enum';
 
@@ -8,60 +7,44 @@ export class User {
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
-      @Column()
+      @Column({ default: null })
       username: string;
 
-      @Column()
+      @Column({ default: null })
       password: string;
 
-      @Column()
+      @Column({ nullable: false })
       name: string;
 
-      @Column()
+      @Column({ default: '' })
       avatarUrl: string;
 
-      @Column()
+      @Column({ default: null, unique: true })
       googleId: string;
 
-      @Column()
+      @Column({ default: null, unique: true })
       facebookId: string;
 
-      @Column()
+      @Column({ default: null, unique: true })
       githubId: string;
 
-      @Column()
+      @Column({ default: 0 })
       elo: number;
 
-      @Column()
+      @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
 
-      @Column()
+      @Column({ default: UserRole.USER.toString() })
       role: UserRole;
 
-      @Column()
+      @Column({ default: false })
       isDisabled: boolean;
 
-      @Column()
+      @Column({ default: null })
       email: string;
 
-      @Column()
+      @Column({ default: null })
       phoneNumber: string;
-
-      constructor() {
-            this.avatarUrl = '';
-            this.facebookId = '';
-            this.githubId = '';
-            this.googleId = '';
-            this.name = '';
-            this.email = '';
-            this.phoneNumber = '';
-            this.elo = 0;
-            this.password = '';
-            this.username = '';
-            this.role = UserRole.USER;
-            this.createDate = new Date();
-            this.isDisabled = false;
-      }
 }
 
 export default User;

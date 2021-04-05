@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ObjectId } from 'mongodb';
 import * as bcrypt from 'bcrypt';
-
+import { v4 as uuidv4 } from 'uuid';
 import { UserRepository } from '../models/users/entities/user.repository';
 import { ReTokenRepository } from './entities/re-token.repository';
 import { User } from '../models/users/entities/user.entity';
@@ -56,7 +55,7 @@ export class AuthService {
 
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
-            const authTokenId = new ObjectId();
+            const authTokenId = uuidv4();
 
             this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
             return String(authTokenId);
