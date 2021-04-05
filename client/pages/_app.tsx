@@ -6,9 +6,10 @@ import Cookies from 'universal-cookie';
 import '../styles/tailwind.css';
 
 //* Import
+import Navbar from '../components/navbar';
+import AutoLogin from '../common/HOC/autoLogin';
 import { store } from '../store';
 import { apiActions } from '../store/api';
-import Navbar from '../components/navbar';
 import { Provider } from 'react-redux';
 import { authActions } from '../store/auth';
 
@@ -33,7 +34,7 @@ const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
         <Provider store={store}>
             <div className="min-h-screen flex flex-col bg-gray-700">
                 <Navbar />
-                <Component {...pageProps} />
+                <AutoLogin Component={Component} props={pageProps} />
             </div>
         </Provider>
     );
