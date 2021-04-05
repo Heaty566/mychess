@@ -75,6 +75,12 @@ export class AuthController {
             if (!user) {
                   throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
             }
+
+            const canSendMore = await this.authService.limitSendingEmail(user.email, 5, 1); // 30 instead 1, 1 for test
+            if (!canSendMore) {
+                  throw apiResponse.sendError({ body: { details: { email: 'wait 30 minutes' } } });
+            }
+
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
             if (!isSent)
