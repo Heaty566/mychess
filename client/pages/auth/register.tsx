@@ -33,33 +33,12 @@ const Register: React.FunctionComponent = () => {
         <>
             <SeoHead title="Login" description="he" canonical="/" />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <form
-                    className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in "
-                    onSubmit={handleSubmit(onSubmit)}
-                >
+                <form className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in " onSubmit={handleSubmit(onSubmit)}>
                     <h1 className="text-center text-4xl text-white mb-7">Register Account</h1>
                     <div className="space-y-2">
-                        <TextField
-                            name="name"
-                            label="Name"
-                            error={errors.name}
-                            register={register}
-                            type="text"
-                        />
-                        <TextField
-                            name="username"
-                            label="Username"
-                            error={errors.username}
-                            register={register}
-                            type="text"
-                        />
-                        <TextField
-                            name="password"
-                            label="Password"
-                            error={errors.password}
-                            register={register}
-                            type="password"
-                        />
+                        <TextField name="name" label="Name" error={errors.name} register={register} type="text" />
+                        <TextField name="username" label="Username" error={errors.username} register={register} type="text" />
+                        <TextField name="password" label="Password" error={errors.password} register={register} type="password" />
                         <TextField
                             name="confirmPassword"
                             label="Confirm Password"
@@ -69,11 +48,7 @@ const Register: React.FunctionComponent = () => {
                         />
                     </div>
                     <div className="mt-4 mb-7">
-                        <SideLink
-                            label="Sign In Instead"
-                            position="text-right"
-                            href={routers.login.link}
-                        />
+                        <SideLink label="Sign In Instead" position="text-right" href={routers.login.link} />
                     </div>
                     {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign Up" />}
                     <p className="text-center my-4 text-mercury">Or continue with</p>

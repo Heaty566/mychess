@@ -1,8 +1,6 @@
 import * as React from 'react';
 
-export function usePopUpNewWindow(
-    handleOnClose: () => void,
-): [(url: string) => void, Window | undefined] {
+export function usePopUpNewWindow(handleOnClose: () => void): [(url: string) => void, Window | undefined] {
     const [isListen, setIsListen] = React.useState<boolean>(false);
     const [newWindow, setWindow] = React.useState<Window>();
 

@@ -24,7 +24,7 @@ const reducer = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(authApi.forgotPasswordCreate.fulfilled, (state, { payload }) => {
+        builder.addCase(authApi.forgotPasswordByEmail.fulfilled, (state, { payload }) => {
             const newState = { ...state };
             newState.message = payload.message;
 

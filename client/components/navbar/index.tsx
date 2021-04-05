@@ -39,11 +39,7 @@ const Navbar: React.FunctionComponent = () => {
                 </Link>
                 <NavbarMenu />
             </div>
-            <NavbarUser
-                isActiveLang={langOpen}
-                handleChangeLanguage={handleChangeLanguage}
-                handleChangeActiveLang={() => setOpenLang(!langOpen)}
-            />
+            <NavbarUser isActiveLang={langOpen} handleChangeLanguage={handleChangeLanguage} handleChangeActiveLang={() => setOpenLang(!langOpen)} />
         </div>
     );
 };

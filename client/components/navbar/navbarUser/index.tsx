@@ -10,11 +10,7 @@ export interface NavbarUserProps {
     handleChangeLanguage: THandleChangeLanguage;
 }
 
-const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({
-    handleChangeActiveLang,
-    isActiveLang,
-    handleChangeLanguage,
-}) => (
+const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeActiveLang, isActiveLang, handleChangeLanguage }) => (
     <ul className="space-x-4 text-cloud items-center self-start  hidden md:flex ">
         <li>
             <Link href={router.login.link}>

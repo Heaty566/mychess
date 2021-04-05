@@ -1,10 +1,6 @@
 import * as React from 'react';
 
-export function useTimer(
-    resetTime: number,
-    initIsRunning: boolean,
-    circle = false,
-): [number, boolean, (value: boolean) => void] {
+export function useTimer(resetTime: number, initIsRunning: boolean, circle = false): [number, boolean, (value: boolean) => void] {
     const [time, setTime] = React.useState<number>(0);
     const [startTime, setStartTime] = React.useState(0);
     const [isRunning, setIsRunning] = React.useState(initIsRunning);
@@ -15,14 +11,15 @@ export function useTimer(
     React.useEffect(() => {
         let intervalId: any;
 
-        if (isRunning || circle) {
+        if (isRunning || (circle && isRunning)) {
             intervalId = setInterval(() => {
                 if (time + 1 >= resetTime) {
-                    setIsRunning(false);
                     setTime(0);
+                    if (!circle) setIsRunning(false);
                 }
+
                 setTime(((Date.now() - startTime) / 1000) % resetTime);
-            }, 1000);
+            }, 300);
         }
         return () => {
             clearInterval(intervalId);

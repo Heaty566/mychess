@@ -13,6 +13,9 @@ export interface UserRegisterDto {
 export interface ForgotPasswordEmailDto {
     email: string;
 }
+export interface ForgotPasswordPhoneDto {
+    phoneNumber: string;
+}
 export interface ForgotPasswordUpdateDto {
     newPassword: string;
     resetKey: string;

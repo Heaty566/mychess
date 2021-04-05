@@ -30,14 +30,8 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
         <Head>
             <meta charSet="UTF-8" />
             <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
-            <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0, user-scalable=0"
-            />
-            <meta
-                name="google-site-verification"
-                content="BWOjVaLMrQlDDZSMNRtScpbtQTBOWSuuZLoFe6IwjV4"
-            />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+            <meta name="google-site-verification" content="BWOjVaLMrQlDDZSMNRtScpbtQTBOWSuuZLoFe6IwjV4" />
             {/* common header */}
             <title>{pageTitle}</title>
             <meta name="description" content={description} />

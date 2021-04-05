@@ -29,6 +29,10 @@
     }
 }
 
+.text-first-uppercase::first-letter {
+    text-transform: uppercase;
+}
+
 .fade-in {
     animation: FadeIn 0.3s;
 }

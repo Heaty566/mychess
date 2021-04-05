@@ -6,11 +6,7 @@ export interface BtnFormProps {
     handleOnClick?: Function;
 }
 
-const BtnForm: React.FunctionComponent<BtnFormProps> = ({
-    label,
-    type = 'submit',
-    handleOnClick = () => {},
-}) => (
+const BtnForm: React.FunctionComponent<BtnFormProps> = ({ label, type = 'submit', handleOnClick = () => {} }) => (
     <button
         className="bg-btn-1 w-full py-2 text-white rounded-sm focus:outline-none "
         type={type}
