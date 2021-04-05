@@ -35,5 +35,6 @@
     "update user success": "cập nhật thành công",
     "problem occurs when sending email": "xảy ra lỗi trong quá trình gửi tin nhắn",
     "a mail has been sent to you email": "mail đã được gửi đến email của bạn",
-    "wait 30 minutes": "đợi 30 phút"
+    "wait 30 minutes": "đợi 30 phút",
+    "wait 60 minutes": "đợi 60 phút"
 }

@@ -30,6 +30,31 @@ describe('AuthService', () => {
             redisService = module.get<RedisService>(RedisService);
       });
 
+      describe('limitSendingEmailOrSms', () => {
+            beforeEach(async () => {
+                  await redisService.deleteByKey('email1@gmail.com');
+                  await redisService.deleteByKey('email2@gmail.com');
+
+                  await redisService.setByValue('email1@gmail.com', 1);
+            });
+
+            it('Pass (first send)', async () => {
+                  const result = await authService.limitSendingEmailOrSms('email2@gmail.com', 5, 30);
+                  expect(result).toBe(true);
+            });
+
+            it('Pass (do not oversend)', async () => {
+                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  expect(result).toBe(true);
+            });
+
+            it('Fail (oversend', async () => {
+                  await redisService.setByValue('email1@gmail.com', 5);
+                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  expect(result).toBe(false);
+            });
+      });
+
       describe('getAuthTokenByReToken', () => {
             let reToken: string;
 
