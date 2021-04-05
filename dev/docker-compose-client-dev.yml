@@ -10,3 +10,11 @@ services:
                         - 4000:4000
                 env_file:
                         - ./config/server.env
+        mysqldb:
+                image: mysql
+                restart: always
+                environment:
+                        MYSQL_ROOT_PASSWORD: 123456
+                        MYSQL_DATABASE: mygame
+                ports:
+                        - 3366:3306

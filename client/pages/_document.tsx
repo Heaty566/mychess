@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React from 'react';
 
 import Document, { Head, Html, NextScript, Main } from 'next/document';
@@ -27,7 +29,10 @@ export default class MyDocument extends Document {
                     <meta name="msapplication-TileColor" content="#ffffff" />
                     <meta name="msapplication-TileImage" content="/asset/share/ms-icon-144x144.png" />
                     <meta name="theme-color" content="#ffffff" />
+                    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FEMBDB700Z"></script>
+                    <script type="text/javascript" src="/static/google.script.js"></script>
                 </Head>
+
                 <body>
                     <Main />
                     <NextScript />
