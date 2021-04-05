@@ -75,10 +75,10 @@ const ResetEmail: React.FunctionComponent = () => {
                         </>
                     )}
                     <div className="mt-4 mb-4">
-                        {isSubmit && !apiState.isError ? (
-                            <BtnForm label="Change Another Email" type="button" handleOnClick={onReset} />
-                        ) : apiState.isLoading ? (
+                        {apiState.isLoading ? (
                             <WaveLoading />
+                        ) : isSubmit && !apiState.isError ? (
+                            <BtnForm label="Change Another Email" type="button" handleOnClick={onReset} />
                         ) : (
                             <BtnForm label="Send An Email" />
                         )}
