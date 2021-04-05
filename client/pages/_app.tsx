@@ -2,13 +2,15 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import Cookies from 'universal-cookie';
-import { Provider } from 'react-redux';
+
 import '../styles/tailwind.css';
 
 //* Import
 import { store } from '../store';
 import { apiActions } from '../store/api';
 import Navbar from '../components/navbar';
+import { Provider } from 'react-redux';
+import { authActions } from '../store/auth';
 
 export interface AppProps {
     Component: React.FunctionComponent;
@@ -17,15 +19,15 @@ export interface AppProps {
 
 const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
     const cookies = new Cookies();
-    const reToken = cookies.get('re-token');
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        const reToken = cookies.get('re-token');
+        if (reToken) store.dispatch(authActions.updateLogin());
+    }, []);
 
     useEffect(() => {
         store.dispatch(apiActions.resetState());
     }, [Component]);
-
-    useEffect(() => {}, [reToken]);
 
     return (
         <Provider store={store}>

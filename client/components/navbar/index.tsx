@@ -8,13 +8,21 @@ import NavbarUser from './navbarUser';
 import router from '../../common/constants/router';
 import NavbarMobile from './navbarMobile';
 import { THandleChangeLanguage } from './navbarLang';
+import { IAuthState } from '../../store/auth/interface';
+import { RootState, store } from '../../store';
+import { useSelector } from 'react-redux';
+import userApi from '../../api/user';
 
 const Navbar: React.FunctionComponent = () => {
     const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(false);
     const [langOpen, setOpenLang] = React.useState(false);
+    const authState = useSelector<RootState, IAuthState>((state) => state.auth);
     const handleChangeLanguage: THandleChangeLanguage = (langKey: string) => {
         console.log(langKey);
     };
+    React.useEffect(() => {
+        if (authState.isLogin) store.dispatch(userApi.getLoginUser());
+    }, [authState.isLogin]);
 
     return (
         <div className="h-16 md:h-24 bg-woodsmoke flex justify-evenly items-center py-3  relative ">

@@ -36,12 +36,6 @@ const reducer = createSlice({
 
             return newState;
         });
-        builder.addCase(authApi.forgotPasswordUpdate.fulfilled, (state, { payload }) => {
-            const newState = { ...state };
-            newState.message = payload.message;
-
-            return newState;
-        });
     },
 });
 
