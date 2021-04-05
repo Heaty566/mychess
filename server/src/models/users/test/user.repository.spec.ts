@@ -26,14 +26,14 @@ describe('UserRepository', () => {
 
             it('Pass (field is _id)', async () => {
                   const userData = await userRepository.findOneByField('name', userDb.name);
-                  const res = await userRepository.findOneByField('_id', userData._id.toHexString());
+                  const res = await userRepository.findOneByField('id', userData.id);
                   expect(res).toBeDefined();
                   expect(res.username).toBe(userDb.username);
             });
 
             it('Failed (is not valid _id)', async () => {
-                  const res = await userRepository.findOneByField('_id', fakeData(10, 'lettersAndNumbers'));
-                  expect(res).toBeNull();
+                  const res = await userRepository.findOneByField('id', fakeData(10, 'lettersAndNumbers'));
+                  expect(res).toBeUndefined();
             });
       });
 

@@ -227,7 +227,7 @@ describe('AuthController', () => {
 
             it('Pass', async () => {
                   const res = await reqApi(reToken);
-                  const checkToken = await reTokenRepository.findOne({ where: { userId: new Object(user._id) } });
+                  const checkToken = await reTokenRepository.findOne({ where: { userId: user.id } });
 
                   expect(checkToken).toBe(undefined);
                   expect(res.status).toBe(201);

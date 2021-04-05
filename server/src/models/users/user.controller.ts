@@ -32,7 +32,7 @@ export class UserController {
       @Get('/')
       @UseGuards(MyAuthGuard)
       async cGetUser(@Req() req: Request) {
-            const user = await this.userService.getOneUserByField('_id', req.user._id);
+            const user = await this.userService.getOneUserByField('id', req.user.id);
 
             return apiResponse.send<User>({ body: { data: user } });
       }
@@ -41,7 +41,7 @@ export class UserController {
       @Put('/')
       @UseGuards(MyAuthGuard)
       async cUpdateUserBasicInformation(@Req() req: Request, @Body(new JoiValidatorPipe(vUpdateUserDto)) body: UpdateUserDto) {
-            const user = await this.userService.findOneUserByField('_id', req.user._id);
+            const user = await this.userService.findOneUserByField('id', req.user.id);
             user.name = body.name;
             await this.userService.saveUser(user);
 
@@ -69,10 +69,10 @@ export class UserController {
                         isTranslateDetails: true,
                   });
 
-            const fileLocation = await this.awsService.uploadFile(file, String(req.user._id), 'user');
+            const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');
             if (!fileLocation) throw apiResponse.sendError({ body: { message: 'please, try again later' }, type: 'InternalServerErrorException' });
 
-            const user = await this.userService.getOneUserByField('_id', req.user._id);
+            const user = await this.userService.getOneUserByField('id', req.user.id);
             user.avatarUrl = '/' + fileLocation;
             await this.userService.saveUser(user);
 
@@ -127,7 +127,7 @@ export class UserController {
             let user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
             if (user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is already exist' } } });
 
-            user = await this.userService.findOneUserByField('_id', req.user._id);
+            user = await this.userService.findOneUserByField('id', req.user.id);
 
             user.phoneNumber = body.phoneNumber;
 

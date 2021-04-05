@@ -13,7 +13,9 @@ export class RedisService {
        */
       setObjectByKey(key: string, value: Record<string, any>, expired?: number) {
             const flatValue: Record<string, any> = flat(value);
-            this.redisRepository.hmset(key, flatValue);
+            const convertToString = JSON.stringify(flatValue);
+
+            this.redisRepository.set(key, convertToString);
             if (expired) {
                   this.redisRepository.expire(key, expired * 60);
             }
@@ -25,13 +27,13 @@ export class RedisService {
 
       getObjectByKey<T>(key: string) {
             return new Promise<T>((res, rej) => {
-                  this.redisRepository.hgetall(key, (err, data) => {
+                  this.redisRepository.get(key, (err, data) => {
                         if (err) {
                               this.logger.print(err, 'error');
                               return rej(null);
                         }
-
-                        res(flat.unflatten(data) as T);
+                        const convertToJson = JSON.parse(flat.unflatten(data));
+                        res(convertToJson as T);
                   });
             });
       }

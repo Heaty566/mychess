@@ -18,11 +18,14 @@ const Config = ConfigModule.forRoot({
       envFilePath: `./config/.env.${process.env.NODE_ENV}`,
 });
 const DBConfig = TypeOrmModule.forRoot({
-      url: process.env.DB_URL,
-      type: 'mongodb',
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: 3306,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      useUnifiedTopology: true,
       entities: [User, ReToken],
 });
 

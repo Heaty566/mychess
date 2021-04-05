@@ -1,14 +1,13 @@
-import { ObjectId } from 'mongodb';
-import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class ReToken {
-      @ObjectIdColumn()
-      _id: ObjectId;
+      @PrimaryGeneratedColumn('uuid')
+      id: string;
 
-      @Column()
+      @Column({ nullable: false })
       data: string;
 
-      @Column()
-      userId: ObjectId;
+      @Column({ nullable: false })
+      userId: string;
 }

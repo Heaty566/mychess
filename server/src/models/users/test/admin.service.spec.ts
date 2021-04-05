@@ -35,7 +35,7 @@ describe('AdminService', () => {
 
             it('Pass Change to Admin', async () => {
                   const user = await adminService.toggleUserRole(testUser);
-                  const getUser = await userRepository.findOneByField('_id', user._id);
+                  const getUser = await userRepository.findOneByField('id', user.id);
 
                   expect(getUser.username).toBe(testUser.username);
                   expect(user.role).toBe(UserRole.ADMIN);
@@ -43,7 +43,7 @@ describe('AdminService', () => {
             });
             it('Pass Change to User', async () => {
                   const user = await adminService.toggleUserRole(testUser);
-                  const getUser = await userRepository.findOneByField('_id', testUser._id);
+                  const getUser = await userRepository.findOneByField('id', testUser.id);
 
                   expect(getUser.username).toBe(testUser.username);
                   expect(user.role).toBe(UserRole.USER);
@@ -59,7 +59,7 @@ describe('AdminService', () => {
             });
             it('Pass Change to true', async () => {
                   const user = await adminService.toggleUserStatus(testUser);
-                  const getUser = await userRepository.findOneByField('_id', testUser._id);
+                  const getUser = await userRepository.findOneByField('id', testUser.id);
 
                   expect(getUser.username).toBe(testUser.username);
                   expect(user.role).toBeTruthy();
@@ -68,7 +68,7 @@ describe('AdminService', () => {
 
             it('Pass Change to false', async () => {
                   const user = await adminService.toggleUserStatus(testUser);
-                  const getUser = await userRepository.findOneByField('_id', user._id);
+                  const getUser = await userRepository.findOneByField('id', user.id);
 
                   expect(getUser.username).toBe(testUser.username);
                   expect(user.isDisabled).toBeFalsy();

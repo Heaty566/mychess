@@ -165,7 +165,7 @@ describe('UserController E2E', () => {
                   it('Pass', async () => {
                         const res = await reqApi(body);
 
-                        const getUser = await userRepository.findOneByField('_id', user._id);
+                        const getUser = await userRepository.findOneByField('id', user.id);
 
                         expect(getUser.name.toLocaleLowerCase()).toBe(body.name.toLocaleLowerCase());
                         expect(getUser.username).toBe(user.username);
@@ -287,7 +287,7 @@ describe('UserController E2E', () => {
                   it('Pass', async () => {
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(body, redisKey);
-                        const getUser = await userRepository.findOneByField('_id', user._id);
+                        const getUser = await userRepository.findOneByField('id', user.id);
                         const isMatch = await authService.decryptString(body.newPassword, getUser.password);
                         const afterRedisKey = await redisService.getObjectByKey(redisKey);
                         expect(res.status).toBe(200);
@@ -302,8 +302,7 @@ describe('UserController E2E', () => {
                         expect(res.status).toBe(403);
                   });
                   it('Failed redis expired', async () => {
-                        const res = await reqApi(body, 123456);
-
+                        const res = await reqApi(body, '123456');
                         expect(res.status).toBe(403);
                   });
             });

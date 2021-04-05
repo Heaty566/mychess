@@ -26,7 +26,7 @@ async function bootstrap() {
             logger.log(`Listening on port ${port}`);
             logger.log(`Current mode: ${process.env.NODE_ENV}`);
             logger.log(`Cors allows access: ${process.env.CLIENT_URL}`);
-            logger.log(`Database Information: ${process.env.DB_URL}`);
+            logger.log(`Database Information: ${process.env.DB_HOST}`);
             logger.log('Ready for service');
       });
 }
