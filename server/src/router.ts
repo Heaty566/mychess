@@ -24,7 +24,7 @@ export function router(app: INestApplication) {
       app.use(I18n.init);
       app.setGlobalPrefix('/api');
       app.use(cookieParser());
-      app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
+      app.enableCors({ origin: [process.env.CLIENT_URL, process.env.ADMIN_URL], credentials: true });
 
       //for production
       if (process.env.NODE_ENV === 'production') {
@@ -47,8 +47,7 @@ export function router(app: INestApplication) {
       //handle for multiple language
       app.use((req: Request, res: Response, next: NextFunction) => {
             //set header
-            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL);
-            res.header('Access-Control-Allow-Methods', '*');
+            res.header('Access-Control-Allow-Methods', 'POST, GET, PUT');
             res.header('Access-Control-Allow-Headers', '*');
 
             const lang = req.cookies['lang'] || '';

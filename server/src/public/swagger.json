@@ -66,32 +66,6 @@
                                     "$ref": "#/components/responses/401"
                               }
                         }
-                  },
-                  "put": {
-                        "tags": ["user"],
-                        "description": "update basic user information",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
-                        "requestBody": {
-                              "$ref": "#/components/requestBodies/UpdateBasicUserDto"
-                        },
-                        "responses": {
-                              "200": {
-                                    "description": "user update successfully",
-                                    "content": {
-                                          "application/json": {
-                                                "schema": {
-                                                      "$ref": "#/components/schemas/CommonApiResponse"
-                                                }
-                                          }
-                                    }
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              }
-                        }
                   }
             },
             "/api/auth/register": {
