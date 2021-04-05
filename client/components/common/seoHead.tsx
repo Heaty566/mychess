@@ -1,6 +1,7 @@
+// @ts-nocheck
+
 import * as React from 'react';
 import Head from 'next/head';
-
 export interface SeoHeadProps {
     title: string;
     description?: string;
@@ -32,6 +33,11 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
             <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
             <meta name="google-site-verification" content="BWOjVaLMrQlDDZSMNRtScpbtQTBOWSuuZLoFe6IwjV4" />
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-FEMBDB700Z"></script>
+            <script>
+                window.dataLayer = window.dataLayer || []; function gtag()dataLayer.push(arguments); gtag('js', new Date()); gtag('config',
+                'G-FEMBDB700Z');
+            </script>
             {/* common header */}
             <title>{pageTitle}</title>
             <meta name="description" content={description} />
