@@ -9,12 +9,11 @@ import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import { RootState, store } from '../../store';
 import authApi from '../../api/auth';
-
 import { UserLoginDto } from '../../api/auth/dto';
 import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
-
+import { RouteGuard } from '../../common/HOC/routeGuard';
 const defaultValues: UserLoginDto = {
     password: '',
     username: '',
@@ -51,4 +50,6 @@ const Login: React.FunctionComponent = () => {
         </>
     );
 };
-export default Login;
+
+const LoginRoute = (props: any) => RouteGuard({ Component: Login, props: { ...props } });
+export default LoginRoute;

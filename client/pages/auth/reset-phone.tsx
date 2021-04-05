@@ -55,7 +55,7 @@ const ResetEmail: React.FunctionComponent = () => {
 
                     {isSubmit && !apiState.isError && (
                         <>
-                            {/* ------------ Resend email start ------------------- */}
+                            {/* ------------ Resend OTP start ------------------- */}
                             <div className=" flex space-x-2">
                                 <p className="text-mercury-800">Send me an another OTP.</p>
                                 {!isDone ? (
@@ -64,7 +64,7 @@ const ResetEmail: React.FunctionComponent = () => {
                                     <p className="text-white">{timer}s</p>
                                 )}
                             </div>
-                            {/* ------------ Resend email end ------------------- */}
+                            {/* ------------ Resend OTP end ------------------- */}
                         </>
                     )}
                     {!isSubmit && (
@@ -75,10 +75,10 @@ const ResetEmail: React.FunctionComponent = () => {
                         </>
                     )}
                     <div className="mt-4 mb-4">
-                        {isSubmit && !apiState.isError ? (
-                            <BtnForm label="Change Another Phone Number" type="button" handleOnClick={onReset} />
-                        ) : apiState.isLoading ? (
+                        {apiState.isLoading ? (
                             <WaveLoading />
+                        ) : isSubmit && !apiState.isError ? (
+                            <BtnForm label="Change Another Phone Number" type="button" handleOnClick={onReset} />
                         ) : (
                             <BtnForm label="Send An OTP" />
                         )}

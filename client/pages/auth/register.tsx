@@ -31,7 +31,7 @@ const Register: React.FunctionComponent = () => {
 
     return (
         <>
-            <SeoHead title="Login" description="he" canonical="/" />
+            <SeoHead title="Register" description="he" canonical="/" />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <form className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in " onSubmit={handleSubmit(onSubmit)}>
                     <h1 className="text-center text-4xl text-white mb-7">Register Account</h1>

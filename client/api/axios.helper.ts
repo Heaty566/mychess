@@ -6,20 +6,22 @@ import { IApiResponse } from '../store/api/interface';
 import { apiActions } from '../store/api';
 import { store } from '../store';
 
-axios.defaults.baseURL = process.env.SERVER_URL;
-axios.defaults.withCredentials = true;
-
-axios.interceptors.request.use((req) => {
-    store.dispatch(apiActions.initReq());
-    return req;
+const axiosClient = axios.create({
+    baseURL: process.env.SERVER_URL,
+    withCredentials: true,
 });
 
-axios.interceptors.response.use(
-    (response) => {
+axiosClient.interceptors.request.use(function (req) {
+    store.dispatch(apiActions.initReq());
+
+    return req;
+});
+axiosClient.interceptors.response.use(
+    function (response) {
         store.dispatch(apiActions.resetState());
         return response;
     },
-    (error: AxiosError<IApiResponse<null>>) => {
+    function (error: AxiosError<IApiResponse<null>>) {
         store.dispatch(apiActions.resetState());
         if (error.response?.status === 400) {
             store.dispatch(apiActions.updateErrorDetails(error.response.data.details));
@@ -30,8 +32,9 @@ axios.interceptors.response.use(
             cookies.set('auth-token', '', { maxAge: -999 });
             store.dispatch(apiActions.updateErrorDetails(error.response.data.details));
         }
+
         return Promise.reject(error.response);
     },
 );
 
-export default axios;
+export default axiosClient;
