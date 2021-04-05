@@ -36,6 +36,7 @@ export class AuthService {
 
       generateOTP(user: User, expired: number, type: 'sms' | 'email') {
             const otpKey = this.generateOtpKey(type === 'email' ? 50 : 6, type);
+
             this.redisService.setObjectByKey(otpKey, user, expired);
             return otpKey;
       }

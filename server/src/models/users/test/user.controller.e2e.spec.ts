@@ -303,7 +303,6 @@ describe('UserController E2E', () => {
                   });
                   it('Failed redis expired', async () => {
                         const res = await reqApi(body, '123456');
-                        console.log(res.body);
                         expect(res.status).toBe(403);
                   });
             });
