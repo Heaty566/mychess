@@ -1,8 +1,7 @@
-// @ts-nocheck
-
 import React from 'react';
-
+import { Provider } from 'react-redux';
 import Document, { Head, Html, NextScript, Main } from 'next/document';
+import { store } from '../store';
 
 //* Import
 

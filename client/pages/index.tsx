@@ -5,7 +5,7 @@ export interface HomeProps {}
 
 const Home: React.FunctionComponent<HomeProps> = () => (
     <>
-        <h1>213</h1>
+        <h1>index page</h1>
     </>
 );
 

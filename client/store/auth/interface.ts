@@ -1,10 +1,11 @@
 export interface IUser {
+    id: string;
     username: string;
     name: string;
-    email: string;
     avatarUrl: string;
-    isPremium: boolean;
-    role: string;
+    elo: number;
+    email: string;
+    phoneNumber: string;
 }
 
 export interface IAuthState extends IUser {
