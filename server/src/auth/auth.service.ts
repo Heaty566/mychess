@@ -7,6 +7,7 @@ import { ReTokenRepository } from './entities/re-token.repository';
 import { User } from '../models/users/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
 import { RedisService } from '../providers/redis/redis.service';
+import { number } from 'joi';
 
 @Injectable()
 export class AuthService {
@@ -39,6 +40,18 @@ export class AuthService {
 
             this.redisService.setObjectByKey(otpKey, user, expired);
             return otpKey;
+      }
+
+      async limitSendingEmail(email: string, maxSent: number, expiredTime: number) {
+            const isExist = await this.redisService.getByKey(email);
+            if (isExist) {
+                  const count = Number(await this.redisService.getByKey(email));
+                  if (count === maxSent) return false;
+                  await this.redisService.setByValue(email, count + 1, expiredTime);
+            } else {
+                  await this.redisService.setByValue(email, 1, expiredTime);
+            }
+            return true;
       }
 
       //-------------------------------Token Service --------------------------------------
