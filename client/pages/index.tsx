@@ -5,7 +5,6 @@ export interface HomeProps {}
 
 const Home: React.FunctionComponent<HomeProps> = () => (
     <>
-        <SeoHead title="Hello" description="he" canonical="/" />
         <h1>213</h1>
     </>
 );
