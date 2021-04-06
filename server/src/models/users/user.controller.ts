@@ -119,6 +119,14 @@ export class UserController {
             this.redisService.deleteByKey(otp);
       }
 
+      @Post('/check-top/:otp')
+      async cCheckOTP(@Param('otp') otp: string) {
+            const isExist = await this.redisService.getObjectByKey<User>(otp);
+            if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'invalid otp' } });
+
+            return apiResponse.send<void>({ body: { message: 'valid otp' } });
+      }
+
       //-----------------------------------Create-OTP--WITH GUARD-------------------------------
       @Post('/otp-sms')
       @UseGuards(MyAuthGuard)

@@ -45,7 +45,7 @@ export class SmailService {
                   <h2>Hello</h2>
                   <p>You receiving this email because we received a password request for your account.</p>
                   </br>
-                  <p>Please click this link:<a href="${process.env.CLIENT_URL}/user/reset-password/${OTP}">Click here</a>
+                  <p>Please click this link:<a href="${process.env.CLIENT_URL}/user/password/${OTP}">Click here</a>
                   </p>
                   </br>
             </div>`,
@@ -60,7 +60,7 @@ export class SmailService {
                   <h2>Hello</h2>
                   <p>You receiving this email because we received update email request for your account.</p>
                   </br>
-                  <p>Please click this link:</p><a href="${process.env.CLIENT_URL}/user/update-email/${OTP}">Click here</a>
+                  <p>Please click this link:</p><a href="${process.env.CLIENT_URL}/user/email/${OTP}">Click here</a>
                   </br>
             </div>`,
             );
