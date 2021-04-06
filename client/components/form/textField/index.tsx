@@ -14,7 +14,13 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
         <label htmlFor={name} className="block text-cotton-seed ">
             {label}
         </label>
-        <input type={type} id={name} className="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury" {...register(name)} />
+        <input
+            type={type}
+            id={name}
+            className="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
+            {...register(name)}
+            autoComplete={type === 'password' ? 'off' : 'on'}
+        />
         {Boolean(error.length) && <p className="text-red-500 fade-in">{`${label} ${error}`}</p>}
     </div>
 );

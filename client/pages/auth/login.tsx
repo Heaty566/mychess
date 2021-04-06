@@ -1,20 +1,22 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+
 import SeoHead from '../../components/common/seoHead';
-import TextField from '../../components/form/textField';
-import SideLink from '../../components/link/sidelink';
 import routers from '../../common/constants/router';
+import { UserLoginDto } from '../../api/auth/dto';
+import { RootState, store } from '../../store';
+import authThunk from '../../store/auth/thunk';
+import { IApiState } from '../../store/api/interface';
+import { RouteGuard } from '../../common/HOC/routeGuard';
+import useFormError from '../../common/hooks/useFormError';
+
+import TextField from '../../components/form/textField';
+import SideLink from '../../components/link/sideLink';
 import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
-import { RootState, store } from '../../store';
-import authApi from '../../api/auth';
-import { UserLoginDto } from '../../api/auth/dto';
-import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
-import useFormError from '../../common/hooks/useFormError';
-import { RouteGuard } from '../../common/HOC/routeGuard';
-import authThunk from '../../store/auth/thunk';
+
 const defaultValues: UserLoginDto = {
     password: '',
     username: '',

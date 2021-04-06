@@ -1,12 +1,12 @@
-import http from '../axios.helper';
+import { AxiosInstance } from 'axios';
 
 import { IApiResponse } from '../../store/api/interface';
 import { IUser } from '../../store/auth/interface';
-import { AxiosInstance } from 'axios';
+import http from '../axiosCommon';
 
 export class UserAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {
-        apiCall.defaults.baseURL = `${process.env.SERVER_URL + prefix}`;
+        this.apiCall.defaults.baseURL = `${process.env.SERVER_URL + prefix}`;
     }
 
     async getCurrentUser() {
@@ -15,5 +15,5 @@ export class UserAPI {
     }
 }
 
-export const userAPI = new UserAPI(http, '/user');
+export const userAPI = new UserAPI(http(), '/user');
 export default userAPI;

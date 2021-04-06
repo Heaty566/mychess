@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IAuthState } from './interface';
-import { authThunk } from '../auth/thunk';
-import { userAPI } from '../../api/user';
 import Cookies from 'universal-cookie';
+
+import { IAuthState } from './interface';
 import { userThunk } from './userThunk';
+import { authThunk } from '../auth/thunk';
+
 const initialState: IAuthState = {
     email: '',
     username: '',

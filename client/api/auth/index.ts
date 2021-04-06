@@ -1,14 +1,16 @@
-import http from '../axios.helper';
 import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from './dto';
 import { IApiResponse } from '../../store/api/interface';
-import { AxiosInstance } from 'axios';
 
+import { AxiosInstance } from 'axios';
+import http from '../axiosCommon';
 export class AuthAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {
-        apiCall.defaults.baseURL = `${process.env.SERVER_URL + prefix}`;
+        console.log(`${process.env.SERVER_URL + prefix}`);
+        this.apiCall.defaults.baseURL = `${process.env.SERVER_URL + prefix}`;
     }
 
     async loginUser(input: UserLoginDto) {
+        console.log(this.apiCall.defaults.baseURL);
         const res = await this.apiCall.post<IApiResponse<null>>('/login', input);
         return res;
     }
@@ -28,5 +30,5 @@ export class AuthAPI {
         return res;
     }
 }
-export const authApi = new AuthAPI(http, '/auth');
+export const authApi = new AuthAPI(http(), '/auth');
 export default authApi;

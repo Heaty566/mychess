@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IJoiError, IApiState } from './interface';
 
+import { IJoiError, IApiState } from './interface';
 import { authThunk } from '../auth/thunk';
 
 const initialState: IApiState = {
