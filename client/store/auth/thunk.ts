@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+
 import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from '../../api/auth/dto';
 import { AuthAPI, authApi } from '../../api/auth';
 import { IApiResponse } from '../api/interface';
@@ -7,12 +8,12 @@ class AuthThunk {
     constructor(private readonly apiCall: AuthAPI) {}
 
     loginUser = createAsyncThunk<null, UserLoginDto>('UserLoginDto', async (input) => {
-        this.apiCall.loginUser(input);
+        await this.apiCall.loginUser(input);
         return null;
     });
 
     registerUser = createAsyncThunk<null, UserRegisterDto>('UserRegisterDto', async (input) => {
-        this.apiCall.registerUser(input);
+        await this.apiCall.registerUser(input);
         return null;
     });
 

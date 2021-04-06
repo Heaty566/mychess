@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+
 import { IUser } from '../../store/auth/interface';
 import { UserAPI, userAPI } from '../../api/user';
 

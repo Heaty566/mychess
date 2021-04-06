@@ -2,17 +2,15 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import Cookies from 'universal-cookie';
-
 import '../styles/tailwind.css';
-
-//* Import
-import Navbar from '../components/navbar';
-import AutoLogin from '../common/HOC/autoLogin';
 import { store } from '../store';
+
 import { apiActions } from '../store/api';
 import { Provider } from 'react-redux';
+import AutoLogin from '../common/HOC/autoLogin';
 import { authActions } from '../store/auth';
 
+import Navbar from '../components/navbar';
 export interface AppProps {
     Component: React.FunctionComponent;
     pageProps: any;

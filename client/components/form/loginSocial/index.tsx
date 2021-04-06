@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Cookies from 'universal-cookie';
-import config from './config';
+
 import { usePopUpNewWindow } from '../../../common/hooks/usePopUpNewWindow';
+import config from './config';
 
 export interface LoginSocialProps {}
 

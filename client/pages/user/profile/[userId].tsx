@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { userAPI } from '../../../api/user';
 import { GetServerSideProps, GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
 
 export interface ProfileProps {}
@@ -38,6 +39,8 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
 
 export async function getServerSideProps(context: GetServerSidePropsContext<{ userId: string }>) {
     console.log(context.params?.userId);
+    const res = await userAPI.getCurrentUser();
+
     return {
         props: {},
     };

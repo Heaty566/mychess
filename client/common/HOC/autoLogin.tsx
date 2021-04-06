@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import userApi from '../../api/user';
+
+import userThunk from '../../store/auth/userThunk';
 import { RootState, store } from '../../store';
 import { IAuthState } from '../../store/auth/interface';
-import userThunk from '../../store/auth/userThunk';
 
 export interface AuthLoginProps {
     Component: Function;

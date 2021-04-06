@@ -1,7 +1,8 @@
 import * as React from 'react';
+
 import { THandleChangeLanguage } from '../navbarLang';
-import MobileNavBtn from './mobileNavBtn';
 import MobileNavSideMenu from './mobileSideMenu';
+import MobileNavBtn from './mobileNavBtn';
 
 export interface NavbarMobileProps {
     handleChangeActive(): void;

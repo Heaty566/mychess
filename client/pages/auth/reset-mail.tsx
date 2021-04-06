@@ -1,23 +1,22 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+
 import SeoHead from '../../components/common/seoHead';
-import TextField from '../../components/form/textField';
-import SideLink from '../../components/link/sidelink';
 import routers from '../../common/constants/router';
-import BtnForm from '../../components/btn/btnForm';
-
 import { RootState, store } from '../../store';
-import authApi from '../../api/auth';
 import { useTimer } from '../../common/hooks/useTimer';
-
 import { ForgotPasswordEmailDto } from '../../api/auth/dto';
 import { IApiState } from '../../store/api/interface';
-import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
 import { RouteGuard } from '../../common/HOC/routeGuard';
 import authThunk from '../../store/auth/thunk';
+
+import TextField from '../../components/form/textField';
+import SideLink from '../../components/link/sidelink';
+import BtnForm from '../../components/btn/btnForm';
+import WaveLoading from '../../components/loading/waveLoading';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',

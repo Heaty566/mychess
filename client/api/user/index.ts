@@ -1,16 +1,15 @@
-import http from '../axios.helper';
-
-import { IApiResponse } from '../../store/api/interface';
-import { IUser } from '../../store/auth/interface';
 import { AxiosInstance } from 'axios';
 
+import http from '../axiosCommon';
+import { IApiResponse } from '../../store/api/interface';
+import { IUser } from '../../store/auth/interface';
+
 export class UserAPI {
-    constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {
-        apiCall.defaults.baseURL = `${process.env.SERVER_URL + prefix}`;
-    }
+    constructor(private readonly apiCall: AxiosInstance, private readonly prefix: string) {}
 
     async getCurrentUser() {
-        const res = await this.apiCall.get<IApiResponse<IUser>>('/');
+        const url = `${this.prefix + '/'}`;
+        const res = await this.apiCall.get<IApiResponse<IUser>>(url);
         return res;
     }
 }

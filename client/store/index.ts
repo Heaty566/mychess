@@ -1,4 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+
 import { apiReducer } from './api';
 import { IApiState } from './api/interface';
 import { authReducer } from './auth';

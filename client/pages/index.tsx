@@ -1,5 +1,4 @@
 import * as React from 'react';
-import SeoHead from '../components/common/seoHead';
 
 export interface HomeProps {}
 

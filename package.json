@@ -1,9 +1,6 @@
 {
         "dependencies": {
-                "@nestjs/typeorm": "^7.1.5",
-                "husky": "^6.0.0",
-                "mysql2": "^2.2.5",
-                "typeorm": "^0.2.32"
+                "husky": "^6.0.0",  
         },
         "private": true,
         "scripts": {
