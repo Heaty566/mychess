@@ -16,6 +16,8 @@ import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
+import { RouteGuard } from '../../common/HOC/routeGuard';
+import authThunk from '../../store/auth/thunk';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -29,7 +31,7 @@ const ResetEmail: React.FunctionComponent = () => {
     const [timer, isDone, setTimerStatus] = useTimer(60, false);
 
     const onSubmit = (data: ForgotPasswordEmailDto) => {
-        store.dispatch(authApi.forgotPasswordByEmail(data));
+        store.dispatch(authThunk.forgotPasswordByEmail(data));
         setIsSubmit(true);
         if (isSubmit) setTimerStatus(true);
     };
@@ -92,4 +94,5 @@ const ResetEmail: React.FunctionComponent = () => {
         </>
     );
 };
-export default ResetEmail;
+const ResetMailRoute = (props: any) => RouteGuard({ Component: ResetEmail, props: { ...props } });
+export default ResetMailRoute;

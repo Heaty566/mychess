@@ -20,9 +20,6 @@ const Navbar: React.FunctionComponent = () => {
     const handleChangeLanguage: THandleChangeLanguage = (langKey: string) => {
         console.log(langKey);
     };
-    React.useEffect(() => {
-        if (authState.isLogin) store.dispatch(userApi.getLoginUser());
-    }, [authState.isLogin]);
 
     return (
         <div className="h-16 md:h-24 bg-woodsmoke flex justify-evenly items-center py-3  relative ">

@@ -14,6 +14,7 @@ import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
 import { RouteGuard } from '../../common/HOC/routeGuard';
+import authThunk from '../../store/auth/thunk';
 const defaultValues: UserLoginDto = {
     password: '',
     username: '',
@@ -24,7 +25,7 @@ const Login: React.FunctionComponent = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserLoginDto>(defaultValues);
 
-    const onSubmit = (data: UserLoginDto) => store.dispatch(authApi.loginUser(data));
+    const onSubmit = (data: UserLoginDto) => store.dispatch(authThunk.loginUser(data));
 
     return (
         <>

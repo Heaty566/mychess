@@ -1,28 +1,32 @@
 import http from '../axios.helper';
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from './dto';
 import { IApiResponse } from '../../store/api/interface';
+import { AxiosInstance } from 'axios';
 
-export const authApi = {
-    loginUser: createAsyncThunk<null, UserLoginDto>('UserLoginDto', async (input) => {
-        await http.post<IApiResponse<null>>('/auth/login', input);
-        return null;
-    }),
+export class AuthAPI {
+    constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {
+        apiCall.defaults.baseURL = `${process.env.SERVER_URL + prefix}`;
+    }
 
-    registerUser: createAsyncThunk<null, UserRegisterDto>('UserRegisterDto', async (input) => {
-        await http.post<IApiResponse<null>>('/auth/register', input);
-        return null;
-    }),
+    async loginUser(input: UserLoginDto) {
+        const res = await this.apiCall.post<IApiResponse<null>>('/login', input);
+        return res;
+    }
 
-    forgotPasswordByEmail: createAsyncThunk<IApiResponse<void>, ForgotPasswordEmailDto>('ForgotPasswordEmailDto', async (input) => {
-        const res = await http.post<IApiResponse<void>>('/auth/otp-email', input);
-        return res.data;
-    }),
+    async registerUser(input: UserRegisterDto) {
+        const res = await this.apiCall.post<IApiResponse<null>>('/register', input);
+        return res;
+    }
 
-    forgotPasswordByPhone: createAsyncThunk<IApiResponse<void>, ForgotPasswordPhoneDto>('ForgotPasswordPhoneDto', async (input) => {
-        const res = await http.post<IApiResponse<void>>('/auth/otp-sms', input);
-        return res.data;
-    }),
-};
+    async forgotPasswordByEmail(input: ForgotPasswordEmailDto) {
+        const res = await this.apiCall.post<IApiResponse<void>>('/otp-email', input);
+        return res;
+    }
 
+    async forgotPasswordByPhone(input: ForgotPasswordPhoneDto) {
+        const res = await this.apiCall.post<IApiResponse<void>>('/otp-sms', input);
+        return res;
+    }
+}
+export const authApi = new AuthAPI(http, '/auth');
 export default authApi;
