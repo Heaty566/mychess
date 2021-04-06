@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { GetServerSideProps, GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
 
 export interface ProfileProps {}
 
@@ -34,5 +35,12 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
         </div>
     );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext<{ userId: string }>) {
+    console.log(context.params?.userId);
+    return {
+        props: {},
+    };
+}
 
 export default Profile;

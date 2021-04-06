@@ -16,12 +16,14 @@ import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
+import { RouteGuard } from '../../common/HOC/routeGuard';
+import authThunk from '../../store/auth/thunk';
 
 const defaultValues: ForgotPasswordPhoneDto = {
     phoneNumber: '',
 };
 
-const ResetEmail: React.FunctionComponent = () => {
+const ResetPhone: React.FunctionComponent = () => {
     const { register, handleSubmit } = useForm<ForgotPasswordPhoneDto>({ defaultValues });
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordPhoneDto>(defaultValues);
@@ -29,7 +31,7 @@ const ResetEmail: React.FunctionComponent = () => {
     const [timer, isDone, setTimerStatus] = useTimer(60, false);
 
     const onSubmit = (data: ForgotPasswordPhoneDto) => {
-        store.dispatch(authApi.forgotPasswordByPhone(data));
+        store.dispatch(authThunk.forgotPasswordByPhone(data));
         setIsSubmit(true);
         if (isSubmit) setTimerStatus(true);
     };
@@ -92,4 +94,5 @@ const ResetEmail: React.FunctionComponent = () => {
         </>
     );
 };
-export default ResetEmail;
+const ResetPhoneRoute = (props: any) => RouteGuard({ Component: ResetPhone, props: { ...props } });
+export default ResetPhoneRoute;
