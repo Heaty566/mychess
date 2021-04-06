@@ -12,6 +12,12 @@ import { RedisModule } from './providers/redis/redis.module';
 
 import { User } from './models/users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
+import { RoomModule } from './models/rooms/room.module';
+import { ChatModule } from './models/chats/chat.module';
+import { MessagesModule } from './models/messages/messages.module';
+import Room from './models/rooms/entities/room.entity';
+import { Chat } from './models/chats/entities/chat.entity';
+import { Message } from './models/messages/entities/message.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -26,11 +32,24 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken],
+      entities: [User, ReToken, Room, Chat, Message],
 });
 
 @Module({
-      imports: [Config, DBConfig, AuthModule, SmailModule, UserModule, SmsModule, AwsModule, LoggerModule, RedisModule],
+      imports: [
+            Config,
+            DBConfig,
+            AuthModule,
+            SmailModule,
+            UserModule,
+            SmsModule,
+            AwsModule,
+            LoggerModule,
+            RedisModule,
+            RoomModule,
+            ChatModule,
+            MessagesModule,
+      ],
       controllers: [],
 })
 export class AppModule {}
