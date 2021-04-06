@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'universal-cookie';
 
 import { IAuthState } from './interface';
+import { authThunk } from './thunk';
 import { userThunk } from './userThunk';
-import { authThunk } from '../auth/thunk';
 
 const initialState: IAuthState = {
     email: '',
@@ -20,7 +20,7 @@ const reducer = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        resetAuth: () => ({ ...initialState }),
+        resetState: () => ({ ...initialState }),
         updateLogin: (state) => ({ ...state, isLogin: true }),
     },
     extraReducers: (builder) => {
@@ -33,7 +33,7 @@ const reducer = createSlice({
             newState.elo = payload.elo;
             newState.id = payload.id;
             newState.avatarUrl = payload.avatarUrl;
-
+            newState.isLogin = true;
             return newState;
         });
         builder.addCase(authThunk.loginUser.fulfilled, (state) => ({ ...state, isLogin: true }));
