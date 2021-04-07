@@ -2,7 +2,7 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from
 import { EventsService } from './events.service';
 import { Server } from 'socket.io';
 
-@WebSocketGateway(8000)
+@WebSocketGateway()
 export class EventsGateway {
       constructor(private readonly eventsService: EventsService) {}
 
