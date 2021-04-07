@@ -21,7 +21,7 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
             {...register(name)}
             autoComplete={type === 'password' ? 'off' : 'on'}
         />
-        {Boolean(error.length) && <p className="text-red-500 fade-in">{`${label} ${error}`}</p>}
+        {Boolean(error.length) && <p className="text-red-500 fade-in" data-testid={`${name}-error`}>{`${label} ${error}`}</p>}
     </div>
 );
 

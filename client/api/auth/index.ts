@@ -7,7 +7,6 @@ export class AuthAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
 
     async loginUser(input: UserLoginDto) {
-        console.log('helloo');
         const url = `${this.prefix + '/login'}`;
         const res = await this.apiCall.post<IApiResponse<null>>(url, input);
         return res;

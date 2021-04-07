@@ -10,6 +10,7 @@ const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
     const cookies = new Cookies();
     const [openNewWindow, newWindow] = usePopUpNewWindow(() => {
         const reToken = cookies.get('re-token');
+
         if (reToken && newWindow) {
             newWindow.close();
             window.location.reload();
@@ -24,6 +25,7 @@ const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
                     key={item.label}
                     onClick={() => openNewWindow(process.env.SERVER_URL + item.url)}
                     className="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
+                    data-testid={item.label}
                 >
                     <item.Icon />
 

@@ -4,23 +4,27 @@ import { useSelector } from 'react-redux';
 
 import { IAuthState } from '../../store/auth/interface';
 import { RootState } from '../../store';
-export interface UserRouterProps {
+export interface UserRouterProps<T> {
     Component: Function;
-    props: any;
+    props: T;
     isNeedLogin?: boolean;
 }
 
-export const RouteGuard: React.FunctionComponent<UserRouterProps> = ({ Component, props, isNeedLogin = false }) => {
-    const authState = useSelector<RootState, IAuthState>((state) => state.auth);
-    const router = useRouter();
+export const RouteGuard = <T extends any>({ Component, props, isNeedLogin = false }: UserRouterProps<T>) => {
+    const Render: React.FunctionComponent<UserRouterProps<T>> = ({ Component, props, isNeedLogin = false }) => {
+        const authState = useSelector<RootState, IAuthState>((state) => state.auth);
+        const router = useRouter();
 
-    useEffect(() => {
-        if (!authState.isLogin && isNeedLogin) {
-            router.push('/auth/login');
-        } else if (!isNeedLogin && authState.isLogin) {
-            router.push('/');
-        }
-    }, [authState.isLogin]);
+        useEffect(() => {
+            if (!authState.isLogin && isNeedLogin) {
+                router.push('/auth/login');
+            } else if (!isNeedLogin && authState.isLogin) {
+                router.push('/');
+            }
+        }, [authState.isLogin]);
 
-    return <Component {...props} />;
+        return <Component {...props} />;
+    };
+
+    return Render({ Component, props, isNeedLogin });
 };
