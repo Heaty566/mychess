@@ -12,7 +12,7 @@ import { RouteGuard } from '../../common/HOC/routeGuard';
 import useFormError from '../../common/hooks/useFormError';
 
 import TextField from '../../components/form/textField';
-import SideLink from '../../components/link/sideLink';
+import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
@@ -21,19 +21,26 @@ const defaultValues: UserLoginDto = {
     password: '',
     username: '',
 };
+export interface LoginProps {
+    handleOnSubmit: (data: UserLoginDto) => void;
+}
 
-const Login: React.FunctionComponent = () => {
+const onSubmit = (data: UserLoginDto) => store.dispatch(authThunk.loginUser(data));
+
+const Login: React.FunctionComponent<LoginProps> = ({ handleOnSubmit }) => {
     const { register, handleSubmit } = useForm<UserLoginDto>({ defaultValues });
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserLoginDto>(defaultValues);
-
-    const onSubmit = (data: UserLoginDto) => store.dispatch(authThunk.loginUser(data));
 
     return (
         <>
             <SeoHead title="Register" description="he" canonical="/" />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <form className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in " onSubmit={handleSubmit(onSubmit)}>
+                <form
+                    className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in "
+                    onSubmit={handleSubmit(handleOnSubmit)}
+                    data-testid="login-form"
+                >
                     <h1 className="text-center text-4xl text-white mb-7">Login Account</h1>
                     <div className="space-y-2">
                         <TextField name="username" label="Username" error={errors.username} register={register} type="text" />
@@ -42,6 +49,7 @@ const Login: React.FunctionComponent = () => {
                     <div className="mt-4 mb-7">
                         <SideLink label="Sign Up Instead" position="text-right" href={routers.register.link} />
                     </div>
+
                     {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign In" />}
                     <p className="text-center my-4 text-mercury">Or continue with</p>
                     <LoginSocial />
@@ -54,5 +62,5 @@ const Login: React.FunctionComponent = () => {
     );
 };
 
-const LoginRoute = (props: any) => RouteGuard({ Component: Login, props: { ...props } });
+const LoginRoute = (props: LoginProps) => RouteGuard<LoginProps>({ Component: Login, props: { ...props, handleOnSubmit: onSubmit } });
 export default LoginRoute;

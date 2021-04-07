@@ -12,7 +12,7 @@ import { RouteGuard } from '../../common/HOC/routeGuard';
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
-import SideLink from '../../components/link/sideLink';
+import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
