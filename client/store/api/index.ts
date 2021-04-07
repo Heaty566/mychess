@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IJoiError, IApiState } from './interface';
 
-import authApi from '../../api/auth';
+import { IJoiError, IApiState } from './interface';
+import { authThunk } from '../auth/thunk';
 
 const initialState: IApiState = {
     isLoading: false,
@@ -24,13 +24,13 @@ const reducer = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(authApi.forgotPasswordByEmail.fulfilled, (state, { payload }) => {
+        builder.addCase(authThunk.forgotPasswordByEmail.fulfilled, (state, { payload }) => {
             const newState = { ...state };
             newState.message = payload.message;
 
             return newState;
         });
-        builder.addCase(authApi.forgotPasswordByPhone.fulfilled, (state, { payload }) => {
+        builder.addCase(authThunk.forgotPasswordByPhone.fulfilled, (state, { payload }) => {
             const newState = { ...state };
             newState.message = payload.message;
 

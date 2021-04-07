@@ -1,10 +1,9 @@
+import { store } from '../store';
 import axios, { AxiosError } from 'axios';
 import Cookies from 'universal-cookie';
 
-//* Import
 import { IApiResponse } from '../store/api/interface';
 import { apiActions } from '../store/api';
-import { store } from '../store';
 
 const axiosClient = axios.create({
     baseURL: process.env.SERVER_URL,

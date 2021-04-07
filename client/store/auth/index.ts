@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IAuthState } from './interface';
-import { authApi } from '../../api/auth';
-import { userApi } from '../../api/user';
 import Cookies from 'universal-cookie';
+
+import { IAuthState } from './interface';
+import { authThunk } from './thunk';
+import { userThunk } from './userThunk';
 
 const initialState: IAuthState = {
     email: '',
@@ -19,11 +20,11 @@ const reducer = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        resetAuth: () => ({ ...initialState }),
+        resetState: () => ({ ...initialState }),
         updateLogin: (state) => ({ ...state, isLogin: true }),
     },
     extraReducers: (builder) => {
-        builder.addCase(userApi.getLoginUser.fulfilled, (state, { payload }) => {
+        builder.addCase(userThunk.getCurrentUser.fulfilled, (state, { payload }) => {
             const newState = { ...state };
             newState.name = payload.name;
             newState.username = payload.username;
@@ -32,12 +33,12 @@ const reducer = createSlice({
             newState.elo = payload.elo;
             newState.id = payload.id;
             newState.avatarUrl = payload.avatarUrl;
-
+            newState.isLogin = true;
             return newState;
         });
-        builder.addCase(authApi.loginUser.fulfilled, (state) => ({ ...state, isLogin: true }));
-        builder.addCase(authApi.registerUser.fulfilled, (state) => ({ ...state, isLogin: true }));
-        builder.addCase(userApi.getLoginUser.rejected, (state) => {
+        builder.addCase(authThunk.loginUser.fulfilled, (state) => ({ ...state, isLogin: true }));
+        builder.addCase(authThunk.registerUser.fulfilled, (state) => ({ ...state, isLogin: true }));
+        builder.addCase(userThunk.getCurrentUser.rejected, (state) => {
             const cookies = new Cookies();
             cookies.remove('re-token');
             cookies.remove('auth-token');

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Link from 'next/link';
-import config from './config';
+
 import NavbarLang, { THandleChangeLanguage } from '../navbarLang';
+import config from './config';
 
 export interface MobileNavSideMenuProps {
     isActive: boolean;

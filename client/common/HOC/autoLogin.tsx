@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
-import userApi from '../../api/user';
+
+import userThunk from '../../store/auth/userThunk';
 import { RootState, store } from '../../store';
 import { IAuthState } from '../../store/auth/interface';
 
@@ -13,7 +14,7 @@ const AutoLogin: React.FunctionComponent<AuthLoginProps> = ({ Component, props }
     const authState = useSelector<RootState, IAuthState>((state) => state.auth);
 
     React.useEffect(() => {
-        if (authState.isLogin) store.dispatch(userApi.getLoginUser());
+        if (authState.isLogin) store.dispatch(userThunk.getCurrentUser());
     }, [authState.isLogin]);
     return <Component {...props} />;
 };

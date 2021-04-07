@@ -1,19 +1,21 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+
 import SeoHead from '../../components/common/seoHead';
+import routers from '../../common/constants/router';
+import { RootState, store } from '../../store';
+import { UserRegisterDto } from '../../api/auth/dto';
+import { IApiState } from '../../store/api/interface';
+import useFormError from '../../common/hooks/useFormError';
+import { RouteGuard } from '../../common/HOC/routeGuard';
+import authThunk from '../../store/auth/thunk';
+
 import TextField from '../../components/form/textField';
 import SideLink from '../../components/link/sidelink';
-import routers from '../../common/constants/router';
 import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
-import { RootState, store } from '../../store';
-import authApi from '../../api/auth';
-
-import { UserLoginDto, UserRegisterDto } from '../../api/auth/dto';
-import { IApiState } from '../../store/api/interface';
 import WaveLoading from '../../components/loading/waveLoading';
-import useFormError from '../../common/hooks/useFormError';
 
 const defaultValues: UserRegisterDto = {
     name: '',
@@ -27,7 +29,7 @@ const Register: React.FunctionComponent = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserRegisterDto>(defaultValues);
 
-    const onSubmit = (data: UserRegisterDto) => store.dispatch(authApi.registerUser(data));
+    const onSubmit = (data: UserRegisterDto) => store.dispatch(authThunk.registerUser(data));
 
     return (
         <>
@@ -58,4 +60,6 @@ const Register: React.FunctionComponent = () => {
         </>
     );
 };
-export default Register;
+
+const RegisterRoute = (props: any) => RouteGuard({ Component: Register, props: { ...props } });
+export default RegisterRoute;

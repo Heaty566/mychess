@@ -1,28 +1,25 @@
 import Link from 'next/link';
 import * as React from 'react';
+import Cookies from 'universal-cookie';
+
 import LogoIcons from '../../public/asset/icons/navbar-logo.svg';
 import LogoMdIcons from '../../public/asset/icons/navbar-logo-md.svg';
+
+import { THandleChangeLanguage } from './navbarLang';
+import router from '../../common/constants/router';
 import NavbarMenu from './navbarMenu';
 import NavbarUser from './navbarUser';
-
-import router from '../../common/constants/router';
 import NavbarMobile from './navbarMobile';
-import { THandleChangeLanguage } from './navbarLang';
-import { IAuthState } from '../../store/auth/interface';
-import { RootState, store } from '../../store';
-import { useSelector } from 'react-redux';
-import userApi from '../../api/user';
 
 const Navbar: React.FunctionComponent = () => {
     const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(false);
     const [langOpen, setOpenLang] = React.useState(false);
-    const authState = useSelector<RootState, IAuthState>((state) => state.auth);
+
     const handleChangeLanguage: THandleChangeLanguage = (langKey: string) => {
-        console.log(langKey);
+        const cookies = new Cookies();
+        cookies.set('lang', langKey);
+        window.location.reload();
     };
-    React.useEffect(() => {
-        if (authState.isLogin) store.dispatch(userApi.getLoginUser());
-    }, [authState.isLogin]);
 
     return (
         <div className="h-16 md:h-24 bg-woodsmoke flex justify-evenly items-center py-3  relative ">

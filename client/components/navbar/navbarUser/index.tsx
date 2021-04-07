@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Link from 'next/link';
-import router from '../../../common/constants/router';
 
 import NavbarLang, { THandleChangeLanguage } from '../navbarLang';
+import router from '../../../common/constants/router';
 
 export interface NavbarUserProps {
     isActiveLang: boolean;

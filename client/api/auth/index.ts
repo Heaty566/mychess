@@ -1,28 +1,35 @@
-import http from '../axios.helper';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import http from '../axiosCommon';
+import { AxiosInstance } from 'axios';
 import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from './dto';
 import { IApiResponse } from '../../store/api/interface';
 
-export const authApi = {
-    loginUser: createAsyncThunk<null, UserLoginDto>('UserLoginDto', async (input) => {
-        await http.post<IApiResponse<null>>('/auth/login', input);
-        return null;
-    }),
+export class AuthAPI {
+    constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
 
-    registerUser: createAsyncThunk<null, UserRegisterDto>('UserRegisterDto', async (input) => {
-        await http.post<IApiResponse<null>>('/auth/register', input);
-        return null;
-    }),
+    async loginUser(input: UserLoginDto) {
+        console.log('helloo');
+        const url = `${this.prefix + '/login'}`;
+        const res = await this.apiCall.post<IApiResponse<null>>(url, input);
+        return res;
+    }
 
-    forgotPasswordByEmail: createAsyncThunk<IApiResponse<void>, ForgotPasswordEmailDto>('ForgotPasswordEmailDto', async (input) => {
-        const res = await http.post<IApiResponse<void>>('/auth/otp-email', input);
-        return res.data;
-    }),
+    async registerUser(input: UserRegisterDto) {
+        const url = `${this.prefix + '/register'}`;
+        const res = await this.apiCall.post<IApiResponse<null>>(url, input);
+        return res;
+    }
 
-    forgotPasswordByPhone: createAsyncThunk<IApiResponse<void>, ForgotPasswordPhoneDto>('ForgotPasswordPhoneDto', async (input) => {
-        const res = await http.post<IApiResponse<void>>('/auth/otp-sms', input);
-        return res.data;
-    }),
-};
+    async forgotPasswordByEmail(input: ForgotPasswordEmailDto) {
+        const url = `${this.prefix + '/otp-email'}`;
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        return res;
+    }
 
+    async forgotPasswordByPhone(input: ForgotPasswordPhoneDto) {
+        const url = `${this.prefix + '/otp-sms'}`;
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        return res;
+    }
+}
+export const authApi = new AuthAPI(http, '/auth');
 export default authApi;
