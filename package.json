@@ -12,6 +12,7 @@
                 "precommit": "yarn run server:dev && cd server && yarn run format && yarn run test",
                 "test": "yarn run server:dev && cd server && yarn install && yarn run test",
                 "deploy": "yarn run docker-build && yarn run docker-push",
+                "docker-update": "docker pull heaty566/my-game-server:latest && docker pull heaty566/my-game-client:latest && docker pull heaty566/my-game-admin:latest",
                 "docker-build": "yarn run docker-build:server && yarn run docker-build:client && yarn run docker-build:admin",
                 "docker-build:server": "cd server && docker build . -t heaty566/my-game-server:latest",
                 "docker-build:client": "cd client && docker build . -t heaty566/my-game-client:latest",

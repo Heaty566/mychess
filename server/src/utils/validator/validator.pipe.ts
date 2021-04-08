@@ -10,7 +10,7 @@ export class JoiValidatorPipe implements PipeTransform {
 
       transform(input: any) {
             const { error, value } = this.schema.validate(input, { abortEarly: false });
-            if (error) throw apiResponse.sendError({ body: { details: LocalesService.mapJoiError(error), message: 'invalid input' } });
+            if (error) throw apiResponse.sendError({ body: { details: LocalesService.mapJoiError(error), message: 'user.invalid-input' } });
 
             return value;
       }

@@ -30,11 +30,11 @@ export class AuthController {
       async cLoginUser(@Body() body: LoginUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (!isUserExist) throw apiResponse.sendError({ body: { details: { username: 'or password is not correct' } } });
+            if (!isUserExist) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
-            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'or password is not correct' } } });
+            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             //return token
             const reToken = await this.authService.createReToken(isUserExist);
@@ -46,7 +46,7 @@ export class AuthController {
       async cRegisterUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (isUserExist) throw apiResponse.sendError({ body: { details: { username: 'is already exist' } } });
+            if (isUserExist) throw apiResponse.sendError({ body: { details: { username: 'user.field-taken' } } });
 
             const newUser = new User();
             newUser.username = body.username;
@@ -73,35 +73,35 @@ export class AuthController {
       async cSendOTPByMail(@Body() body: UpdateEmailDTO) {
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user) {
-                  throw apiResponse.sendError({ body: { details: { email: 'is not found' } } });
+                  throw apiResponse.sendError({ body: { details: { email: 'user.field.not-found' } } });
             }
 
             const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
             if (!canSendMore) {
-                  throw apiResponse.sendError({ body: { details: { email: 'is requested too many times, please try again after 30 minutes' } } });
+                  throw apiResponse.sendError({ body: { details: { email: 'user.request-many-time-30p' } } });
             }
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({
-                        body: { details: { email: 'problem occurs when sending email' } },
+                        body: { details: { email: 'server.some-wrong' } },
                         type: 'InternalServerErrorException',
                   });
 
-            return apiResponse.send({ body: { message: 'an email has been sent to your email' } });
+            return apiResponse.send({ body: { message: 'server.send-email-otp' } });
       }
 
       @Post('/otp-sms')
       @UsePipes(new JoiValidatorPipe(vOtpSmsDTO))
       async cSendOTPBySms(@Body() body: OtpSmsDTO) {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not found' } } });
+            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field.not-found' } } });
 
             const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 5, 60);
             if (!canSendMore) {
                   throw apiResponse.sendError({
-                        body: { details: { phoneNumber: 'is requested too many times, please try again after 60 minutes' } },
+                        body: { details: { phoneNumber: 'user.request-many-time-60p' } },
                   });
             }
 
@@ -109,11 +109,11 @@ export class AuthController {
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
             if (!isSent)
                   throw apiResponse.sendError({
-                        body: { details: { phoneNumber: 'please, try again later' } },
+                        body: { details: { phoneNumber: 'server.some-wrong' } },
                         type: 'InternalServerErrorException',
                   });
 
-            return apiResponse.send({ body: { message: 'an OTP has been sent to your phone number' } });
+            return apiResponse.send({ body: { message: 'server.send-phone-otp' } });
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------

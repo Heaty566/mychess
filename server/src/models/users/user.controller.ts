@@ -45,7 +45,7 @@ export class UserController {
             user.name = body.name;
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({ body: { message: 'update user successfully' } });
+            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
       @Put('/avatar')
@@ -57,7 +57,7 @@ export class UserController {
             const isCorrectSize = this.awsService.checkFileSize(file, 1);
             if (!isCorrectSize)
                   throw apiResponse.sendError({
-                        body: { details: { avatar: "couldn't be uploaded. Photos should be smaller than {{size}} MB" } },
+                        body: { details: { avatar: 'aws.file-too-big' } },
                         context: { size: '1' },
                         isTranslateDetails: true,
                   });
@@ -65,38 +65,38 @@ export class UserController {
             const isCorrectFileExtension = this.awsService.checkFileExtension(file);
             if (!isCorrectFileExtension)
                   throw apiResponse.sendError({
-                        body: { details: { avatar: "couldn't be uploaded. Photos should be saved as JPEG, JPG, PNG, BMP files" } },
+                        body: { details: { avatar: 'aws.file-wrong-extension' } },
                         isTranslateDetails: true,
                   });
 
             const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');
-            if (!fileLocation) throw apiResponse.sendError({ body: { message: 'please, try again later' }, type: 'InternalServerErrorException' });
+            if (!fileLocation) throw apiResponse.sendError({ body: { message: 'server.some-wrong' }, type: 'InternalServerErrorException' });
 
             const user = await this.userService.getOneUserByField('id', req.user.id);
             user.avatarUrl = '/' + fileLocation;
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({ body: { message: 'update user successfully' } });
+            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
       @Put('/password/:otp')
       async cUpdatePasswordByOtp(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO) {
             const redisUser = await this.redisService.getObjectByKey<User>(otp);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'action is not allowed' } });
+            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
             const user = await this.userService.findOneUserByField('username', redisUser.username);
 
             user.password = await this.authService.encryptString(body.newPassword);
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(otp);
 
-            return apiResponse.send<void>({ body: { message: 'update user successfully' } });
+            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
       @Put('/email/:otp')
       @UseGuards(MyAuthGuard)
       async cUpdateEmailByOTP(@Param('otp') otp: string) {
             const redisUser = await this.redisService.getObjectByKey<User>(otp);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'action is not allowed' } });
+            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
 
             const user = await this.userService.findOneUserByField('username', redisUser.username);
             user.email = redisUser.email;
@@ -104,14 +104,14 @@ export class UserController {
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(otp);
 
-            return apiResponse.send<void>({ body: { message: 'update user successfully' } });
+            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
       @Put('/phone/:otp')
       @UseGuards(MyAuthGuard)
       async cUpdatePhoneByOTP(@Param('otp') otp: string) {
             const redisUser = await this.redisService.getObjectByKey<User>(otp);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'action is not allowed' } });
+            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
 
             const user = await this.userService.findOneUserByField('username', redisUser.username);
             user.phoneNumber = redisUser.phoneNumber;
@@ -125,7 +125,7 @@ export class UserController {
       @UsePipes(new JoiValidatorPipe(vOtpSmsDTO))
       async cCreateOTPBySmsWithGuard(@Body() body: OtpSmsDTO, @Req() req: Request) {
             let user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is already exist' } } });
+            if (user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field-taken' } } });
 
             user = await this.userService.findOneUserByField('id', req.user.id);
 
@@ -133,9 +133,9 @@ export class UserController {
 
             const otpKey = this.authService.generateOTP(user, 10, 'sms');
             const res = await this.smsService.sendOTP(user.phoneNumber, otpKey);
+            if (!res) throw apiResponse.sendError({ body: { message: 'server.some-wrong' }, type: 'InternalServerErrorException' });
 
-            if (!res) throw apiResponse.sendError({ body: { message: 'please, try again later' }, type: 'InternalServerErrorException' });
-            return apiResponse.send({ body: { message: 'an OTP has been sent to your phone number' } });
+            return apiResponse.send({ body: { message: 'server.send-phone-otp' } });
       }
 
       @Post('/otp-email')
@@ -143,7 +143,7 @@ export class UserController {
       @UsePipes(new JoiValidatorPipe(vUpdateEmailDTO))
       async cCreateOtpByEmailWithGuard(@Body() body: UpdateEmailDTO, @Req() req: Request) {
             let user = await this.userService.findOneUserByField('email', body.email);
-            if (user) throw apiResponse.sendError({ body: { details: { email: 'is already exist' } } });
+            if (user) throw apiResponse.sendError({ body: { details: { email: 'user.field-taken' } } });
 
             user = req.user;
             user.email = body.email;
@@ -152,10 +152,10 @@ export class UserController {
             const isSent = await this.smailService.sendOTPForUpdateEmail(user.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({
-                        body: { details: { email: 'problem occurs when sending email' } },
+                        body: { details: { email: 'server.some-wrong' } },
                         type: 'InternalServerErrorException',
                   });
 
-            return apiResponse.send({ body: { message: 'an email has been sent to your email' } });
+            return apiResponse.send({ body: { message: 'server.send-email-otp' } });
       }
 }
