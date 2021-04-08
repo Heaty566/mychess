@@ -7,7 +7,7 @@ const initialState: IApiState = {
     isLoading: false,
     errorDetails: {},
     isError: false,
-    message: '',
+    message: '122222222',
 };
 
 const reducer = createSlice({
@@ -15,7 +15,7 @@ const reducer = createSlice({
     initialState,
     reducers: {
         initReq: (state) => ({ ...state, isLoading: true, isError: false }),
-        resetState: (state) => ({ ...initialState }),
+        resetState: (_) => ({ ...initialState }),
         updateErrorDetails: (state, { payload }: PayloadAction<IJoiError>) => {
             const newState = { ...state };
             newState.errorDetails = payload;

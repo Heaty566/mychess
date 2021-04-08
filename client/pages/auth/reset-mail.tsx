@@ -17,6 +17,7 @@ import TextField from '../../components/form/textField';
 import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
+import MsgSuccess from '../../components/form/msgSuccess';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -49,46 +50,47 @@ const ResetEmail: React.FunctionComponent = () => {
         <>
             <SeoHead title="Reset Password" description="he" canonical="/" />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <form className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in " onSubmit={handleSubmit(onSubmit)}>
-                    <h1 className="text-center text-4xl text-white mb-7">Reset Password</h1>
-                    {Boolean(apiState.message) && <p className="text-first-uppercase text-green-500 fade-in">{apiState.message}</p>}
-                    <p className="text-mercury-800 py-2">Please enter your email, you will receive an mail to reset your password</p>
+                <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <h1 className="text-center text-4xl text-white mb-7">Reset Password</h1>
+                        <MsgSuccess message={apiState.message} />
+                        <p className="text-mercury-800 py-2">Please enter your email, you will receive an mail to reset your password</p>
 
-                    {isSubmit && !apiState.isError && (
-                        <>
-                            {/* ------------ Resend email start ------------------- */}
-                            <div className=" flex space-x-2">
-                                <p className="text-mercury-800">Send me an another email.</p>
-                                {!isDone ? (
-                                    <button className="duration-300 hover:text-malibu text-white focus:outline-none">Click Here</button>
-                                ) : (
-                                    <p className="text-white">{timer}s</p>
-                                )}
-                            </div>
-                            {/* ------------ Resend email end ------------------- */}
-                        </>
-                    )}
-                    {!isSubmit && (
-                        <>
-                            <div className="space-y-2">
-                                <TextField name="email" label="Email" error={errors.email} register={register} type="text" />
-                            </div>
-                        </>
-                    )}
-                    <div className="mt-4 mb-4">
-                        {apiState.isLoading ? (
-                            <WaveLoading />
-                        ) : isSubmit && !apiState.isError ? (
-                            <BtnForm label="Change Another Email" type="button" handleOnClick={onReset} />
-                        ) : (
-                            <BtnForm label="Send An Email" />
+                        {isSubmit && !apiState.isError && (
+                            <>
+                                {/* ------------ Resend email start ------------------- */}
+                                <div className=" flex space-x-2">
+                                    <p className="text-mercury-800">Send me an another email.</p>
+                                    {!isDone ? (
+                                        <button className="duration-300 hover:text-malibu text-white focus:outline-none">Click Here</button>
+                                    ) : (
+                                        <p className="text-white">{timer}s</p>
+                                    )}
+                                </div>
+                                {/* ------------ Resend email end ------------------- */}
+                            </>
                         )}
-                    </div>
-
+                        {!isSubmit && (
+                            <>
+                                <div className="space-y-2">
+                                    <TextField name="email" label="Email" error={errors.email} register={register} type="text" />
+                                </div>
+                            </>
+                        )}
+                        <div className="mt-4 mb-4">
+                            {apiState.isLoading ? (
+                                <WaveLoading />
+                            ) : isSubmit && !apiState.isError ? (
+                                <BtnForm label="Change Another Email" type="button" handleOnClick={onReset} />
+                            ) : (
+                                <BtnForm label="Send An Email" />
+                            )}
+                        </div>
+                    </form>
                     <div>
                         <SideLink label="Or Reset By Phone Number?" position="text-center" href={routers.forgotPasswordPhone.link} />
                     </div>
-                </form>
+                </div>
             </div>
         </>
     );
