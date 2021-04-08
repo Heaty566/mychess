@@ -1,4 +1,4 @@
-import { Chat } from '../../chats/entities/chat.entity';
+import { Chat } from '../../../chats/entities/chat.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

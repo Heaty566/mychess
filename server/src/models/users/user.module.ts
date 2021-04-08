@@ -14,10 +14,12 @@ import { AuthModule } from '../../auth/auth.module';
 import { RedisModule } from '../../providers/redis/redis.module';
 import { SmsModule } from '../../providers/sms/sms.module';
 import { AwsModule } from '../../providers/aws/aws.module';
+import { RoomService } from '../rooms/room.service';
+import { RoomRepository } from '../rooms/entities/room.repository';
 
 @Module({
       imports: [
-            TypeOrmModule.forFeature([UserRepository]),
+            TypeOrmModule.forFeature([UserRepository, RoomRepository]),
             forwardRef(() => AuthModule),
             LoggerModule,
             RedisModule,
@@ -26,7 +28,7 @@ import { AwsModule } from '../../providers/aws/aws.module';
             AwsModule,
       ],
       controllers: [UserController, AdminController],
-      providers: [UserService, AdminService],
+      providers: [UserService, AdminService, RoomService],
       exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}

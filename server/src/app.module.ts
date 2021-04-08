@@ -13,12 +13,12 @@ import { RedisModule } from './providers/redis/redis.module';
 import { User } from './models/users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { RoomModule } from './models/rooms/room.module';
-import { ChatModule } from './models/chats/chat.module';
+import { ChatModule } from './chats/chat.module';
 import { MessagesModule } from './models/messages/messages.module';
 import Room from './models/rooms/entities/room.entity';
-import { Chat } from './models/chats/entities/chat.entity';
+import { Chat } from './chats/entities/chat.entity';
 import { Message } from './models/messages/entities/message.entity';
-import { EventsModule } from './events/events.module';
+import { EventsModule } from './chats/events/events.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
