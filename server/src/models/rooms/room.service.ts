@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import User from '../users/entities/user.entity';
 import Room from './entities/room.entity';
 import { RoomRepository } from './entities/room.repository';
 
@@ -11,7 +10,11 @@ export class RoomService {
             return await this.roomRepository.save(input);
       }
 
-      async getOneRoomByUserId(input: string) {
+      async getOneRoomByUserId(input: string): Promise<Room> {
             return await this.roomRepository.getRoomByUserId(input);
+      }
+
+      async getOneRoomByField(field: keyof Room, value: any): Promise<Room> {
+            return this.roomRepository.getRoomByField(field, value);
       }
 }

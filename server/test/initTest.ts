@@ -7,6 +7,8 @@ import { fakeUser } from './fakeEntity';
 import { UserRepository } from '../src/models/users/entities/user.repository';
 import { AuthService } from '../src/auth/auth.service';
 import { UserRole } from '../src/models/users/entities/user.userRole.enum';
+import Room from '../src/models/rooms/entities/room.entity';
+import { RoomRepository } from '../src/models/rooms/entities/room.repository';
 
 export const initTestModule = async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -27,11 +29,24 @@ export const initTestModule = async () => {
       adminUser.role = UserRole.ADMIN;
       const userRepository = module.get<UserRepository>(UserRepository);
       const authService = module.get<AuthService>(AuthService);
+      const roomRepository = module.get<RoomRepository>(RoomRepository);
 
       user = await userRepository.save(user);
       adminUser = await userRepository.save(adminUser);
       const reToken = await authService.createReToken(user);
       const adminReToken = await authService.createReToken(adminUser);
 
-      return { getApp, module, cookie: [`re-token=${reToken} ;`], adminCookie: [`re-token=${adminReToken};`], getUser: user, getReToken: reToken };
+      //create a fake room
+      let room = new Room();
+      await roomRepository.save(room);
+
+      return {
+            getApp,
+            module,
+            cookie: [`re-token=${reToken} ;`],
+            adminCookie: [`re-token=${adminReToken};`],
+            getUser: user,
+            getReToken: reToken,
+            getRoom: room,
+      };
 };

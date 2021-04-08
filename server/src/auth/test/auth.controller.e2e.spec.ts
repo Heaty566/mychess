@@ -121,7 +121,7 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (username is not correct)', async () => {
-                        loginUserData.username = 'update';
+                        loginUserData.username = 'updateaaabbbccc';
                         const res = await reqApi(loginUserData);
                         expect(res.status).toBe(400);
                   });

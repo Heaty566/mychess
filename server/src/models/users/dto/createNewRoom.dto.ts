@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-export class createNewRoomDTO {
+export class CreateNewRoomDTO {
       limitTime: number;
 }
 

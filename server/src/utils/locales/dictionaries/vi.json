@@ -40,5 +40,7 @@
     "invalid otp": "opt không hợp lệ",
     "valid otp": "opt hợp lệ",
     "a new room has been created": "một room mới vừa được tạo",
-    "user is already in another room": "user đã ở trong room khác"
+    "user is already in another room": "user đã ở trong room khác",
+    "room is not exist": "room không tồn tại",
+    "join room success": "tham gia room thành công"
 }

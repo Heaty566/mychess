@@ -6,20 +6,22 @@ import { AuthService } from '../../auth/auth.service';
 import { UserService } from './user.service';
 import { RedisService } from '../../providers/redis/redis.service';
 import { SmsService } from '../../providers/sms/sms.service';
+import { AwsService } from '../../providers/aws/aws.service';
+import { RoomService } from '../rooms/room.service';
+
 import { JoiValidatorPipe } from '../../utils/validator/validator.pipe';
 import { MyAuthGuard } from '../../auth/auth.guard';
 import { apiResponse } from '../../app/interface/ApiResponse';
 import { User } from './entities/user.entity';
+import { Room } from '../rooms/entities/room.entity';
 
 import { OtpSmsDTO, vOtpSmsDTO } from '../../auth/dto/otpSms.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
+import { CreateNewRoomDTO, vCreateNewRoomDTO } from './dto/createNewRoom.dto';
+import { JoinRoomDTO, vJoinRoomDTO } from './dto/joinRoom.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AwsService } from '../../providers/aws/aws.service';
-import { createNewRoomDTO, vCreateNewRoomDTO } from './dto/createNewRoom.dto';
-import { RoomService } from '../rooms/room.service';
-import Room from '../rooms/entities/room.entity';
 
 @Controller('user')
 export class UserController {
@@ -174,8 +176,9 @@ export class UserController {
       @Post('/newRoom')
       @UseGuards(MyAuthGuard)
       @UsePipes(new JoiValidatorPipe(vCreateNewRoomDTO))
-      async cCreateNewRoom(@Body() body: createNewRoomDTO, @Req() req: Request) {
+      async cCreateNewRoom(@Body() body: CreateNewRoomDTO, @Req() req: Request) {
             const user = req.user;
+
             let room = await this.roomService.getOneRoomByUserId(user.id);
             if (room) {
                   throw apiResponse.sendError({ body: { message: 'user is already in another room' } });
@@ -191,9 +194,23 @@ export class UserController {
 
       @Post('/joinRoom')
       @UseGuards(MyAuthGuard)
-      async cJoinRoom(@Body() body, @Req() req: Request) {}
+      @UsePipes(new JoiValidatorPipe(vJoinRoomDTO))
+      async cJoinRoom(@Body() body: JoinRoomDTO, @Req() req: Request) {
+            const user = req.user;
+            
+            let room = await this.roomService.getOneRoomByUserId(user.id);
 
-      @Get('roomId')
-      @UseGuards(MyAuthGuard)
-      async getRoomId(@Body() body, @Req() req: Request) {}
+            if (room) {
+                  throw apiResponse.sendError({ body: { message: 'user is already in another room' } });
+            }
+
+            room = await this.roomService.getOneRoomByField('id', body.roomId);
+            if (!room) {
+                  throw apiResponse.sendError({ body: { message: 'room is not exist' } });
+            }
+
+            room.user2 = user;
+            await this.roomService.saveRoom(room);
+            return apiResponse.send({ body: { message: 'join room success' } });
+      }
 }

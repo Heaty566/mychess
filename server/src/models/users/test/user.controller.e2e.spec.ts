@@ -15,7 +15,7 @@ import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { fakeUser } from '../../../../test/fakeEntity';
+import { fakeUser, fakeRoom } from '../../../../test/fakeEntity';
 import { UserRepository } from '../entities/user.repository';
 import { initTestModule } from '../../../../test/initTest';
 import { AuthService } from '../../../auth/auth.service';
@@ -30,6 +30,11 @@ import { OtpSmsDTO } from '../../../auth/dto/otpSms.dto';
 import { UpdateUserDto } from '../dto/updateBasicUser.dto';
 import { UpdateEmailDTO } from '../dto/updateEmail.dto';
 import { defuse } from '../../../../test/testHelper';
+import { CreateNewRoomDTO } from '../dto/createNewRoom.dto';
+import { Room } from '../../../models/rooms/entities/room.entity';
+import { RoomService } from '../../../models/rooms/room.service';
+import { JoinRoomDTO } from '../dto/joinRoom.dto';
+import { RoomRepository } from '../../../models/rooms/entities/room.repository';
 
 jest.mock('twilio', () => {
       return {
@@ -41,25 +46,29 @@ describe('UserController E2E', () => {
       let app: INestApplication;
 
       let userRepository: UserRepository;
+      let roomRepository: RoomRepository;
 
       let authService: AuthService;
       let redisService: RedisService;
       let userService: UserService;
       let mailService: SmailService;
       let awsService: AwsService;
+      let roomService: RoomService;
 
       let cookieData: Array<string>;
       let user: User;
+      let roomDb: Room;
 
       beforeAll(async () => {
-            const { getApp, module, cookie, getUser } = await initTestModule();
+            const { getApp, module, cookie, getUser, getRoom } = await initTestModule();
             app = getApp;
             user = getUser;
-            user = getUser;
+            roomDb = getRoom;
             cookieData = cookie;
 
             userRepository = module.get<UserRepository>(UserRepository);
-
+            roomRepository = module.get<RoomRepository>(RoomRepository);
+            roomService = module.get<RoomService>(RoomService);
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
             userService = module.get<UserService>(UserService);
@@ -308,8 +317,41 @@ describe('UserController E2E', () => {
             });
       });
 
+      describe('user create or join room', () => {
+            describe('Post /api/user/newRoom', () => {
+                  let body: CreateNewRoomDTO;
+                  let user: User;
+                  const reqApi = (input: CreateNewRoomDTO) =>
+                        supertest(app.getHttpServer()).post('/api/user/newRoom').set({ cookie: cookieData }).send(input);
+
+                  beforeEach(async () => {
+                        user = fakeUser();
+                        await userService.saveUser(user);
+                  });
+
+                  it('Pass', async () => {
+                        body = {
+                              limitTime: 10,
+                        };
+                        const res = await reqApi(body);
+                        expect(res.status).toBe(201);
+                  });
+
+                  it('Failed(user is already in a room)', async () => {
+                        body = {
+                              limitTime: 10,
+                        };
+                        roomDb.user1 = user;
+                        await roomService.saveRoom(roomDb);
+                        const res = await reqApi(body);
+                        expect(res.status).toBe(400);
+                  });
+            });
+      });
+
       afterAll(async () => {
             await userRepository.clear();
+            await roomRepository.clear();
             await app.close();
       });
 });

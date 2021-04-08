@@ -41,5 +41,7 @@
     "invalid otp": "invalid otp",
     "valid otp": "valid otp",
     "a new room has been created": "a new room has been created",
-    "user is already in another room": "user is already in another room"
+    "user is already in another room": "user is already in another room",
+    "room is not exist": "room is not exist",
+    "join room success": "join room success"
 }
