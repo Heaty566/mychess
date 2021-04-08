@@ -3,7 +3,6 @@ import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
 
 //* Internal import
-import { fakeUser } from '../../../test/fakeEntity';
 import { initTestModule } from '../../../test/initTest';
 
 import { UserRepository } from '../../models/users/entities/user.repository';
