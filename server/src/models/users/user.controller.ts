@@ -17,11 +17,15 @@ import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AwsService } from '../../providers/aws/aws.service';
+import { createNewRoomDTO, vCreateNewRoomDTO } from './dto/createNewRoom.dto';
+import { RoomService } from '../rooms/room.service';
+import Room from '../rooms/entities/room.entity';
 
 @Controller('user')
 export class UserController {
       constructor(
             private readonly userService: UserService,
+            private readonly roomService: RoomService,
             private readonly authService: AuthService,
             private readonly redisService: RedisService,
             private readonly smsService: SmsService,
@@ -166,4 +170,30 @@ export class UserController {
 
             return apiResponse.send({ body: { message: 'an email has been sent to your email' } });
       }
+
+      @Post('/newRoom')
+      @UseGuards(MyAuthGuard)
+      @UsePipes(new JoiValidatorPipe(vCreateNewRoomDTO))
+      async cCreateNewRoom(@Body() body: createNewRoomDTO, @Req() req: Request) {
+            const user = req.user;
+            let room = await this.roomService.getOneRoomByUserId(user.id);
+            if (room) {
+                  throw apiResponse.sendError({ body: { message: 'user is already in another room' } });
+            }
+
+            room = new Room();
+            room.limitTime = body.limitTime;
+            room.user1 = user;
+
+            await this.roomService.saveRoom(room);
+            return apiResponse.send({ body: { message: 'a new room has been created' } });
+      }
+
+      @Post('/joinRoom')
+      @UseGuards(MyAuthGuard)
+      async cJoinRoom(@Body() body, @Req() req: Request) {}
+
+      @Get('roomId')
+      @UseGuards(MyAuthGuard)
+      async getRoomId(@Body() body, @Req() req: Request) {}
 }

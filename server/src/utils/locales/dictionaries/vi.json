@@ -38,5 +38,7 @@
     "is requested too many times, please try again after 30 minutes": "is requested too many times, please try again after 30 minutes",
     "is requested too many times, please try again after 60 minutes": "is requested too many times, please try again after 60 minutes",
     "invalid otp": "opt không hợp lệ",
-    "valid otp": "opt hợp lệ"
+    "valid otp": "opt hợp lệ",
+    "a new room has been created": "một room mới vừa được tạo",
+    "user is already in another room": "user đã ở trong room khác"
 }

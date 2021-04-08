@@ -12,7 +12,7 @@ export class Room {
       @Column({ default: null })
       endTime: Date;
 
-      @Column()
+      @Column({ default: 10 })
       limitTime: number;
 
       @Column({ default: 0 })

@@ -39,5 +39,7 @@
     "password.minOfNumeric": "should contain at least {{min}} number",
     "object.unknown": "object.unknown",
     "invalid otp": "invalid otp",
-    "valid otp": "valid otp"
+    "valid otp": "valid otp",
+    "a new room has been created": "a new room has been created",
+    "user is already in another room": "user is already in another room"
 }
