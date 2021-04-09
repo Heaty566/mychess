@@ -197,7 +197,7 @@ export class UserController {
       @UsePipes(new JoiValidatorPipe(vJoinRoomDTO))
       async cJoinRoom(@Body() body: JoinRoomDTO, @Req() req: Request) {
             const user = req.user;
-            
+
             let room = await this.roomService.getOneRoomByUserId(user.id);
 
             if (room) {

@@ -15,7 +15,7 @@ import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { fakeUser, fakeRoom } from '../../../../test/fakeEntity';
+import { fakeUser } from '../../../../test/fakeEntity';
 import { UserRepository } from '../entities/user.repository';
 import { initTestModule } from '../../../../test/initTest';
 import { AuthService } from '../../../auth/auth.service';
@@ -31,10 +31,10 @@ import { UpdateUserDto } from '../dto/updateBasicUser.dto';
 import { UpdateEmailDTO } from '../dto/updateEmail.dto';
 import { defuse } from '../../../../test/testHelper';
 import { CreateNewRoomDTO } from '../dto/createNewRoom.dto';
-import { Room } from '../../../models/rooms/entities/room.entity';
-import { RoomService } from '../../../models/rooms/room.service';
+import { Room } from '../../rooms/entities/room.entity';
+import { RoomService } from '../../rooms/room.service';
 import { JoinRoomDTO } from '../dto/joinRoom.dto';
-import { RoomRepository } from '../../../models/rooms/entities/room.repository';
+import { RoomRepository } from '../../rooms/entities/room.repository';
 
 jest.mock('twilio', () => {
       return {
@@ -60,10 +60,9 @@ describe('UserController E2E', () => {
       let roomDb: Room;
 
       beforeAll(async () => {
-            const { getApp, module, cookie, getUser, getRoom } = await initTestModule();
+            const { getApp, module, cookie, getUser } = await initTestModule();
             app = getApp;
             user = getUser;
-            roomDb = getRoom;
             cookieData = cookie;
 
             userRepository = module.get<UserRepository>(UserRepository);
@@ -331,7 +330,7 @@ describe('UserController E2E', () => {
 
                   it('Pass', async () => {
                         body = {
-                              limitTime: 10,
+                              limitTime: 7,
                         };
                         const res = await reqApi(body);
                         expect(res.status).toBe(201);
@@ -339,8 +338,9 @@ describe('UserController E2E', () => {
 
                   it('Failed(user is already in a room)', async () => {
                         body = {
-                              limitTime: 10,
+                              limitTime: 8,
                         };
+                        roomDb = new Room();
                         roomDb.user1 = user;
                         await roomService.saveRoom(roomDb);
                         const res = await reqApi(body);
@@ -350,8 +350,8 @@ describe('UserController E2E', () => {
       });
 
       afterAll(async () => {
-            await userRepository.clear();
             await roomRepository.clear();
+            await userRepository.clear();
             await app.close();
       });
 });

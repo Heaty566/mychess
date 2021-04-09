@@ -13,12 +13,13 @@ describe('RoomService', () => {
       let userDb: User;
 
       beforeAll(async () => {
-            const { getApp, module, getRoom, getUser } = await initTestModule();
+            const { getApp, module, getUser } = await initTestModule();
             app = getApp;
-            roomDb = getRoom;
             userDb = getUser;
-            roomRepository = module.get<RoomRepository>(RoomRepository);
+            roomDb = new Room();
             roomService = module.get<RoomService>(RoomService);
+            await roomService.saveRoom(roomDb);
+            roomRepository = module.get<RoomRepository>(RoomRepository);
       });
 
       describe('saveRoom', () => {

@@ -7,7 +7,6 @@ import { fakeUser } from './fakeEntity';
 import { UserRepository } from '../src/models/users/entities/user.repository';
 import { AuthService } from '../src/auth/auth.service';
 import { UserRole } from '../src/models/users/entities/user.userRole.enum';
-import Room from '../src/models/rooms/entities/room.entity';
 import { RoomRepository } from '../src/models/rooms/entities/room.repository';
 
 export const initTestModule = async () => {
@@ -36,10 +35,6 @@ export const initTestModule = async () => {
       const reToken = await authService.createReToken(user);
       const adminReToken = await authService.createReToken(adminUser);
 
-      //create a fake room
-      let room = new Room();
-      await roomRepository.save(room);
-
       return {
             getApp,
             module,
@@ -47,6 +42,5 @@ export const initTestModule = async () => {
             adminCookie: [`re-token=${adminReToken};`],
             getUser: user,
             getReToken: reToken,
-            getRoom: room,
       };
 };

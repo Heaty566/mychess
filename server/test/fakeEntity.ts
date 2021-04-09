@@ -15,8 +15,3 @@ export const fakeUser = () => {
 
       return user;
 };
-
-export const fakeRoom = () => {
-      const room = new Room();
-      return room;
-};
