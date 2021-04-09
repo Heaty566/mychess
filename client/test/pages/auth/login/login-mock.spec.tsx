@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Provider, useSelector } from 'react-redux';
+
 import { useFormError } from '../../../../common/hooks/useFormError';
 import LoginRoute from '../../../../pages/auth/login';
 import { store } from '../../../../store';
@@ -37,25 +38,25 @@ describe('Login Mock', () => {
                 <LoginRoute handleOnSubmit={mockFn} />
             </Provider>,
         );
-        const usernameTextField = await wrapper.findByTestId('username-text-field');
-        const passwordTextField = await wrapper.findByTestId('password-text-field');
+        const usernameTextField = await wrapper.findByTestId('textfield-input-username');
+        const passwordTextField = await wrapper.findByTestId('textfield-input-password');
 
         expect(usernameTextField).toBeDefined();
         expect(passwordTextField).toBeDefined();
         expect(wrapper).toMatchSnapshot();
         try {
-            await wrapper.findByTestId('username-error');
+            await wrapper.findByTestId('textfield-error-username');
         } catch (err) {
             expect(err).toBeDefined();
         }
 
         try {
-            await wrapper.findByTestId('wave-loading');
+            await wrapper.findByTestId('waveloading');
         } catch (err) {
             expect(err).toBeDefined();
         }
         try {
-            await wrapper.findByTestId('success-msg');
+            await wrapper.findByTestId('successmsg');
         } catch (err) {
             expect(err).toBeDefined();
         }
@@ -70,8 +71,8 @@ describe('Login Mock', () => {
             </Provider>,
         );
 
-        const usernameError = await wrapper.findByTestId('username-error');
-        const passwordError = await wrapper.findByTestId('password-error');
+        const usernameError = await wrapper.findByTestId('textfield-error-username');
+        const passwordError = await wrapper.findByTestId('textfield-error-password');
 
         expect(usernameError.innerHTML).toContain('Username error-message');
         expect(passwordError.innerHTML).toContain('Password error-message');
@@ -86,7 +87,7 @@ describe('Login Mock', () => {
             </Provider>,
         );
 
-        const loadingWave = await wrapper.findByTestId('wave-loading');
+        const loadingWave = await wrapper.findByTestId('waveloading');
         expect(loadingWave).toBeDefined();
     });
 
@@ -111,7 +112,7 @@ describe('Login Mock', () => {
                 <LoginRoute handleOnSubmit={submitMockFn} />
             </Provider>,
         );
-        const formLogin = await wrapper.findByTestId('login-form');
+        const formLogin = await wrapper.findByTestId('auth-login');
 
         waitFor(
             () => {

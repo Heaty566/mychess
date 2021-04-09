@@ -6,16 +6,16 @@ type TRouters = 'register' | 'login' | 'home' | 'community' | 'about' | 'support
 
 const config: Record<TRouters, IRouter> = {
     home: {
-        link: '/home',
+        link: '/',
     },
     community: {
-        link: '/home',
+        link: '/',
     },
     about: {
-        link: '/home',
+        link: '/',
     },
     support: {
-        link: '/home',
+        link: '/',
     },
     login: {
         link: '/auth/login',

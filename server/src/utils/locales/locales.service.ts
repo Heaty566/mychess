@@ -11,7 +11,9 @@ export class LocalesService {
        * @description translate content to different languages base on dictionary files
        */
       public translate(content: Dictionary, context?: i18n.Replacements) {
-            return i18n.__(content, { ...context }) as Dictionary;
+            const newStr = i18n.__(content, { ...context }) as Dictionary;
+
+            return newStr;
       }
 
       /**
