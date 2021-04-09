@@ -17,6 +17,7 @@ import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
+import { useTestId } from '../../test/helper/data-testId';
 
 const defaultValues: UserLoginDto = {
     password: '',
@@ -38,7 +39,7 @@ const Login: React.FunctionComponent<LoginProps> = ({ handleOnSubmit }) => {
             <SeoHead title="Register" description="he" canonical="/" />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
-                    <form onSubmit={handleSubmit(handleOnSubmit)} data-testid="login-form">
+                    <form onSubmit={handleSubmit(handleOnSubmit)} {...useTestId(`auth-login`)}>
                         <h1 className="text-center text-4xl text-white mb-7">Login Account</h1>
                         <MsgSuccess message={apiState.message} />
                         <div className="space-y-2">

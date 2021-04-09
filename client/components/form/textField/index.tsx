@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { UseFormRegister } from 'react-hook-form';
+import { useTestId } from '../../../test/helper/data-testId';
 
 export interface TextFieldProps {
     name: string;
@@ -11,7 +12,7 @@ export interface TextFieldProps {
 
 const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register, type }) => (
     <div className="space-y-1.5 text-sm">
-        <label htmlFor={name} className="block text-cotton-seed ">
+        <label htmlFor={name} className="block text-cotton-seed " {...useTestId(`textField-label-${name}`)}>
             {label}
         </label>
         <input
@@ -20,9 +21,9 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
             className="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
             {...register(name)}
             autoComplete={type === 'password' ? 'off' : 'on'}
-            data-testid={`${name}-text-field`}
+            {...useTestId(`textField-input-${name}`)}
         />
-        {Boolean(error.length) && <p className="text-red-500 fade-in" data-testid={`${name}-error`}>{`${label} ${error}`}</p>}
+        {Boolean(error.length) && <p className="text-red-500 fade-in" {...useTestId(`textField-error-${name}`)}>{`${label} ${error}`}</p>}
     </div>
 );
 

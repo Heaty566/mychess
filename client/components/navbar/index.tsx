@@ -22,7 +22,7 @@ const Navbar: React.FunctionComponent = () => {
     };
 
     return (
-        <div className="h-16 md:h-24 bg-woodsmoke flex justify-evenly items-center py-3  relative ">
+        <div className="h-16 md:h-24 bg-woodsmoke flex justify-evenly items-center py-3  relative navbar">
             <NavbarMobile
                 isActiveLang={langOpen}
                 handleChangeActiveLang={() => setOpenLang(!langOpen)}

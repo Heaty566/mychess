@@ -36,6 +36,21 @@ export class UserController {
 
             return apiResponse.send<User>({ body: { data: user } });
       }
+      @Get('/:id')
+      async cGetUserById() {
+            return apiResponse.send<any>({
+                  body: {
+                        data: {
+                              id: '2561d256-4cb4-47ed-b692-0a73e310cff6',
+                              username: 'heaty566',
+                              name: 'heaty566',
+                              avatarUrl: '',
+                              createDate: new Date(),
+                              elo: 0,
+                        },
+                  },
+            });
+      }
 
       //------------------Update user information------------------------------------------
       @Put('/')
@@ -52,21 +67,19 @@ export class UserController {
       @UseGuards(MyAuthGuard)
       @UseInterceptors(FileInterceptor('avatar'))
       async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
-            if (!file) throw apiResponse.sendError({ body: { details: { avatar: 'any.required' } }, isTranslateDetails: true });
+            if (!file) throw apiResponse.sendError({ body: { details: { avatar: 'any.required' } } });
 
             const isCorrectSize = this.awsService.checkFileSize(file, 1);
             if (!isCorrectSize)
                   throw apiResponse.sendError({
                         body: { details: { avatar: 'aws.file-too-big' } },
                         context: { size: '1' },
-                        isTranslateDetails: true,
                   });
 
             const isCorrectFileExtension = this.awsService.checkFileExtension(file);
             if (!isCorrectFileExtension)
                   throw apiResponse.sendError({
                         body: { details: { avatar: 'aws.file-wrong-extension' } },
-                        isTranslateDetails: true,
                   });
 
             const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');

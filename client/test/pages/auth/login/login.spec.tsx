@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { create, act } from 'react-test-renderer';
+import { render } from '@testing-library/react';
 
 import LoginRoute from '../../../../pages/auth/login';
 import { Provider } from 'react-redux';
 import { store } from '../../../../store';
-import { render } from '@testing-library/react';
 
 describe('Login', () => {
     const mockFn = jest.fn();
@@ -15,19 +14,19 @@ describe('Login', () => {
                 <LoginRoute handleOnSubmit={mockFn} />
             </Provider>,
         );
-        const usernameTextField = await wrapper.findByTestId('username-text-field');
-        const passwordTextField = await wrapper.findByTestId('password-text-field');
+        const usernameTextField = await wrapper.findByTestId('textfield-input-username');
+        const passwordTextField = await wrapper.findByTestId('textfield-input-password');
 
         expect(usernameTextField).toBeDefined();
         expect(passwordTextField).toBeDefined();
 
         try {
-            await wrapper.findByTestId('username-error');
+            await wrapper.findByTestId('textfield-error-username');
         } catch (err) {
             expect(err).toBeDefined();
         }
         try {
-            await wrapper.findByTestId('wave-loading');
+            await wrapper.findByTestId('waveloading');
         } catch (err) {
             expect(err).toBeDefined();
         }
