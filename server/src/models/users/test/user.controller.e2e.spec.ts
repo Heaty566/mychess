@@ -56,13 +56,13 @@ describe('UserController E2E', () => {
       let roomService: RoomService;
 
       let cookieData: Array<string>;
-      let user: User;
+      let userDb: User;
       let roomDb: Room;
 
       beforeAll(async () => {
             const { getApp, module, cookie, getUser } = await initTestModule();
             app = getApp;
-            user = getUser;
+            userDb = getUser;
             cookieData = cookie;
 
             userRepository = module.get<UserRepository>(UserRepository);
@@ -92,7 +92,7 @@ describe('UserController E2E', () => {
 
                   beforeEach(async () => {
                         otpSmsDTO = {
-                              phoneNumber: user.phoneNumber,
+                              phoneNumber: userDb.phoneNumber,
                         };
                   });
 
@@ -173,10 +173,10 @@ describe('UserController E2E', () => {
                   it('Pass', async () => {
                         const res = await reqApi(body);
 
-                        const getUser = await userRepository.findOneByField('id', user.id);
+                        const getUser = await userRepository.findOneByField('id', userDb.id);
 
                         expect(getUser.name.toLocaleLowerCase()).toBe(body.name.toLocaleLowerCase());
-                        expect(getUser.username).toBe(user.username);
+                        expect(getUser.username).toBe(userDb.username);
                         expect(res.status).toBe(200);
                   });
             });
@@ -223,7 +223,7 @@ describe('UserController E2E', () => {
                   const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/phone/${redisKey}`).set({ cookie: cookieData }).send();
 
                   beforeAll(async () => {
-                        redisKey = await authService.generateOTP(user, 2, 'sms');
+                        redisKey = await authService.generateOTP(userDb, 2, 'sms');
                   });
 
                   it('Pass', async () => {
@@ -251,7 +251,7 @@ describe('UserController E2E', () => {
                   const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/email/${redisKey}`).set({ cookie: cookieData }).send();
 
                   beforeAll(async () => {
-                        redisKey = await authService.generateOTP(user, 2, 'email');
+                        redisKey = await authService.generateOTP(userDb, 2, 'email');
                   });
 
                   it('Pass', async () => {
@@ -346,12 +346,63 @@ describe('UserController E2E', () => {
                         const res = await reqApi(body);
                         expect(res.status).toBe(400);
                   });
+
+                  afterAll(async () => {
+                        await roomRepository.createQueryBuilder().delete().execute();
+                        await app.close();
+                  });
+            });
+
+            describe('Post /api/user/joinRoom', () => {
+                  let body: JoinRoomDTO;
+
+                  const reqApi = (input: JoinRoomDTO) =>
+                        supertest(app.getHttpServer()).post('/api/user/joinRoom').set({ cookie: cookieData }).send(input);
+
+                  beforeEach(async () => {
+                        roomDb = new Room();
+                        await roomService.saveRoom(roomDb);
+                  });
+
+                  it('Failed(room is not exist)', async () => {
+                        body = {
+                              roomId: 'haideptraiNo1',
+                        };
+                        const res = await reqApi(body);
+                        expect(res.status).toBe(400);
+                  });
+
+                  it('Failed(user in another room)', async () => {
+                        roomDb.user1 = userDb;
+                        await roomService.saveRoom(roomDb);
+
+                        body = {
+                              roomId: roomDb.id,
+                        };
+                        const res = await reqApi(body);
+                        expect(res.status).toBe(400);
+                        await roomRepository.createQueryBuilder().delete().execute();
+                  });
+
+                  it('Pass', async () => {
+                        roomDb = new Room();
+                        let userCreateRoom = fakeUser();
+                        await userService.saveUser(userCreateRoom);
+                        roomDb.user1 = userCreateRoom;
+                        await roomService.saveRoom(roomDb);
+
+                        body = {
+                              roomId: roomDb.id,
+                        };
+                        const res = await reqApi(body);
+                        expect(res.status).toBe(201);
+                  });
             });
       });
 
       afterAll(async () => {
-            await roomRepository.clear();
-            await userRepository.clear();
+            await roomRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

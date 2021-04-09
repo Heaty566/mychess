@@ -1,25 +1,27 @@
 import { INestApplication } from '@nestjs/common';
-import User from 'src/models/users/entities/user.entity';
+import { User } from '../../../models/users/entities/user.entity';
 import { initTestModule } from '../../../../test/initTest';
-import Room from '../entities/room.entity';
+import { Room } from '../entities/room.entity';
 import { RoomRepository } from '../entities/room.repository';
 import { RoomService } from '../room.service';
+import { UserRepository } from '../../../models/users/entities/user.repository';
 
 describe('RoomService', () => {
       let app: INestApplication;
+      let userRepository: UserRepository;
       let roomRepository: RoomRepository;
       let roomService: RoomService;
       let roomDb: Room;
       let userDb: User;
 
       beforeAll(async () => {
-            const { getApp, module, getUser } = await initTestModule();
+            const { getApp, module, getUser, getRoom } = await initTestModule();
             app = getApp;
             userDb = getUser;
-            roomDb = new Room();
+            roomDb = getRoom;
             roomService = module.get<RoomService>(RoomService);
-            await roomService.saveRoom(roomDb);
             roomRepository = module.get<RoomRepository>(RoomRepository);
+            userRepository = module.get<UserRepository>(UserRepository);
       });
 
       describe('saveRoom', () => {
@@ -74,7 +76,8 @@ describe('RoomService', () => {
       });
 
       afterAll(async () => {
-            await roomRepository.clear();
+            await roomRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

@@ -13,13 +13,12 @@ describe('RoomRepository', () => {
       let userDb: User;
 
       beforeAll(async () => {
-            const { getApp, module, getUser } = await initTestModule();
+            const { getApp, module, getUser, getRoom } = await initTestModule();
             app = getApp;
             userDb = getUser;
-            roomDb = new Room();
+            roomDb = getRoom;
             roomRepository = module.get<RoomRepository>(RoomRepository);
             userRepository = module.get<UserRepository>(UserRepository);
-            await roomRepository.save(roomDb);
       });
 
       describe('getRoomByField', () => {
@@ -40,8 +39,8 @@ describe('RoomRepository', () => {
       });
 
       afterAll(async () => {
-            await roomRepository.clear();
-            await userRepository.clear();
+            await roomRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

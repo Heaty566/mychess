@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 //* Internal import
 import { router } from '../src/router';
 import { AppModule } from '../src/app.module';
-import { fakeUser } from './fakeEntity';
+import { fakeRoom, fakeUser } from './fakeEntity';
 import { UserRepository } from '../src/models/users/entities/user.repository';
 import { AuthService } from '../src/auth/auth.service';
 import { UserRole } from '../src/models/users/entities/user.userRole.enum';
@@ -35,6 +35,10 @@ export const initTestModule = async () => {
       const reToken = await authService.createReToken(user);
       const adminReToken = await authService.createReToken(adminUser);
 
+      // create a fake room
+      let room = fakeRoom();
+      room = await roomRepository.save(room);
+
       return {
             getApp,
             module,
@@ -42,5 +46,6 @@ export const initTestModule = async () => {
             adminCookie: [`re-token=${adminReToken};`],
             getUser: user,
             getReToken: reToken,
+            getRoom: room,
       };
 };
