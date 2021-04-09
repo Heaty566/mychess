@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { create, act } from 'react-test-renderer';
+import { Provider } from 'react-redux';
+import { render } from '@testing-library/react';
 
 import Register from '../../../../pages/auth/register';
-import { Provider } from 'react-redux';
 import { store } from '../../../../store';
-import { render } from '@testing-library/react';
 
 describe('Register', () => {
     const mockFn = jest.fn();
@@ -16,10 +15,10 @@ describe('Register', () => {
             </Provider>,
         );
 
-        const nameTextField = await wrapper.findByTestId('name-text-field');
-        const confirmPasswordTextField = await wrapper.findByTestId('confirmPassword-text-field');
-        const usernameTextField = await wrapper.findByTestId('username-text-field');
-        const passwordTextField = await wrapper.findByTestId('password-text-field');
+        const nameTextField = await wrapper.findByTestId('textfield-input-name');
+        const confirmPasswordTextField = await wrapper.findByTestId('textfield-input-confirmpassword');
+        const usernameTextField = await wrapper.findByTestId('textfield-input-username');
+        const passwordTextField = await wrapper.findByTestId('textfield-input-password');
 
         expect(usernameTextField).toBeDefined();
         expect(passwordTextField).toBeDefined();
@@ -27,12 +26,17 @@ describe('Register', () => {
         expect(confirmPasswordTextField).toBeDefined();
 
         try {
-            await wrapper.findByTestId('username-error');
+            await wrapper.findByTestId('textfield-error-username');
         } catch (err) {
             expect(err).toBeDefined();
         }
         try {
-            await wrapper.findByTestId('wave-loading');
+            await wrapper.findByTestId('waveloading');
+        } catch (err) {
+            expect(err).toBeDefined();
+        }
+        try {
+            await wrapper.findByTestId('successmsg');
         } catch (err) {
             expect(err).toBeDefined();
         }
