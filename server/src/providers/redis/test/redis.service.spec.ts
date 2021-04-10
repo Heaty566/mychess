@@ -6,18 +6,21 @@ import { fakeUser } from '../../../../test/fakeEntity';
 import { fakeData } from '../../../../test/fakeData';
 import { User } from '../../../models/users/entities/user.entity';
 import { RedisService } from '../redis.service';
-import { createClient } from 'redis';
+import { createClient, RedisClient } from 'redis';
 
 describe('RedisService', () => {
       let app: INestApplication;
       let redisService: RedisService;
+      let redis: RedisClient;
 
       beforeAll(async () => {
+            process.env.REDIS_PORT = null;
+            process.env.REDIS_DB_NUMBER = '';
             const { getApp, module } = await initTestModule();
             app = getApp;
 
             const redisPort = Number(process.env.REDIS_PORT) || 7000;
-            const redis = createClient({ port: redisPort, host: process.env.REDIS_HOST || '' });
+            redis = createClient({ port: redisPort, host: process.env.REDIS_HOST || '' });
             redis.select(process.env.REDIS_DB_NUMBER || 1);
 
             redisService = module.get<RedisService>(RedisService);
@@ -103,6 +106,17 @@ describe('RedisService', () => {
                   expect(res).toBeDefined();
             });
       });
+      // it('getByKey', async () => {
+      //       let fsCallback: (error, data) => void;
+      //       const redi2s = createClient({ port: 223, host: '1234' });
+      //       const fsMockFn = jest.fn((data, callback) => (fsCallback = callback));
+      //       const getSpy = jest.spyOn(redi2s, 'get');
+      //       getSpy.mockImplementation(fsMockFn);
+      //       const res = await redisService.getObjectByKey<User>('');
+      //       console.log(fsCallback);
+      //       getSpy.mockClear();
+      //       redi2s.quit();
+      // });
 
       afterAll(async () => {
             await app.close();

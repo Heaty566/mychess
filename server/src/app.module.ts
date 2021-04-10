@@ -1,6 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { AuthModule } from './auth/auth.module';
 import { SmailModule } from './providers/smail/smail.module';
@@ -19,6 +20,7 @@ import Room from './models/rooms/entities/room.entity';
 import { Chat } from './chats/entities/chat.entity';
 import { Message } from './models/messages/entities/message.entity';
 import { EventsModule } from './chats/events/events.module';
+import { RepositoryModule } from './utils/repository/repository.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -40,6 +42,7 @@ const DBConfig = TypeOrmModule.forRoot({
       imports: [
             Config,
             DBConfig,
+            ScheduleModule.forRoot(),
             AuthModule,
             SmailModule,
             UserModule,
@@ -51,6 +54,7 @@ const DBConfig = TypeOrmModule.forRoot({
             ChatModule,
             MessagesModule,
             EventsModule,
+            RepositoryModule,
       ],
       controllers: [],
 })
