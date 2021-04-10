@@ -74,7 +74,7 @@ describe('AdminController E2E', () => {
       });
 
       afterAll(async () => {
-            await userRepository.clear();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });
