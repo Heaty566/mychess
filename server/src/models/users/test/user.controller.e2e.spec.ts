@@ -84,6 +84,20 @@ describe('UserController E2E', () => {
             });
       });
 
+      describe('GET /:id', () => {
+            const reqApi = (id: string) => supertest(app.getHttpServer()).get(`/api/user/${id}`).set({ cookie: cookieData }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi(user.id);
+                  expect(res.body.data).toBeDefined();
+            });
+
+            it('Id not correct', async () => {
+                  const res = await reqApi(fakeData(10, 'lettersAndNumbers'));
+                  expect(res.status).toBe(400);
+            });
+      });
+
       describe('create otp by user', () => {
             describe('POST /otp-sms', () => {
                   let otpSmsDTO: OtpSmsDTO;
