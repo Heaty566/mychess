@@ -30,11 +30,12 @@ export class AuthController {
       async cLoginUser(@Body() body: LoginUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (!isUserExist) throw apiResponse.sendError({ body: { details: { username: 'username or password is not correct' } } });
+            if (!isUserExist) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
-            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'username or password is not correct' } } });
+
+            if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             //return token
             const reToken = await this.authService.createReToken(isUserExist);
@@ -46,7 +47,7 @@ export class AuthController {
       async cRegisterUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (isUserExist) throw apiResponse.sendError({ body: { details: { username: 'username is already exist' } } });
+            if (isUserExist) throw apiResponse.sendError({ body: { details: { username: 'user.field-taken' } } });
 
             const newUser = new User();
             newUser.username = body.username;
@@ -62,7 +63,7 @@ export class AuthController {
       @Post('/logout')
       @UseGuards(MyAuthGuard)
       async cLogout(@Req() req: Request, @Res() res: Response) {
-            await this.authService.clearToken(req.user._id);
+            await this.authService.clearToken(req.user.id);
 
             return res.cookie('re-token', '', { maxAge: -999 }).cookie('auth-token', '', { maxAge: -999 }).send();
       }
@@ -73,30 +74,47 @@ export class AuthController {
       async cSendOTPByMail(@Body() body: UpdateEmailDTO) {
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user) {
-                  throw apiResponse.sendError({ body: { details: { email: 'email is not found' } } });
+                  throw apiResponse.sendError({ body: { details: { email: 'user.field.not-found' } } });
             }
+
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
+            if (!canSendMore) {
+                  throw apiResponse.sendError({ body: { details: { email: 'user.request-many-time-30p' } } });
+            }
+
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({
-                        body: { details: { email: 'problem occurs when sending email' } },
+                        body: { details: { email: 'server.some-wrong' } },
                         type: 'InternalServerErrorException',
                   });
 
-            return apiResponse.send({ body: { message: 'a mail has been sent to you email' } });
+            return apiResponse.send({ body: { message: 'server.send-email-otp' } });
       }
 
       @Post('/otp-sms')
       @UsePipes(new JoiValidatorPipe(vOtpSmsDTO))
       async cSendOTPBySms(@Body() body: OtpSmsDTO) {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'is not correct' } } });
+            if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field.not-found' } } });
+
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 5, 60);
+            if (!canSendMore) {
+                  throw apiResponse.sendError({
+                        body: { details: { phoneNumber: 'user.request-many-time-60p' } },
+                  });
+            }
 
             const otpKey = this.authService.generateOTP(user, 5, 'sms');
+            const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
+            if (!isSent)
+                  throw apiResponse.sendError({
+                        body: { details: { phoneNumber: 'server.some-wrong' } },
+                        type: 'InternalServerErrorException',
+                  });
 
-            const res = await this.smsService.sendOTP(user.phoneNumber, otpKey);
-            if (!res) throw apiResponse.sendError({ body: { message: 'please, try again later' }, type: 'InternalServerErrorException' });
-            return apiResponse.send({ body: { message: 'an OTP has been sent to your phone number' } });
+            return apiResponse.send({ body: { message: 'server.send-phone-otp' } });
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------

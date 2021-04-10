@@ -93,7 +93,7 @@ describe('MyAuthGuard', () => {
 
             it('Pass have auth-token', async () => {
                   const reTokenId = await authService.createReToken(user);
-                  const reToken = await reTokenRepository.findOneByField('_id', reTokenId);
+                  const reToken = await reTokenRepository.findOneByField('id', reTokenId);
 
                   const contextTracker = context({
                         're-token': '132',
@@ -165,10 +165,10 @@ describe('MyAuthGuard', () => {
 
             it('Failed invalid re-token (invalid)', async () => {
                   const authToken = await authService.createReToken(user);
-                  const reToken = await reTokenRepository.findOneByField('_id', authToken);
+                  const reToken = await reTokenRepository.findOneByField('id', authToken);
                   redisService.setByValue(reToken.data, '123', 0);
                   const contextTracker = context({
-                        're-token': reToken._id,
+                        're-token': reToken.id,
                   });
 
                   try {
@@ -194,8 +194,8 @@ describe('MyAuthGuard', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.clear();
-            await userRepository.clear();
+            await reTokenRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

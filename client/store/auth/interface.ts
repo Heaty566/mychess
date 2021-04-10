@@ -1,12 +1,13 @@
 export interface IUser {
-        username: string;
-        name: string;
-        email: string;
-        avatarUrl: string;
-        isPremium: boolean;
-        role: string;
+    id: string;
+    username: string;
+    name: string;
+    avatarUrl: string;
+    elo: number;
+    email: string;
+    phoneNumber: string;
 }
 
 export interface IAuthState extends IUser {
-        isLogin: boolean;
+    isLogin: boolean;
 }

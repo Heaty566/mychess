@@ -1,30 +1,13 @@
-import { ObjectId } from 'mongodb';
-import { Repository, FindManyOptions } from 'typeorm';
+import { Repository } from 'typeorm';
 
 export class RepositoryService<T> extends Repository<T> {
       public async findOneByField(field: keyof T, value: any) {
-            if (field === '_id' && typeof value === 'string') {
-                  if (!ObjectId.isValid(value)) return null;
-                  value = new ObjectId(value);
-            }
-
-            return await this.findOne({ [`${field}`]: value });
+            const results = await this.createQueryBuilder().select('*').where(`${field} = :value`, { value }).execute();
+            return results[0];
       }
 
       public async findManyByField(field: keyof T, value: any) {
-            if (field === '_id' && typeof value === 'string') {
-                  if (!ObjectId.isValid(value)) return null;
-                  value = new ObjectId(value);
-            }
-
-            return await this.find({ [`${field}`]: value });
-      }
-
-      private transformToArrayObjectId(value: Array<string>) {
-            return value.map((item) => {
-                  if (!ObjectId.isValid(item)) return null;
-                  return new ObjectId(item);
-            });
+            return await this.createQueryBuilder().select('*').where(`${field} = :value`, { value }).execute();
       }
 
       /**
@@ -35,12 +18,10 @@ export class RepositoryService<T> extends Repository<T> {
             return self.indexOf(value) === index;
       }
 
-      public async findManyByArrayValue(field: keyof T, value: Array<any>, options: FindManyOptions<T>, isUnique?: boolean) {
-            if (!value.length) return [];
-            if (isUnique) value = value.filter(this.onlyUnique);
-            if (field === '_id' && typeof value[0] === 'string') {
-                  return await this.find({ where: { ['_id']: { $in: this.transformToArrayObjectId(value) } }, ...options });
-            }
-            return await this.find({ where: { [`${field}`]: { $in: value } }, ...options });
+      public async findManyByArrayValue(field: keyof T, values: Array<any>, isUnique?: boolean) {
+            if (!values.length) return [];
+            if (isUnique) values = values.filter(this.onlyUnique);
+
+            return await this.createQueryBuilder().select('*').where(`${field} IN (:...values)`, { values }).execute();
       }
 }

@@ -8,7 +8,6 @@ import { User } from '../../models/users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
 import { RedisService } from '../../providers/redis/redis.service';
-import { ObjectId } from 'mongodb';
 
 describe('AuthService', () => {
       let app: INestApplication;
@@ -29,6 +28,31 @@ describe('AuthService', () => {
 
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
+      });
+
+      describe('limitSendingEmailOrSms', () => {
+            beforeEach(async () => {
+                  await redisService.deleteByKey('email1@gmail.com');
+                  await redisService.deleteByKey('email2@gmail.com');
+
+                  await redisService.setByValue('email1@gmail.com', 1);
+            });
+
+            it('Pass (first send)', async () => {
+                  const result = await authService.limitSendingEmailOrSms('email2@gmail.com', 5, 30);
+                  expect(result).toBe(true);
+            });
+
+            it('Pass (do not oversend)', async () => {
+                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  expect(result).toBe(true);
+            });
+
+            it('Fail (oversend', async () => {
+                  await redisService.setByValue('email1@gmail.com', 5);
+                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  expect(result).toBe(false);
+            });
       });
 
       describe('getAuthTokenByReToken', () => {
@@ -100,7 +124,7 @@ describe('AuthService', () => {
             });
             it('Failed Still get', async () => {
                   const reToken = await authService.createReToken(userDb);
-                  let getReToken = await reTokenRepository.findOne({ where: { _id: new ObjectId(reToken) } });
+                  let getReToken = await reTokenRepository.findOne({ where: { id: reToken } });
                   getReToken.data = 'hello';
                   getReToken = await reTokenRepository.save(getReToken);
                   const authToken = await authService.getAuthTokenByReToken(reToken);
@@ -119,7 +143,7 @@ describe('AuthService', () => {
                   reToken = await authService.createReToken(userDb);
             });
             it('Pass', async () => {
-                  const refreshToken = await reTokenRepository.findOneByField('_id', reToken);
+                  const refreshToken = await reTokenRepository.findOneByField('id', reToken);
                   const encryptedUser = await redisService.getByKey(refreshToken.data);
                   const userInformation = await authService.decodeToken<User>(encryptedUser);
 
@@ -150,8 +174,8 @@ describe('AuthService', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.clear();
-            await userRepository.clear();
+            await reTokenRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

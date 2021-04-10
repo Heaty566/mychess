@@ -2,39 +2,40 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from 'react';
 import Cookies from 'universal-cookie';
-import { Provider } from 'react-redux';
 import '../styles/tailwind.css';
-
-//* Import
 import { store } from '../store';
-import { apiActions } from '../store/api';
-import Navbar from '../components/navbar';
 
+import { apiActions } from '../store/api';
+import { Provider } from 'react-redux';
+import AutoLogin from '../common/HOC/autoLogin';
+import { authActions } from '../store/auth';
+
+import Navbar from '../components/navbar';
 export interface AppProps {
-        Component: React.FunctionComponent;
-        pageProps: any;
+    Component: React.FunctionComponent;
+    pageProps: any;
 }
 
 const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
-        const cookies = new Cookies();
+    const cookies = new Cookies();
+
+    useEffect(() => {
         const reToken = cookies.get('re-token');
+        if (reToken) store.dispatch(authActions.updateLogin());
+    }, []);
 
-        useEffect(() => {}, []);
+    useEffect(() => {
+        store.dispatch(apiActions.resetState());
+    }, [Component]);
 
-        useEffect(() => {
-                store.dispatch(apiActions.resetState());
-        }, [Component]);
-
-        useEffect(() => {}, [reToken]);
-
-        return (
-                <Provider store={store}>
-                        <div className="min-h-screen flex flex-col bg-gray-700">
-                                <Navbar />
-                                <Component {...pageProps} />
-                        </div>
-                </Provider>
-        );
+    return (
+        <Provider store={store}>
+            <div className="min-h-screen flex flex-col bg-gray-700">
+                <Navbar />
+                <AutoLogin Component={Component} props={pageProps} />
+            </div>
+        </Provider>
+    );
 };
 
 export default App;

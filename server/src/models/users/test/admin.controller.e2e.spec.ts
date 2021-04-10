@@ -35,15 +35,15 @@ describe('AdminController E2E', () => {
             const reqApi = (cookie, userId: string) => supertest(app.getHttpServer()).put(`/api/admin/user-admin/${userId}`).set({ cookie }).send();
 
             it('Pass to be ADMIN', async () => {
-                  await reqApi(cookieData, String(UserDb._id));
+                  await reqApi(cookieData, String(UserDb.id));
 
-                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
+                  const getUser = await userRepository.findOneByField('id', UserDb.id);
                   expect(getUser.role).toBe(UserRole.ADMIN);
             });
             it('Pass to be USER', async () => {
-                  await reqApi(cookieData, String(UserDb._id));
+                  await reqApi(cookieData, String(UserDb.id));
 
-                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
+                  const getUser = await userRepository.findOneByField('id', UserDb.id);
                   expect(getUser.role).toBe(UserRole.USER);
             });
             it('Failed not found', async () => {
@@ -55,15 +55,15 @@ describe('AdminController E2E', () => {
             const reqApi = (cookie, userId: string) => supertest(app.getHttpServer()).put(`/api/admin/user-status/${userId}`).set({ cookie }).send();
 
             it('Pass to be false', async () => {
-                  await reqApi(cookieData, String(UserDb._id));
+                  await reqApi(cookieData, String(UserDb.id));
 
-                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
+                  const getUser = await userRepository.findOneByField('id', UserDb.id);
                   expect(getUser.isDisabled).toBeTruthy();
             });
             it('Pass to be true', async () => {
-                  await reqApi(cookieData, String(UserDb._id));
+                  await reqApi(cookieData, String(UserDb.id));
 
-                  const getUser = await userRepository.findOneByField('_id', UserDb._id);
+                  const getUser = await userRepository.findOneByField('id', UserDb.id);
                   expect(getUser.isDisabled).toBeFalsy();
             });
 
@@ -74,7 +74,7 @@ describe('AdminController E2E', () => {
       });
 
       afterAll(async () => {
-            await userRepository.clear();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

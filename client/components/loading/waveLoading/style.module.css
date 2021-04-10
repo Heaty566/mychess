@@ -1,0 +1,22 @@
+.item {
+    @apply bg-blue-600;
+    @apply h-12;
+    @apply w-2;
+}
+
+.animation1 {
+    animation: Wave 0.4s infinite ease-in alternate;
+}
+.animation2 {
+    animation: Wave 0.4s 0.3s infinite ease-in alternate;
+}
+
+@keyframes Wave {
+    0% {
+        transform: scaleY(0.5);
+    }
+
+    100% {
+        transform: scaleY(1);
+    }
+}

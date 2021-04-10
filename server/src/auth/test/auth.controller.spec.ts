@@ -3,25 +3,25 @@ import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
 
 //* Internal import
-import { fakeUser } from '../../../test/fakeEntity';
 import { initTestModule } from '../../../test/initTest';
 
 import { UserRepository } from '../../models/users/entities/user.repository';
 
 import { AuthController } from '../auth.controller';
 import { ReTokenRepository } from '../entities/re-token.repository';
+import User from '../../models/users/entities/user.entity';
 
 describe('AuthController', () => {
       let app: INestApplication;
 
       let userRepository: UserRepository;
-
+      let user: User;
       let authController: AuthController;
       let reTokenRepository: ReTokenRepository;
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getApp, module, getUser } = await initTestModule();
             app = getApp;
-
+            user = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
             authController = module.get<AuthController>(AuthController);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
@@ -49,7 +49,7 @@ describe('AuthController', () => {
 
                   beforeEach(() => {
                         req = createMock<Request>();
-                        req.user = fakeUser();
+                        req.user = user;
                         res = createMock<Response>();
                         res.cookie = jest.fn().mockReturnValue({
                               redirect: (url) => url,
@@ -75,8 +75,8 @@ describe('AuthController', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.clear();
-            await userRepository.clear();
+            await reTokenRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

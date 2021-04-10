@@ -1,47 +1,34 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import http from '..';
-//* Import
-
-import { UserLoginDto, UserRegisterDto, ForgotPasswordDto, ForgotPasswordUpdateDto } from './dto';
+import http from '../axiosCommon';
+import { AxiosInstance } from 'axios';
+import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from './dto';
 import { IApiResponse } from '../../store/api/interface';
-import { AxiosStatic } from 'axios';
 
-class AuthApi {
-        constructor(private readonly apiCall: AxiosStatic) {
-                apiCall.defaults.baseURL = process.env.SERVER_URL + '/auth';
-        }
+export class AuthAPI {
+    constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
 
-        loginUser = createAsyncThunk<null, UserLoginDto>('loginUser', async (input) => {
-                await this.apiCall.post<IApiResponse<null>>('/login', input);
-                return null;
-        });
+    async loginUser(input: UserLoginDto) {
+        const url = `${this.prefix + '/login'}`;
+        const res = await this.apiCall.post<IApiResponse<null>>(url, input);
+        return res;
+    }
 
-        registerUser = createAsyncThunk<null, UserRegisterDto>('registerUser', async (input) => {
-                await this.apiCall.post<IApiResponse<null>>('/register', input);
-                return null;
-        });
+    async registerUser(input: UserRegisterDto) {
+        const url = `${this.prefix + '/register'}`;
+        const res = await this.apiCall.post<IApiResponse<null>>(url, input);
+        return res;
+    }
 
-        forgotPasswordCreate = createAsyncThunk<IApiResponse<void>, ForgotPasswordDto>(
-                'forgotPasswordCreate',
-                async (input) => {
-                        const res = await this.apiCall.post<IApiResponse<void>>(
-                                '/reset-password',
-                                input
-                        );
-                        return res.data;
-                }
-        );
+    async forgotPasswordByEmail(input: ForgotPasswordEmailDto) {
+        const url = `${this.prefix + '/otp-email'}`;
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        return res;
+    }
 
-        forgotPasswordUpdate = createAsyncThunk<IApiResponse<void>, ForgotPasswordUpdateDto>(
-                'forgotPasswordUpdate',
-                async (input) => {
-                        const res = await this.apiCall.put<IApiResponse<void>>(
-                                '/reset-password',
-                                input
-                        );
-                        return res.data;
-                }
-        );
+    async forgotPasswordByPhone(input: ForgotPasswordPhoneDto) {
+        const url = `${this.prefix + '/otp-sms'}`;
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        return res;
+    }
 }
-
-export default new AuthApi(http);
+export const authApi = new AuthAPI(http, '/auth');
+export default authApi;
