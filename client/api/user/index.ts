@@ -12,6 +12,11 @@ export class UserAPI {
         const res = await this.apiCall.get<IApiResponse<IUser>>(url);
         return res;
     }
+    async getUserById(userId: string) {
+        const url = `${this.prefix}/${userId}`;
+        const res = await this.apiCall.get<IApiResponse<IUser>>(url);
+        return res;
+    }
 }
 
 export const userAPI = new UserAPI(http, '/user');

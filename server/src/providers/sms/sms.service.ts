@@ -8,6 +8,8 @@ export class SmsService {
       constructor(private readonly twilioService: Twilio, private readonly LoggerService: LoggerService) {}
 
       private sendSms(phoneNumber: string, content: string): Promise<boolean> {
+            if (process.env.DOC === 'active') return Promise.resolve(true);
+
             return this.twilioService.messages
                   .create({
                         to: phoneNumber,

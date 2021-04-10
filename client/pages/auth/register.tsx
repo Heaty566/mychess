@@ -17,6 +17,7 @@ import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
+import { useTestId } from '../../test/helper/data-testId';
 
 const defaultValues: UserRegisterDto = {
     name: '',
@@ -36,10 +37,10 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
 
     return (
         <>
-            <SeoHead title="Register" description="he" canonical="/" />
+            <SeoHead {...routers.register.header} />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <div className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in ">
-                    <form onSubmit={handleSubmit(onSubmit)} data-testid="register-form">
+                    <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`auth-register`)}>
                         <h1 className="text-center text-4xl text-white mb-7">Register Account</h1>
                         <MsgSuccess message={apiState.message} />
                         <div className="space-y-2">

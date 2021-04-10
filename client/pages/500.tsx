@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-export interface NotFoundProps {}
+export interface PageErrorProps {}
 
-const NotFound: React.FunctionComponent<NotFoundProps> = () => {
+const PageError: React.FunctionComponent<PageErrorProps> = () => {
     return <h1>test</h1>;
 };
 
-export default NotFound;
+export default PageError;

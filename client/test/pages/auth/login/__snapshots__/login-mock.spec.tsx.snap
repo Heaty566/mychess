@@ -12,7 +12,7 @@ Object {
           class="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in "
         >
           <form
-            data-testid="login-form"
+            data-testid="auth-login"
           >
             <h1
               class="text-center text-4xl text-white mb-7"
@@ -27,6 +27,7 @@ Object {
               >
                 <label
                   class="block text-cotton-seed "
+                  data-testid="textfield-label-username"
                   for="username"
                 >
                   Username
@@ -34,7 +35,7 @@ Object {
                 <input
                   autocomplete="on"
                   class="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
-                  data-testid="username-text-field"
+                  data-testid="textfield-input-username"
                   id="username"
                   name="username"
                   type="text"
@@ -45,6 +46,7 @@ Object {
               >
                 <label
                   class="block text-cotton-seed "
+                  data-testid="textfield-label-password"
                   for="password"
                 >
                   Password
@@ -52,7 +54,7 @@ Object {
                 <input
                   autocomplete="off"
                   class="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
-                  data-testid="password-text-field"
+                  data-testid="textfield-input-password"
                   id="password"
                   name="password"
                   type="password"
@@ -64,9 +66,11 @@ Object {
             >
               <div
                 class="text-right"
+                data-testid="sidelink-wrapper-sign-up-instead"
               >
                 <a
                   class="text-mercury text-sm duration-300 hover:text-malibu"
+                  data-testid="sidelink-link-sign-up-instead"
                   href="/auth/register"
                 >
                   Sign Up Instead
@@ -75,6 +79,7 @@ Object {
             </div>
             <button
               class="bg-btn-1 w-full py-2 text-white rounded-sm focus:outline-none "
+              data-testid="btnform-sign-in"
               type="submit"
             >
               Sign In
@@ -91,7 +96,7 @@ Object {
             <div
               aria-hidden="true"
               class="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-              data-testid="Continue with Google"
+              data-testid="loginsocial-continue-with-google"
             >
               <svg
                 fill="none"
@@ -138,7 +143,7 @@ Object {
             <div
               aria-hidden="true"
               class="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-              data-testid="Continue with Facebook"
+              data-testid="loginsocial-continue-with-facebook"
             >
               <svg
                 fill="none"
@@ -162,7 +167,7 @@ Object {
             <div
               aria-hidden="true"
               class="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-              data-testid="Continue with Github"
+              data-testid="loginsocial-continue-with-github"
             >
               <svg
                 fill="none"
@@ -185,9 +190,11 @@ Object {
           >
             <div
               class="text-center"
+              data-testid="sidelink-wrapper-forgot-your-password?"
             >
               <a
                 class="text-mercury text-sm duration-300 hover:text-malibu"
+                data-testid="sidelink-link-forgot-your-password?"
                 href="/auth/reset-mail"
               >
                 Forgot Your Password?
@@ -206,7 +213,7 @@ Object {
         class="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in "
       >
         <form
-          data-testid="login-form"
+          data-testid="auth-login"
         >
           <h1
             class="text-center text-4xl text-white mb-7"
@@ -221,6 +228,7 @@ Object {
             >
               <label
                 class="block text-cotton-seed "
+                data-testid="textfield-label-username"
                 for="username"
               >
                 Username
@@ -228,7 +236,7 @@ Object {
               <input
                 autocomplete="on"
                 class="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
-                data-testid="username-text-field"
+                data-testid="textfield-input-username"
                 id="username"
                 name="username"
                 type="text"
@@ -239,6 +247,7 @@ Object {
             >
               <label
                 class="block text-cotton-seed "
+                data-testid="textfield-label-password"
                 for="password"
               >
                 Password
@@ -246,7 +255,7 @@ Object {
               <input
                 autocomplete="off"
                 class="block w-full outline-none rounded-sm bg-tuna py-2 px-1.5  text-mercury"
-                data-testid="password-text-field"
+                data-testid="textfield-input-password"
                 id="password"
                 name="password"
                 type="password"
@@ -258,9 +267,11 @@ Object {
           >
             <div
               class="text-right"
+              data-testid="sidelink-wrapper-sign-up-instead"
             >
               <a
                 class="text-mercury text-sm duration-300 hover:text-malibu"
+                data-testid="sidelink-link-sign-up-instead"
                 href="/auth/register"
               >
                 Sign Up Instead
@@ -269,6 +280,7 @@ Object {
           </div>
           <button
             class="bg-btn-1 w-full py-2 text-white rounded-sm focus:outline-none "
+            data-testid="btnform-sign-in"
             type="submit"
           >
             Sign In
@@ -285,7 +297,7 @@ Object {
           <div
             aria-hidden="true"
             class="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-            data-testid="Continue with Google"
+            data-testid="loginsocial-continue-with-google"
           >
             <svg
               fill="none"
@@ -332,7 +344,7 @@ Object {
           <div
             aria-hidden="true"
             class="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-            data-testid="Continue with Facebook"
+            data-testid="loginsocial-continue-with-facebook"
           >
             <svg
               fill="none"
@@ -356,7 +368,7 @@ Object {
           <div
             aria-hidden="true"
             class="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-            data-testid="Continue with Github"
+            data-testid="loginsocial-continue-with-github"
           >
             <svg
               fill="none"
@@ -379,9 +391,11 @@ Object {
         >
           <div
             class="text-center"
+            data-testid="sidelink-wrapper-forgot-your-password?"
           >
             <a
               class="text-mercury text-sm duration-300 hover:text-malibu"
+              data-testid="sidelink-link-forgot-your-password?"
               href="/auth/reset-mail"
             >
               Forgot Your Password?
