@@ -6,22 +6,28 @@ import { AuthService } from '../../auth/auth.service';
 import { UserService } from './user.service';
 import { RedisService } from '../../providers/redis/redis.service';
 import { SmsService } from '../../providers/sms/sms.service';
+import { AwsService } from '../../providers/aws/aws.service';
+import { RoomService } from '../rooms/room.service';
+
 import { JoiValidatorPipe } from '../../utils/validator/validator.pipe';
 import { MyAuthGuard } from '../../auth/auth.guard';
 import { apiResponse } from '../../app/interface/ApiResponse';
 import { User } from './entities/user.entity';
+import { Room } from '../rooms/entities/room.entity';
 
 import { OtpSmsDTO, vOtpSmsDTO } from '../../auth/dto/otpSms.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
+import { CreateNewRoomDTO, vCreateNewRoomDTO } from './dto/createNewRoom.dto';
+import { JoinRoomDTO, vJoinRoomDTO } from './dto/joinRoom.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AwsService } from '../../providers/aws/aws.service';
 
 @Controller('user')
 export class UserController {
       constructor(
             private readonly userService: UserService,
+            private readonly roomService: RoomService,
             private readonly authService: AuthService,
             private readonly redisService: RedisService,
             private readonly smsService: SmsService,
@@ -132,6 +138,14 @@ export class UserController {
             this.redisService.deleteByKey(otp);
       }
 
+      @Post('/check-top/:otp')
+      async cCheckOTP(@Param('otp') otp: string) {
+            const isExist = await this.redisService.getObjectByKey<User>(otp);
+            if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
+
+            return apiResponse.send<void>({ body: { message: 'server.success' } });
+      }
+
       //-----------------------------------Create-OTP--WITH GUARD-------------------------------
       @Post('/otp-sms')
       @UseGuards(MyAuthGuard)
@@ -170,5 +184,40 @@ export class UserController {
                   });
 
             return apiResponse.send({ body: { message: 'server.send-email-otp' } });
+      }
+
+      @Post('/new-room')
+      @UseGuards(MyAuthGuard)
+      @UsePipes(new JoiValidatorPipe(vCreateNewRoomDTO))
+      async cCreateNewRoom(@Body() body: CreateNewRoomDTO, @Req() req: Request) {
+            const user = req.user;
+
+            let room = await this.roomService.getOneRoomByUserId(user.id);
+            if (room) throw apiResponse.sendError({ body: { message: 'user.field-taken' } });
+
+            room = new Room();
+            room.limitTime = body.limitTime;
+            room.user1 = user;
+
+            await this.roomService.saveRoom(room);
+            return apiResponse.send({ body: { message: 'socket.room.created' } });
+      }
+
+      @Post('/join-room')
+      @UseGuards(MyAuthGuard)
+      @UsePipes(new JoiValidatorPipe(vJoinRoomDTO))
+      async cJoinRoom(@Body() body: JoinRoomDTO, @Req() req: Request) {
+            const user = req.user;
+
+            let room = await this.roomService.getOneRoomByUserId(user.id);
+
+            if (room) throw apiResponse.sendError({ body: { details: { roomId: 'user.field-taken' } } });
+
+            room = await this.roomService.getOneRoomByField('id', body.roomId);
+            if (!room) throw apiResponse.sendError({ body: { details: { roomId: 'user.field.not-found' } } });
+
+            room.user2 = user;
+            await this.roomService.saveRoom(room);
+            return apiResponse.send({ body: { message: 'socket.room.created' } });
       }
 }
