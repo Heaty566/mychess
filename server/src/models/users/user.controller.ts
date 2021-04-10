@@ -40,6 +40,8 @@ export class UserController {
       async cGetUserById(@Param('id') id: string) {
             const user = await this.userService.getOneUserByField('id', id);
 
+            if (!user) throw apiResponse.sendError({ body: { message: 'user.invalid-input' }, type: 'BadRequestException' });
+
             return apiResponse.send<User>({ body: { data: user } });
       }
 

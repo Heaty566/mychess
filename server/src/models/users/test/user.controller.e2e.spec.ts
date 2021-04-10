@@ -82,6 +82,11 @@ describe('UserController E2E', () => {
                   const res = await reqApi(user.id);
                   expect(res.body.data).toBeDefined();
             });
+
+            it('Id not correct', async () => {
+                  const res = await reqApi(fakeData(10, 'lettersAndNumbers'));
+                  expect(res.status).toBe(400);
+            });
       });
 
       describe('create otp by user', () => {
