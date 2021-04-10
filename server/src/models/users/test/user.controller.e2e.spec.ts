@@ -55,7 +55,6 @@ describe('UserController E2E', () => {
             const { getApp, module, cookie, getUser } = await initTestModule();
             app = getApp;
             user = getUser;
-            user = getUser;
             cookieData = cookie;
 
             userRepository = module.get<UserRepository>(UserRepository);
@@ -72,6 +71,15 @@ describe('UserController E2E', () => {
 
             it('Pass', async () => {
                   const res = await reqApi();
+                  expect(res.body.data).toBeDefined();
+            });
+      });
+
+      describe('GET /:id', () => {
+            const reqApi = (id: string) => supertest(app.getHttpServer()).get(`/api/user/${id}`).set({ cookie: cookieData }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi(user.id);
                   expect(res.body.data).toBeDefined();
             });
       });

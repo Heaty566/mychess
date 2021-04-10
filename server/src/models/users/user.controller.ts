@@ -37,19 +37,10 @@ export class UserController {
             return apiResponse.send<User>({ body: { data: user } });
       }
       @Get('/:id')
-      async cGetUserById() {
-            return apiResponse.send<any>({
-                  body: {
-                        data: {
-                              id: '2561d256-4cb4-47ed-b692-0a73e310cff6',
-                              username: 'heaty566',
-                              name: 'heaty566',
-                              avatarUrl: '',
-                              createDate: new Date(),
-                              elo: 0,
-                        },
-                  },
-            });
+      async cGetUserById(@Param('id') id: string) {
+            const user = await this.userService.getOneUserByField('id', id);
+
+            return apiResponse.send<User>({ body: { data: user } });
       }
 
       //------------------Update user information------------------------------------------
