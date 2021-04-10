@@ -2,6 +2,7 @@ import puppeteer, { Page } from 'puppeteer';
 
 import { Browser } from 'puppeteer';
 import router from '../../../common/constants/router';
+import { captureScreen } from '../../helper/captureScreen';
 
 jest.setTimeout(60000);
 const url = 'http://localhost:3000/auth/login';
@@ -17,7 +18,7 @@ describe('/auth/login', () => {
     beforeEach(async () => {
         browser = await puppeteer.launch({
             slowMo: 200,
-            headless: true,
+            headless: false,
         });
         page = await browser.newPage();
         await page.goto(url);
@@ -41,7 +42,7 @@ describe('/auth/login', () => {
 
         const passwordErrorSelector = '[data-testid=textfield-error-password]';
         const passwordError = await page.waitForSelector(passwordErrorSelector, { visible: true, timeout: 5000 });
-
+        await captureScreen(page, 'user-login-failed');
         expect(usernameError).toBeDefined();
         expect(passwordError).toBeDefined();
         expect(page.url().endsWith(router.login.link)).toBeTruthy();
@@ -52,7 +53,6 @@ describe('/auth/login', () => {
         const selector = 'a[data-testid=sidelink-link-sign-up-instead]';
         await page.waitForSelector(selector);
         await page.click(selector);
-        await page.screenshot({ fullPage: true, path: './login.jpg' });
 
         expect(page.url().endsWith(router.register.link)).toBeTruthy();
         await page.close();
