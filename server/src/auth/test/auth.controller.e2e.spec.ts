@@ -121,7 +121,7 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (username is not correct)', async () => {
-                        loginUserData.username = 'update';
+                        loginUserData.username = 'updateaaabbbccc';
                         const res = await reqApi(loginUserData);
                         expect(res.status).toBe(400);
                   });
@@ -273,8 +273,8 @@ describe('AuthController', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.clear();
-            await userRepository.clear();
+            await reTokenRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

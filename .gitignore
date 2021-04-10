@@ -1,8 +1,8 @@
 # compiled output
-*/dist
-*/build
+**/dist
+**/build
 **/node_modules
-*/.next
+**/.next
 # Logs
 logs
 *.log
@@ -11,8 +11,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-*/.env.*
-*/*.env
+**/.env.*
+**/server.env
+**/client.env
+
 ./server/dist/*
 ./data/config/*.env
 
