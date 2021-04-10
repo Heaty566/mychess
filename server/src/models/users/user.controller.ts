@@ -69,17 +69,10 @@ export class UserController {
             if (!file) throw apiResponse.sendError({ body: { details: { avatar: 'any.required' } } });
 
             const isCorrectSize = this.awsService.checkFileSize(file, 1);
-            if (!isCorrectSize)
-                  throw apiResponse.sendError({
-                        body: { details: { avatar: 'aws.file-too-big' } },
-                        context: { size: '1' },
-                  });
+            if (!isCorrectSize) throw apiResponse.sendError({ body: { details: { avatar: 'aws.file-too-big' } }, context: { size: '1' } });
 
             const isCorrectFileExtension = this.awsService.checkFileExtension(file);
-            if (!isCorrectFileExtension)
-                  throw apiResponse.sendError({
-                        body: { details: { avatar: 'aws.file-wrong-extension' } },
-                  });
+            if (!isCorrectFileExtension) throw apiResponse.sendError({ body: { details: { avatar: 'aws.file-wrong-extension' } } });
 
             const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');
             if (!fileLocation) throw apiResponse.sendError({ body: { message: 'server.some-wrong' }, type: 'InternalServerErrorException' });
@@ -128,15 +121,9 @@ export class UserController {
             const user = await this.userService.findOneUserByField('username', redisUser.username);
             user.phoneNumber = redisUser.phoneNumber;
             await this.userService.saveUser(user);
+
             this.redisService.deleteByKey(otp);
-      }
-
-      @Post('/check-top/:otp')
-      async cCheckOTP(@Param('otp') otp: string) {
-            const isExist = await this.redisService.getObjectByKey<User>(otp);
-            if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
-
-            return apiResponse.send<void>({ body: { message: 'server.success' } });
+            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
       //-----------------------------------Create-OTP--WITH GUARD-------------------------------
@@ -148,7 +135,6 @@ export class UserController {
             if (user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field-taken' } } });
 
             user = await this.userService.findOneUserByField('id', req.user.id);
-
             user.phoneNumber = body.phoneNumber;
 
             const otpKey = this.authService.generateOTP(user, 10, 'sms');
@@ -170,11 +156,7 @@ export class UserController {
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTPForUpdateEmail(user.email, redisKey);
-            if (!isSent)
-                  throw apiResponse.sendError({
-                        body: { details: { email: 'server.some-wrong' } },
-                        type: 'InternalServerErrorException',
-                  });
+            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'server.some-wrong' } }, type: 'InternalServerErrorException' });
 
             return apiResponse.send({ body: { message: 'server.send-email-otp' } });
       }
@@ -203,7 +185,6 @@ export class UserController {
             const user = req.user;
 
             let room = await this.roomService.getOneRoomByUserId(user.id);
-
             if (room) throw apiResponse.sendError({ body: { details: { roomId: 'user.field-taken' } } });
 
             room = await this.roomService.getOneRoomByField('id', body.roomId);

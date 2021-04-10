@@ -164,10 +164,6 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (spam sms', async () => {
-                        otpSmsDTO = {
-                              phoneNumber: userDB.phoneNumber,
-                        };
-
                         const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
 
                         try {
@@ -209,10 +205,6 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (error of smail)', async () => {
-                        otpMail = {
-                              email: userDB.email,
-                        };
-
                         const mySpy = jest.spyOn(mailService, 'sendOTP').mockImplementation(() => Promise.resolve(false));
 
                         try {
@@ -224,10 +216,6 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (spam email)', async () => {
-                        otpMail = {
-                              email: userDB.email,
-                        };
-
                         const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
 
                         try {
@@ -245,6 +233,25 @@ describe('AuthController', () => {
                         };
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(400);
+                  });
+            });
+
+            describe('POST /check-otp/:otp', () => {
+                  const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp/${input}`).send();
+
+                  it('Pass', async () => {
+                        const otp = await authService.generateOTP(userDB, 10, 'email');
+                        const res = await reqApi(otp);
+
+                        expect(res.status).toBe(201);
+                  });
+
+                  it('Failed (otp does not exist)', async () => {
+                        try {
+                              await reqApi('123456789');
+                        } catch (err) {
+                              expect(err.status).toBe(403);
+                        }
                   });
             });
       });
