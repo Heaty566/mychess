@@ -1,30 +1,34 @@
 import * as React from 'react';
+import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 
-import LoginRoute from '../../../../pages/auth/login';
-import { Provider } from 'react-redux';
+import ResetEmail from '../../../../pages/auth/reset-mail';
 import { store } from '../../../../store';
 
-describe('Login', () => {
+describe('ResetEmail', () => {
     it('Render Correct Default', async () => {
         let wrapper = render(
             <Provider store={store}>
-                <LoginRoute />
+                <ResetEmail />
             </Provider>,
         );
-        const usernameTextField = await wrapper.findByTestId('textfield-input-username');
-        const passwordTextField = await wrapper.findByTestId('textfield-input-password');
 
-        expect(usernameTextField).toBeDefined();
-        expect(passwordTextField).toBeDefined();
+        const emailTextField = await wrapper.findByTestId('textfield-input-email');
+
+        expect(emailTextField).toBeDefined();
 
         try {
-            await wrapper.findByTestId('textfield-error-username');
+            await wrapper.findByTestId('textfield-error-email');
         } catch (err) {
             expect(err).toBeDefined();
         }
         try {
             await wrapper.findByTestId('waveloading');
+        } catch (err) {
+            expect(err).toBeDefined();
+        }
+        try {
+            await wrapper.findByTestId('successmsg');
         } catch (err) {
             expect(err).toBeDefined();
         }

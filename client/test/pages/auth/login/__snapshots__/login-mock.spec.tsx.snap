@@ -190,11 +190,11 @@ Object {
           >
             <div
               class="text-center"
-              data-testid="sidelink-wrapper-forgot-your-password?"
+              data-testid="sidelink-wrapper-forgot-your-password"
             >
               <a
                 class="text-mercury text-sm duration-300 hover:text-malibu"
-                data-testid="sidelink-link-forgot-your-password?"
+                data-testid="sidelink-link-forgot-your-password"
                 href="/auth/reset-mail"
               >
                 Forgot Your Password?
@@ -391,11 +391,11 @@ Object {
         >
           <div
             class="text-center"
-            data-testid="sidelink-wrapper-forgot-your-password?"
+            data-testid="sidelink-wrapper-forgot-your-password"
           >
             <a
               class="text-mercury text-sm duration-300 hover:text-malibu"
-              data-testid="sidelink-link-forgot-your-password?"
+              data-testid="sidelink-link-forgot-your-password"
               href="/auth/reset-mail"
             >
               Forgot Your Password?

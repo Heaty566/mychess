@@ -6,12 +6,10 @@ import Register from '../../../../pages/auth/register';
 import { store } from '../../../../store';
 
 describe('Register', () => {
-    const mockFn = jest.fn();
-
     it('Render Correct Default', async () => {
         let wrapper = render(
             <Provider store={store}>
-                <Register handleOnSubmit={mockFn} />
+                <Register />
             </Provider>,
         );
 
