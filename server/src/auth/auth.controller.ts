@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 
@@ -14,6 +14,7 @@ import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
 import { UserService } from '../models/users/user.service';
 import { MyAuthGuard } from './auth.guard';
+import { RedisService } from '../providers/redis/redis.service';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +23,7 @@ export class AuthController {
             private readonly userService: UserService,
             private readonly smailService: SmailService,
             private readonly smsService: SmsService,
+            private readonly redisService: RedisService,
       ) {}
 
       //----------------------------------Common authentication-----------------------------------------------------------
@@ -34,7 +36,6 @@ export class AuthController {
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
-
             if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             //return token
@@ -73,22 +74,14 @@ export class AuthController {
       @UsePipes(new JoiValidatorPipe(vUpdateEmailDTO))
       async cSendOTPByMail(@Body() body: UpdateEmailDTO) {
             const user = await this.userService.findOneUserByField('email', body.email);
-            if (!user) {
-                  throw apiResponse.sendError({ body: { details: { email: 'user.field.not-found' } } });
-            }
+            if (!user) throw apiResponse.sendError({ body: { details: { email: 'user.field.not-found' } } });
 
             const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
-            if (!canSendMore) {
-                  throw apiResponse.sendError({ body: { details: { email: 'user.request-many-time-30p' } } });
-            }
+            if (!canSendMore) throw apiResponse.sendError({ body: { details: { email: 'user.request-many-time-30p' } } });
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
-            if (!isSent)
-                  throw apiResponse.sendError({
-                        body: { details: { email: 'server.some-wrong' } },
-                        type: 'InternalServerErrorException',
-                  });
+            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'server.some-wrong' } }, type: 'InternalServerErrorException' });
 
             return apiResponse.send({ body: { message: 'server.send-email-otp' } });
       }
@@ -100,21 +93,22 @@ export class AuthController {
             if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field.not-found' } } });
 
             const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 5, 60);
-            if (!canSendMore) {
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: 'user.request-many-time-60p' } },
-                  });
-            }
+            if (!canSendMore) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.request-many-time-60p' } } });
 
             const otpKey = this.authService.generateOTP(user, 5, 'sms');
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
             if (!isSent)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: 'server.some-wrong' } },
-                        type: 'InternalServerErrorException',
-                  });
+                  throw apiResponse.sendError({ body: { details: { phoneNumber: 'server.some-wrong' } }, type: 'InternalServerErrorException' });
 
             return apiResponse.send({ body: { message: 'server.send-phone-otp' } });
+      }
+
+      @Post('/check-otp/:otp')
+      async cCheckOTP(@Param('otp') otp: string) {
+            const isExist = await this.redisService.getObjectByKey<User>(otp);
+            if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
+
+            return apiResponse.send<void>({ body: { message: 'server.success' } });
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------

@@ -4,7 +4,7 @@
             "title": "MyGame-V1",
             "description": "a board game build base on NestJs and NextJs",
             "contact": {
-                  "name": "pham vinh nhan",
+                  "name": "Pham Vinh Nhan",
                   "email": "heaty566@gmail.com"
             },
             "license": {
@@ -25,6 +25,12 @@
             {
                   "name": "admin",
                   "description": "service for administrator, have to login and with role is ADMIN"
+            }
+      ],
+      "servers": [
+            {
+                  "url": "http://localhost:4000",
+                  "description": "Development server"
             }
       ],
       "paths": {
@@ -139,6 +145,28 @@
                         }
                   }
             },
+            "/api/auth/check-otp/:otp": {
+                  "post": {
+                        "tags": ["auth"],
+                        "parameters": [{ "$ref": "#/components/parameters/OTPkey" }],
+                        "responses": {
+                              "200": {
+                                    "description": "checking OTP is exist or not",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              }
+                        }
+                  }
+            },
             "/api/auth/google": {
                   "get": {
                         "tags": ["auth"],
@@ -242,7 +270,6 @@
                         }
                   }
             },
-
             "/api/user/avatar": {
                   "put": {
                         "tags": ["user"],
