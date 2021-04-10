@@ -11,7 +11,7 @@ export class DatabaseService {
       constructor(private readonly logger: LoggerService, private readonly awsService: AwsService) {}
 
       @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-      handleCron() {
+      cronBackupDatabase() {
             const path = `${__dirname}/backup.sql`;
             exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${path}`, (err) => {
                   if (err) this.logger.print('Create a backup database failed', 'error');
@@ -24,6 +24,7 @@ export class DatabaseService {
                         }
 
                         const fileName = `backup-${Date.now()}.sql`;
+
                         const databaseFile: Express.Multer.File = {
                               buffer: data,
                               originalname: fileName,
