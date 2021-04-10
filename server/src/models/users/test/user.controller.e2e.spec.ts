@@ -297,7 +297,7 @@ describe('UserController E2E', () => {
 
                   beforeAll(async () => {
                         user = fakeUser();
-                        user.email = 'heaty566@gmail.com';
+                        user.email = 'heaty126@gmail.com';
                         await userService.saveUser(user);
                         redisKey = await authService.generateOTP(user, 2, 'email');
                         body = {
@@ -400,7 +400,7 @@ describe('UserController E2E', () => {
 
                   it('Pass', async () => {
                         roomDb = new Room();
-                        let userCreateRoom = fakeUser();
+                        const userCreateRoom = fakeUser();
                         await userService.saveUser(userCreateRoom);
                         roomDb.user1 = userCreateRoom;
                         await roomService.saveRoom(roomDb);
