@@ -221,6 +221,28 @@
                         }
                   }
             },
+            "/api/user/:id": {
+                  "get": {
+                        "tags": ["user"],
+                        "responses": {
+                              "200": {
+                                    "description": "return any user information without some sensitive fields",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  }
+            },
+
             "/api/user/avatar": {
                   "put": {
                         "tags": ["user"],

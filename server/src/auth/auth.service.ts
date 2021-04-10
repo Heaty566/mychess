@@ -31,7 +31,7 @@ export class AuthService {
             const charactersLength = pattern[type].length;
             for (let i = 0; i < length; i++) result += characters.charAt(Math.floor(Math.random() * charactersLength));
 
-            return process.env.NODE_ENV === 'production' ? result : '1234567890';
+            return process.env.NODE_ENV === 'active' ? '1234567890' : result;
       }
 
       generateOTP(user: User, expired: number, type: 'sms' | 'email') {
