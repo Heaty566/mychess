@@ -194,8 +194,8 @@ describe('MyAuthGuard', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.clear();
-            await userRepository.clear();
+            await reTokenRepository.createQueryBuilder().delete().execute();
+            await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });
 });

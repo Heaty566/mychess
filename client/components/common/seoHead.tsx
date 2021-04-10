@@ -22,7 +22,7 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
     const metaIndexPage = isIndexPage ? 'index' : 'noindex';
     const metaIsFollowPage = isFollowPage ? 'follow' : 'nofollow';
     const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
-    const canonicalLink = process.env.DOMAIN + canonical;
+    const canonicalLink = process.env.CLIENT_URL + canonical;
     const pageTitle = title === 'Home' ? 'MyGame' : `${title} | MyGame`;
 
     return (

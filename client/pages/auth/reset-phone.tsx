@@ -48,7 +48,7 @@ const ResetPhone: React.FunctionComponent = () => {
 
     return (
         <>
-            <SeoHead title="Reset Password" description="he" canonical="/" />
+            <SeoHead {...routers.forgotPasswordPhone.header} />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
