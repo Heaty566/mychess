@@ -8,6 +8,7 @@ class AuthThunk {
     constructor(private readonly apiCall: AuthAPI) {}
 
     loginUser = createAsyncThunk<null, UserLoginDto>('UserLoginDto', async (input) => {
+        console.log('------------');
         await this.apiCall.loginUser(input);
         return null;
     });

@@ -25,15 +25,14 @@ const defaultValues: UserRegisterDto = {
     username: '',
     confirmPassword: '',
 };
-export interface RegisterProps {
-    handleOnSubmit: (data: UserRegisterDto) => void;
-}
-const onSubmit = (data: UserRegisterDto) => store.dispatch(authThunk.registerUser(data));
 
+export interface RegisterProps {}
 const Register: React.FunctionComponent<RegisterProps> = () => {
     const { register, handleSubmit } = useForm<UserRegisterDto>({ defaultValues });
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserRegisterDto>(defaultValues);
+
+    const onSubmit = (data: UserRegisterDto) => store.dispatch(authThunk.registerUser(data));
 
     return (
         <>
@@ -68,5 +67,5 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
     );
 };
 
-const RegisterRoute = (props: RegisterProps) => RouteGuard<RegisterProps>({ Component: Register, props: { ...props, handleOnSubmit: onSubmit } });
+const RegisterRoute = (props: RegisterProps) => RouteGuard<RegisterProps>({ Component: Register, props: { ...props } });
 export default RegisterRoute;

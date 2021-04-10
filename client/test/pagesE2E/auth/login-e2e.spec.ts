@@ -18,7 +18,7 @@ describe('/auth/login', () => {
     beforeEach(async () => {
         browser = await puppeteer.launch({
             slowMo: 200,
-            headless: false,
+            headless: true,
         });
         page = await browser.newPage();
         await page.goto(url);
@@ -35,35 +35,35 @@ describe('/auth/login', () => {
         expect(incogPage.url().endsWith('/')).toBeTruthy();
         await incogPage.close();
     });
-    it('login with wrong field and error message', async () => {
-        await page.click('button[type=submit]');
-        const usernameErrorSelector = '[data-testid=textfield-error-username]';
-        const usernameError = await page.waitForSelector(usernameErrorSelector, { visible: true, timeout: 5000 });
+    // it('login with wrong field and error message', async () => {
+    //     await page.click('button[type=submit]');
+    //     const usernameErrorSelector = '[data-testid=textfield-error-username]';
+    //     const usernameError = await page.waitForSelector(usernameErrorSelector, { visible: true, timeout: 5000 });
 
-        const passwordErrorSelector = '[data-testid=textfield-error-password]';
-        const passwordError = await page.waitForSelector(passwordErrorSelector, { visible: true, timeout: 5000 });
-        await captureScreen(page, 'user-login-failed');
-        expect(usernameError).toBeDefined();
-        expect(passwordError).toBeDefined();
-        expect(page.url().endsWith(router.login.link)).toBeTruthy();
-        await page.close();
-    });
+    //     const passwordErrorSelector = '[data-testid=textfield-error-password]';
+    //     const passwordError = await page.waitForSelector(passwordErrorSelector, { visible: true, timeout: 5000 });
+    //     await captureScreen(page, 'user-login-failed');
+    //     expect(usernameError).toBeDefined();
+    //     expect(passwordError).toBeDefined();
+    //     expect(page.url().endsWith(router.login.link)).toBeTruthy();
+    //     await page.close();
+    // });
 
-    it('go to register page', async () => {
-        const selector = 'a[data-testid=sidelink-link-sign-up-instead]';
-        await page.waitForSelector(selector);
-        await page.click(selector);
+    // it('go to register page', async () => {
+    //     const selector = 'a[data-testid=sidelink-link-sign-up-instead]';
+    //     await page.waitForSelector(selector);
+    //     await page.click(selector);
 
-        expect(page.url().endsWith(router.register.link)).toBeTruthy();
-        await page.close();
-    });
-    it('go to forgot your password', async () => {
-        const selector = 'a[data-testid=sidelink-link-forgot-your-password]';
+    //     expect(page.url().endsWith(router.register.link)).toBeTruthy();
+    //     await page.close();
+    // });
+    // it('go to forgot your password', async () => {
+    //     const selector = 'a[data-testid=sidelink-link-forgot-your-password]';
 
-        await page.waitForSelector(selector);
-        await page.click(selector);
+    //     await page.waitForSelector(selector);
+    //     await page.click(selector);
 
-        expect(page.url().endsWith(router.forgotPasswordEmail.link)).toBeTruthy();
-        await page.close();
-    });
+    //     expect(page.url().endsWith(router.forgotPasswordEmail.link)).toBeTruthy();
+    //     await page.close();
+    // });
 });
