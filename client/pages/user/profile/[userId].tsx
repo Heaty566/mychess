@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { userAPI } from '../../../api/user';
 import { GetServerSideProps, GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
+import { IUser } from '../../../store/auth/interface';
 
-export interface ProfileProps {}
+export interface ProfileProps {
+    user: IUser | null;
+}
 
-const Profile: React.FunctionComponent<ProfileProps> = () => {
+const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     return (
         <div className="relative">
             <video
@@ -20,30 +23,37 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
                     type="video/webm"
                 />
             </video>
-
             <div className=" relative w-full md:w-5/6 xl:w-4/6 m-auto py-6 px-4 background-profile ">
-                <div className="flex space-x-4">
-                    <div className="h-40 ">
-                        <img src="https://picsum.photos/160/160" alt="" />
+                {user ? (
+                    <div className="flex space-x-4">
+                        <div className="h-40 ">
+                            <img src="https://picsum.photos/160/160" alt="" />
+                        </div>
+                        <div>
+                            <h1 className="text-4xl text-white capitalize">{user.username}</h1>
+                            <h3 className="text-lg text-cloud-700 capitalize">{user.name}</h3>
+                            <h3 className="text-lg text-cloud mt-2">ELO: {user.elo}</h3>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-4xl text-white">Heaty Cherry</h1>
-                        <h3 className="text-lg text-cloud-700">Pham Vinh Nhan</h3>
-                        <h3 className="text-lg text-cloud mt-2">ELO: 1000</h3>
-                    </div>
-                </div>
+                ) : (
+                    <h1>Not Found</h1>
+                )}
             </div>
         </div>
     );
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext<{ userId: string }>) {
-    console.log(context.params?.userId);
-    const res = await userAPI.getCurrentUser();
-
-    return {
-        props: {},
-    };
+export async function getServerSideProps(context: GetServerSidePropsContext<{ userId: string }>): Promise<GetServerSidePropsResult<ProfileProps>> {
+    const userId = context.params?.userId;
+    if (!userId) return { props: { user: null } };
+    else {
+        try {
+            const user = await userAPI.getUserById(userId).then((res) => res.data.data);
+            return { props: { user: JSON.parse(JSON.stringify(user)) } };
+        } catch (err) {
+            return { props: { user: null } };
+        }
+    }
 }
 
 export default Profile;

@@ -34,6 +34,7 @@ export class AuthController {
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
+
             if (!isCorrect) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             //return token

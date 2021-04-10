@@ -24,9 +24,7 @@ export interface IApiResponse<T> {
 
 export interface IApiBase<T> {
       body: IApiResponse<T>;
-      isTranslate?: boolean;
       context?: Record<string, string>;
-      isTranslateDetails?: boolean;
 }
 
 export interface IApiError extends IApiBase<void> {
@@ -39,15 +37,15 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public sendError({ body, isTranslate = true, isTranslateDetails = false, type = 'BadRequestException', context = {} }: IApiError) {
-            if (isTranslate && body.message) {
-                  body.message = this.localeService.translate(body.message, { ...context });
-            }
-            if (isTranslateDetails && body.details) {
+      public sendError({ body, type = 'BadRequestException', context = {} }: IApiError) {
+            if (body.message) body.message = this.localeService.translate(body.message, { ...context });
+
+            if (body.details) {
                   for (const item in body.details) {
                         body.details[item] = this.localeService.translate(body.details[item], { ...context });
                   }
             }
+
             switch (type) {
                   case 'BadGatewayException':
                         return new BadGatewayException(body);
@@ -68,10 +66,9 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public send<T>({ body, isTranslate, context }: IApiBase<T>) {
-            if (isTranslate && body.message) {
-                  body.message = this.localeService.translate(body.message, { ...context });
-            }
+      public send<T>({ body, context }: IApiBase<T>) {
+            if (body.message) body.message = this.localeService.translate(body.message, { ...context });
+
             return body;
       }
 }

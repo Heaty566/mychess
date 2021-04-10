@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import NavbarLang, { THandleChangeLanguage } from '../navbarLang';
 import router from '../../../common/constants/router';
+import { useTestId } from '../../../test/helper/data-testId';
 
 export interface NavbarUserProps {
     isActiveLang: boolean;
@@ -14,7 +15,7 @@ const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeActi
     <ul className="space-x-4 text-cloud items-center self-start  hidden md:flex ">
         <li>
             <Link href={router.login.link}>
-                <a href={router.login.link} className="duration-300 hover:text-cloud-50">
+                <a href={router.login.link} className="duration-300 hover:text-cloud-50" {...useTestId(`navbarUser-login`)}>
                     Login
                 </a>
             </Link>

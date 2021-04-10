@@ -2,6 +2,7 @@ import * as React from 'react';
 import Cookies from 'universal-cookie';
 
 import { usePopUpNewWindow } from '../../../common/hooks/usePopUpNewWindow';
+import { useTestId } from '../../../test/helper/data-testId';
 import config from './config';
 
 export interface LoginSocialProps {}
@@ -25,7 +26,7 @@ const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
                     key={item.label}
                     onClick={() => openNewWindow(process.env.SERVER_URL + item.url)}
                     className="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
-                    data-testid={item.label}
+                    {...useTestId(`loginSocial-${item.label}`)}
                 >
                     <item.Icon />
 

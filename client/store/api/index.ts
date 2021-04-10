@@ -7,7 +7,7 @@ const initialState: IApiState = {
     isLoading: false,
     errorDetails: {},
     isError: false,
-    message: '122222222',
+    message: '',
 };
 
 const reducer = createSlice({
