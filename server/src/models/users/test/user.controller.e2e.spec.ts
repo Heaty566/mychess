@@ -317,11 +317,11 @@ describe('UserController E2E', () => {
       });
 
       describe('user create or join room', () => {
-            describe('Post /api/user/newRoom', () => {
+            describe('Post /api/user/new-room', () => {
                   let body: CreateNewRoomDTO;
                   let user: User;
                   const reqApi = (input: CreateNewRoomDTO) =>
-                        supertest(app.getHttpServer()).post('/api/user/newRoom').set({ cookie: cookieData }).send(input);
+                        supertest(app.getHttpServer()).post('/api/user/new-room').set({ cookie: cookieData }).send(input);
 
                   beforeEach(async () => {
                         user = fakeUser();
@@ -353,11 +353,11 @@ describe('UserController E2E', () => {
                   });
             });
 
-            describe('Post /api/user/joinRoom', () => {
+            describe('Post /api/user/join-room', () => {
                   let body: JoinRoomDTO;
 
                   const reqApi = (input: JoinRoomDTO) =>
-                        supertest(app.getHttpServer()).post('/api/user/joinRoom').set({ cookie: cookieData }).send(input);
+                        supertest(app.getHttpServer()).post('/api/user/join-room').set({ cookie: cookieData }).send(input);
 
                   beforeEach(async () => {
                         roomDb = new Room();

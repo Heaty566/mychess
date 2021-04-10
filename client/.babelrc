@@ -5,5 +5,19 @@
     "plugins": [
         "inline-react-svg",
         "@babel/plugin-proposal-class-properties"
-    ]
+    ],
+    "env": {
+        "production": {
+            "plugins": [
+                [
+                    "react-remove-properties",
+                    {
+                        "properties": [
+                            "data-testid"
+                        ]
+                    }
+                ]
+            ]
+        }
+    }
 }
