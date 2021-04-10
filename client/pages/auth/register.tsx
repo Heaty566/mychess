@@ -37,7 +37,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
 
     return (
         <>
-            <SeoHead title="Register" description="he" canonical="/" />
+            <SeoHead {...routers.register.header} />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <div className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`auth-register`)}>

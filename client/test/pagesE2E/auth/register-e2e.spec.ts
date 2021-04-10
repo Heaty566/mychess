@@ -4,6 +4,7 @@ import { fakeData } from '../../helper/fakeData';
 
 import { Browser } from 'puppeteer';
 import router from '../../../common/constants/router';
+import { captureScreen } from '../../helper/captureScreen';
 
 //còn cái này e2e test máy nó nhập tự submit luôn
 jest.setTimeout(60000);
@@ -51,7 +52,7 @@ describe('/auth/register', () => {
 
         const nameErrorSelector = '[data-testid=textfield-error-name]';
         const nameError = await page.waitForSelector(nameErrorSelector, { visible: true, timeout: 5000 });
-
+        await captureScreen(page, 'user-register-failed');
         expect(usernameError).toBeDefined();
         expect(passwordError).toBeDefined();
         expect(nameError).toBeDefined();
