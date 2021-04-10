@@ -40,7 +40,7 @@ describe('NotFound', () => {
                       <a
                         class="inline-block bg-gray-800 px-8 py-2 text-white rounded-sm  duration-300 hover:bg-gray-900 outline-none"
                         data-testid="btnlink-back-to-home"
-                        href="/home"
+                        href="/"
                       >
                         Back To Home
                       </a>
@@ -77,7 +77,7 @@ describe('NotFound', () => {
                     <a
                       class="inline-block bg-gray-800 px-8 py-2 text-white rounded-sm  duration-300 hover:bg-gray-900 outline-none"
                       data-testid="btnlink-back-to-home"
-                      href="/home"
+                      href="/"
                     >
                       Back To Home
                     </a>

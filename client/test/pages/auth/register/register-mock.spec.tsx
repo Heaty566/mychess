@@ -5,6 +5,7 @@ import { Provider, useSelector } from 'react-redux';
 import { useFormError } from '../../../../common/hooks/useFormError';
 import Register from '../../../../pages/auth/register';
 import { store } from '../../../../store';
+import authThunk from '../../../../store/auth/thunk';
 
 jest.mock('../../../../common/hooks/useFormError');
 jest.mock('react-redux', () => ({
@@ -35,7 +36,7 @@ describe('Register Mock', () => {
     it('Render Correct Default Mock', async () => {
         let wrapper = render(
             <Provider store={store}>
-                <Register handleOnSubmit={mockFn} />
+                <Register />
             </Provider>,
         );
         const nameTextField = await wrapper.findByTestId('textfield-input-name');
@@ -76,7 +77,7 @@ describe('Register Mock', () => {
 
         const wrapper = render(
             <Provider store={store}>
-                <Register handleOnSubmit={mockFn} />
+                <Register />
             </Provider>,
         );
 
@@ -96,7 +97,7 @@ describe('Register Mock', () => {
 
         const wrapper = render(
             <Provider store={store}>
-                <Register handleOnSubmit={mockFn} />
+                <Register />
             </Provider>,
         );
 
@@ -108,7 +109,7 @@ describe('Register Mock', () => {
 
         const wrapper = render(
             <Provider store={store}>
-                <Register handleOnSubmit={mockFn} />
+                <Register />
             </Provider>,
         );
 
@@ -118,20 +119,18 @@ describe('Register Mock', () => {
 
     it('Function submit', async () => {
         const submitMockFn = jest.fn();
+        const authThunkSpy = jest.spyOn(authThunk, 'registerUser');
+        authThunkSpy.mockReturnValue(submitMockFn);
 
         const wrapper = render(
             <Provider store={store}>
-                <Register handleOnSubmit={submitMockFn} />
+                <Register />
             </Provider>,
         );
         const formLogin = await wrapper.findByTestId('auth-register');
 
-        waitFor(
-            () => {
-                fireEvent.submit(formLogin);
-                expect(submitMockFn).toHaveBeenCalled();
-            },
-            { timeout: 1000 },
-        );
+        await fireEvent.submit(formLogin);
+        // expect(submitMockFn).toBeCalledWith(1);
+        authThunkSpy.mockClear();
     });
 });

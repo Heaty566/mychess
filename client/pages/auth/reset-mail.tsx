@@ -18,6 +18,7 @@ import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
+import { useTestId } from '../../test/helper/data-testId';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -28,7 +29,7 @@ const ResetEmail: React.FunctionComponent = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordEmailDto>(defaultValues);
     const [isSubmit, setIsSubmit] = React.useState(false);
-    const [timer, isDone, setTimerStatus] = useTimer(60, false);
+    const [timer, isRunning, setTimerStatus] = useTimer(60, false);
 
     const onSubmit = (data: ForgotPasswordEmailDto) => {
         store.dispatch(authThunk.forgotPasswordByEmail(data));
@@ -51,7 +52,7 @@ const ResetEmail: React.FunctionComponent = () => {
             <SeoHead {...routers.forgotPasswordEmail.header} />
             <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
                 <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`reset-mail`)}>
                         <h1 className="text-center text-4xl text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
                         <p className="text-mercury-800 py-2">Please enter your email, you will receive an mail to reset your password</p>
@@ -61,7 +62,7 @@ const ResetEmail: React.FunctionComponent = () => {
                                 {/* ------------ Resend email start ------------------- */}
                                 <div className=" flex space-x-2">
                                     <p className="text-mercury-800">Send me an another email.</p>
-                                    {!isDone ? (
+                                    {!isRunning ? (
                                         <button className="duration-300 hover:text-malibu text-white focus:outline-none">Click Here</button>
                                     ) : (
                                         <p className="text-white">{timer}s</p>

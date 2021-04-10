@@ -5,6 +5,7 @@ import { Provider, useSelector } from 'react-redux';
 import { useFormError } from '../../../../common/hooks/useFormError';
 import LoginRoute from '../../../../pages/auth/login';
 import { store } from '../../../../store';
+import authThunk from '../../../../store/auth/thunk';
 
 jest.mock('../../../../common/hooks/useFormError');
 jest.mock('react-redux', () => ({
@@ -13,7 +14,6 @@ jest.mock('react-redux', () => ({
 }));
 
 describe('Login Mock', () => {
-    const mockFn = jest.fn();
     const useFormErrorMock = useFormError as jest.Mock;
     const useSelectorMock = useSelector as jest.Mock<any, any>;
 
@@ -35,7 +35,7 @@ describe('Login Mock', () => {
     it('Render Correct Default', async () => {
         let wrapper = render(
             <Provider store={store}>
-                <LoginRoute handleOnSubmit={mockFn} />
+                <LoginRoute />
             </Provider>,
         );
         const usernameTextField = await wrapper.findByTestId('textfield-input-username');
@@ -67,7 +67,7 @@ describe('Login Mock', () => {
 
         const wrapper = render(
             <Provider store={store}>
-                <LoginRoute handleOnSubmit={mockFn} />
+                <LoginRoute />
             </Provider>,
         );
 
@@ -83,7 +83,7 @@ describe('Login Mock', () => {
 
         const wrapper = render(
             <Provider store={store}>
-                <LoginRoute handleOnSubmit={mockFn} />
+                <LoginRoute />
             </Provider>,
         );
 
@@ -96,7 +96,7 @@ describe('Login Mock', () => {
 
         const wrapper = render(
             <Provider store={store}>
-                <LoginRoute handleOnSubmit={mockFn} />
+                <LoginRoute />
             </Provider>,
         );
 
@@ -106,20 +106,18 @@ describe('Login Mock', () => {
 
     it('Function submit', async () => {
         const submitMockFn = jest.fn();
+        const authThunkSpy = jest.spyOn(authThunk, 'loginUser');
+        authThunkSpy.mockReturnValue(submitMockFn);
 
         const wrapper = render(
             <Provider store={store}>
-                <LoginRoute handleOnSubmit={submitMockFn} />
+                <LoginRoute />
             </Provider>,
         );
         const formLogin = await wrapper.findByTestId('auth-login');
 
-        waitFor(
-            () => {
-                fireEvent.submit(formLogin);
-                expect(submitMockFn).toHaveBeenCalled();
-            },
-            { timeout: 1000 },
-        );
+        await fireEvent.submit(formLogin);
+        // expect(submitMockFn).toHaveBeenCalledTimes(1);
+        authThunkSpy.mockClear();
     });
 });

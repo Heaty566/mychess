@@ -88,7 +88,7 @@ describe('UserController E2E', () => {
             const reqApi = (id: string) => supertest(app.getHttpServer()).get(`/api/user/${id}`).set({ cookie: cookieData }).send();
 
             it('Pass', async () => {
-                  const res = await reqApi(user.id);
+                  const res = await reqApi(userDb.id);
                   expect(res.body.data).toBeDefined();
             });
 
