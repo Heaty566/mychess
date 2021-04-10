@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
 import { initTestModule } from '../../../../test/initTest';
 import { fakeUser } from '../../../../test/fakeEntity';
 import { fakeData } from '../../../../test/fakeData';

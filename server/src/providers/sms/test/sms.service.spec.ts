@@ -42,6 +42,11 @@ describe('TokenService', () => {
                   const res = await smsService['sendSms'](fakeData(11), fakeData(10));
                   expect(res).toBeFalsy();
             });
+            it('Debug mode', async () => {
+                  process.env.DOC = 'active';
+                  const res = await smsService['sendSms'](fakeData(11), fakeData(10));
+                  expect(res).toBeTruthy();
+            });
       });
 
       describe('sendOtp', () => {
