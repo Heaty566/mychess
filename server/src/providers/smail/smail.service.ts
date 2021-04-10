@@ -21,7 +21,7 @@ export class SmailService {
                         </div>`,
                   mailSettings: {
                         sandboxMode: {
-                              enable: process.env.NODE_ENV === 'test',
+                              enable: process.env.NODE_ENV === 'test' || process.env.DOC === 'active',
                         },
                   },
             };
