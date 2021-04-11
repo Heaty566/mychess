@@ -8,7 +8,6 @@ class AuthThunk {
     constructor(private readonly apiCall: AuthAPI) {}
 
     loginUser = createAsyncThunk<null, UserLoginDto>('UserLoginDto', async (input) => {
-        console.log('------------');
         await this.apiCall.loginUser(input);
         return null;
     });
@@ -19,6 +18,7 @@ class AuthThunk {
     });
 
     forgotPasswordByEmail = createAsyncThunk<IApiResponse<void>, ForgotPasswordEmailDto>('ForgotPasswordEmailDto', async (input) => {
+        console.log(input);
         const res = await this.apiCall.forgotPasswordByEmail(input);
         return res.data;
     });

@@ -30,7 +30,7 @@ const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
 
     return (
         <Provider store={store}>
-            <div className="min-h-screen flex flex-col bg-gray-700">
+            <div className="flex flex-col min-h-screen bg-gray-700">
                 <Navbar />
                 <AutoLogin Component={Component} props={pageProps} />
             </div>

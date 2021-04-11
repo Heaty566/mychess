@@ -35,7 +35,7 @@ const config: Record<TRouters, IRouter> = {
         },
     },
     support: {
-        link: '/',
+        link: '/support',
         header: {
             title: 'Home',
             canonical: '/',

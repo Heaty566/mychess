@@ -21,6 +21,7 @@ import { Chat } from './chats/entities/chat.entity';
 import { Message } from './models/messages/entities/message.entity';
 import { EventsModule } from './chats/events/events.module';
 import { RepositoryModule } from './utils/repository/repository.module';
+import { CommonModule } from './common/common.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -55,6 +56,7 @@ const DBConfig = TypeOrmModule.forRoot({
             MessagesModule,
             EventsModule,
             RepositoryModule,
+            CommonModule,
       ],
       controllers: [],
 })

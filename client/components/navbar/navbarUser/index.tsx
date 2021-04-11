@@ -12,7 +12,7 @@ export interface NavbarUserProps {
 }
 
 const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeActiveLang, isActiveLang, handleChangeLanguage }) => (
-    <ul className="space-x-4 text-cloud items-center self-start  hidden md:flex ">
+    <ul className="items-center self-start hidden space-x-4 text-cloud md:flex ">
         <li>
             <Link href={router.login.link}>
                 <a href={router.login.link} className="duration-300 hover:text-cloud-50" {...useTestId(`navbarUser-login`)}>

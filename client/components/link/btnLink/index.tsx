@@ -11,7 +11,7 @@ const BtnLink: React.FunctionComponent<BtnLinkProps> = ({ label, href }) => (
     <Link href={href}>
         <a
             href={href}
-            className="inline-block bg-gray-800 px-8 py-2 text-white rounded-sm  duration-300 hover:bg-gray-900 outline-none"
+            className="inline-block px-8 py-2 text-white duration-300 bg-gray-800 rounded-sm outline-none hover:bg-gray-900"
             {...useTestId(`btnLink-${label}`)}
         >
             {label}

@@ -19,7 +19,7 @@ const NavbarLang: React.FunctionComponent<NavbarLangProps> = ({
     isActive = false,
 }) => (
     <div className="relative">
-        <div className="flex items-center relative cursor-pointer" onClick={() => handleChangeActive()} aria-hidden>
+        <div className="relative flex items-center cursor-pointer" onClick={() => handleChangeActive()} aria-hidden>
             <span className="mr-1 duration-300 hover:text-cloud-50">Language</span>
             <DropdownIcons />
         </div>
@@ -32,7 +32,7 @@ const NavbarLang: React.FunctionComponent<NavbarLangProps> = ({
                 {config.map((item) => (
                     <li key={item.label}>
                         <div
-                            className="py-2 px-4 duration-300 hover:bg-woodsmoke-400 cursor-pointer capitalize"
+                            className="px-4 py-2 capitalize duration-300 cursor-pointer hover:bg-woodsmoke-400"
                             onClick={() => {
                                 handleChangeLanguage(item.key);
                                 handleChangeActive();

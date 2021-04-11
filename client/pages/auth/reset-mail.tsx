@@ -50,20 +50,20 @@ const ResetEmail: React.FunctionComponent = () => {
     return (
         <>
             <SeoHead {...routers.forgotPasswordEmail.header} />
-            <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
+            <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
+                <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`reset-mail`)}>
-                        <h1 className="text-center text-4xl text-white mb-7">Reset Password</h1>
+                        <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
-                        <p className="text-mercury-800 py-2">Please enter your email, you will receive an mail to reset your password</p>
+                        <p className="py-2 text-mercury-800">Please enter your email, you will receive an mail to reset your password</p>
 
                         {isSubmit && !apiState.isError && (
                             <>
                                 {/* ------------ Resend email start ------------------- */}
-                                <div className=" flex space-x-2">
+                                <div className="flex space-x-2 ">
                                     <p className="text-mercury-800">Send me an another email.</p>
                                     {!isRunning ? (
-                                        <button className="duration-300 hover:text-malibu text-white focus:outline-none">Click Here</button>
+                                        <button className="text-white duration-300 hover:text-malibu focus:outline-none">Click Here</button>
                                     ) : (
                                         <p className="text-white">{timer}s</p>
                                     )}
