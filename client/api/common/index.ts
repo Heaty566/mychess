@@ -8,12 +8,12 @@ import { SupportDto } from './dto';
 export class CommonAPI {
     constructor(private readonly apiCall: AxiosInstance, private readonly prefix: string) {}
 
-    async getCurrentUser() {
-        const url = `${this.prefix + '/'}`;
-        const res = await this.apiCall.get<IApiResponse<IUser>>(url);
+    async sendFeedBack(input: SupportDto) {
+        const url = `${this.prefix + '/support'}`;
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
         return res;
     }
 }
 
-export const userAPI = new CommonAPI(http, '');
-export default userAPI;
+export const commonAPI = new CommonAPI(http, '');
+export default commonAPI;

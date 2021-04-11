@@ -10,7 +10,7 @@ import { IApiState } from '../../store/api/interface';
 import { RootState, store } from '../../store';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
-import { RouteGuard } from '../../common/HOC/routeGuard';
+
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -18,6 +18,7 @@ import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
+import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: ForgotPasswordPhoneDto = {
     phoneNumber: '',
@@ -47,7 +48,7 @@ const ResetPhone: React.FunctionComponent = () => {
     }, [apiState.isError]);
 
     return (
-        <>
+        <RouteProtectedWrapper>
             <SeoHead {...routers.forgotPasswordPhone.header} />
             <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
                 <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
@@ -92,8 +93,8 @@ const ResetPhone: React.FunctionComponent = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </RouteProtectedWrapper>
     );
 };
-const ResetPhoneRoute = (props: any) => RouteGuard({ Component: ResetPhone, props: { ...props } });
-export default ResetPhoneRoute;
+
+export default ResetPhone;

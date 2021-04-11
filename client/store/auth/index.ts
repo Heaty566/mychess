@@ -38,6 +38,7 @@ const reducer = createSlice({
         });
         builder.addCase(authThunk.loginUser.fulfilled, (state) => ({ ...state, isLogin: true }));
         builder.addCase(authThunk.registerUser.fulfilled, (state) => ({ ...state, isLogin: true }));
+        builder.addCase(authThunk.logoutUser.fulfilled, () => ({ ...initialState }));
         builder.addCase(userThunk.getCurrentUser.rejected, (state) => {
             const cookies = new Cookies();
             cookies.remove('re-token');

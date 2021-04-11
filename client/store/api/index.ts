@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { IJoiError, IApiState } from './interface';
+import { IJoiError, IApiState, IApiResponse } from './interface';
 import { authThunk } from '../auth/thunk';
 
 const initialState: IApiState = {
@@ -22,21 +22,9 @@ const reducer = createSlice({
             newState.isError = true;
             return newState;
         },
+        updateSuccessMessage: (state, { payload }: PayloadAction<IApiResponse<any>>) => ({ ...state, message: payload.message || '' }),
     },
-    extraReducers: (builder) => {
-        builder.addCase(authThunk.forgotPasswordByEmail.fulfilled, (state, { payload }) => {
-            const newState = { ...state };
-            newState.message = payload.message;
-
-            return newState;
-        });
-        builder.addCase(authThunk.forgotPasswordByPhone.fulfilled, (state, { payload }) => {
-            const newState = { ...state };
-            newState.message = payload.message;
-
-            return newState;
-        });
-    },
+    extraReducers: (builder) => {},
 });
 
 export const apiActions = {

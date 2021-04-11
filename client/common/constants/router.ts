@@ -4,7 +4,7 @@ interface IRouter {
     header: SeoHeadProps;
 }
 
-type TRouters = 'register' | 'login' | 'home' | 'community' | 'about' | 'support' | 'forgotPasswordEmail' | 'forgotPasswordPhone';
+type TRouters = 'register' | 'login' | 'home' | 'community' | 'about' | 'support' | 'forgotPasswordEmail' | 'forgotPasswordPhone' | 'userProfile';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -75,6 +75,15 @@ const config: Record<TRouters, IRouter> = {
             canonical: '/auth/reset-phone',
             description: 'Send an OTP to your phone number',
             isFollowPage: false,
+        },
+    },
+    userProfile: {
+        link: '/user/profile',
+        header: {
+            title: 'Reset Password',
+            canonical: '/auth/reset-phone',
+            description: 'Send an OTP to your phone number',
+            isFollowPage: true,
         },
     },
 };

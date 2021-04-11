@@ -16,7 +16,7 @@ export class User {
       @Column({ nullable: false })
       name: string;
 
-      @Column({ default: '' })
+      @Column({ default: 'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar.jpg' })
       avatarUrl: string;
 
       @Column({ default: null, unique: true })

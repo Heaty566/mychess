@@ -1,31 +1,31 @@
 import * as React from 'react';
 
-import { THandleChangeLanguage } from '../navbarLang';
 import MobileNavSideMenu from './mobileSideMenu';
 import MobileNavBtn from './mobileNavBtn';
+import { IAuthState } from '../../../store/auth/interface';
 
 export interface NavbarMobileProps {
     handleChangeActive(): void;
-    handleChangeActiveLang(): void;
-    handleChangeLanguage: THandleChangeLanguage;
+    handleLogoutUser: () => void;
+    handleChangeLanguage: any;
     isActive: boolean;
-    isActiveLang: boolean;
+    authState: IAuthState;
 }
 
 const NavbarMobile: React.FunctionComponent<NavbarMobileProps> = ({
     handleChangeActive,
-    handleChangeActiveLang,
-    isActiveLang,
     handleChangeLanguage,
     isActive = false,
+    authState,
+    handleLogoutUser,
 }) => (
     <>
         <MobileNavBtn handleChangeActive={handleChangeActive} />
         <MobileNavSideMenu
-            handleChangeActiveLang={handleChangeActiveLang}
             isActive={isActive}
-            isActiveLang={isActiveLang}
             handleChangeLanguage={handleChangeLanguage}
+            authState={authState}
+            handleLogoutUser={handleLogoutUser}
         />
         {isActive && <div className="fixed top-0 left-0 z-30 w-full h-screen" onClick={() => handleChangeActive()} aria-hidden />}
     </>

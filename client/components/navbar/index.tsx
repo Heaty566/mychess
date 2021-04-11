@@ -5,29 +5,35 @@ import Cookies from 'universal-cookie';
 import LogoIcons from '../../public/asset/icons/navbar-logo.svg';
 import LogoMdIcons from '../../public/asset/icons/navbar-logo-md.svg';
 
-import { THandleChangeLanguage } from './navbarLang';
 import router from '../../common/constants/router';
 import NavbarMenu from './navbarMenu';
 import NavbarUser from './navbarUser';
 import NavbarMobile from './navbarMobile';
+import { useSelector } from 'react-redux';
+import { RootState, store } from '../../store';
+import { IAuthState } from '../../store/auth/interface';
+import authThunk from '../../store/auth/thunk';
 
 const Navbar: React.FunctionComponent = () => {
-    const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(false);
-    const [langOpen, setOpenLang] = React.useState(false);
+    const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(true);
 
-    const handleChangeLanguage: THandleChangeLanguage = (langKey: string) => {
+    const authState = useSelector<RootState, IAuthState>((api) => api.auth);
+
+    const handleChangeLanguage = (langKey: string) => {
         const cookies = new Cookies();
         cookies.set('lang', langKey);
         window.location.reload();
     };
 
+    const handleOnLogoutUser = () => store.dispatch(authThunk.logoutUser());
+
     return (
         <div className="relative flex items-center h-16 py-3 md:h-24 bg-woodsmoke justify-evenly navbar">
             <NavbarMobile
-                isActiveLang={langOpen}
-                handleChangeActiveLang={() => setOpenLang(!langOpen)}
+                authState={authState}
                 handleChangeLanguage={handleChangeLanguage}
                 isActive={isOpenSideMenu}
+                handleLogoutUser={handleOnLogoutUser}
                 handleChangeActive={() => setIsOpenSideMenu(!isOpenSideMenu)}
             />
             <div className="flex items-center">
@@ -44,7 +50,7 @@ const Navbar: React.FunctionComponent = () => {
                 </Link>
                 <NavbarMenu />
             </div>
-            <NavbarUser isActiveLang={langOpen} handleChangeLanguage={handleChangeLanguage} handleChangeActiveLang={() => setOpenLang(!langOpen)} />
+            <NavbarUser authState={authState} handleLogoutUser={handleOnLogoutUser} handleChangeLanguage={handleChangeLanguage} />
         </div>
     );
 };

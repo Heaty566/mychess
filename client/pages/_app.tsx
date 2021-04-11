@@ -7,7 +7,7 @@ import { store } from '../store';
 
 import { apiActions } from '../store/api';
 import { Provider } from 'react-redux';
-import AutoLogin from '../common/HOC/autoLogin';
+import AutoLoginWrapper from '../common/HOC/autoLoginWrapper';
 import { authActions } from '../store/auth';
 
 import Navbar from '../components/navbar';
@@ -32,7 +32,9 @@ const App: React.FunctionComponent<AppProps> = ({ Component, pageProps }) => {
         <Provider store={store}>
             <div className="flex flex-col min-h-screen bg-gray-700">
                 <Navbar />
-                <AutoLogin Component={Component} props={pageProps} />
+                <AutoLoginWrapper>
+                    <Component {...pageProps} />
+                </AutoLoginWrapper>
             </div>
         </Provider>
     );

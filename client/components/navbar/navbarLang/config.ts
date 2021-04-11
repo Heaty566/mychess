@@ -1,11 +1,9 @@
-interface ILangItem {
+interface LanguageItem {
     label: string;
     key: string;
 }
 
-const config: Array<ILangItem> = [
+export const languageData: Array<LanguageItem> = [
     { label: 'Vietnamese', key: 'vi' },
     { label: 'English', key: 'en' },
 ];
-
-export default config;
