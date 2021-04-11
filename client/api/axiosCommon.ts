@@ -18,6 +18,7 @@ axiosClient.interceptors.request.use(function (req) {
 axiosClient.interceptors.response.use(
     function (response) {
         store.dispatch(apiActions.resetState());
+        if (response.data.message) store.dispatch(apiActions.updateSuccessMessage(response.data.message));
         return response;
     },
     function (error: AxiosError<IApiResponse<null>>) {

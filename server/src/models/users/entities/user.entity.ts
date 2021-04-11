@@ -16,7 +16,7 @@ export class User {
       @Column({ nullable: false })
       name: string;
 
-      @Column({ default: '' })
+      @Column({ default: '/system/share/default-avatar.jpg' })
       avatarUrl: string;
 
       @Column({ default: null, unique: true })
