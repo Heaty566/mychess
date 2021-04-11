@@ -28,7 +28,7 @@ const Support: React.FunctionComponent<SupportProps> = () => {
 
     return (
         <div className="flex-1 p-4 md:p-8 chess-bg-2">
-            <form className="max-w-3xl p-0 space-y-2 md:p-4" onSubmit={handleSubmit(onSubmit)}>
+            <form className="max-w-3xl p-0 space-y-2 md:p-4 fade-in" onSubmit={handleSubmit(onSubmit)}>
                 <h1 className="text-4xl text-white">Support Form</h1>
                 <div className="max-w-xs">
                     <TextField error={errors.name} label="Name" name="name" register={register} type="text" />

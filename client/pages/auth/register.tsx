@@ -8,7 +8,7 @@ import { RootState, store } from '../../store';
 import { UserRegisterDto } from '../../api/auth/dto';
 import { IApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
-import { RouteGuard } from '../../common/HOC/routeGuard';
+
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -18,6 +18,7 @@ import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
 import { useTestId } from '../../test/helper/data-testId';
+import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: UserRegisterDto = {
     name: '',
@@ -35,7 +36,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
     const onSubmit = (data: UserRegisterDto) => store.dispatch(authThunk.registerUser(data));
 
     return (
-        <>
+        <RouteProtectedWrapper>
             <SeoHead {...routers.register.header} />
             <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
                 <div className="w-full max-w-md px-4 py-16 bg-gray-800 rounded-sm md:px-10 fade-in ">
@@ -63,9 +64,8 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                     <LoginSocial />
                 </div>
             </div>
-        </>
+        </RouteProtectedWrapper>
     );
 };
 
-const RegisterRoute = (props: RegisterProps) => RouteGuard<RegisterProps>({ Component: Register, props: { ...props } });
-export default RegisterRoute;
+export default Register;

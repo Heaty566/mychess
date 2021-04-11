@@ -10,10 +10,14 @@ import router from '../../common/constants/router';
 import NavbarMenu from './navbarMenu';
 import NavbarUser from './navbarUser';
 import NavbarMobile from './navbarMobile';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { IAuthState } from '../../store/auth/interface';
 
 const Navbar: React.FunctionComponent = () => {
     const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(false);
     const [langOpen, setOpenLang] = React.useState(false);
+    const authState = useSelector<RootState, IAuthState>((api) => api.auth);
 
     const handleChangeLanguage: THandleChangeLanguage = (langKey: string) => {
         const cookies = new Cookies();
@@ -44,7 +48,12 @@ const Navbar: React.FunctionComponent = () => {
                 </Link>
                 <NavbarMenu />
             </div>
-            <NavbarUser isActiveLang={langOpen} handleChangeLanguage={handleChangeLanguage} handleChangeActiveLang={() => setOpenLang(!langOpen)} />
+            <NavbarUser
+                authState={authState}
+                isActiveLang={langOpen}
+                handleChangeLanguage={handleChangeLanguage}
+                handleChangeActiveLang={() => setOpenLang(!langOpen)}
+            />
         </div>
     );
 };
