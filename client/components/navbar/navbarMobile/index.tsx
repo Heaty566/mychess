@@ -27,7 +27,7 @@ const NavbarMobile: React.FunctionComponent<NavbarMobileProps> = ({
             isActiveLang={isActiveLang}
             handleChangeLanguage={handleChangeLanguage}
         />
-        {isActive && <div className="fixed top-0 left-0 w-full h-screen z-30" onClick={() => handleChangeActive()} aria-hidden />}
+        {isActive && <div className="fixed top-0 left-0 z-30 w-full h-screen" onClick={() => handleChangeActive()} aria-hidden />}
     </>
 );
 

@@ -25,7 +25,7 @@ const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
                     aria-hidden
                     key={item.label}
                     onClick={() => openNewWindow(process.env.SERVER_URL + item.url)}
-                    className="bg-gray-700 py-2 px-4 flex space-x-4 text-mercury font-semibold rounded-sm duration-300 hover:bg-gray-600 cursor-pointer"
+                    className="flex px-4 py-2 space-x-4 font-semibold duration-300 bg-gray-700 rounded-sm cursor-pointer text-mercury hover:bg-gray-600"
                     {...useTestId(`loginSocial-${item.label}`)}
                 >
                     <item.Icon />

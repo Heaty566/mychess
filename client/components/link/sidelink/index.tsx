@@ -11,7 +11,7 @@ export interface SideLinkProps {
 const SideLink: React.FunctionComponent<SideLinkProps> = ({ href, label, position }) => (
     <div className={position} {...useTestId(`sideLink-wrapper-${label}`)}>
         <Link href={href}>
-            <a href={href} className="text-mercury text-sm duration-300 hover:text-malibu" {...useTestId(`sideLink-link-${label}`)}>
+            <a href={href} className="text-sm duration-300 text-mercury hover:text-malibu" {...useTestId(`sideLink-link-${label}`)}>
                 {label}
             </a>
         </Link>

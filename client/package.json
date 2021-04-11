@@ -8,7 +8,7 @@
         "build": "cross-env GENERATE_SOURCEMAP=false next build",
         "start": "NODE_ENV=production next start",
         "test": "NODE_ENV=test jest --runInBand --detectOpenHandles --forceExit",
-        "test:e2e": "NODE_ENV=test jest --findRelatedTests /test/pagesE2E/ --runInBand --detectOpenHandles --forceExit",
+        "test:e2e": "jest --findRelatedTests /test/pagesE2E/ --runInBand --detectOpenHandles --forceExit",
         "test:watch": "NODE_ENV=test  jest --watch --runInBand --detectOpenHandles",
         "test:cov": "NODE_ENV=test  jest --coverage --runInBand --detectOpenHandles --forceExit"
     },
@@ -19,6 +19,7 @@
         "next": "10.1.2",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
+        "react-google-recaptcha": "^2.1.0",
         "react-hook-form": "^7.0.0",
         "react-redux": "^7.2.3",
         "universal-cookie": "^4.0.4"
@@ -33,6 +34,7 @@
         "@types/enzyme-adapter-react-16": "^1.0.6",
         "@types/jest": "^26.0.22",
         "@types/react": "^17.0.3",
+        "@types/react-google-recaptcha": "^2.1.0",
         "@typescript-eslint/eslint-plugin": "^4.20.0",
         "@typescript-eslint/parser": "^4.20.0",
         "autoprefixer": "^10.2.5",

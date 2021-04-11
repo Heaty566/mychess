@@ -26,13 +26,13 @@ const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({
             {config.map((item) => (
                 <li key={item.label} className="duration-300 hover:bg-woodsmoke-400">
                     <Link href={item.link}>
-                        <a href={item.link} className="p-4 block  ">
+                        <a href={item.link} className="block p-4 ">
                             {item.label}
                         </a>
                     </Link>
                 </li>
             ))}
-            <li className=" p-4 duration-300 hover:bg-woodsmoke-400 uppercase">
+            <li className="p-4 uppercase duration-300 hover:bg-woodsmoke-400">
                 <NavbarLang
                     isActive={isActiveLang}
                     handleChangeActive={handleChangeActiveLang}

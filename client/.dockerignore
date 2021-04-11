@@ -1,7 +1,8 @@
 .git/
 .gitignore
-.next/               
-.dockerignore
+.next/       
+/test        
+
 Dockerfile
 docker-compose.yml
 node_modules/  

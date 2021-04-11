@@ -15,7 +15,13 @@
 }
 
 .chess-bg {
-    background: url('/asset/images/chess-board.jpg');
+    background: url('/asset/images/chess-board-1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.chess-bg-2 {
+    background: url('/asset/images/chess-board-2.jpg');
     background-repeat: no-repeat;
     background-size: cover;
 }

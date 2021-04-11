@@ -30,15 +30,17 @@ const Login: React.FunctionComponent<LoginProps> = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserLoginDto>(defaultValues);
 
-    const onSubmit = (data: UserLoginDto) => store.dispatch(authThunk.loginUser(data));
+    const onSubmit = (data: UserLoginDto) => {
+        store.dispatch(authThunk.loginUser(data));
+    };
 
     return (
         <>
             <SeoHead {...routers.login.header} />
-            <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
+            <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
+                <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`auth-login`)}>
-                        <h1 className="text-center text-4xl text-white mb-7">Login Account</h1>
+                        <h1 className="text-4xl text-center text-white mb-7">Login Account</h1>
                         <MsgSuccess message={apiState.message} />
                         <div className="space-y-2">
                             <TextField name="username" label="Username" error={errors.username} register={register} type="text" />
@@ -50,7 +52,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
 
                         {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign In" />}
                     </form>
-                    <p className="text-center my-4 text-mercury">Or continue with</p>
+                    <p className="my-4 text-center text-mercury">Or continue with</p>
                     <LoginSocial />
                     <div className="mt-4">
                         <SideLink label="Forgot Your Password?" position="text-center" href={routers.forgotPasswordEmail.link} />
