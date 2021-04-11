@@ -12,13 +12,17 @@ class AuthThunk {
         return null;
     });
 
+    logoutUser = createAsyncThunk<null, void>('LogoutUser', async () => {
+        await this.apiCall.logoutUser();
+        return null;
+    });
+
     registerUser = createAsyncThunk<null, UserRegisterDto>('UserRegisterDto', async (input) => {
         await this.apiCall.registerUser(input);
         return null;
     });
 
     forgotPasswordByEmail = createAsyncThunk<IApiResponse<void>, ForgotPasswordEmailDto>('ForgotPasswordEmailDto', async (input) => {
-        console.log(input);
         const res = await this.apiCall.forgotPasswordByEmail(input);
         return res.data;
     });

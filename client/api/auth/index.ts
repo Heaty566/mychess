@@ -12,6 +12,12 @@ export class AuthAPI {
         return res;
     }
 
+    async logoutUser() {
+        const url = `${this.prefix + '/logout'}`;
+        const res = await this.apiCall.post<IApiResponse<null>>(url);
+        return res;
+    }
+
     async registerUser(input: UserRegisterDto) {
         const url = `${this.prefix + '/register'}`;
         const res = await this.apiCall.post<IApiResponse<null>>(url, input);

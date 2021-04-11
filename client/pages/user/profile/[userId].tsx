@@ -37,8 +37,8 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                             <img src="https://picsum.photos/160/160" alt="" />
                         </div>
                         <div>
-                            <h1 className="text-4xl text-white capitalize">{user.username}</h1>
-                            <h3 className="text-lg capitalize text-cloud-700">{user.name}</h3>
+                            <h1 className="text-4xl text-white capitalize">{user.name}</h1>
+                            <h3 className="text-lg capitalize text-cloud-700">{user.username}</h3>
                             <h3 className="mt-2 text-lg text-cloud">ELO: {user.elo}</h3>
                         </div>
                     </div>
