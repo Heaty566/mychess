@@ -8,8 +8,8 @@ import { SupportDto } from './dto';
 export class CommonAPI {
     constructor(private readonly apiCall: AxiosInstance, private readonly prefix: string) {}
 
-    async getCurrentUser() {
-        const url = `${this.prefix + '/'}`;
+    async sendFeedBack() {
+        const url = `${this.prefix + '/about-us'}`;
         const res = await this.apiCall.get<IApiResponse<IUser>>(url);
         return res;
     }

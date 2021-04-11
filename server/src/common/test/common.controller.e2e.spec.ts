@@ -5,7 +5,7 @@ import { INestApplication } from '@nestjs/common';
 //* Internal import
 
 import { initTestModule } from '../../../test/initTest';
-import { AboutUsDTO } from '../dto/aboutUsDto';
+import { SupportDTO } from '../dto/aboutUsDto';
 
 describe('commonController', () => {
       let app: INestApplication;
@@ -15,9 +15,9 @@ describe('commonController', () => {
             app = getApp;
       });
 
-      describe('POST /about-us', () => {
-            let createUserData: AboutUsDTO;
-            const reqApi = (input: AboutUsDTO) => supertest(app.getHttpServer()).post('/api/about-us').send(input);
+      describe('POST /support', () => {
+            let createUserData: SupportDTO;
+            const reqApi = (input: SupportDTO) => supertest(app.getHttpServer()).post('/api/support').send(input);
 
             beforeEach(() => {
                   createUserData = {
