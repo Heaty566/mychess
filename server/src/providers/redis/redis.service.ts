@@ -16,9 +16,7 @@ export class RedisService {
             const convertToString = JSON.stringify(flatValue);
 
             this.redisRepository.set(key, convertToString);
-            if (expired) {
-                  this.redisRepository.expire(key, expired * 60);
-            }
+            if (expired) this.redisRepository.expire(key, expired * 60);
       }
 
       deleteByKey(key: string) {
@@ -43,11 +41,8 @@ export class RedisService {
        * @param expired amount time for redis value to be expired( 1 = 60s )
        */
       setByValue(key: string, value: number | string, expired?: number) {
-            if (expired) {
-                  this.redisRepository.setex(key, expired * 60, String(value));
-            } else {
-                  this.redisRepository.set(key, String(value));
-            }
+            if (expired) this.redisRepository.setex(key, expired * 60, String(value));
+            else this.redisRepository.set(key, String(value));
       }
 
       getByKey(key: string): Promise<string> {

@@ -7,6 +7,7 @@ import { fakeData } from '../../../../test/fakeData';
 import { User } from '../../../models/users/entities/user.entity';
 import { RedisService } from '../redis.service';
 import { createClient, RedisClient } from 'redis';
+import { LoggerService } from '../../../utils/logger/logger.service';
 
 describe('RedisService', () => {
       let app: INestApplication;
@@ -22,8 +23,8 @@ describe('RedisService', () => {
             const redisPort = Number(process.env.REDIS_PORT) || 7000;
             redis = createClient({ port: redisPort, host: process.env.REDIS_HOST || '' });
             redis.select(process.env.REDIS_DB_NUMBER || 1);
-
-            redisService = module.get<RedisService>(RedisService);
+            const logger = module.get<LoggerService>(LoggerService);
+            redisService = new RedisService(redis, logger);
       });
 
       describe('setObjectByKey', () => {
@@ -35,6 +36,11 @@ describe('RedisService', () => {
 
             it('Pass', async () => {
                   redisService.setObjectByKey('user', user);
+                  const res = await redisService.getObjectByKey<User>('user');
+                  expect(res).toBeDefined();
+            });
+            it('Pass with time', async () => {
+                  redisService.setObjectByKey('user', user, 10);
                   const res = await redisService.getObjectByKey<User>('user');
                   expect(res).toBeDefined();
             });
@@ -106,19 +112,9 @@ describe('RedisService', () => {
                   expect(res).toBeDefined();
             });
       });
-      // it('getByKey', async () => {
-      //       let fsCallback: (error, data) => void;
-      //       const redi2s = createClient({ port: 223, host: '1234' });
-      //       const fsMockFn = jest.fn((data, callback) => (fsCallback = callback));
-      //       const getSpy = jest.spyOn(redi2s, 'get');
-      //       getSpy.mockImplementation(fsMockFn);
-      //       const res = await redisService.getObjectByKey<User>('');
-      //       console.log(fsCallback);
-      //       getSpy.mockClear();
-      //       redi2s.quit();
-      // });
 
       afterAll(async () => {
+            await redis.quit();
             await app.close();
       });
 });
