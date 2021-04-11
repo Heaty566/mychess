@@ -25,6 +25,10 @@
             {
                   "name": "admin",
                   "description": "service for administrator, have to login and with role is ADMIN"
+            },
+            {
+                  "name": "common",
+                  "description": "service for basic request"
             }
       ],
       "servers": [
@@ -114,6 +118,23 @@
                               },
                               "500": {
                                     "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+            "/api/about-us": {
+                  "post": {
+                        "tags": ["common"],
+                        "description": "allow user to send feed back",
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/AboutUsDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/components/responses/reTokenKey"
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
                               }
                         }
                   }
@@ -729,6 +750,31 @@
                                                 "phoneNumber": {
                                                       "type": "string",
                                                       "example": "hello@gmail.com"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "AboutUsDto": {
+                        "description": "basic user information",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "email": {
+                                                      "type": "string",
+                                                      "example": "hello@gmail.com"
+                                                },
+                                                "name": {
+                                                      "type": "string",
+                                                      "example": "pham vinh nhan"
+                                                },
+                                                "message": {
+                                                      "type": "string",
+                                                      "example": "hello world"
                                                 }
                                           }
                                     }
