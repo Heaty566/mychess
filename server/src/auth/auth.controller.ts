@@ -2,18 +2,18 @@ import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, UsePipes } fro
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 
-import { UpdateEmailDTO, vUpdateEmailDTO } from '../models/users/dto/updateEmail.dto';
+import { UpdateEmailDTO, vUpdateEmailDTO } from '../users/dto/updateEmail.dto';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/registerUser.dto';
 import { LoginUserDTO, vLoginUserDto } from './dto/loginUser.dto';
 import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';
 import { SmailService } from '../providers/smail/smail.service';
 import { SmsService } from '../providers/sms/sms.service';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
-import { User } from '../models/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
-import { UserService } from '../models/users/user.service';
-import { MyAuthGuard } from './auth.guard';
+import { UserService } from '../users/user.service';
+import { UserGuard } from './auth.guard';
 import { RedisService } from '../providers/redis/redis.service';
 
 @Controller('auth')
@@ -61,8 +61,18 @@ export class AuthController {
             return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send();
       }
 
+      @Get('/socket-token')
+      @UseGuards(UserGuard)
+      async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
+            const user = await this.userService.getOneUserByField('id', req.user.id);
+            if (!user) throw apiResponse.sendError({ body: { message: 'user.invalid-input' }, type: 'BadRequestException' });
+            const socketId = await this.authService.getSocketToken(user);
+
+            return res.cookie('io-token', socketId, { maxAge: 1000 * 60 * 60 * 24 }).send();
+      }
+
       @Post('/logout')
-      @UseGuards(MyAuthGuard)
+      @UseGuards(UserGuard)
       async cLogout(@Req() req: Request, @Res() res: Response) {
             await this.authService.clearToken(req.user.id);
 
