@@ -1,10 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../models/users/entities/user.repository';
+import { UserRepository } from '../../users/entities/user.repository';
 import { initTestModule } from '../../../test/initTest';
 import { AuthService } from '../auth.service';
-import { User } from '../../models/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
 import { RedisService } from '../../providers/redis/redis.service';

@@ -2,12 +2,12 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Reflector } from '@nestjs/core';
 
-import { UserRole } from '../models/users/entities/user.userRole.enum';
+import { UserRole } from '../users/entities/user.userRole.enum';
 import { apiResponse } from '../app/interface/ApiResponse';
 import { AuthService } from './auth.service';
 
 @Injectable()
-export class MyAuthGuard implements CanActivate {
+export class UserGuard implements CanActivate {
       constructor(private authService: AuthService, private readonly reflector: Reflector) {}
 
       private async deleteAllAuthToken(res: Response) {

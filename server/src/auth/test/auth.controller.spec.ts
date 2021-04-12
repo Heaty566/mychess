@@ -5,11 +5,11 @@ import { Request, Response } from 'express';
 //* Internal import
 import { initTestModule } from '../../../test/initTest';
 
-import { UserRepository } from '../../models/users/entities/user.repository';
+import { UserRepository } from '../../users/entities/user.repository';
 
 import { AuthController } from '../auth.controller';
 import { ReTokenRepository } from '../entities/re-token.repository';
-import User from '../../models/users/entities/user.entity';
+import User from '../../users/entities/user.entity';
 
 describe('AuthController', () => {
       let app: INestApplication;

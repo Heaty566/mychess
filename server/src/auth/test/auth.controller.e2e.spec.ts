@@ -22,17 +22,17 @@ import { fakeUser } from '../../../test/fakeEntity';
 import { fakeData } from '../../../test/fakeData';
 import { initTestModule } from '../../../test/initTest';
 
-import { UserRepository } from '../../models/users/entities/user.repository';
+import { UserRepository } from '../../users/entities/user.repository';
 
 import { AuthService } from '../auth.service';
-import { UserService } from '../../models/users/user.service';
+import { UserService } from '../../users/user.service';
 
 import { LoginUserDTO } from '../dto/loginUser.dto';
 import { RegisterUserDTO } from '../dto/registerUser.dto';
-import { UpdateEmailDTO } from '../../models/users/dto/updateEmail.dto';
+import { UpdateEmailDTO } from '../../users/dto/updateEmail.dto';
 import { OtpSmsDTO } from '../dto/otpSms.dto';
 
-import { User } from '../../models/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 
 jest.mock('twilio', () => {

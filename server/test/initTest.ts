@@ -3,11 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 //* Internal import
 import { router } from '../src/router';
 import { AppModule } from '../src/app.module';
-import { fakeRoom, fakeUser } from './fakeEntity';
-import { UserRepository } from '../src/models/users/entities/user.repository';
+import { fakeUser } from './fakeEntity';
+import { UserRepository } from '../src/users/entities/user.repository';
 import { AuthService } from '../src/auth/auth.service';
-import { UserRole } from '../src/models/users/entities/user.userRole.enum';
-import { RoomRepository } from '../src/models/rooms/entities/room.repository';
+import { UserRole } from '../src/users/entities/user.userRole.enum';
 
 export const initTestModule = async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -28,7 +27,6 @@ export const initTestModule = async () => {
       adminUser.role = UserRole.ADMIN;
       const userRepository = module.get<UserRepository>(UserRepository);
       const authService = module.get<AuthService>(AuthService);
-      const roomRepository = module.get<RoomRepository>(RoomRepository);
 
       user = await userRepository.save(user);
       adminUser = await userRepository.save(adminUser);
@@ -36,8 +34,6 @@ export const initTestModule = async () => {
       const adminReToken = await authService.createReToken(adminUser);
 
       // create a fake room
-      let room = fakeRoom();
-      room = await roomRepository.save(room);
 
       return {
             getApp,
@@ -46,6 +42,5 @@ export const initTestModule = async () => {
             adminCookie: [`re-token=${adminReToken};`],
             getUser: user,
             getReToken: reToken,
-            getRoom: room,
       };
 };

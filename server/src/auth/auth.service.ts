@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { UserRepository } from '../models/users/entities/user.repository';
+import { UserRepository } from '../users/entities/user.repository';
 import { ReTokenRepository } from './entities/re-token.repository';
-import { User } from '../models/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
 import { RedisService } from '../providers/redis/redis.service';
-import { number } from 'joi';
 
 @Injectable()
 export class AuthService {
@@ -68,10 +67,17 @@ export class AuthService {
 
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
-            const authTokenId = uuidv4();
+            const authTokenId = String(uuidv4());
 
-            this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
-            return String(authTokenId);
+            this.redisService.setByValue(authTokenId, encryptUser, 5);
+            return authTokenId;
+      }
+
+      async getSocketToken(user: User) {
+            const authTokenId = String(uuidv4());
+
+            this.redisService.setObjectByKey(authTokenId, user, 1440);
+            return authTokenId;
       }
 
       async getAuthTokenByReToken(reTokenId: string) {
