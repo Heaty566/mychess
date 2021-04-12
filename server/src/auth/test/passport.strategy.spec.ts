@@ -10,9 +10,9 @@ import { GithubStrategy } from '../passport/github.strategy';
 import { GoogleStrategy } from '../passport/google.strategy';
 import { FacebookStrategy } from '../passport/facebook.strategy';
 
-import { UserRepository } from '../../models/users/entities/user.repository';
+import { UserRepository } from '../../users/entities/user.repository';
 
-import { UserService } from '../../models/users/user.service';
+import { UserService } from '../../users/user.service';
 
 describe('FacebookStrategy', () => {
       let app: INestApplication;

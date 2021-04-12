@@ -1,7 +1,6 @@
-import { UserRole } from '../src/models/users/entities/user.userRole.enum';
-import { User } from '../src/models/users/entities/user.entity';
+import { UserRole } from '../src/users/entities/user.userRole.enum';
+import { User } from '../src/users/entities/user.entity';
 import { fakeData } from './fakeData';
-import { Room } from '../src/models/rooms/entities/room.entity';
 
 export const fakeUser = () => {
       const user = new User();
@@ -14,10 +13,4 @@ export const fakeUser = () => {
       user.role = UserRole.USER;
 
       return user;
-};
-
-export const fakeRoom = () => {
-      const room = new Room();
-
-      return room;
 };

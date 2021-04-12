@@ -1,7 +1,7 @@
 import * as Joi from 'joi';
 import { JoiPasswordComplexity } from 'joi-password';
 
-import { User } from '../../../models/users/entities/user.entity';
+import { User } from '../../../users/entities/user.entity';
 
 export function userJoiSchema(field: keyof User) {
       switch (field) {

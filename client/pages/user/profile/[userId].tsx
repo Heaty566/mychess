@@ -3,17 +3,29 @@ import { userAPI } from '../../../api/user';
 import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
 import { IUser } from '../../../store/auth/interface';
 import { useRouter } from 'next/router';
+import io from 'socket.io-client';
 
 export interface ProfileProps {
     user: IUser | null;
 }
 
 const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
+    const socket = io('http://localhost:4000/chat');
     const router = useRouter();
 
     React.useEffect(() => {
         if (!user) router.push('/404');
     }, [user]);
+
+    React.useEffect(() => {
+        socket.on('events', (data: any) => {
+            console.log(data);
+        });
+    }, []);
+
+    const handleOnClick = () => {
+        socket.emit('events', { data: 'hello' });
+    };
 
     return (
         <div className="relative flex-1">
@@ -22,7 +34,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                 autoPlay
                 muted
                 loop
-                className="absolute top-0 z-0 object-cover h-full "
+                className="absolute top-0 z-0 object-cover w-full h-full"
                 poster="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/d7d28a52bd829aeee6989e58c3214e6c1cdbc5e3.jpg"
             >
                 <source
@@ -37,6 +49,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                             <img src="https://picsum.photos/160/160" alt="" />
                         </div>
                         <div>
+                            <button onClick={() => handleOnClick()}>BUtoon</button>
                             <h1 className="text-4xl text-white capitalize">{user.name}</h1>
                             <h3 className="text-lg capitalize text-cloud-700">{user.username}</h3>
                             <h3 className="mt-2 text-lg text-cloud">ELO: {user.elo}</h3>
