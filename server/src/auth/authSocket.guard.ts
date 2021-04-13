@@ -19,10 +19,10 @@ export class UserSocketGuard implements CanActivate {
 
       async canActivate(context: ExecutionContext) {
             const client = await this.cookieParserSocket(context);
-            const reToken = client.cookies['io-token'] || '';
+            const ioToken = client.cookies['io-token'] || '';
 
-            if (!reToken) return false;
-            const getUser = await this.redisService.getObjectByKey<User>(reToken);
+            if (!ioToken) return false;
+            const getUser = await this.redisService.getObjectByKey<User>(ioToken);
             if (!getUser) return false;
             client.user = getUser;
 
