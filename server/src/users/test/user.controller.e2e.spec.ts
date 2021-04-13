@@ -25,16 +25,12 @@ import { SmailService } from '../../providers/smail/smail.service';
 import { AwsService } from '../../providers/aws/aws.service';
 import { User } from '../entities/user.entity';
 import { fakeData } from '../../../test/fakeData';
+import { ResetPasswordDTO } from '../dto/resetPassword.dto';
 import { ChangePasswordDTO } from '../dto/changePassword.dto';
 import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
 import { UpdateUserDto } from '../dto/updateBasicUser.dto';
 import { UpdateEmailDTO } from '../dto/updateEmail.dto';
 import { defuse } from '../../../test/testHelper';
-import { CreateNewRoomDTO } from '../dto/createNewRoom.dto';
-import { Room } from '../../rooms/entities/room.entity';
-import { RoomService } from '../../rooms/room.service';
-import { JoinRoomDTO } from '../dto/joinRoom.dto';
-import { RoomRepository } from '../../rooms/entities/room.repository';
 
 jest.mock('twilio', () => {
       return {
@@ -46,18 +42,15 @@ describe('UserController E2E', () => {
       let app: INestApplication;
 
       let userRepository: UserRepository;
-      let roomRepository: RoomRepository;
 
       let authService: AuthService;
       let redisService: RedisService;
       let userService: UserService;
       let mailService: SmailService;
       let awsService: AwsService;
-      let roomService: RoomService;
 
       let cookieData: Array<string>;
       let userDb: User;
-      let roomDb: Room;
 
       beforeAll(async () => {
             const { getApp, module, cookie, getUser } = await initTestModule();
@@ -66,8 +59,6 @@ describe('UserController E2E', () => {
             cookieData = cookie;
 
             userRepository = module.get<UserRepository>(UserRepository);
-            roomRepository = module.get<RoomRepository>(RoomRepository);
-            roomService = module.get<RoomService>(RoomService);
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
             userService = module.get<UserService>(UserService);
@@ -292,7 +283,7 @@ describe('UserController E2E', () => {
             describe('PUT /api/user/password/:otp', () => {
                   let user: User;
                   let redisKey: string;
-                  let body: ChangePasswordDTO;
+                  let body: ResetPasswordDTO;
                   const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/password/${redisKey}`).send(body);
 
                   beforeAll(async () => {
@@ -328,94 +319,42 @@ describe('UserController E2E', () => {
                         expect(res.status).toBe(403);
                   });
             });
-      });
 
-      describe('user create or join room', () => {
-            describe('Post /api/user/new-room', () => {
-                  let body: CreateNewRoomDTO;
+            describe('PUT /api/user/password', () => {
                   let user: User;
-                  const reqApi = (input: CreateNewRoomDTO) =>
-                        supertest(app.getHttpServer()).post('/api/user/new-room').set({ cookie: cookieData }).send(input);
+                  let body: ChangePasswordDTO;
+                  const reqApi = (body) => supertest(app.getHttpServer()).put('/api/user/password').set({ cookie: cookieData }).send(body);
 
-                  beforeEach(async () => {
+                  beforeAll(async () => {
                         user = fakeUser();
+                        user.email = 'heaty126@gmail.com';
                         await userService.saveUser(user);
+
+                        body = {
+                              newPassword: 'Password123',
+                              confirmNewPassword: 'Password123',
+                              currentPassword: user.password,
+                        };
                   });
 
                   it('Pass', async () => {
-                        body = {
-                              limitTime: 7,
-                        };
                         const res = await reqApi(body);
-                        expect(res.status).toBe(201);
+                        const getUser = await userRepository.findOneByField('id', user.id);
+                        console.log(getUser.password);
+                        const isMatch = await authService.decryptString(body.newPassword, getUser.password);
+                        expect(res.status).toBe(200);
+                        expect(isMatch).toBeTruthy();
                   });
 
-                  it('Failed(user is already in a room)', async () => {
-                        body = {
-                              limitTime: 8,
-                        };
-                        roomDb = new Room();
-                        roomDb.user1 = user;
-                        await roomService.saveRoom(roomDb);
+                  it('Failed currentPassword is not correct', async () => {
+                        body.currentPassword = fakeData(10, 'lettersAndNumbers');
                         const res = await reqApi(body);
                         expect(res.status).toBe(400);
-                  });
-
-                  afterAll(async () => {
-                        await roomRepository.createQueryBuilder().delete().execute();
-                        await app.close();
-                  });
-            });
-
-            describe('Post /api/user/join-room', () => {
-                  let body: JoinRoomDTO;
-
-                  const reqApi = (input: JoinRoomDTO) =>
-                        supertest(app.getHttpServer()).post('/api/user/join-room').set({ cookie: cookieData }).send(input);
-
-                  beforeEach(async () => {
-                        roomDb = new Room();
-                        await roomService.saveRoom(roomDb);
-                  });
-
-                  it('Failed(room is not exist)', async () => {
-                        body = {
-                              roomId: 'haideptraiNo1',
-                        };
-                        const res = await reqApi(body);
-                        expect(res.status).toBe(400);
-                  });
-
-                  it('Failed(user in another room)', async () => {
-                        roomDb.user1 = userDb;
-                        await roomService.saveRoom(roomDb);
-
-                        body = {
-                              roomId: roomDb.id,
-                        };
-                        const res = await reqApi(body);
-                        expect(res.status).toBe(400);
-                        await roomRepository.createQueryBuilder().delete().execute();
-                  });
-
-                  it('Pass', async () => {
-                        roomDb = new Room();
-                        const userCreateRoom = fakeUser();
-                        await userService.saveUser(userCreateRoom);
-                        roomDb.user1 = userCreateRoom;
-                        await roomService.saveRoom(roomDb);
-
-                        body = {
-                              roomId: roomDb.id,
-                        };
-                        const res = await reqApi(body);
-                        expect(res.status).toBe(201);
                   });
             });
       });
 
       afterAll(async () => {
-            await roomRepository.createQueryBuilder().delete().execute();
             await userRepository.createQueryBuilder().delete().execute();
             await app.close();
       });

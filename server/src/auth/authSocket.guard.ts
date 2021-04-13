@@ -1,7 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-
-import { AuthService } from './auth.service';
 import { Socket } from 'socket.io';
 import * as Cookie from 'cookie';
 import { RedisService } from '../providers/redis/redis.service';

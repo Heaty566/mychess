@@ -6,14 +6,12 @@ import { User } from '../entities/user.entity';
 
 const { getJoiSchema } = ValidatorService.joiSchemaGenerator<User>(userJoiSchema);
 
-export class ChangePasswordDTO {
+export class ResetPasswordDTO {
       newPassword: string;
       confirmNewPassword: string;
-      currentPassword: string;
 }
 
-export const vChangePasswordDTO = Joi.object({
+export const vResetPasswordDTO = Joi.object({
       newPassword: getJoiSchema('password'),
       confirmNewPassword: getJoiSchema('password').valid(Joi.ref('newPassword')),
-      currentPassword: getJoiSchema('password'),
 });
