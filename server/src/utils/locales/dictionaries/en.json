@@ -39,5 +39,6 @@
 	"password.minOfLowercase": "should contain at least {{min}} lowercase characters",
 	"password.minOfNumeric": "should contain at least {{min}} number",
 	"should contain at least 1 uppercase characters": "should contain at least 1 uppercase characters",
-	"should contain at least 1 number": "should contain at least 1 number"
+	"should contain at least 1 number": "should contain at least 1 number",
+	"should contain letters and numbers": "should contain letters and numbers"
 }
