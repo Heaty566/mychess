@@ -17,4 +17,9 @@ export class UserRepository extends RepositoryService<User> {
                   .execute();
             return results[0];
       }
+
+      public async getAllUsers() {
+            const results = await this.createQueryBuilder().select('id, username, name, avatarUrl, createDate, elo').execute();
+            return results;
+      }
 }
