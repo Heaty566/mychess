@@ -2,41 +2,95 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import TextField from '../../../components/form/textField';
-import { RootState } from '../../../store';
-import { IAuthState } from '../../../store/auth/interface';
+import { RootState, store } from '../../../store';
+import { AuthState } from '../../../store/auth/interface';
 import { UpdateUserAvatarDto, UpdateUserInfoDto } from '../../../api/user/dto';
 import useFormError from '../../../common/hooks/useFormError';
+import FileUpload from '../../../components/form/fileUpload';
+import { useUploadFile } from '../../../common/hooks/useUploadFile';
+import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
+import BtnForm from '../../../components/btn/btnForm';
+import userAPI from '../../../api/user';
+import MsgSuccess from '../../../components/form/msgSuccess';
+import { ApiState } from '../../../store/api/interface';
 
-interface EditUserInfoDto extends UpdateUserAvatarDto, UpdateUserInfoDto {}
+interface EditUserForm extends UpdateUserInfoDto {
+    avatar: string;
+}
 
-const defaultValues: EditUserInfoDto = {
+const defaultValues: EditUserForm = {
     name: '',
-    avatar: null,
+    avatar: '',
 };
 
 export interface AutoLoginProps {}
 
-const AutoLogin: React.FunctionComponent<AutoLoginProps> = () => {
-    const authState = useSelector<RootState, IAuthState>((state) => state.auth);
-    const { register, getValues } = useForm<UpdateUserInfoDto>({ defaultValues });
+const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
+    const authState = useSelector<RootState, AuthState>((state) => state.auth);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
+
+    const { register, handleSubmit, setValue } = useForm<UpdateUserInfoDto>({ defaultValues });
+    const [file, handleOnChangeFile] = useUploadFile();
     const errors = useFormError(defaultValues);
 
+    const handleOnSubmit = async (data: UpdateUserInfoDto) => {
+        if (file) await userAPI.updateUserAvatar(file);
+        if (data.name !== authState.name) await userAPI.updateUserInfo({ name: data.name });
+    };
+
     React.useEffect(() => {
-        console.log(getValues());
+        if (authState.isLogin) {
+            setValue('name', authState.name);
+        }
+    }, [authState]);
+
+    React.useEffect(() => {
+        console.log(apiState.message);
     });
 
     return (
-        <div className="w-1/5 p-4">
-            <div>
-                <img src={authState.avatarUrl} alt={authState.name} />
-                <input name="avatar" {...register} type="file" />
+        <RouteProtectedWrapper isNeedLogin>
+            <div className="relative flex flex-1">
+                <video
+                    playsInline
+                    autoPlay
+                    muted
+                    loop
+                    className="absolute top-0 z-0 object-cover w-full h-full"
+                    poster="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/d7d28a52bd829aeee6989e58c3214e6c1cdbc5e3.jpg"
+                >
+                    <source
+                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/cba7f6ad5a2a96638ff91e5900e17fa671d0385e.webm?fbclid=IwAR2lnhDiu_UzKVt5H4VjGhULyMB1GPhEBEm0276riR0MeAyKUnWfj2qQtUw"
+                        type="video/webm"
+                    />
+                </video>
+                <div className="relative w-full px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile">
+                    <form onSubmit={handleSubmit(handleOnSubmit)} className="flex space-x-10">
+                        <div className="w-40 space-y-2">
+                            <div className="relative max-w-xs ">
+                                <img
+                                    src={file ? URL.createObjectURL(file) : authState.avatarUrl}
+                                    alt={authState.name}
+                                    className="object-cover w-40 h-40"
+                                />
+                                <FileUpload name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
+                            </div>
+                        </div>
+                        <div className="w-64 space-y-2">
+                            <h1 className="text-3xl text-white ">Update User</h1>
+                            <MsgSuccess message={apiState.message} />
+                            <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
+                            {Boolean(authState.username) && (
+                                <TextField name="username" type="text" error="" label="Username" register={register} isDisable />
+                            )}
+
+                            <BtnForm label="Update" />
+                        </div>
+                    </form>
+                </div>
             </div>
-            <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
-            {Boolean(authState.username) && (
-                <TextField name="username" type="text" error="" label="Username" register={register} value={authState.username} isDisable />
-            )}
-        </div>
+        </RouteProtectedWrapper>
     );
 };
 
-export default AutoLogin;
+export default EditUserProfile;

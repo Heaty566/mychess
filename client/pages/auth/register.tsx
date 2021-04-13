@@ -6,7 +6,7 @@ import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
 import { RootState, store } from '../../store';
 import { UserRegisterDto } from '../../api/auth/dto';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
 
 import authThunk from '../../store/auth/thunk';
@@ -30,7 +30,7 @@ const defaultValues: UserRegisterDto = {
 export interface RegisterProps {}
 const Register: React.FunctionComponent<RegisterProps> = () => {
     const { register, handleSubmit } = useForm<UserRegisterDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<UserRegisterDto>(defaultValues);
 
     const onSubmit = (data: UserRegisterDto) => store.dispatch(authThunk.registerUser(data));

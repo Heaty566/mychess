@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import * as React from 'react';
 import router from '../../../common/constants/router';
-import { IAuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../store/auth/interface';
 
 export interface UserDropDownProps {
-    authState: IAuthState;
+    authState: AuthState;
     handleLogoutUser: () => void;
 }
 

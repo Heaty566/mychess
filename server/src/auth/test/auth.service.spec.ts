@@ -49,7 +49,7 @@ describe('UserGuard', () => {
             });
 
             it('Fail (oversend', async () => {
-                  await redisService.setByValue('email1@gmail.com', 5);
+                  await redisService.setByValue('email1@gmail.com', 6);
                   const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
                   expect(result).toBe(false);
             });

@@ -13,3 +13,8 @@ export interface UpdateUserInfoDto {
 export interface UpdateUserAvatarDto {
     avatar: File | null;
 }
+
+export interface ResetUserPasswordDto {
+    newPassword: string;
+    confirmNewPassword: string;
+}

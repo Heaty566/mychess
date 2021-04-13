@@ -2,7 +2,7 @@ import { store } from '../..';
 import { authActions } from '..';
 import { authThunk } from '../thunk';
 import userThunk from '../userThunk';
-import { IUser } from '../interface';
+import { User } from '../interface';
 
 describe('AuthReducer', () => {
     const getAuthState = () => store.getState().auth;
@@ -49,7 +49,7 @@ describe('AuthReducer', () => {
     describe('userThunk', () => {
         describe('getCurrentUser', () => {
             it('rejected', () => {
-                const userObject: IUser = {
+                const userObject: User = {
                     avatarUrl: '123',
                     elo: 0,
                     email: 'fe',
