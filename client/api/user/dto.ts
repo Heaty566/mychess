@@ -11,5 +11,5 @@ export interface UpdateUserInfoDto {
 }
 
 export interface UpdateUserAvatarDto {
-    avatar: File;
+    avatar: File | null;
 }
