@@ -1,7 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-
-import { AuthService } from './auth.service';
 import { Socket } from 'socket.io';
 import * as Cookie from 'cookie';
 import { RedisService } from '../providers/redis/redis.service';
@@ -21,10 +18,10 @@ export class UserSocketGuard implements CanActivate {
             console.log('///////////////////////');
             console.log(context.switchToWs().getClient().handshake.headers);
             const client = await this.cookieParserSocket(context);
-            const reToken = client.cookies['io-token'] || '';
+            const ioToken = client.cookies['io-token'] || '';
 
-            if (!reToken) return false;
-            const getUser = await this.redisService.getObjectByKey<User>(reToken);
+            if (!ioToken) return false;
+            const getUser = await this.redisService.getObjectByKey<User>(ioToken);
             if (!getUser) return false;
             client.user = getUser;
 

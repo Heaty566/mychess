@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Head from 'next/head';
+import { capitalize } from '../../common/helpers/string.helper';
 export interface SeoHeadProps {
     title: string;
     description?: string;
@@ -33,7 +34,7 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
             <meta name="google-site-verification" content="BWOjVaLMrQlDDZSMNRtScpbtQTBOWSuuZLoFe6IwjV4" />
 
             {/* common header */}
-            <title>{pageTitle}</title>
+            <title>{capitalize(pageTitle)}</title>
             <meta name="description" content={description} />
             <meta name="robots" content={metaRobots} />
             <meta name="keywords" content={keyword} />

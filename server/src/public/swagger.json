@@ -222,6 +222,28 @@
                   }
             },
 
+            "/api/auth/socket-token": {
+                  "get": {
+                        "tags": ["auth"],
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "return io cookie",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  }
+            },
             "/api/user": {
                   "get": {
                         "tags": ["user"],
@@ -322,11 +344,39 @@
                         }
                   }
             },
+            "/api/user/password": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "change password by user",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/ChangePasswordDTO"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              }
+                        }
+                  }
+            },
             "/api/user/password/:otp": {
                   "put": {
                         "tags": ["user"],
                         "description": "reset password with otp key",
                         "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
+                        "requestBody": {
+                              "$ref": "#/components/requestBodies/ResetPasswordDTO"
+                        },
                         "responses": {
                               "200": {
                                     "description": "update user successfully",
@@ -733,6 +783,52 @@
                                                 "phoneNumber": {
                                                       "type": "string",
                                                       "example": "+20401230312"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "ResetPasswordDTO": {
+                        "description": "provide new password to reset password",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "newPassword": {
+                                                      "type": "string",
+                                                      "example": "123abcAbc"
+                                                },
+                                                "confirmNewPassword": {
+                                                      "type": "string",
+                                                      "example": "123abcAbc"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "ChangePasswordDTO": {
+                        "description": "provide new password and current password to change password by user",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "newPassword": {
+                                                      "type": "string",
+                                                      "example": "123abcAbc"
+                                                },
+                                                "confirmNewPassword": {
+                                                      "type": "string",
+                                                      "example": "123abcAbc"
+                                                },
+                                                "currentPassword": {
+                                                      "type": "string",
+                                                      "example": "1234abcAbc"
                                                 }
                                           }
                                     }

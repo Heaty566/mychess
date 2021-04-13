@@ -14,6 +14,7 @@ import { apiResponse } from '../app/interface/ApiResponse';
 import { User } from './entities/user.entity';
 
 import { OtpSmsDTO, vOtpSmsDTO } from '../auth/dto/otpSms.dto';
+import { ResetPasswordDTO, vResetPasswordDTO } from './dto/resetPassword.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
@@ -82,8 +83,21 @@ export class UserController {
             return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
+      @Put('/password')
+      @UseGuards(UserGuard)
+      async cUpdatePasswordByUser(@Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO, @Req() req: Request) {
+            const user = await this.userService.findOneUserByField('username', req.user.username);
+            const isCorrectPassword = await this.authService.decryptString(body.currentPassword, user.password);
+            if (!isCorrectPassword) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
+
+            user.password = await this.authService.encryptString(body.newPassword);
+            await this.userService.saveUser(user);
+
+            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
+      }
+
       @Put('/password/:otp')
-      async cUpdatePasswordByOtp(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO) {
+      async cUpdatePasswordByOtp(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vResetPasswordDTO)) body: ResetPasswordDTO) {
             const redisUser = await this.redisService.getObjectByKey<User>(otp);
             if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
             const user = await this.userService.findOneUserByField('username', redisUser.username);

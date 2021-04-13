@@ -9,7 +9,7 @@ import { ReTokenRepository } from '../entities/re-token.repository';
 import { fakeData } from '../../../test/fakeData';
 import { RedisService } from '../../providers/redis/redis.service';
 
-describe('AuthService', () => {
+describe('UserGuard', () => {
       let app: INestApplication;
       let userDb: User;
 
@@ -111,6 +111,15 @@ describe('AuthService', () => {
 
                   expect(userInformation).toBeDefined();
                   expect(userInformation.username).toBe(userInformation.username);
+            });
+      });
+      describe('getSocketToken', () => {
+            it('Pass', async () => {
+                  const authToken = await authService.getSocketToken(userDb);
+                  const user = await redisService.getObjectByKey<User>(authToken);
+
+                  expect(user.username).toBe(userDb.username);
+                  expect(user.id).toBe(userDb.id);
             });
       });
 

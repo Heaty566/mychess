@@ -3,6 +3,7 @@ import 'jest-ts-auto-mock';
 let mockPromise = Promise.resolve();
 import { defuse } from '../../../test/testHelper';
 import { SmailService } from '../../providers/smail/smail.service';
+
 class TwilioMock {
       constructor() {
             //
@@ -51,14 +52,13 @@ describe('AuthController', () => {
       let userService: UserService;
       let mailService: SmailService;
       let reTokenRepository: ReTokenRepository;
+
       beforeAll(async () => {
             const { getApp, module, getUser } = await initTestModule();
             app = getApp;
             userDB = getUser;
             userRepository = module.get<UserRepository>(UserRepository);
-
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
-
             authService = module.get<AuthService>(AuthService);
             mailService = module.get<SmailService>(SmailService);
             userService = module.get<UserService>(UserService);
@@ -233,6 +233,44 @@ describe('AuthController', () => {
                         };
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(400);
+                  });
+            });
+            describe('GET /socket-token', () => {
+                  let user: User;
+                  let reToken: string;
+                  const reqApi = (reToken: string) =>
+                        supertest(app.getHttpServer())
+                              .get('/api/auth/socket-token')
+                              .set({ cookie: `re-token=${reToken};` })
+                              .send();
+
+                  beforeEach(async () => {
+                        user = await userRepository.save(fakeUser());
+                        reToken = await authService.createReToken(user);
+                  });
+
+                  it('Pass', async () => {
+                        const res = await reqApi(reToken);
+
+                        const token = res.headers['set-cookie'].join('');
+
+                        expect(token).toContain('io-token');
+                        expect(res.status).toBe(200);
+                  });
+                  it('Failed invalid user', async () => {
+                        const res = await reqApi('');
+
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).not.toContain('io-token');
+                        expect(res.status).toBe(401);
+                  });
+                  it('Failed user does not exist ', async () => {
+                        await userRepository.createQueryBuilder().delete().where('id = :value', { value: user.id }).execute();
+                        const res = await reqApi(reToken);
+
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).not.toContain('io-token');
+                        expect(res.status).toBe(401);
                   });
             });
 
