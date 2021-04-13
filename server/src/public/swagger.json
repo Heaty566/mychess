@@ -222,6 +222,28 @@
                   }
             },
 
+            "/api/auth/socket-token": {
+                  "get": {
+                        "tags": ["auth"],
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "return io cookie",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              }
+                        }
+                  }
+            },
             "/api/user": {
                   "get": {
                         "tags": ["user"],

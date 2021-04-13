@@ -19,6 +19,21 @@ export class UserAPI {
         const res = await this.apiCall.get<IApiResponse<IUser>>(url);
         return res;
     }
+
+    async updateUserInfo(input: UpdateUserEmailDto) {
+        const url = `${this.prefix}/otp-email`;
+
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        return res;
+    }
+
+    async updateUserAvatar(input: UpdateUserEmailDto) {
+        const url = `${this.prefix}/otp-email`;
+
+        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        return res;
+    }
+
     async updateUserEmailCreateOTP(input: UpdateUserEmailDto) {
         const url = `${this.prefix}/otp-email`;
 

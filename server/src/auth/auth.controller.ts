@@ -65,7 +65,7 @@ export class AuthController {
       @UseGuards(UserGuard)
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
             const user = await this.userService.getOneUserByField('id', req.user.id);
-            if (!user) throw apiResponse.sendError({ body: { message: 'user.invalid-input' }, type: 'BadRequestException' });
+            if (!user) throw apiResponse.sendError({ body: { message: 'user.invalid-input' }, type: 'UnauthorizedException' });
             const socketId = await this.authService.getSocketToken(user);
 
             return res.cookie('io-token', socketId, { maxAge: 1000 * 60 * 60 * 24 }).send();

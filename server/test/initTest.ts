@@ -32,6 +32,7 @@ export const initTestModule = async () => {
       adminUser = await userRepository.save(adminUser);
       const reToken = await authService.createReToken(user);
       const adminReToken = await authService.createReToken(adminUser);
+      const socketToken = await authService.getSocketToken(user);
 
       // create a fake room
 
@@ -42,5 +43,6 @@ export const initTestModule = async () => {
             adminCookie: [`re-token=${adminReToken};`],
             getUser: user,
             getReToken: reToken,
+            getSocketToken: socketToken,
       };
 };
