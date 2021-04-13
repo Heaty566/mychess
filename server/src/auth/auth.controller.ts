@@ -91,7 +91,7 @@ export class AuthController {
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
-            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'server.some-wrong' } }, type: 'InternalServerErrorException' });
+            if (!isSent) throw apiResponse.sendError({ body: { details: { email: 'server.some-wrong' } }, type: 'BadGatewayException' });
 
             return apiResponse.send({ body: { message: 'server.send-email-otp' } });
       }
@@ -102,7 +102,7 @@ export class AuthController {
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
             if (!user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field.not-found' } } });
 
-            const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 5, 60);
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 3, 60);
             if (!canSendMore) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.request-many-time-60p' } } });
 
             const otpKey = this.authService.generateOTP(user, 5, 'sms');
@@ -115,10 +115,12 @@ export class AuthController {
 
       @Post('/check-otp/:otp')
       async cCheckOTP(@Param('otp') otp: string) {
-            const isExist = await this.redisService.getObjectByKey<User>(otp);
-            if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
+            if (!otp) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
 
-            return apiResponse.send<void>({ body: { message: 'server.success' } });
+            const isExist = await this.redisService.getObjectByKey<User>(otp);
+            if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
+
+            return apiResponse.send<void>({ body: {} });
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------

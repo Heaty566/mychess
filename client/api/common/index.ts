@@ -1,8 +1,8 @@
 import { AxiosInstance } from 'axios';
 
 import http from '../axiosCommon';
-import { IApiResponse } from '../../store/api/interface';
-import { IUser } from '../../store/auth/interface';
+import { ApiResponse } from '../../store/api/interface';
+import { User } from '../../store/auth/interface';
 import { SupportDto } from './dto';
 
 export class CommonAPI {
@@ -10,7 +10,7 @@ export class CommonAPI {
 
     async sendFeedBack(input: SupportDto) {
         const url = `${this.prefix + '/support'}`;
-        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        const res = await this.apiCall.post<ApiResponse<void>>(url, input);
         return res;
     }
 }

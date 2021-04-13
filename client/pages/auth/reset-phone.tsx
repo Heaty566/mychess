@@ -6,7 +6,7 @@ import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
 import { ForgotPasswordPhoneDto } from '../../api/auth/dto';
 import { useTimer } from '../../common/hooks/useTimer';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 import { RootState, store } from '../../store';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
@@ -19,6 +19,7 @@ import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
 import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
+import Link from 'next/link';
 
 const defaultValues: ForgotPasswordPhoneDto = {
     phoneNumber: '',
@@ -26,7 +27,7 @@ const defaultValues: ForgotPasswordPhoneDto = {
 
 const ResetPhone: React.FunctionComponent = () => {
     const { register, handleSubmit } = useForm<ForgotPasswordPhoneDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordPhoneDto>(defaultValues);
     const [isSubmit, setIsSubmit] = React.useState(false);
     const [timer, isDone, setTimerStatus] = useTimer(60, false);
@@ -68,6 +69,11 @@ const ResetPhone: React.FunctionComponent = () => {
                                         <p className="text-white">{timer}s</p>
                                     )}
                                 </div>
+                                <Link href={routers.resetPassword.link}>
+                                    <a href={routers.resetPassword.link} className="text-white duration-300 hover:text-malibu">
+                                        Click Here To Enter Your OTP
+                                    </a>
+                                </Link>
                                 {/* ------------ Resend OTP end ------------------- */}
                             </>
                         )}

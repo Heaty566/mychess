@@ -1,14 +1,14 @@
-export interface IJoiError {
+export interface JoiError {
     [key: string]: string;
 }
-export interface IApiResponse<T> {
+export interface ApiResponse<T> {
     data: T;
     message: string;
-    details: IJoiError;
+    details: JoiError;
 }
-export interface IApiState {
+export interface ApiState {
     isLoading: boolean;
-    errorDetails: IJoiError;
+    errorDetails: JoiError;
     isError: boolean;
     message: string;
 }

@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import router from '../../../common/constants/router';
 import { useTestId } from '../../../test/helper/data-testId';
-import { IAuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../store/auth/interface';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
 
 import NavbarLang from '../navbarLang';
@@ -11,7 +11,7 @@ import UserDropDown from '../userDropdown';
 
 export interface NavbarUserProps {
     handleChangeLanguage: (data: any) => void;
-    authState: IAuthState;
+    authState: AuthState;
     handleLogoutUser: () => void;
 }
 

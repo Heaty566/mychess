@@ -7,11 +7,11 @@ import navbarMenuConfig from '../navbarMenu/config';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
 import config from './config';
 import NavbarLang from '../navbarLang';
-import { IAuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../store/auth/interface';
 
 export interface MobileNavSideMenuProps {
     isActive: boolean;
-    authState: IAuthState;
+    authState: AuthState;
     handleChangeLanguage: (data: any) => void;
     handleLogoutUser: () => void;
 }
