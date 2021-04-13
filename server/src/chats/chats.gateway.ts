@@ -21,7 +21,7 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('events')
       onEvents(client: Socket) {
-            console.log(client.user);
+            //console.log(client.user);
             this.server.emit('events', 'hello client, i am server');
       }
 }
