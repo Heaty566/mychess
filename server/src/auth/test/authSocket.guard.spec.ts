@@ -39,7 +39,7 @@ describe('UserSocketGuard', () => {
                               getClient: jest.fn().mockReturnValue({
                                     handshake: {
                                           headers: {
-                                                cookies: {},
+                                                cookie: {},
                                           },
                                     },
                               }),
