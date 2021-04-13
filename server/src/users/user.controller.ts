@@ -86,9 +86,8 @@ export class UserController {
       @Put('/password')
       @UseGuards(UserGuard)
       async cUpdatePasswordByUser(@Body(new JoiValidatorPipe(vChangePasswordDTO)) body: ChangePasswordDTO, @Req() req: Request) {
-            const user = await this.userService.findOneUserByField('id', req.user.id);
-
-            const isCorrectPassword = this.authService.decryptString(body.currentPassword, user.password);
+            const user = await this.userService.findOneUserByField('username', req.user.username);
+            const isCorrectPassword = await this.authService.decryptString(body.currentPassword, user.password);
             if (!isCorrectPassword) throw apiResponse.sendError({ body: { details: { username: 'user.auth-failed' } } });
 
             user.password = await this.authService.encryptString(body.newPassword);

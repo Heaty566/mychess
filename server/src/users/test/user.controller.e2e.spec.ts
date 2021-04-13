@@ -38,11 +38,19 @@ jest.mock('twilio', () => {
       };
 });
 
+jest.mock('aws-sdk', () => {
+      return {
+            config: {
+                  update: jest.fn(),
+            },
+            S3: jest.fn(() => ({ putObject: jest.fn() })),
+      };
+});
+
 describe('UserController E2E', () => {
       let app: INestApplication;
 
       let userRepository: UserRepository;
-
       let authService: AuthService;
       let redisService: RedisService;
       let userService: UserService;
@@ -191,13 +199,14 @@ describe('UserController E2E', () => {
                         supertest(app.getHttpServer())
                               .put(`/api/user/avatar`)
                               .set({ cookie: cookieData })
-                              .attach('avatar', `${__dirname}/../../../../test/testFile/${input}`);
+                              .attach('avatar', `${__dirname}/../../../test/testFile/${input}`);
 
                   it('Pass', async () => {
-                        const awsSpy = jest.spyOn(awsService, 'uploadFile').mockImplementation(() => Promise.resolve(true));
+                        const awsSpy = jest.spyOn(awsService, 'uploadFile');
+                        awsSpy.mockImplementation(() => Promise.resolve(true));
                         const res = await reqApi('photo.png');
-                        awsSpy.mockClear();
                         expect(res.status).toBe(200);
+                        awsSpy.mockClear();
                   });
                   it('Failed file too large', async () => {
                         const res = await reqApi('4mb.png');
@@ -321,26 +330,34 @@ describe('UserController E2E', () => {
             });
 
             describe('PUT /api/user/password', () => {
+                  let currentPassword: string;
                   let user: User;
                   let body: ChangePasswordDTO;
-                  const reqApi = (body) => supertest(app.getHttpServer()).put('/api/user/password').set({ cookie: cookieData }).send(body);
+                  let newToken: string;
+                  const reqApi = (body, cookie) =>
+                        supertest(app.getHttpServer())
+                              .put('/api/user/password')
+                              .set({ cookie: `re-token=${cookie} ;` })
+                              .send(body);
 
                   beforeAll(async () => {
                         user = fakeUser();
                         user.email = 'heaty126@gmail.com';
-                        await userService.saveUser(user);
+                        currentPassword = user.password;
+                        user.password = await authService.encryptString(user.password);
+                        const getCurrentUser = await userService.saveUser(user);
+                        newToken = await authService.createReToken(getCurrentUser);
 
                         body = {
                               newPassword: 'Password123',
                               confirmNewPassword: 'Password123',
-                              currentPassword: user.password,
+                              currentPassword: currentPassword,
                         };
                   });
 
                   it('Pass', async () => {
-                        const res = await reqApi(body);
-                        const getUser = await userRepository.findOneByField('id', user.id);
-                        console.log(getUser.password);
+                        const res = await reqApi(body, newToken);
+                        const getUser = await userRepository.findOneByField('username', user.username);
                         const isMatch = await authService.decryptString(body.newPassword, getUser.password);
                         expect(res.status).toBe(200);
                         expect(isMatch).toBeTruthy();
@@ -348,7 +365,7 @@ describe('UserController E2E', () => {
 
                   it('Failed currentPassword is not correct', async () => {
                         body.currentPassword = fakeData(10, 'lettersAndNumbers');
-                        const res = await reqApi(body);
+                        const res = await reqApi(body, newToken);
                         expect(res.status).toBe(400);
                   });
             });
