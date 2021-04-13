@@ -37,6 +37,13 @@ describe('UserRepository', () => {
             });
       });
 
+      describe('getAllUsers', () => {
+            it('Pass', async () => {
+                  const res = await userRepository.getAllUsers();
+                  expect(res).toBeDefined();
+            });
+      });
+
       afterAll(async () => {
             await userRepository.createQueryBuilder().delete().execute();
             await app.close();

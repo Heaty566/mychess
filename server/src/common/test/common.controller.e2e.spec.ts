@@ -34,6 +34,16 @@ describe('commonController', () => {
             });
       });
 
+      describe('GET /users', () => {
+            const reqApi = () => supertest(app.getHttpServer()).get('/api/users');
+
+            it('Pass', async () => {
+                  const res = await reqApi();
+                  expect(res.body.data).toBeDefined();
+                  expect(res.status).toBe(200);
+            });
+      });
+
       afterAll(async () => {
             await app.close();
       });
