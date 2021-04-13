@@ -3,7 +3,7 @@
 	"user.field-taken": "is already exist",
 	"user.request-many-time-30p": "is requested too many times, please try again after 30 minutes",
 	"user.request-many-time-60p": "is requested too many times, please try again after 60 minutes",
-	"user.not-allow-action": "action is not allowed",
+	"user.not-allow-action": "is not allowed",
 	"user.update-success": "update user successfully",
 	"user.ban": "you is blocked by an administrator",
 	"user.field.not-found": "is not found",
@@ -40,5 +40,11 @@
 	"password.minOfNumeric": "should contain at least {{min}} number",
 	"should contain at least 1 uppercase characters": "should contain at least 1 uppercase characters",
 	"should contain at least 1 number": "should contain at least 1 number",
-	"should contain letters and numbers": "should contain letters and numbers"
+	"should contain letters and numbers": "should contain letters and numbers",
+	"should not be empty": "should not be empty",
+	"should contain less than or equal 40 characters": "should contain less than or equal 40 characters",
+	"should contain less than or equal 15 characters": "should contain less than or equal 15 characters",
+	"should be a valid email": "should be a valid email",
+	"should contain at least 9 characters": "should contain at least 9 characters",
+	"should be match": "should be match"
 }

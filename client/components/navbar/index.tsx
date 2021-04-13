@@ -11,13 +11,13 @@ import NavbarUser from './navbarUser';
 import NavbarMobile from './navbarMobile';
 import { useSelector } from 'react-redux';
 import { RootState, store } from '../../store';
-import { IAuthState } from '../../store/auth/interface';
+import { AuthState } from '../../store/auth/interface';
 import authThunk from '../../store/auth/thunk';
 
 const Navbar: React.FunctionComponent = () => {
     const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(true);
 
-    const authState = useSelector<RootState, IAuthState>((api) => api.auth);
+    const authState = useSelector<RootState, AuthState>((api) => api.auth);
 
     const handleChangeLanguage = (langKey: string) => {
         const cookies = new Cookies();

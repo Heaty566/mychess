@@ -1,38 +1,43 @@
 import http from '../axiosCommon';
 import { AxiosInstance } from 'axios';
 import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from './dto';
-import { IApiResponse } from '../../store/api/interface';
+import { ApiResponse } from '../../store/api/interface';
 
 export class AuthAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
 
     async loginUser(input: UserLoginDto) {
         const url = `${this.prefix + '/login'}`;
-        const res = await this.apiCall.post<IApiResponse<null>>(url, input);
+        const res = await this.apiCall.post<ApiResponse<null>>(url, input);
         return res;
     }
 
     async logoutUser() {
         const url = `${this.prefix + '/logout'}`;
-        const res = await this.apiCall.post<IApiResponse<null>>(url);
+        const res = await this.apiCall.post<ApiResponse<null>>(url);
         return res;
     }
 
     async registerUser(input: UserRegisterDto) {
         const url = `${this.prefix + '/register'}`;
-        const res = await this.apiCall.post<IApiResponse<null>>(url, input);
+        const res = await this.apiCall.post<ApiResponse<null>>(url, input);
         return res;
     }
 
     async forgotPasswordByEmail(input: ForgotPasswordEmailDto) {
         const url = `${this.prefix + '/otp-email'}`;
-        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        const res = await this.apiCall.post<ApiResponse<void>>(url, input);
         return res;
     }
 
     async forgotPasswordByPhone(input: ForgotPasswordPhoneDto) {
         const url = `${this.prefix + '/otp-sms'}`;
-        const res = await this.apiCall.post<IApiResponse<void>>(url, input);
+        const res = await this.apiCall.post<ApiResponse<void>>(url, input);
+        return res;
+    }
+    async checkOTP(input: string) {
+        const url = `${this.prefix + '/check-otp/' + (input ? input : 'not')}`;
+        const res = await this.apiCall.post<ApiResponse<void>>(url);
         return res;
     }
 }

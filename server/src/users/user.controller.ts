@@ -77,7 +77,7 @@ export class UserController {
             if (!fileLocation) throw apiResponse.sendError({ body: { message: 'server.some-wrong' }, type: 'InternalServerErrorException' });
 
             const user = await this.userService.getOneUserByField('id', req.user.id);
-            user.avatarUrl = '/' + fileLocation;
+            user.avatarUrl = fileLocation;
             await this.userService.saveUser(user);
 
             return apiResponse.send<void>({ body: { message: 'user.update-success' } });
@@ -149,6 +149,9 @@ export class UserController {
             user = await this.userService.findOneUserByField('id', req.user.id);
             user.phoneNumber = body.phoneNumber;
 
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 3, 60);
+            if (!canSendMore) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.request-many-time-60p' } } });
+
             const otpKey = this.authService.generateOTP(user, 10, 'sms');
             const res = await this.smsService.sendOTP(user.phoneNumber, otpKey);
             if (!res) throw apiResponse.sendError({ body: { message: 'server.some-wrong' }, type: 'InternalServerErrorException' });
@@ -165,6 +168,8 @@ export class UserController {
 
             user = req.user;
             user.email = body.email;
+            const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
+            if (!canSendMore) throw apiResponse.sendError({ body: { details: { email: 'user.request-many-time-30p' } } });
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');
             const isSent = await this.smailService.sendOTPForUpdateEmail(user.email, redisKey);
