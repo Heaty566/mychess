@@ -42,5 +42,6 @@ export const initTestModule = async () => {
             adminCookie: [`re-token=${adminReToken};`],
             getUser: user,
             getReToken: reToken,
+            configModule,
       };
 };

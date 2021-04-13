@@ -18,6 +18,8 @@ export class UserSocketGuard implements CanActivate {
       }
 
       async canActivate(context: ExecutionContext) {
+            console.log('///////////////////////');
+            console.log(context.switchToWs().getClient().handshake.headers);
             const client = await this.cookieParserSocket(context);
             const reToken = client.cookies['io-token'] || '';
 
