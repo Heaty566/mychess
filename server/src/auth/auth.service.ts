@@ -74,7 +74,7 @@ export class AuthService {
       }
 
       async getSocketToken(user: User) {
-            const authTokenId = String(uuidv4());
+            const authTokenId = uuidv4();
 
             this.redisService.setObjectByKey(authTokenId, user, 1440);
             return authTokenId;
