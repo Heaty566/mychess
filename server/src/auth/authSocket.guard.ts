@@ -10,12 +10,15 @@ export class UserSocketGuard implements CanActivate {
 
       private async cookieParserSocket(context: ExecutionContext) {
             const client: Socket = context.switchToWs().getClient();
-            client.cookies = Cookie.parse(client.handshake.headers.cookie);
+
+            if (client.handshake.headers.cookie) client.cookies = Cookie.parse(client.handshake.headers.cookie);
             return client;
       }
 
       async canActivate(context: ExecutionContext) {
             const client = await this.cookieParserSocket(context);
+            if (!client.cookies) return false;
+
             const ioToken = client.cookies['io-token'] || '';
 
             if (!ioToken) return false;
