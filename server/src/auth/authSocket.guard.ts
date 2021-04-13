@@ -10,7 +10,6 @@ export class UserSocketGuard implements CanActivate {
 
       private async cookieParserSocket(context: ExecutionContext) {
             const client: SocketExtend = context.switchToWs().getClient();
-
             if (client.handshake.headers.cookie) client.cookies = Cookie.parse(client.handshake.headers.cookie);
             return client;
       }
