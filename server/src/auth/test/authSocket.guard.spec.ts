@@ -23,6 +23,8 @@ describe('UserSocketGuard', () => {
       let reTokenRepository: ReTokenRepository;
       let redisService: RedisService;
       let context: () => ExecutionContext;
+      let headerCookieMock = '';
+      const cookieSpy = jest.spyOn(Cookie, 'parse');
 
       beforeAll(async () => {
             const { getApp, module } = await initTestModule();
@@ -39,7 +41,7 @@ describe('UserSocketGuard', () => {
                               getClient: jest.fn().mockReturnValue({
                                     handshake: {
                                           headers: {
-                                                cookie: {},
+                                                cookie: headerCookieMock,
                                           },
                                     },
                               }),
@@ -56,27 +58,39 @@ describe('UserSocketGuard', () => {
 
             it('Pass', async () => {
                   redisService.setObjectByKey('1234', { username: '123' });
-                  const cookieSpy = jest.spyOn(Cookie, 'parse');
                   cookieSpy.mockReturnValue({ 'io-token': '1234' });
+                  headerCookieMock = 'io=1;';
 
                   const res = await userSocketGuard.canActivate(context());
                   expect(res).toBeTruthy();
+                  cookieSpy.mockClear();
+            });
+            it('Pass', async () => {
+                  redisService.setObjectByKey('1234', { username: '123' });
+                  cookieSpy.mockReturnValue({ 'io-token': '1234' });
+                  headerCookieMock = '';
+
+                  const res = await userSocketGuard.canActivate(context());
+                  expect(res).toBeFalsy();
+                  cookieSpy.mockClear();
             });
 
             it('Failed redis key does not exist', async () => {
-                  const cookieSpy = jest.spyOn(Cookie, 'parse');
+                  headerCookieMock = 'io=1;';
                   cookieSpy.mockReturnValue({ 'io-token': '124' });
 
                   const res = await userSocketGuard.canActivate(context());
                   expect(res).toBeFalsy();
+                  cookieSpy.mockClear();
             });
 
             it('Failed does not have io-token', async () => {
-                  const cookieSpy = jest.spyOn(Cookie, 'parse');
+                  headerCookieMock = 'io=1;';
                   cookieSpy.mockReturnValue({ 'io-token': '' });
 
                   const res = await userSocketGuard.canActivate(context());
                   expect(res).toBeFalsy();
+                  cookieSpy.mockClear();
             });
       });
 
