@@ -54,14 +54,14 @@ describe('UserSocketGuard', () => {
                   userSocketGuard = new UserSocketGuard(redisService);
             });
 
-            it('Pass', async () => {
-                  redisService.setObjectByKey('1234', { username: '123' });
-                  const cookieSpy = jest.spyOn(Cookie, 'parse');
-                  cookieSpy.mockReturnValue({ 'io-token': '1234' });
+            // it('Pass', async () => {
+            //       redisService.setObjectByKey('1234', { username: '123' });
+            //       const cookieSpy = jest.spyOn(Cookie, 'parse');
+            //       cookieSpy.mockReturnValue({ 'io-token': '1234' });
 
-                  const res = await userSocketGuard.canActivate(context());
-                  expect(res).toBeTruthy();
-            });
+            //       const res = await userSocketGuard.canActivate(context());
+            //       expect(res).toBeTruthy();
+            // });
 
             it('Failed redis key does not exist', async () => {
                   const cookieSpy = jest.spyOn(Cookie, 'parse');

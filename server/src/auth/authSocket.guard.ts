@@ -20,7 +20,6 @@ export class UserSocketGuard implements CanActivate {
             if (!client.cookies) return false;
 
             const ioToken = client.cookies['io-token'] || '';
-
             if (!ioToken) return false;
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
             if (!getUser) return false;

@@ -2,10 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import * as io from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { initTestModule } from '../../test/initTest';
+import { Socket } from 'socket.io-client';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
       let port: number;
+      let namespace: string;
       let client;
       let authService: AuthService;
       let socketToken: string;
@@ -13,13 +15,14 @@ describe('ChatsGateway', () => {
             const { configModule, getUser } = await initTestModule();
             app = configModule;
             port = 5208;
+            namespace = 'chat';
             authService = app.get<AuthService>(AuthService);
             socketToken = await authService.getSocketToken(getUser);
             await app.listen(port);
       });
 
       beforeEach(async () => {
-            client = await io(`http://localhost:${port}`, {
+            client = await io(`http://localhost:${port}/${namespace}`, {
                   autoConnect: false,
                   transportOptions: {
                         polling: {
@@ -55,23 +58,3 @@ describe('ChatsGateway', () => {
             await app.close();
       });
 });
-
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { ChatsGateway } from './chats.gateway';
-// import { ChatsService } from './chats.service';
-
-// describe('ChatsGateway', () => {
-//       let gateway: ChatsGateway;
-
-//       beforeEach(async () => {
-//             const module: TestingModule = await Test.createTestingModule({
-//                   providers: [ChatsGateway, ChatsService],
-//             }).compile();
-
-//             gateway = module.get<ChatsGateway>(ChatsGateway);
-//       });
-
-//       it('should be defined', () => {
-//             expect(gateway).toBeDefined();
-//       });
-// });

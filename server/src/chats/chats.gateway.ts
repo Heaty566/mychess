@@ -6,7 +6,7 @@ import { UserSocketGuard } from '../auth/authSocket.guard';
 import { RedisService } from '../providers/redis/redis.service';
 import { ChatsService } from './chats.service';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'chat' })
 export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @WebSocketServer() server: Server;
 
@@ -21,7 +21,7 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('events')
       onEvents(client: Socket) {
-            //console.log(client.user);
+            console.log(client.user);
             this.server.emit('events', 'hello client, i am server');
       }
 }
