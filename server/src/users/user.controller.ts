@@ -131,7 +131,7 @@ export class UserController {
 
             if (user.email !== redisUser.email) {
                   user.email = redisUser.email;
-            } else {
+            } else if (user.phoneNumber !== redisUser.phoneNumber) {
                   user.phoneNumber = redisUser.phoneNumber;
             }
 

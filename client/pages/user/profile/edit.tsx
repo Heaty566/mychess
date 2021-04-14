@@ -15,6 +15,9 @@ import MsgSuccess from '../../../components/form/msgSuccess';
 import { ApiState } from '../../../store/api/interface';
 import { authActions } from '../../../store/auth';
 import userThunk from '../../../store/auth/userThunk';
+import routers from '../../../common/constants/router';
+import WaveLoading from '../../../components/loading/waveLoading';
+import { useRouter } from 'next/router';
 
 interface EditUserForm extends UpdateUserInfoDto, UpdateUserEmailDto, UpdateUserPhoneDto {
     avatar: string;
@@ -32,7 +35,7 @@ export interface AutoLoginProps {}
 const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
     const apiState = useSelector<RootState, ApiState>((state) => state.api);
-
+    const router = useRouter();
     const { register, handleSubmit, setValue } = useForm<EditUserForm>({ defaultValues });
     const [file, handleOnChangeFile] = useUploadFile();
     const errors = useFormError(defaultValues);
@@ -40,8 +43,9 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
     const handleOnSubmit = async (data: EditUserForm) => {
         if (file) await userAPI.updateUserAvatar(file);
         if (data.name !== authState.name) await userAPI.updateUserInfo({ name: data.name });
-        if (data.phoneNumber !== authState.phoneNumber) await userAPI.updateUserPhoneCreateOTP({ phoneNumber: data.phoneNumber });
         if (data.email !== authState.email) await userAPI.updateUserEmailCreateOTP({ email: data.email });
+        if (data.phoneNumber !== authState.phoneNumber)
+            await userAPI.updateUserPhoneCreateOTP({ phoneNumber: data.phoneNumber }).then(() => router.push(routers.updateWithOTP.link));
     };
 
     React.useEffect(() => {
@@ -68,7 +72,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                         type="video/webm"
                     />
                 </video>
-                <div className="relative w-full px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile">
+                <div className="relative w-full px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
                     <form onSubmit={handleSubmit(handleOnSubmit)} className="flex space-x-10">
                         <div className="w-40 space-y-2">
                             <div className="relative max-w-xs ">
@@ -90,7 +94,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                                 <TextField name="username" type="text" error="" label="Username" register={register} isDisable />
                             )}
 
-                            <BtnForm label="Update" />
+                            {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Update" />}
                         </div>
                     </form>
                 </div>

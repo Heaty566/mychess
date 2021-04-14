@@ -13,6 +13,7 @@ const initialState: AuthState = {
     id: '',
     phoneNumber: '',
     avatarUrl: '',
+    createDate: Date(),
     isLogin: false,
 };
 
