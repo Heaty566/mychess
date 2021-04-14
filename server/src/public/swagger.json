@@ -397,10 +397,10 @@
                         }
                   }
             },
-            "/api/user/email?key=": {
+            "/api/user/update-with-otp?key=": {
                   "put": {
                         "tags": ["user"],
-                        "description": "update email with otp key",
+                        "description": "update user information with otp key",
                         "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
                         "responses": {
                               "200": {
@@ -413,36 +413,8 @@
                                           }
                                     }
                               },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              }
-                        }
-                  }
-            },
-            "/api/user/phone?key=": {
-                  "put": {
-                        "tags": ["user"],
-                        "description": "update phone with otp key",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
-                        "responses": {
-                              "200": {
-                                    "description": "update user successfully",
-                                    "content": {
-                                          "application/json": {
-                                                "schema": {
-                                                      "$ref": "#/components/schemas/CommonApiResponse"
-                                                }
-                                          }
-                                    }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
+                              "403": {
+                                    "$ref": "#/components/responses/403"
                               }
                         }
                   }

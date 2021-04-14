@@ -58,7 +58,9 @@ const ResetEmail: React.FunctionComponent = () => {
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
 
-                        <p className="py-2 text-mercury-800">Please enter your email, you will receive an mail to reset your password</p>
+                        <p className="py-2 text-mercury-800">
+                            Please enter your email address. you will receive a link to create a new password via email.
+                        </p>
 
                         {isSubmit && !apiState.isError && (
                             <>

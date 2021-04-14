@@ -26,6 +26,10 @@
     background-size: cover;
 }
 
+.bg-transparent {
+    background-color: transparent;
+}
+
 @keyframes FadeIn {
     0% {
         opacity: 0;

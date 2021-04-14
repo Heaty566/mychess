@@ -29,7 +29,7 @@ const config: Record<TRouters, IRouter> = {
         },
     },
     community: {
-        link: '/',
+        link: '/community?name=&currentPage=0&pageSize=12',
         header: {
             title: 'Home',
             canonical: '/',
@@ -38,7 +38,7 @@ const config: Record<TRouters, IRouter> = {
         },
     },
     about: {
-        link: '/',
+        link: '/about',
         header: {
             title: 'Home',
             canonical: '/',
@@ -117,7 +117,7 @@ const config: Record<TRouters, IRouter> = {
         },
     },
     updateWithOTP: {
-        link: '/auth/update-with-otp',
+        link: '/user/update-with-otp',
         header: {
             title: 'Reset Password',
             canonical: '/auth/reset-phone',
