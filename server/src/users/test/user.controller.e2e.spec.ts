@@ -415,6 +415,69 @@ describe('UserController E2E', () => {
                   });
             });
       });
+      describe('GET /user/search?name=&currentPage=&pageSize', () => {
+            const reqApi = (name: string, currentPage: string, pageSize: string) =>
+                  supertest(app.getHttpServer()).get(`/api/user/search?name=${name}&currentPage=${currentPage}&pageSize=${pageSize}`);
+
+            beforeAll(async () => {
+                  let exampleUser = fakeUser();
+                  exampleUser.name = '132hello1321';
+                  await userRepository.save(exampleUser);
+                  exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+            });
+
+            it('Pass get two', async () => {
+                  const res = await reqApi('hello', '0', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get zero currentPage 1000', async () => {
+                  const res = await reqApi('hello', '10000', '12');
+
+                  expect(res.body.data).toHaveLength(0);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get two currentPage -10', async () => {
+                  const res = await reqApi('hello', '-10', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get two currentPage=dksakdmksamk', async () => {
+                  const res = await reqApi('hello', 'dksakdmksamk', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass get two currentPage=dksakdmksamk', async () => {
+                  const res = await reqApi('hello', 'dksakdmksamk', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get one pageSize=1', async () => {
+                  const res = await reqApi('hello', '0', '1');
+
+                  expect(res.body.data).toHaveLength(1);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass get all', async () => {
+                  const exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+                  const res = await reqApi('', '0', '200');
+
+                  expect(res.body.data.length).toBeGreaterThan(2);
+                  expect(res.status).toBe(200);
+            });
+      });
 
       afterAll(async () => {
             await userRepository.createQueryBuilder().delete().execute();

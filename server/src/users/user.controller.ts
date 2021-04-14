@@ -20,6 +20,7 @@ import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
 
 import { FileInterceptor } from '@nestjs/platform-express';
+import { SearchUsersDTO, vSearchUsersDTO } from './dto/searchUsers';
 
 @Controller('user')
 export class UserController {
@@ -39,6 +40,14 @@ export class UserController {
             const user = await this.userService.getOneUserByField('id', req.user.id);
 
             return apiResponse.send<User>({ body: { data: user } });
+      }
+
+      @Get('/search')
+      async cSearchUsers(@Query() queries: SearchUsersDTO) {
+            const { value } = <{ value: SearchUsersDTO }>vSearchUsersDTO.validate(queries, { convert: true, stripUnknown: true });
+
+            const users = await this.userService.searchUsersByName(value.name, value.pageSize, value.currentPage);
+            return apiResponse.send<Array<User>>({ body: { data: users } });
       }
 
       @Get('/:id')

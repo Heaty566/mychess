@@ -509,6 +509,25 @@
                         }
                   }
             },
+            "/api/user/search?name=&currentPage=&pageSize=": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "search user by name",
+                        "parameters": [{ "$ref": "#/components/parameters/searchUser" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
 
             "/api/admin/users": {
                   "get": {
@@ -970,6 +989,29 @@
                         "schema": {
                               "type": "string",
                               "example": "123456789aa"
+                        }
+                  },
+                  "searchUser": {
+                        "name": "searchUserQuery",
+                        "in": "query",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                              "type": "object",
+                              "properties": {
+                                    "name": {
+                                          "type": "string",
+                                          "example": "hello world"
+                                    },
+                                    "currentPage": {
+                                          "type": "number",
+                                          "example": 1
+                                    },
+                                    "pageSize": {
+                                          "type": "number",
+                                          "example": 1
+                                    }
+                              }
                         }
                   }
             }
