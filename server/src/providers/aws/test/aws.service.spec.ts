@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 const mockS3Object = jest.fn();
 jest.mock('aws-sdk', () => {
       return {
+            ...jest.requireActual('aws-sdk'),
             config: {
                   update: jest.fn(),
             },

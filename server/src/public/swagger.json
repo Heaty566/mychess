@@ -369,7 +369,7 @@
                         }
                   }
             },
-            "/api/user/password?key=": {
+            "/api/user/reset-password?key=": {
                   "put": {
                         "tags": ["user"],
                         "description": "reset password with otp key",
