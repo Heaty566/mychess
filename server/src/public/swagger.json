@@ -166,7 +166,7 @@
                         }
                   }
             },
-            "/api/auth/check-otp/:otp": {
+            "/api/auth/check-otp?key=": {
                   "post": {
                         "tags": ["auth"],
                         "parameters": [{ "$ref": "#/components/parameters/OTPkey" }],
@@ -369,7 +369,7 @@
                         }
                   }
             },
-            "/api/user/password/:otp": {
+            "/api/user/password?key=": {
                   "put": {
                         "tags": ["user"],
                         "description": "reset password with otp key",
@@ -397,7 +397,7 @@
                         }
                   }
             },
-            "/api/user/email/:otp": {
+            "/api/user/email?key=": {
                   "put": {
                         "tags": ["user"],
                         "description": "update email with otp key",
@@ -422,7 +422,7 @@
                         }
                   }
             },
-            "/api/user/phone/:otp": {
+            "/api/user/phone?key=": {
                   "put": {
                         "tags": ["user"],
                         "description": "update phone with otp key",
@@ -962,7 +962,7 @@
                         }
                   },
                   "OTPkey": {
-                        "name": "id",
+                        "name": "key",
                         "description": "otp key",
                         "in": "query",
                         "required": true,

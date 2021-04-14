@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 
@@ -113,11 +113,11 @@ export class AuthController {
             return apiResponse.send({ body: { message: 'server.send-phone-otp' } });
       }
 
-      @Post('/check-otp/:otp')
-      async cCheckOTP(@Param('otp') otp: string) {
-            if (!otp) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
+      @Post('/check-otp')
+      async cCheckOTP(@Query('key') key: string) {
+            if (!key) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
 
-            const isExist = await this.redisService.getObjectByKey<User>(otp);
+            const isExist = await this.redisService.getObjectByKey<User>(key);
             if (!isExist) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
 
             return apiResponse.send<void>({ body: {} });
