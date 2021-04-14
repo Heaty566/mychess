@@ -1,14 +1,22 @@
 import { UseGuards } from '@nestjs/common';
-import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketServer } from '@nestjs/websockets';
+import {
+      WebSocketGateway,
+      OnGatewayConnection,
+      OnGatewayDisconnect,
+      SubscribeMessage,
+      WebSocketServer,
+      MessageBody,
+      ConnectedSocket,
+} from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { UserSocketGuard } from '../auth/authSocket.guard';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'chat' })
 export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @WebSocketServer() server: Server;
 
       async handleConnection(client: Socket) {
-            //
+            console.log(`Client connect: ${client.id}`);
       }
 
       handleDisconnect() {
@@ -17,8 +25,10 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('events')
-      onEvents(client: Socket) {
-            //console.log(client.user);
-            this.server.emit('events', 'hello client, i am server');
+      onEvents(@MessageBody() data, @ConnectedSocket() client: Socket) {
+            //console.log(client['user']);
+            console.log(data);
+            //client.join('room1');
+            client.emit('events', 'hello client, i am server');
       }
 }
