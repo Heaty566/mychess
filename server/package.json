@@ -33,7 +33,7 @@
         "@nestjs/typeorm": "^7.1.5",
         "@nestjs/websockets": "^7.6.15",
         "@sendgrid/mail": "^7.4.2",
-        "aws-sdk": "^2.850.0",
+        "aws-sdk": "^2.886.0",
         "bcrypt": "^5.0.0",
         "compression": "^1.7.4",
         "cookie": "^0.4.1",

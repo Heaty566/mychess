@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import * as io from 'socket.io-client';
-import { Socket } from 'socket.io-client';
 import { initTestModule } from '../../test/initTest';
 
 describe('ChatsGateway', () => {
