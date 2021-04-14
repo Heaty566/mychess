@@ -42,13 +42,13 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                             type="video/webm"
                         />
                     </video>
-                    <div className="relative flex-1 px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile">
-                        <div className="flex h-full space-x-4">
-                            <div className="h-40">
+                    <div className="relative flex-1 px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
+                        <div className="flex flex-col h-full space-x-0 space-y-4 md:space-y-0 md:space-x-4 md:flex-row">
+                            <div className="w-40 h-40 mx-auto md:mx-0">
                                 <img className="object-cover w-40 h-40" src={user.avatarUrl} alt={user.name} />
                             </div>
                             <div>
-                                <div className="flex items-center space-x-1">
+                                <div className="flex items-center space-x-1 ">
                                     <h1 className="text-4xl text-white capitalize">{user.name}</h1>
                                     {authState.id === user.id && (
                                         <Link href={routers.userEdit.link}>
@@ -60,6 +60,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                 </div>
                                 <h3 className="text-lg capitalize text-cloud-700">{user.username}</h3>
                                 <h3 className="mt-2 text-lg text-cloud">ELO: {user.elo}</h3>
+                                <h3 className="mt-2 text-md text-cloud">JOIN: {user.createDate.split('T')[0]}</h3>
                             </div>
                         </div>
                     </div>

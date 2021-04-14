@@ -17,6 +17,7 @@ import MsgSuccess from '../../../components/form/msgSuccess';
 import userAPI from '../../../api/user';
 import authApi from '../../../api/auth';
 import { useRouter } from 'next/router';
+import BtnLink from '../../../components/link/btnLink';
 
 interface RestUserPasswordWithKey {
     otp: string;
@@ -37,8 +38,8 @@ const UpdateWithOTP: React.FunctionComponent<ResetPasswordProps> = () => {
 
     const onSubmit = async (data: RestUserPasswordWithKey) => {
         if (!isCheckOtp)
-            authApi
-                .checkOTP(data.otp)
+            userAPI
+                .updateUserByOtp(data.otp)
                 .then(() => setCheckOtp(true))
                 .catch((err) => setCheckOtp(false));
     };
@@ -46,37 +47,37 @@ const UpdateWithOTP: React.FunctionComponent<ResetPasswordProps> = () => {
     React.useEffect(() => {
         if (router.query.key && router.query.key[0]) {
             const key = router.query.key[0];
-
-            onSubmit({ otp: key, confirmNewPassword: '', newPassword: '' });
+            onSubmit({ otp: key });
         }
     }, [router.query]);
 
     return (
         <>
             <SeoHead {...routers.resetPassword.header} />
-            <RouteProtectedWrapper>
-                <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
-                    <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
-                        <h1 className="text-4xl text-center text-white mb-7">Reset Your Password</h1>
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <MsgSuccess message={apiState.message} />
-                            {isCheckOtp ? (
-                                <div className="space-y-2"></div>
-                            ) : (
-                                <>
-                                    <p className="py-2 text-mercury-800">Please enter your OTP, and do not share it with anybody.</p>
-                                    <div className="space-y-2">
-                                        <TextField name="otp" label="OTP" error={errors.otp} register={register} type="text" />
-                                    </div>
-                                </>
-                            )}
-                            <div className="mb-4"></div>
 
+            <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
+                {isCheckOtp ? (
+                    <div className="flex flex-col justify-center space-y-4 fade-in">
+                        <h1 className="self-start text-4xl text-green-500 m">Your Account Has Been Updated</h1>
+                        <div className="grid place-items-center">
+                            <BtnLink href={routers.home.link} label="Go Back To Home" />
+                        </div>
+                    </div>
+                ) : (
+                    <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
+                        <h1 className="text-4xl text-center text-white mb-7">Update Phone Number</h1>
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+                            <MsgSuccess message={apiState.message} />
+
+                            <p className="py-2 text-mercury-800">Please enter your OTP, and do not share it with anybody.</p>
+                            <div className="space-y-2">
+                                <TextField name="otp" label="OTP" error={errors.otp} register={register} type="text" />
+                            </div>
                             {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Submit" />}
                         </form>
                     </div>
-                </div>
-            </RouteProtectedWrapper>
+                )}
+            </div>
         </>
     );
 };
