@@ -2,7 +2,7 @@ import * as React from 'react';
 import EditIcons from '../../../public/asset/icons/edit.svg';
 import { userAPI } from '../../../api/user';
 import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
-import { IAuthState, IUser } from '../../../store/auth/interface';
+import { AuthState, User } from '../../../store/auth/interface';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
@@ -11,12 +11,12 @@ import SeoHead from '../../../components/common/seoHead';
 import Link from 'next/link';
 
 export interface ProfileProps {
-    user: IUser | null;
+    user: User | null;
 }
 
 const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     const router = useRouter();
-    const authState = useSelector<RootState, IAuthState>((state) => state.auth);
+    const authState = useSelector<RootState, AuthState>((state) => state.auth);
 
     React.useEffect(() => {
         if (!user) router.push('/404');
@@ -28,7 +28,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
             <>
                 <SeoHead title={user.name} isFollowPage canonical={`${routers.userProfile.link}/${user.id}`} imageUrl={user.avatarUrl} />
 
-                <div className="relative flex-1">
+                <div className="relative flex flex-1">
                     <video
                         playsInline
                         autoPlay
@@ -42,8 +42,8 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                             type="video/webm"
                         />
                     </video>
-                    <div className="relative w-full px-4 py-6 m-auto md:w-5/6 xl:w-4/6 background-profile">
-                        <div className="flex space-x-4">
+                    <div className="relative flex-1 px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile">
+                        <div className="flex h-full space-x-4">
                             <div className="h-40">
                                 <img className="object-cover w-40 h-40" src={user.avatarUrl} alt={user.name} />
                             </div>

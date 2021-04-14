@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { useTestId } from '../../../test/helper/data-testId';
+import MsgError from '../msgError';
 
 export interface TextFieldProps {
     name: string;
@@ -20,7 +21,7 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
             {...register(name)}
             {...useTestId(`textField-input-${name}`)}
         />
-        {Boolean(error.length) && <p className="text-red-500 fade-in" {...useTestId(`textField-error-${name}`)}>{`${label} ${error}`}</p>}
+        <MsgError label={label} message={error} />
     </div>
 );
 

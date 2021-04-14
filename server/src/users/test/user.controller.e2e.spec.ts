@@ -133,6 +133,16 @@ describe('UserController E2E', () => {
                         const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(400);
                   });
+
+                  it('Failed(request many time)', async () => {
+                        otpSmsDTO = {
+                              phoneNumber: '0862334006',
+                        };
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+                        const res = await reqApi(otpSmsDTO);
+                        expect(res.status).toBe(400);
+                        mySpy.mockClear();
+                  });
             });
 
             describe('POST /otp-email', () => {
@@ -141,20 +151,22 @@ describe('UserController E2E', () => {
                   const reqApi = (input: UpdateEmailDTO) =>
                         supertest(app.getHttpServer()).post('/api/user/otp-email').set({ cookie: cookieData }).send(input);
 
+                  it('Pass', async () => {
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(true));
+                        otpMail = {
+                              email: `heaty566ex@gmail.com`,
+                        };
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(201);
+                        mySpy.mockClear();
+                  });
+
                   it('Failed (email is taken)', async () => {
                         otpMail = {
                               email: 'haicao2805@gmail.com',
                         };
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(400);
-                  });
-
-                  it('Pass', async () => {
-                        otpMail = {
-                              email: `heaty566ex@gmail.com`,
-                        };
-                        const res = await reqApi(otpMail);
-                        expect(res.status).toBe(201);
                   });
 
                   it('Failed (error of smail)', async () => {
@@ -167,6 +179,16 @@ describe('UserController E2E', () => {
                         } catch (err) {
                               expect(err.status).toBe(500);
                         }
+                        mySpy.mockClear();
+                  });
+
+                  it('Failed(request many time)', async () => {
+                        otpMail = {
+                              email: `heaty566ex@gmail.com`,
+                        };
+                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(400);
                         mySpy.mockClear();
                   });
             });
