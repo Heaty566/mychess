@@ -6,6 +6,8 @@ import { User } from '../entities/user.entity';
 import { fakeData } from '../../../test/fakeData';
 import { UserService } from '../user.service';
 import { v4 as uuidv4 } from 'uuid';
+import { fakeUser } from '../../../test/fakeEntity';
+
 describe('UserService', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
@@ -64,6 +66,43 @@ describe('UserService', () => {
 
                   expect(res).toBeDefined();
                   expect(res.username).toBe('update');
+            });
+      });
+
+      describe('searchUsersByName', () => {
+            beforeAll(async () => {
+                  let exampleUser = fakeUser();
+                  exampleUser.name = '132hello1321';
+                  await userRepository.save(exampleUser);
+                  exampleUser = fakeUser();
+
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+            });
+
+            it('Pass get two', async () => {
+                  const res = await userService.searchUsersByName('hello', 12, 0);
+                  expect(res).toHaveLength(2);
+            });
+
+            it('Pass get zero currentPage 1000', async () => {
+                  const res = await userService.searchUsersByName('hello', 12, 1000);
+
+                  expect(res).toHaveLength(0);
+            });
+
+            it('Pass get one pageSize=1', async () => {
+                  const res = await userService.searchUsersByName('hello', 1, 0);
+
+                  expect(res).toHaveLength(1);
+            });
+            it('Pass get all', async () => {
+                  const exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+                  const res = await userService.searchUsersByName('', 200, 0);
+
+                  expect(res.length).toBeGreaterThan(2);
             });
       });
 
