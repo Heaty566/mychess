@@ -255,16 +255,26 @@ describe('UserController E2E', () => {
                   });
             });
 
-            describe('PUT /api/user/phone?key=', () => {
+            describe('PUT /api/user/update-with-otp?key=', () => {
                   let redisKey: string;
                   const reqApi = (redisKey) =>
-                        supertest(app.getHttpServer()).put(`/api/user/phone?key=${redisKey}`).set({ cookie: cookieData }).send();
+                        supertest(app.getHttpServer()).put(`/api/user/update-with-otp?key=${redisKey}`).set({ cookie: cookieData }).send();
 
                   beforeAll(async () => {
                         redisKey = await authService.generateOTP(userDb, 2, 'sms');
                   });
 
                   it('Pass', async () => {
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(redisKey);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                  });
+
+                  it('Pass', async () => {
+                        redisKey = await authService.generateOTP(userDb, 2, 'email');
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(redisKey);
                         const afterRedisKey = await redisService.getObjectByKey(redisKey);
@@ -285,48 +295,13 @@ describe('UserController E2E', () => {
                   });
 
                   it('Failed url does not provide key', async () => {
-                        const customApi = () => supertest(app.getHttpServer()).put(`/api/user/phone`).set({ cookie: cookieData }).send();
+                        const customApi = () => supertest(app.getHttpServer()).put(`/api/user/update-with-otp`).set({ cookie: cookieData }).send();
                         const res = await customApi();
 
                         expect(res.status).toBe(403);
                   });
             });
-            describe('PUT /api/user/email?key=', () => {
-                  let redisKey: string;
-                  const reqApi = (redisKey) =>
-                        supertest(app.getHttpServer()).put(`/api/user/email?key=${redisKey}`).set({ cookie: cookieData }).send();
 
-                  beforeAll(async () => {
-                        redisKey = await authService.generateOTP(userDb, 2, 'email');
-                  });
-
-                  it('Pass', async () => {
-                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
-                        const res = await reqApi(redisKey);
-                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
-                        expect(res.status).toBe(200);
-                        expect(beforeRedisKey).toBeDefined();
-                        expect(afterRedisKey).toBeNull();
-                  });
-
-                  it('Failed (redis key is used)', async () => {
-                        const res = await reqApi(123456);
-
-                        expect(res.status).toBe(403);
-                  });
-
-                  it('Failed (redis expired)', async () => {
-                        const res = await reqApi(redisKey);
-
-                        expect(res.status).toBe(403);
-                  });
-                  it('Failed url does not provide key', async () => {
-                        const customApi = () => supertest(app.getHttpServer()).put(`/api/user/email`).set({ cookie: cookieData }).send();
-                        const res = await customApi();
-
-                        expect(res.status).toBe(403);
-                  });
-            });
             describe('PUT /api/user/reset-password?key=', () => {
                   let user: User;
                   let redisKey: string;
