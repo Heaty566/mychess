@@ -274,8 +274,8 @@ describe('AuthController', () => {
                   });
             });
 
-            describe('POST /check-otp/:otp', () => {
-                  const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp/${input}`).send();
+            describe('POST /check-otp?key=', () => {
+                  const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp?key=${input}`).send();
 
                   it('Pass', async () => {
                         const otp = await authService.generateOTP(userDB, 10, 'email');
@@ -287,6 +287,14 @@ describe('AuthController', () => {
                   it('Failed (otp does not exist)', async () => {
                         try {
                               await reqApi('123456789');
+                        } catch (err) {
+                              expect(err.status).toBe(403);
+                        }
+                  });
+
+                  it('Failed (does not have key)', async () => {
+                        try {
+                              await reqApi('');
                         } catch (err) {
                               expect(err.status).toBe(403);
                         }
