@@ -7,7 +7,7 @@ import routers from '../../common/constants/router';
 import { RootState, store } from '../../store';
 import { useTimer } from '../../common/hooks/useTimer';
 import { ForgotPasswordEmailDto } from '../../api/auth/dto';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
 
@@ -20,6 +20,7 @@ import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
 import { useTestId } from '../../test/helper/data-testId';
 import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
+import MsgError from '../../components/form/msgError';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -27,7 +28,7 @@ const defaultValues: ForgotPasswordEmailDto = {
 
 const ResetEmail: React.FunctionComponent = () => {
     const { register, handleSubmit } = useForm<ForgotPasswordEmailDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordEmailDto>(defaultValues);
     const [isSubmit, setIsSubmit] = React.useState(false);
     const [timer, isRunning, setTimerStatus] = useTimer(60, false);
@@ -56,6 +57,7 @@ const ResetEmail: React.FunctionComponent = () => {
                     <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`reset-mail`)}>
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
+
                         <p className="py-2 text-mercury-800">Please enter your email, you will receive an mail to reset your password</p>
 
                         {isSubmit && !apiState.isError && (

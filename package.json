@@ -26,5 +26,8 @@
     "main": "index.js",
     "repository": "https://github.com/Heaty566/MyGame-NEXT-NEST.git",
     "author": "heaty566 <heaty566@gmail.com>",
-    "license": "MIT"
+    "license": "MIT",
+    "devDependencies": {
+        "@types/uuid": "^8.3.0"
+    }
 }

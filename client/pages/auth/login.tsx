@@ -7,7 +7,7 @@ import routers from '../../common/constants/router';
 import { UserLoginDto } from '../../api/auth/dto';
 import { RootState, store } from '../../store';
 import authThunk from '../../store/auth/thunk';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 
 import useFormError from '../../common/hooks/useFormError';
 import { useTestId } from '../../test/helper/data-testId';
@@ -27,7 +27,7 @@ const defaultValues: UserLoginDto = {
 export interface LoginProps {}
 const Login: React.FunctionComponent<LoginProps> = () => {
     const { register, handleSubmit } = useForm<UserLoginDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<UserLoginDto>(defaultValues);
 
     const onSubmit = (data: UserLoginDto) => {
@@ -65,5 +65,4 @@ const Login: React.FunctionComponent<LoginProps> = () => {
     );
 };
 
-// const LoginRoute = (props: LoginProps) => RouteGuard<LoginProps>({ Component: Login, props: { ...props } });
 export default Login;

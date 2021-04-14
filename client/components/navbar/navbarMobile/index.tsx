@@ -2,14 +2,14 @@ import * as React from 'react';
 
 import MobileNavSideMenu from './mobileSideMenu';
 import MobileNavBtn from './mobileNavBtn';
-import { IAuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../store/auth/interface';
 
 export interface NavbarMobileProps {
     handleChangeActive(): void;
     handleLogoutUser: () => void;
     handleChangeLanguage: any;
     isActive: boolean;
-    authState: IAuthState;
+    authState: AuthState;
 }
 
 const NavbarMobile: React.FunctionComponent<NavbarMobileProps> = ({
