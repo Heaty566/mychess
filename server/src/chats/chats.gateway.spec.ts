@@ -1,23 +1,22 @@
 import { INestApplication } from '@nestjs/common';
 import * as io from 'socket.io-client';
-import { AuthService } from '../auth/auth.service';
-import { initTestModule } from '../../test/initTest';
 import { Socket } from 'socket.io-client';
+import { initTestModule } from '../../test/initTest';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
       let port: number;
       let namespace: string;
       let client;
-      let authService: AuthService;
-      let socketToken: string;
+
+      let userSocketToken: string;
       beforeAll(async () => {
-            const { configModule, getUser } = await initTestModule();
+            const { configModule, socketToken } = await initTestModule();
             app = configModule;
             port = 5208;
             namespace = 'chat';
-            authService = app.get<AuthService>(AuthService);
-            socketToken = await authService.getSocketToken(getUser);
+            userSocketToken = socketToken;
+
             await app.listen(port);
       });
 
@@ -27,7 +26,7 @@ describe('ChatsGateway', () => {
                   transportOptions: {
                         polling: {
                               extraHeaders: {
-                                    Cookie: `io-token=${socketToken};`,
+                                    Cookie: `io-token=${userSocketToken};`,
                               },
                         },
                   },
@@ -45,11 +44,10 @@ describe('ChatsGateway', () => {
 
             it('Pass', async (done) => {
                   client.on('events', (data) => {
-                        console.log(data);
                         done();
                   });
                   client.emit('events', { data: 'hello' }, async () => {
-                        console.log('call');
+                        //
                   });
             });
       });

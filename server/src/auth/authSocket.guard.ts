@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
+import { SocketExtend } from 'socket.io';
 import * as Cookie from 'cookie';
 import { RedisService } from '../providers/redis/redis.service';
 import User from '../users/entities/user.entity';
@@ -9,8 +9,7 @@ export class UserSocketGuard implements CanActivate {
       constructor(private redisService: RedisService) {}
 
       private async cookieParserSocket(context: ExecutionContext) {
-            const client: Socket = context.switchToWs().getClient();
-
+            const client: SocketExtend = context.switchToWs().getClient();
             if (client.handshake.headers.cookie) client.cookies = Cookie.parse(client.handshake.headers.cookie);
             return client;
       }

@@ -44,5 +44,6 @@ export const initTestModule = async () => {
             getUser: user,
             getReToken: reToken,
             configModule,
+            socketToken,
       };
 };
