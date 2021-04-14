@@ -120,7 +120,7 @@ export class UserController {
             return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
-      @Put('/email')
+      @Put('/update-with-otp')
       async cUpdateEmailByOTP(@Query('key') key: string) {
             if (!key) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
 
@@ -128,23 +128,13 @@ export class UserController {
             if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
 
             const user = await this.userService.findOneUserByField('id', redisUser.id);
-            user.email = redisUser.email;
 
-            await this.userService.saveUser(user);
-            this.redisService.deleteByKey(key);
+            if (user.email !== redisUser.email) {
+                  user.email = redisUser.email;
+            } else {
+                  user.phoneNumber = redisUser.phoneNumber;
+            }
 
-            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
-      }
-
-      @Put('/phone')
-      async cUpdatePhoneByOTP(@Query('key') key: string) {
-            if (!key) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
-
-            const redisUser = await this.redisService.getObjectByKey<User>(key);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
-
-            const user = await this.userService.findOneUserByField('id', redisUser.id);
-            user.phoneNumber = redisUser.phoneNumber;
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(key);
 
