@@ -7,6 +7,15 @@ import { User } from './entities/user.entity';
 export class UserService {
       constructor(private userRepository: UserRepository) {}
 
+      async getCurrentUser(userId: string) {
+            const result = await this.userRepository
+                  .createQueryBuilder()
+                  .select('id, username, name, avatarUrl, createDate, elo, email, phoneNumber')
+                  .where('id = :id', { id: userId })
+                  .execute();
+            return result[0];
+      }
+
       async findOneUserByField(field: keyof User, value: any) {
             return await this.userRepository.findOneByField(field, value);
       }

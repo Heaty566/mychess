@@ -55,19 +55,19 @@ export class UserAPI {
     }
 
     async updateUserPhoneByOtp(input: string) {
-        const url = `${this.prefix}/phone/${input}`;
+        const url = `${this.prefix}/phone?key=${input}`;
         const res = await this.apiCall.put<ApiResponse<void>>(url);
         return res;
     }
 
     async updateUserEmailByOtp(input: string) {
-        const url = `${this.prefix}/phone/${input}`;
+        const url = `${this.prefix}/email?key=${input}`;
         const res = await this.apiCall.put<ApiResponse<void>>(url);
         return res;
     }
 
     async resetUserPassword(input: ResetUserPasswordDto, key: string) {
-        const url = `${this.prefix}/password/${key}`;
+        const url = `${this.prefix}/reset-password?key=${key}`;
         const res = await this.apiCall.put<ApiResponse<void>>(url, input);
         return res;
     }

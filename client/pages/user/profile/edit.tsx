@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import TextField from '../../../components/form/textField';
 import { RootState, store } from '../../../store';
 import { AuthState } from '../../../store/auth/interface';
-import { UpdateUserAvatarDto, UpdateUserInfoDto } from '../../../api/user/dto';
+import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../api/user/dto';
 import useFormError from '../../../common/hooks/useFormError';
 import FileUpload from '../../../components/form/fileUpload';
 import { useUploadFile } from '../../../common/hooks/useUploadFile';
@@ -13,14 +13,18 @@ import BtnForm from '../../../components/btn/btnForm';
 import userAPI from '../../../api/user';
 import MsgSuccess from '../../../components/form/msgSuccess';
 import { ApiState } from '../../../store/api/interface';
+import { authActions } from '../../../store/auth';
+import userThunk from '../../../store/auth/userThunk';
 
-interface EditUserForm extends UpdateUserInfoDto {
+interface EditUserForm extends UpdateUserInfoDto, UpdateUserEmailDto, UpdateUserPhoneDto {
     avatar: string;
 }
 
 const defaultValues: EditUserForm = {
     name: '',
     avatar: '',
+    email: '',
+    phoneNumber: '',
 };
 
 export interface AutoLoginProps {}
@@ -29,24 +33,24 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
     const apiState = useSelector<RootState, ApiState>((state) => state.api);
 
-    const { register, handleSubmit, setValue } = useForm<UpdateUserInfoDto>({ defaultValues });
+    const { register, handleSubmit, setValue } = useForm<EditUserForm>({ defaultValues });
     const [file, handleOnChangeFile] = useUploadFile();
     const errors = useFormError(defaultValues);
 
-    const handleOnSubmit = async (data: UpdateUserInfoDto) => {
+    const handleOnSubmit = async (data: EditUserForm) => {
         if (file) await userAPI.updateUserAvatar(file);
         if (data.name !== authState.name) await userAPI.updateUserInfo({ name: data.name });
+        if (data.phoneNumber !== authState.phoneNumber) await userAPI.updateUserPhoneCreateOTP({ phoneNumber: data.phoneNumber });
+        if (data.email !== authState.email) await userAPI.updateUserEmailCreateOTP({ email: data.email });
     };
 
     React.useEffect(() => {
         if (authState.isLogin) {
             setValue('name', authState.name);
+            setValue('phoneNumber', authState.phoneNumber);
+            setValue('email', authState.email);
         }
     }, [authState]);
-
-    React.useEffect(() => {
-        console.log(apiState.message);
-    });
 
     return (
         <RouteProtectedWrapper isNeedLogin>
@@ -80,6 +84,8 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                             <h1 className="text-3xl text-white ">Update User</h1>
                             <MsgSuccess message={apiState.message} />
                             <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
+                            <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
+                            <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />
                             {Boolean(authState.username) && (
                                 <TextField name="username" type="text" error="" label="Username" register={register} isDisable />
                             )}

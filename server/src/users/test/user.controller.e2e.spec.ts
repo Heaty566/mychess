@@ -40,6 +40,7 @@ jest.mock('twilio', () => {
 
 jest.mock('aws-sdk', () => {
       return {
+            ...jest.requireActual('aws-sdk'),
             config: {
                   update: jest.fn(),
             },

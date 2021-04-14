@@ -36,7 +36,7 @@ export class AuthAPI {
         return res;
     }
     async checkOTP(input: string) {
-        const url = `${this.prefix + '/check-otp/' + (input ? input : 'not')}`;
+        const url = `${this.prefix + '/check-otp?key=' + input}`;
         const res = await this.apiCall.post<ApiResponse<void>>(url);
         return res;
     }

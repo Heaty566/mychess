@@ -15,7 +15,8 @@ type TRouters =
     | 'forgotPasswordPhone'
     | 'userProfile'
     | 'userEdit'
-    | 'resetPassword';
+    | 'resetPassword'
+    | 'updateWithOTP';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -108,6 +109,15 @@ const config: Record<TRouters, IRouter> = {
     },
     resetPassword: {
         link: '/auth/reset-password',
+        header: {
+            title: 'Reset Password',
+            canonical: '/auth/reset-phone',
+            description: 'Send an OTP to your phone number',
+            isFollowPage: true,
+        },
+    },
+    updateWithOTP: {
+        link: '/auth/update-with-otp',
         header: {
             title: 'Reset Password',
             canonical: '/auth/reset-phone',

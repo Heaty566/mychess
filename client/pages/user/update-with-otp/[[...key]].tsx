@@ -18,18 +18,16 @@ import userAPI from '../../../api/user';
 import authApi from '../../../api/auth';
 import { useRouter } from 'next/router';
 
-interface RestUserPasswordWithKey extends ResetUserPasswordDto {
+interface RestUserPasswordWithKey {
     otp: string;
 }
 
 const defaultValues: RestUserPasswordWithKey = {
-    confirmNewPassword: '',
     otp: '',
-    newPassword: '',
 };
 
 export interface ResetPasswordProps {}
-const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => {
+const UpdateWithOTP: React.FunctionComponent<ResetPasswordProps> = () => {
     const { register, handleSubmit } = useForm<RestUserPasswordWithKey>({ defaultValues });
     const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<RestUserPasswordWithKey>(defaultValues);
@@ -43,10 +41,6 @@ const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => {
                 .checkOTP(data.otp)
                 .then(() => setCheckOtp(true))
                 .catch((err) => setCheckOtp(false));
-        else
-            userAPI.resetUserPassword({ confirmNewPassword: data.confirmNewPassword, newPassword: data.newPassword }, data.otp).then(() => {
-                router.push(routers.login.link);
-            });
     };
 
     React.useEffect(() => {
@@ -67,27 +61,7 @@ const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <MsgSuccess message={apiState.message} />
                             {isCheckOtp ? (
-                                <div className="space-y-2">
-                                    <p className="py-2 text-mercury-800">Please enter your new password.</p>
-                                    <div className="space-y-2">
-                                        <TextField
-                                            name="newPassword"
-                                            label="New Password"
-                                            error={errors.newPassword}
-                                            register={register}
-                                            type="password"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <TextField
-                                            name="confirmNewPassword"
-                                            label="Confirm Password"
-                                            error={errors.confirmNewPassword}
-                                            register={register}
-                                            type="password"
-                                        />
-                                    </div>
-                                </div>
+                                <div className="space-y-2"></div>
                             ) : (
                                 <>
                                     <p className="py-2 text-mercury-800">Please enter your OTP, and do not share it with anybody.</p>
@@ -107,4 +81,4 @@ const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => {
     );
 };
 
-export default ResetPassword;
+export default UpdateWithOTP;
