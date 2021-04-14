@@ -16,7 +16,7 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @WebSocketServer() server: Server;
 
       async handleConnection(client: Socket) {
-            console.log(`Client connect: ${client.id}`);
+            // console.log(`Client connect: ${client.id}`);
       }
 
       handleDisconnect() {
@@ -27,7 +27,7 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       @SubscribeMessage('events')
       onEvents(@MessageBody() data, @ConnectedSocket() client: Socket) {
             //console.log(client['user']);
-            console.log(data);
+
             //client.join('room1');
             client.emit('events', 'hello client, i am server');
       }
