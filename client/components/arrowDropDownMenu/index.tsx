@@ -7,6 +7,7 @@ export interface ArrowDropDownMenuProps {
     Component: JSX.Element;
     isOpen: boolean;
     setOpen: () => void;
+    reference?: React.RefObject<HTMLDivElement>;
 }
 
 const ArrowDropDownMenu: React.FunctionComponent<ArrowDropDownMenuProps> = ({
@@ -15,9 +16,10 @@ const ArrowDropDownMenu: React.FunctionComponent<ArrowDropDownMenuProps> = ({
     Component,
     isOpen = false,
     setOpen = () => {},
+    reference,
 }) => {
     return (
-        <div className="relative">
+        <div className="relative" ref={reference}>
             <div className="relative flex items-center cursor-pointer" onClick={() => setOpen()} aria-hidden>
                 {children}
                 <DropdownIcons />
