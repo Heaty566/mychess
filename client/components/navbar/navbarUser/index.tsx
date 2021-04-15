@@ -5,6 +5,7 @@ import router from '../../../common/constants/router';
 import { useTestId } from '../../../test/helper/data-testId';
 import { AuthState } from '../../../store/auth/interface';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
+import { useClickOutSide } from '../../../common/hooks/useClickOutside';
 
 import NavbarLang from '../navbarLang';
 import UserDropDown from '../userDropdown';
@@ -18,6 +19,7 @@ export interface NavbarUserProps {
 const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeLanguage, authState, handleLogoutUser }) => {
     const [isOpenUser, setOpenUser] = React.useState(false);
     const [isOpenLanguage, setOpenLanguage] = React.useState(false);
+    const userRef = useClickOutSide<HTMLDivElement>(() => setOpenUser(false));
 
     return (
         <div className="items-center self-start hidden space-x-4 text-cloud md:flex ">
@@ -27,6 +29,7 @@ const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeLang
                     isOpen={isOpenUser}
                     setOpen={() => setOpenUser(!isOpenUser)}
                     dropMenuPosition="right-0"
+                    reference={userRef}
                 >
                     <div className="flex items-center justify-center mr-1 space-x-2 capitalize duration-300 hover:text-cloud-50">
                         <img src={authState.avatarUrl} alt={authState.name} className="object-cover w-8 h-8" />
