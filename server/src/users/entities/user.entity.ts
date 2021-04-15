@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Notification } from '../../notifications/entities/notification.entity';
 import { UserRole } from './user.userRole.enum';
 
 @Entity()
@@ -45,6 +45,9 @@ export class User {
 
       @Column({ default: null })
       phoneNumber: string;
+
+      @OneToMany(() => Notification, (notification) => notification.user, { cascade: true })
+      notifications: Notification[];
 }
 
 export default User;

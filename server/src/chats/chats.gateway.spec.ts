@@ -10,9 +10,9 @@ describe('ChatsGateway', () => {
 
       let userSocketToken: string;
       beforeAll(async () => {
-            const { configModule, socketToken } = await initTestModule();
+            const { configModule, socketToken1: socketToken } = await initTestModule();
             app = configModule;
-            port = 5208;
+            port = 5228;
             namespace = 'chat';
             userSocketToken = socketToken;
 

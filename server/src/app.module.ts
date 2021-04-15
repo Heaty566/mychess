@@ -16,6 +16,8 @@ import { ReToken } from './auth/entities/re-token.entity';
 import { RepositoryModule } from './utils/repository/repository.module';
 import { CommonModule } from './common/common.module';
 import { ChatsModule } from './chats/chats.module';
+import { Notification } from './notifications/entities/notification.entity';
+import { NotificationsModule } from './notifications/notifications.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -30,7 +32,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken],
+      entities: [User, ReToken, Notification],
 });
 
 @Module({
@@ -48,6 +50,7 @@ const DBConfig = TypeOrmModule.forRoot({
             RepositoryModule,
             CommonModule,
             ChatsModule,
+            NotificationsModule,
       ],
       controllers: [],
 })
