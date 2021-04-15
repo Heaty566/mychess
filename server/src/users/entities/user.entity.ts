@@ -1,4 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+
+//---- Entity
 import { Notification } from '../../notifications/entities/notification.entity';
 import { UserRole } from './user.userRole.enum';
 

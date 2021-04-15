@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
+//---- Service
 import { LoggerService } from '../utils/logger/logger.service';
+
+//---- Repository
 import { UserRepository } from './entities/user.repository';
+
+//---- Entity
 import { UserRole } from './entities/user.userRole.enum';
 import { User } from './entities/user.entity';
 

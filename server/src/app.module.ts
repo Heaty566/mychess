@@ -3,25 +3,32 @@ import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 
+//---------Module
+import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
-import { SmailModule } from './providers/smail/smail.module';
 import { UserModule } from './users/user.module';
+
+//---------Provider
+import { SmailModule } from './providers/smail/smail.module';
 import { SmsModule } from './providers/sms/sms.module';
 import { AwsModule } from './providers/aws/aws.module';
+import { NotificationsModule } from './notifications/notifications.module';
+
+//---------Utils
 import { LoggerModule } from './utils/logger/logger.module';
 import { RedisModule } from './providers/redis/redis.module';
+import { RepositoryModule } from './utils/repository/repository.module';
 
+//---------Entity
 import { User } from './users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
-import { RepositoryModule } from './utils/repository/repository.module';
-import { CommonModule } from './common/common.module';
 import { Notification } from './notifications/entities/notification.entity';
-import { NotificationsModule } from './notifications/notifications.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `./config/.env.${process.env.NODE_ENV}`,
 });
+
 const DBConfig = TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -36,6 +43,7 @@ const DBConfig = TypeOrmModule.forRoot({
 
 @Module({
       imports: [
+            // --- Config
             Config,
             DBConfig,
             ScheduleModule.forRoot(),

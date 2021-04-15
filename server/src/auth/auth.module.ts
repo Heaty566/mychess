@@ -2,16 +2,27 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { ReTokenRepository } from './entities/re-token.repository';
+//----- Module
 import { UserModule } from '../users/user.module';
+
+//----- Utils
 import { RedisModule } from '../providers/redis/redis.module';
+
+//----- Provider
 import { SmailModule } from '../providers/smail/smail.module';
 import { SmsModule } from '../providers/sms/sms.module';
-import { GoogleStrategy } from './passport/google.strategy';
 import { FacebookStrategy } from './passport/facebook.strategy';
 import { GithubStrategy } from './passport/github.strategy';
+import { GoogleStrategy } from './passport/google.strategy';
+
+//----- Service
+import { AuthService } from './auth.service';
+
+//----- Repository
+import { ReTokenRepository } from './entities/re-token.repository';
+
+//----- Controller
+import { AuthController } from './auth.controller';
 
 @Module({
       imports: [TypeOrmModule.forFeature([ReTokenRepository]), UserModule, RedisModule, SmailModule, SmsModule],

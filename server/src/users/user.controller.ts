@@ -1,26 +1,33 @@
 import { Controller, Get, UseGuards, Req, Param, Body, Put, Post, UsePipes, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 
-import { SmailService } from '../providers/smail/smail.service';
+//---- Service
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { SmailService } from '../providers/smail/smail.service';
 import { SmsService } from '../providers/sms/sms.service';
 import { AwsService } from '../providers/aws/aws.service';
+import { RedisService } from '../providers/redis/redis.service';
 
-import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
-import { UserGuard } from '../auth/auth.guard';
-import { apiResponse } from '../app/interface/ApiResponse';
+//---- Entity
 import { User } from './entities/user.entity';
 
+//---- Pipe
+import { UserGuard } from '../auth/auth.guard';
+
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
+
+//---- DTO
 import { OtpSmsDTO, vOtpSmsDTO } from '../auth/dto/otpSms.dto';
 import { ResetPasswordDTO, vResetPasswordDTO } from './dto/resetPassword.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
-
-import { FileInterceptor } from '@nestjs/platform-express';
 import { SearchUsersDTO, vSearchUsersDTO } from './dto/searchUsers';
+
+//---- Common
+import { apiResponse } from '../app/interface/ApiResponse';
 
 @Controller('user')
 export class UserController {

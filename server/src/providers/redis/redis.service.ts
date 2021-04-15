@@ -1,6 +1,8 @@
 import { RedisClient } from 'redis';
 import { Injectable, Inject } from '@nestjs/common';
 import * as flat from 'flat';
+
+//----- Utils
 import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()
