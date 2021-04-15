@@ -15,7 +15,8 @@ import { User } from './users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { RepositoryModule } from './utils/repository/repository.module';
 import { CommonModule } from './common/common.module';
-import { ChatsModule } from './chats/chats.module';
+import { Notification } from './notifications/entities/notification.entity';
+import { NotificationsModule } from './notifications/notifications.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -24,13 +25,13 @@ const Config = ConfigModule.forRoot({
 const DBConfig = TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
-      port: 3306,
+      port: Number(process.env.DB_PORT),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken],
+      entities: [User, ReToken, Notification],
 });
 
 @Module({
@@ -38,16 +39,20 @@ const DBConfig = TypeOrmModule.forRoot({
             Config,
             DBConfig,
             ScheduleModule.forRoot(),
+
+            // --- Module
             AuthModule,
-            SmailModule,
             UserModule,
+            CommonModule,
+            NotificationsModule,
+            // --- Provider
+            SmailModule,
             SmsModule,
             AwsModule,
+            // --- Utils
             LoggerModule,
             RedisModule,
             RepositoryModule,
-            CommonModule,
-            ChatsModule,
       ],
       controllers: [],
 })

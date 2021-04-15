@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 
 export class RepositoryService<T> extends Repository<T> {
-      public async findOneByField(field: keyof T, value: any) {
+      public async findOneByField(field: keyof T, value: any): Promise<T> {
             const results = await this.createQueryBuilder().select('*').where(`${field} = :value`, { value }).execute();
             return results[0];
       }

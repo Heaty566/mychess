@@ -12,7 +12,7 @@ jest.mock('aws-sdk', () => {
 });
 
 //* Internal import
-import { initTestModule } from '../../../../test/initTest';
+import { initTestModule } from '../../../test/initTest';
 import { AwsService } from '../aws.service';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';

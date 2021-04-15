@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { initTestModule } from '../../../../test/initTest';
-import { fakeUser } from '../../../../test/fakeEntity';
-import { fakeData } from '../../../../test/fakeData';
+import { initTestModule } from '../../../test/initTest';
+import { fakeUser } from '../../../test/fakeEntity';
+import { fakeData } from '../../../test/fakeData';
 import { User } from '../../../users/entities/user.entity';
 import { RedisService } from '../redis.service';
 import { createClient, RedisClient } from 'redis';

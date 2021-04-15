@@ -1,29 +1,28 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../users/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { AuthService } from '../auth.service';
 import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
-import { fakeData } from '../../../test/fakeData';
+import { fakeData } from '../../test/fakeData';
 import { RedisService } from '../../providers/redis/redis.service';
 
 describe('UserGuard', () => {
       let app: INestApplication;
       let userDb: User;
 
-      let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
 
       let authService: AuthService;
       let redisService: RedisService;
+      let resetDB: any;
       beforeAll(async () => {
-            const { getUser, getApp, module } = await initTestModule();
+            const { users, getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
-            userDb = getUser;
+            userDb = (await users[0]).user;
+            resetDB = resetDatabase;
 
-            userRepository = module.get<UserRepository>(UserRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
 
             authService = module.get<AuthService>(AuthService);
@@ -183,8 +182,7 @@ describe('UserGuard', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

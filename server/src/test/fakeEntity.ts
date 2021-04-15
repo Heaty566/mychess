@@ -1,5 +1,5 @@
-import { UserRole } from '../src/users/entities/user.userRole.enum';
-import { User } from '../src/users/entities/user.entity';
+import { UserRole } from '../users/entities/user.userRole.enum';
+import { User } from '../users/entities/user.entity';
 import { fakeData } from './fakeData';
 
 export const fakeUser = () => {

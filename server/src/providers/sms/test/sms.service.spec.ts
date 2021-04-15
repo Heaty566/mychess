@@ -13,8 +13,8 @@ class TwilioMock {
 
 import { INestApplication } from '@nestjs/common';
 
-import { fakeData } from '../../../../test/fakeData';
-import { initTestModule } from '../../../../test/initTest';
+import { fakeData } from '../../../test/fakeData';
+import { initTestModule } from '../../../test/initTest';
 import { SmsService } from '../sms.service';
 
 jest.mock('twilio', () => {
