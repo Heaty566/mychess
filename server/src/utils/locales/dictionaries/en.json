@@ -47,5 +47,7 @@
 	"should be a valid email": "should be a valid email",
 	"should contain at least 9 characters": "should contain at least 9 characters",
 	"should be match": "should be match",
-	"is required": "is required"
+	"is required": "is required",
+	"should be a string": "should be a string",
+	"should contain at least 1 lowercase characters": "should contain at least 1 lowercase characters"
 }

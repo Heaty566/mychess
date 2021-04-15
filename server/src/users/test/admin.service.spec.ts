@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { initTestModule } from '../../../test/initTest';
-import { fakeUser } from '../../../test/fakeEntity';
+import { initTestModule } from '../../test/initTest';
+import { fakeUser } from '../../test/fakeEntity';
 
 import { UserRepository } from '../entities/user.repository';
 
@@ -18,11 +18,10 @@ describe('AdminService', () => {
       let adminService: AdminService;
 
       beforeAll(async () => {
-            const { getUser, getApp, module } = await initTestModule();
+            const { getApp, module } = await initTestModule();
             app = getApp;
-            getUser.role = UserRole.ADMIN;
-            userRepository = module.get<UserRepository>(UserRepository);
 
+            userRepository = module.get<UserRepository>(UserRepository);
             adminService = module.get<AdminService>(AdminService);
       });
 

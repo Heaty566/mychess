@@ -1,15 +1,7 @@
 import { UseGuards } from '@nestjs/common';
-import {
-      WebSocketGateway,
-      SubscribeMessage,
-      MessageBody,
-      OnGatewayConnection,
-      OnGatewayDisconnect,
-      ConnectedSocket,
-      WsResponse,
-      WebSocketServer,
-} from '@nestjs/websockets';
-import { Socket, SocketExtend, Server } from 'socket.io';
+import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, WsResponse, WebSocketServer } from '@nestjs/websockets';
+import { SocketExtend, Server } from 'socket.io';
+
 import { UserService } from '../users/user.service';
 import { UserSocketGuard } from '../auth/authSocket.guard';
 import { SendNotificationDto } from './dto/sendNotificationDto';
@@ -24,12 +16,12 @@ export class NotificationsGateway {
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('connection-notification')
-      handleConnection(@ConnectedSocket() client: SocketExtend): WsResponse<any> {
+      handleInitNotification(@ConnectedSocket() client: SocketExtend): WsResponse<null> {
             if (client.user) {
                   client.join(client.user.id);
             }
 
-            return { event: 'connection-notification-success', data: {} };
+            return { event: 'connection-notification-success', data: null };
       }
 
       @UseGuards(UserSocketGuard)
@@ -52,6 +44,6 @@ export class NotificationsGateway {
       async getNotifications(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<any>> {
             const notifications = await this.notificationsService.getNotificationByUserId(client.user.id);
 
-            return { event: 'update-notifications', data: notifications };
+            return { event: 'update-notifications-success', data: notifications };
       }
 }

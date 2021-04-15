@@ -1,7 +1,7 @@
 import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
 let mockPromise = Promise.resolve();
-import { defuse } from '../../../test/testHelper';
+import { defuse } from '../../test/testHelper';
 import { SmailService } from '../../providers/smail/smail.service';
 
 class TwilioMock {
@@ -19,9 +19,9 @@ class TwilioMock {
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { fakeUser } from '../../../test/fakeEntity';
-import { fakeData } from '../../../test/fakeData';
-import { initTestModule } from '../../../test/initTest';
+import { fakeUser } from '../../test/fakeEntity';
+import { fakeData } from '../../test/fakeData';
+import { initTestModule } from '../../test/initTest';
 
 import { UserRepository } from '../../users/entities/user.repository';
 
@@ -52,11 +52,13 @@ describe('AuthController', () => {
       let userService: UserService;
       let mailService: SmailService;
       let reTokenRepository: ReTokenRepository;
+      let resetDB: any;
 
       beforeAll(async () => {
-            const { getApp, module, getUser } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
-            userDB = getUser;
+            userDB = (await users[0]).user;
+            resetDB = resetDatabase;
             userRepository = module.get<UserRepository>(UserRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             authService = module.get<AuthService>(AuthService);
@@ -326,8 +328,7 @@ describe('AuthController', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });
