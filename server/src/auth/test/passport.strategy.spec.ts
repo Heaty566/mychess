@@ -3,8 +3,8 @@ import { Profile as FaceBookProfile } from 'passport-facebook';
 import { Profile as GitHubProfile } from 'passport-github';
 import { Profile as GoogleProfile } from 'passport-google-oauth20';
 
-import { initTestModule } from '../../../test/initTest';
-import { fakeData } from '../../../test/fakeData';
+import { initTestModule } from '../../test/initTest';
+import { fakeData } from '../../test/fakeData';
 
 import { GithubStrategy } from '../passport/github.strategy';
 import { GoogleStrategy } from '../passport/google.strategy';
@@ -23,10 +23,11 @@ describe('FacebookStrategy', () => {
       let faceBookStrategy: FacebookStrategy;
       let githubStrategy: GithubStrategy;
       let googleStrategy: GoogleStrategy;
-
+      let resetDb: any;
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
+            resetDb = resetDatabase;
 
             userRepository = module.get<UserRepository>(UserRepository);
             userService = module.get<UserService>(UserService);
@@ -190,7 +191,7 @@ describe('FacebookStrategy', () => {
       });
 
       afterAll(async () => {
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDb();
             await app.close();
       });
 });

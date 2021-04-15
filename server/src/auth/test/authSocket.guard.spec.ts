@@ -1,11 +1,8 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../users/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { UserSocketGuard } from '../authSocket.guard';
-import { ReTokenRepository } from '../entities/re-token.repository';
-
 import { createMock } from 'ts-auto-mock';
 import { RedisService } from '../../providers/redis/redis.service';
 import * as Cookie from 'cookie';
@@ -18,20 +15,16 @@ jest.mock('cookie', () => {
 
 describe('UserSocketGuard', () => {
       let app: INestApplication;
-
-      let userRepository: UserRepository;
-      let reTokenRepository: ReTokenRepository;
       let redisService: RedisService;
       let context: () => ExecutionContext;
       let headerCookieMock = '';
       const cookieSpy = jest.spyOn(Cookie, 'parse');
+      let resetDB: any;
 
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
-
-            userRepository = module.get<UserRepository>(UserRepository);
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
+            resetDB = resetDatabase;
 
             redisService = module.get<RedisService>(RedisService);
 
@@ -95,8 +88,7 @@ describe('UserSocketGuard', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

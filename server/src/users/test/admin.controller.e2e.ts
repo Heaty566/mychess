@@ -3,8 +3,8 @@ import { INestApplication } from '@nestjs/common';
 
 import { UserRepository } from '../entities/user.repository';
 import { UserRole } from '../entities/user.userRole.enum';
-import { initTestModule } from '../../../test/initTest';
-import { fakeData } from '../../../test/fakeData';
+import { initTestModule } from '../../test/initTest';
+import { fakeData } from '../../test/fakeData';
 import User from '../entities/user.entity';
 
 describe('AdminController E2E', () => {
@@ -12,13 +12,14 @@ describe('AdminController E2E', () => {
       let userRepository: UserRepository;
       let cookieData: Array<string>;
       let UserDb: User;
+      let resetDb: any;
 
       beforeAll(async () => {
-            const { getApp, module, adminCookie, getUser } = await initTestModule();
+            const { getApp, module, users, getAdmin, generateCookie, resetDatabase } = await initTestModule();
             app = getApp;
-            UserDb = getUser;
-            cookieData = adminCookie;
-
+            UserDb = (await users[0]).user;
+            cookieData = generateCookie(getAdmin.reToken);
+            resetDb = resetDatabase;
             userRepository = module.get<UserRepository>(UserRepository);
       });
 
@@ -74,7 +75,7 @@ describe('AdminController E2E', () => {
       });
 
       afterAll(async () => {
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDb();
             await app.close();
       });
 });

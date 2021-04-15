@@ -1,8 +1,7 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../users/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { AuthService } from '../auth.service';
 import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
@@ -17,7 +16,6 @@ describe('MyAuthGuard', () => {
       let app: INestApplication;
       let user: User;
 
-      let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
 
       let authService: AuthService;
@@ -26,19 +24,17 @@ describe('MyAuthGuard', () => {
       let authGuard: UserGuard;
       let reToken: string;
       let context: (cookies) => ExecutionContext;
-
+      let resetDB: any;
       beforeAll(async () => {
-            const { getApp, module, getReToken, getUser } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
-            user = getUser;
-            reToken = getReToken;
+            user = (await users[0]).user;
+            reToken = (await users[0]).reToken;
+            resetDB = resetDatabase;
 
-            userRepository = module.get<UserRepository>(UserRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
-
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
-
             const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.USER) });
             authGuard = new UserGuard(authService, reflector);
 
@@ -194,8 +190,7 @@ describe('MyAuthGuard', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

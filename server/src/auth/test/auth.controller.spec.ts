@@ -3,28 +3,24 @@ import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
 
 //* Internal import
-import { initTestModule } from '../../../test/initTest';
-
-import { UserRepository } from '../../users/entities/user.repository';
-
+import { initTestModule } from '../../test/initTest';
 import { AuthController } from '../auth.controller';
-import { ReTokenRepository } from '../entities/re-token.repository';
 import User from '../../users/entities/user.entity';
 
 describe('AuthController', () => {
       let app: INestApplication;
 
-      let userRepository: UserRepository;
       let user: User;
       let authController: AuthController;
-      let reTokenRepository: ReTokenRepository;
+
+      let resetDB: any;
       beforeAll(async () => {
-            const { getApp, module, getUser } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
-            user = getUser;
-            userRepository = module.get<UserRepository>(UserRepository);
+            user = (await users[0]).user;
+            resetDB = resetDatabase;
+
             authController = module.get<AuthController>(AuthController);
-            reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
       });
 
       describe('3rd Authentication', () => {
@@ -75,8 +71,7 @@ describe('AuthController', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

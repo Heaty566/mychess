@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 
-import { initTestModule } from '../../../../test/initTest';
-import { fakeUser } from '../../../../test/fakeEntity';
-import { fakeData } from '../../../../test/fakeData';
+import { initTestModule } from '../../../test/initTest';
+import { fakeUser } from '../../../test/fakeEntity';
+import { fakeData } from '../../../test/fakeData';
 
 import { UserRepository } from '../../../users/entities/user.repository';
 import { RepositoryService } from '../repository.service';
