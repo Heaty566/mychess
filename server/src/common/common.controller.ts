@@ -1,8 +1,16 @@
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
-import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
-import { apiResponse } from '../app/interface/ApiResponse';
+
+//---- Service
 import { CommonService } from './common.service';
+
+//---- Pipe
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
+
+//---- DTO
 import { SupportDTO, vSupportDto } from './dto/aboutUsDto';
+
+//---- Common
+import { apiResponse } from '../app/interface/ApiResponse';
 
 @Controller('/')
 export class CommonController {

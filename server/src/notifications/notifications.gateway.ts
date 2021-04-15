@@ -1,12 +1,19 @@
-import { UseGuards } from '@nestjs/common';
 import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, WsResponse, WebSocketServer } from '@nestjs/websockets';
 import { SocketExtend, Server } from 'socket.io';
+import { UseGuards } from '@nestjs/common';
 
+//---- Service
 import { UserService } from '../users/user.service';
-import { UserSocketGuard } from '../auth/authSocket.guard';
-import { SendNotificationDto } from './dto/sendNotificationDto';
 import { NotificationsService } from './notifications.service';
+
+//---- Entity
 import { Notification } from './entities/notification.entity';
+
+//---- Pipe
+import { UserSocketGuard } from '../auth/authSocket.guard';
+
+//---- DTO
+import { SendNotificationDto } from './dto/sendNotificationDto';
 
 @WebSocketGateway({ namespace: 'notifications' })
 export class NotificationsGateway {

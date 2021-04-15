@@ -2,11 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { UserRepository } from '../users/entities/user.repository';
-import { ReTokenRepository } from './entities/re-token.repository';
+
+//---- Service
+import { RedisService } from '../providers/redis/redis.service';
+
+//---- Entity
 import { User } from '../users/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
-import { RedisService } from '../providers/redis/redis.service';
+
+//---- Repository
+import { UserRepository } from '../users/entities/user.repository';
+import { ReTokenRepository } from './entities/re-token.repository';
 
 @Injectable()
 export class AuthService {
