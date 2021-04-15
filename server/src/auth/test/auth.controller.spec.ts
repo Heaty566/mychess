@@ -1,8 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
-
-//* Internal import
 import { initTestModule } from '../../test/initTest';
 import { AuthController } from '../auth.controller';
 import User from '../../users/entities/user.entity';

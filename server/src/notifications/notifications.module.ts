@@ -1,11 +1,21 @@
 import { Module } from '@nestjs/common';
-import { NotificationsService } from './notifications.service';
-import { NotificationsGateway } from './notifications.gateway';
-import { AuthModule } from '../auth/auth.module';
-import { RedisModule } from '../providers/redis/redis.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { NotificationRepository } from './entities/notification.repository';
+
+//---- Module
 import { UserModule } from '../users/user.module';
+import { AuthModule } from '../auth/auth.module';
+
+//---- Utils
+import { RedisModule } from '../providers/redis/redis.module';
+
+//---- Service
+import { NotificationsService } from './notifications.service';
+
+//---- Repository
+import { NotificationRepository } from './entities/notification.repository';
+
+//---- Gateway
+import { NotificationsGateway } from './notifications.gateway';
 
 @Module({
       imports: [TypeOrmModule.forFeature([NotificationRepository]), AuthModule, RedisModule, UserModule],

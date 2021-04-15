@@ -1,8 +1,13 @@
 import * as Joi from 'joi';
 
-import { userJoiSchema } from '../../utils/validator/schema/user.validator';
-import { ValidatorService } from '../../utils/validator/validator.service';
+//---- Entity
 import { User } from '../../users/entities/user.entity';
+
+//---- Service
+import { ValidatorService } from '../../utils/validator/validator.service';
+
+//---- Common
+import { userJoiSchema } from '../../utils/validator/schema/user.validator';
 
 const { getJoiSchema, getJoiSchemas } = ValidatorService.joiSchemaGenerator<User>(userJoiSchema);
 export class RegisterUserDTO {

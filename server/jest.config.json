@@ -19,6 +19,7 @@
             "<rootDir>/router.ts",
             "<rootDir>/app/interface/ApiResponse.ts",
             "<rootDir>/app/exception",
-            "<rootDir>/utils/logger"
+            "<rootDir>/utils/logger",
+            "<rootDir>/test"
       ]
 }

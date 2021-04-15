@@ -2,19 +2,28 @@ import { Body, Controller, Get, Post, Query, Req, Res, UseGuards, UsePipes } fro
 import { AuthGuard } from '@nestjs/passport';
 import { Response, Request } from 'express';
 
+//---- Service
+import { SmailService } from '../providers/smail/smail.service';
+import { SmsService } from '../providers/sms/sms.service';
+import { UserService } from '../users/user.service';
+import { AuthService } from './auth.service';
+import { RedisService } from '../providers/redis/redis.service';
+
+//---- Entity
+import { User } from '../users/entities/user.entity';
+
+//---- Pipe
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
+import { UserGuard } from './auth.guard';
+
+//---- DTO
 import { UpdateEmailDTO, vUpdateEmailDTO } from '../users/dto/updateEmail.dto';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/registerUser.dto';
 import { LoginUserDTO, vLoginUserDto } from './dto/loginUser.dto';
 import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';
-import { SmailService } from '../providers/smail/smail.service';
-import { SmsService } from '../providers/sms/sms.service';
-import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
-import { User } from '../users/entities/user.entity';
+
+//---- Common
 import { apiResponse } from '../app/interface/ApiResponse';
-import { AuthService } from './auth.service';
-import { UserService } from '../users/user.service';
-import { UserGuard } from './auth.guard';
-import { RedisService } from '../providers/redis/redis.service';
 
 @Controller('auth')
 export class AuthController {

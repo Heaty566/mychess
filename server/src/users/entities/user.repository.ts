@@ -1,7 +1,10 @@
 import { EntityRepository } from 'typeorm';
 
-import { RepositoryService } from '../../utils/repository/repository.service';
+//---- Entity
 import { User } from './user.entity';
+
+//---- Service
+import { RepositoryService } from '../../utils/repository/repository.service';
 
 @EntityRepository(User)
 export class UserRepository extends RepositoryService<User> {

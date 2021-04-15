@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { S3, config } from 'aws-sdk';
-import * as aws from 'aws-sdk';
+import { S3, config, Credentials } from 'aws-sdk';
+
+//---- Utils
 import { LoggerModule } from '../../utils/logger/logger.module';
-//* Internal import
+
+//---- Service
 import { AwsService } from './aws.service';
 
 @Module({
@@ -12,7 +14,7 @@ import { AwsService } from './aws.service';
             {
                   provide: S3,
                   useFactory: () => {
-                        const credentials = new aws.Credentials({
+                        const credentials = new Credentials({
                               accessKeyId: process.env.AWS_ACCESS_KEY,
                               secretAccessKey: process.env.AWS_SECRET_KEY,
                         });
