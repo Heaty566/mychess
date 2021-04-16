@@ -24,13 +24,14 @@ import { UserService } from '../user.service';
 import { SmailService } from '../../providers/smail/smail.service';
 import { AwsService } from '../../providers/aws/aws.service';
 import { User } from '../entities/user.entity';
-import { fakeData } from '../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 import { ResetPasswordDTO } from '../dto/resetPassword.dto';
 import { ChangePasswordDTO } from '../dto/changePassword.dto';
 import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
 import { UpdateUserDto } from '../dto/updateBasicUser.dto';
 import { UpdateEmailDTO } from '../dto/updateEmail.dto';
-import { defuse } from '../../test/testHelper';
+import { defuse } from '../../test/test.helper';
+import { generateCookie } from '../../test/test.helper';
 
 jest.mock('twilio', () => {
       return {
@@ -60,12 +61,14 @@ describe('UserController E2E', () => {
 
       let cookieData: Array<string>;
       let userDb: User;
+      let userDb2: User;
       let resetDb: any;
 
       beforeAll(async () => {
-            const { getApp, module, users, generateCookie, resetDatabase } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
             userDb = (await users[0]).user;
+            userDb2 = (await users[1]).user;
             cookieData = generateCookie((await users[0]).reToken);
             resetDb = resetDatabase;
             userRepository = module.get<UserRepository>(UserRepository);
@@ -163,13 +166,16 @@ describe('UserController E2E', () => {
                         mySpy.mockClear();
                   });
 
-                  // it('Failed (email is taken)', async () => {
-                  //       otpMail = {
-                  //             email: 'haicao2805@gmail.com',
-                  //       };
-                  //       const res = await reqApi(otpMail);
-                  //       expect(res.status).toBe(400);
-                  // });
+                  it('Failed (email is taken)', async () => {
+                        userDb2.email = 'helloworld@gmail.com';
+                        await userRepository.save(userDb2);
+
+                        otpMail = {
+                              email: 'helloworld@gmail.com',
+                        };
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(400);
+                  });
 
                   it('Failed (error of smail)', async () => {
                         otpMail = {
@@ -274,7 +280,19 @@ describe('UserController E2E', () => {
                         expect(afterRedisKey).toBeNull();
                   });
 
-                  it('Pass', async () => {
+                  it('Pass Email', async () => {
+                        userDb.email = 'helloworld@gmail.com';
+                        redisKey = await authService.generateOTP(userDb, 2, 'email');
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(redisKey);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                  });
+
+                  it('Pass Phone', async () => {
+                        userDb.phoneNumber = '+1234567890';
                         redisKey = await authService.generateOTP(userDb, 2, 'email');
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(redisKey);
@@ -392,69 +410,69 @@ describe('UserController E2E', () => {
                   });
             });
       });
-      // describe('GET /user/search?name=&currentPage=&pageSize', () => {
-      //       const reqApi = (name: string, currentPage: string, pageSize: string) =>
-      //             supertest(app.getHttpServer()).get(`/api/user/search?name=${name}&currentPage=${currentPage}&pageSize=${pageSize}`);
+      describe('GET /user/search?name=&currentPage=&pageSize', () => {
+            const reqApi = (name: string, currentPage: string, pageSize: string) =>
+                  supertest(app.getHttpServer()).get(`/api/user/search?name=${name}&currentPage=${currentPage}&pageSize=${pageSize}`);
 
-      //       beforeAll(async () => {
-      //             let exampleUser = fakeUser();
-      //             exampleUser.name = '132hello1321';
-      //             await userRepository.save(exampleUser);
-      //             exampleUser = fakeUser();
-      //             exampleUser.name = '123hello21cmaclksa';
-      //             await userRepository.save(exampleUser);
-      //       });
+            beforeAll(async () => {
+                  let exampleUser = fakeUser();
+                  exampleUser.name = '132hello1321';
+                  await userRepository.save(exampleUser);
+                  exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+            });
 
-      //       it('Pass get two', async () => {
-      //             const res = await reqApi('hello', '0', '12');
+            it('Pass get two', async () => {
+                  const res = await reqApi('hello', '0', '12');
 
-      //             expect(res.body.data).toHaveLength(2);
-      //             expect(res.status).toBe(200);
-      //       });
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
 
-      //       it('Pass get zero currentPage 1000', async () => {
-      //             const res = await reqApi('hello', '10000', '12');
+            it('Pass get zero currentPage 1000', async () => {
+                  const res = await reqApi('hello', '10000', '12');
 
-      //             expect(res.body.data).toHaveLength(0);
-      //             expect(res.status).toBe(200);
-      //       });
+                  expect(res.body.data).toHaveLength(0);
+                  expect(res.status).toBe(200);
+            });
 
-      //       it('Pass get two currentPage -10', async () => {
-      //             const res = await reqApi('hello', '-10', '12');
+            it('Pass get two currentPage -10', async () => {
+                  const res = await reqApi('hello', '-10', '12');
 
-      //             expect(res.body.data).toHaveLength(12);
-      //             expect(res.status).toBe(200);
-      //       });
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
 
-      //       it('Pass get two currentPage=dksakdmksamk', async () => {
-      //             const res = await reqApi('hello', 'dksakdmksamk', '12');
+            it('Pass get two currentPage=dksakdmksamk', async () => {
+                  const res = await reqApi('hello', 'dksakdmksamk', '12');
 
-      //             expect(res.body.data).toHaveLength(12);
-      //             expect(res.status).toBe(200);
-      //       });
-      //       it('Pass get two currentPage=dksakdmksamk', async () => {
-      //             const res = await reqApi('hello', 'dksakdmksamk', '12');
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass get two currentPage=dksakdmksamk', async () => {
+                  const res = await reqApi('hello', 'dksakdmksamk', '12');
 
-      //             expect(res.body.data).toHaveLength(12);
-      //             expect(res.status).toBe(200);
-      //       });
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
 
-      //       it('Pass get one pageSize=1', async () => {
-      //             const res = await reqApi('hello', '0', '1');
+            it('Pass get one pageSize=1', async () => {
+                  const res = await reqApi('hello', '0', '1');
 
-      //             expect(res.body.data).toHaveLength(1);
-      //             expect(res.status).toBe(200);
-      //       });
-      //       it('Pass get all', async () => {
-      //             const exampleUser = fakeUser();
-      //             exampleUser.name = '123hello21cmaclksa';
-      //             await userRepository.save(exampleUser);
-      //             const res = await reqApi('', '0', '200');
+                  expect(res.body.data).toHaveLength(1);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass get all', async () => {
+                  const exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+                  const res = await reqApi('', '0', '200');
 
-      //             expect(res.body.data.length).toBeGreaterThan(2);
-      //             expect(res.status).toBe(200);
-      //       });
-      // });
+                  expect(res.body.data.length).toBeGreaterThan(2);
+                  expect(res.status).toBe(200);
+            });
+      });
 
       afterAll(async () => {
             await resetDb();

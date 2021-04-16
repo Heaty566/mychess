@@ -1,7 +1,7 @@
 import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
 let mockPromise = Promise.resolve();
-import { defuse } from '../../test/testHelper';
+import { defuse } from '../../test/test.helper';
 import { SmailService } from '../../providers/smail/smail.service';
 
 class TwilioMock {
@@ -20,7 +20,7 @@ import { INestApplication } from '@nestjs/common';
 
 //* Internal import
 import { fakeUser } from '../../test/fakeEntity';
-import { fakeData } from '../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 import { initTestModule } from '../../test/initTest';
 
 import { UserRepository } from '../../users/entities/user.repository';

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 
-import { getIoClient } from '../../test/testHelper';
+import { getIoClient } from '../../test/test.helper';
 import { initTestModule } from '../../test/initTest';
 import { Notification } from '../entities/notification.entity';
 import { UserRepository } from '../../users/entities/user.repository';

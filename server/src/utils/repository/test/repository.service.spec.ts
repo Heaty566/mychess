@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 
 import { initTestModule } from '../../../test/initTest';
 import { fakeUser } from '../../../test/fakeEntity';
-import { fakeData } from '../../../test/fakeData';
+import { fakeData } from '../../../test/test.helper';
 
 import { UserRepository } from '../../../users/entities/user.repository';
 import { RepositoryService } from '../repository.service';

@@ -4,7 +4,8 @@ import { INestApplication } from '@nestjs/common';
 import { UserRepository } from '../entities/user.repository';
 import { UserRole } from '../entities/user.userRole.enum';
 import { initTestModule } from '../../test/initTest';
-import { fakeData } from '../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
+import { generateCookie } from '../../test/test.helper';
 import User from '../entities/user.entity';
 
 describe('AdminController E2E', () => {
@@ -15,7 +16,7 @@ describe('AdminController E2E', () => {
       let resetDb: any;
 
       beforeAll(async () => {
-            const { getApp, module, users, getAdmin, generateCookie, resetDatabase } = await initTestModule();
+            const { getApp, module, users, getAdmin, resetDatabase } = await initTestModule();
             app = getApp;
             UserDb = (await users[0]).user;
             cookieData = generateCookie(getAdmin.reToken);

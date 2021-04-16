@@ -2,8 +2,8 @@ import * as i18n from 'i18n';
 import { ValidationError } from 'joi';
 
 import baseLocales from './dictionaries/en.json';
-
 export type Dictionary = keyof typeof baseLocales;
+
 export class LocalesService {
       /**
        *
