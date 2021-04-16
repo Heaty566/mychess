@@ -9,13 +9,10 @@ import { AuthService } from '../auth/auth.service';
 import { UserRole } from '../users/entities/user.userRole.enum';
 import { NotificationRepository } from '../notifications/entities/notification.repository';
 import { ReTokenRepository } from '../auth/entities/re-token.repository';
-import { fakeData } from './fakeData';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
       return Array.from(Array(5)).map(async (_) => {
             const dummyUser = fakeUser();
-            dummyUser.phoneNumber = `+${fakeData(10, 'number')}`;
-            dummyUser.email = `${fakeData(10, 'letters')}@gmail.com`;
 
             const user = await repository.save(dummyUser);
             const reToken = await authService.createReToken(user);
@@ -73,6 +70,5 @@ export const initTestModule = async () => {
                   user: adminUser,
                   reToken: adminReToken,
             },
-            generateCookie: (reToken: string) => [`re-token=${reToken} ;`],
       };
 };

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Twilio } from 'twilio';
 
-//----- Utils
+//----- Service
 import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()

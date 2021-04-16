@@ -4,7 +4,7 @@ import { Profile as GitHubProfile } from 'passport-github';
 import { Profile as GoogleProfile } from 'passport-google-oauth20';
 
 import { initTestModule } from '../../test/initTest';
-import { fakeData } from '../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 
 import { GithubStrategy } from '../passport/github.strategy';
 import { GoogleStrategy } from '../passport/google.strategy';

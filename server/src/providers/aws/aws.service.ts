@@ -3,7 +3,7 @@ import { S3 } from 'aws-sdk';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-//----- Utils
+//----- Service
 import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()

@@ -5,7 +5,7 @@ import { initTestModule } from '../../test/initTest';
 import { AuthService } from '../auth.service';
 import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
-import { fakeData } from '../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 import { RedisService } from '../../providers/redis/redis.service';
 
 describe('UserGuard', () => {

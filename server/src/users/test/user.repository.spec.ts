@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { UserRepository } from '../entities/user.repository';
 import { initTestModule } from '../../test/initTest';
 import { User } from '../entities/user.entity';
-import { fakeData } from '../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 
 describe('UserRepository', () => {
       let app: INestApplication;
