@@ -130,7 +130,7 @@ export class AuthService {
       async decryptString(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
       }
-      
+  
       randomAvatar(): string {
             let defaultAvatar: string[];
             defaultAvatar = [
