@@ -54,6 +54,8 @@ export class AuthController {
             newUser.username = body.username;
             newUser.name = body.name;
             newUser.password = await this.authService.encryptString(body.password);
+            newUser.avatarUrl = this.authService.randomAvatar();
+
             const insertedUser = await this.userService.saveUser(newUser);
 
             //return token

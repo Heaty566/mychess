@@ -7,6 +7,7 @@ import { ReTokenRepository } from './entities/re-token.repository';
 import { User } from '../users/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
 import { RedisService } from '../providers/redis/redis.service';
+import { array } from 'joi';
 
 @Injectable()
 export class AuthService {
@@ -123,5 +124,19 @@ export class AuthService {
 
       async decryptString(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
+      }
+
+      randomAvatar(): string {
+            let defaultAvatar: string[];
+            defaultAvatar = [
+                  'default-avatar-bishop.png',
+                  'default-avatar-king.png',
+                  'default-avatar-pawn.png',
+                  'default-avatar-queen.png',
+                  'default-avatar-rook.png',
+                  'default-avatar-knight.png',
+            ];
+            let randomNumber: number = Math.floor(Math.random() * (5 - 0 + 1)) + 0; // generate random 0->5
+            return 'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/' + defaultAvatar[randomNumber];
       }
 }
