@@ -19,6 +19,6 @@ export class CommonController {
       @Post('/support')
       @UsePipes(new JoiValidatorPipe(vSupportDto))
       async cSupport(@Body() body: SupportDTO) {
-            return apiResponse.send<void>({ body: { message: 'server.thank-you-feedback' } });
+            return apiResponse.send<void>({ body: { message: { type: 'server.thank-you-feedback' } } });
       }
 }

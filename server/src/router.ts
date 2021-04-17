@@ -16,6 +16,11 @@ I18n.configure({
       directory: `./src/utils/locales/dictionaries`,
       cookie: 'lang',
       defaultLocale: 'en',
+      missingKeyFn: (locale, value) => {
+            console.log(locale);
+            console.log(value);
+            return value;
+      },
 });
 
 export function router(app: INestApplication) {

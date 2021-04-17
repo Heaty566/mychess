@@ -53,10 +53,12 @@ const DBConfig = TypeOrmModule.forRoot({
             UserModule,
             CommonModule,
             NotificationsModule,
+
             // --- Provider
             SmailModule,
             SmsModule,
             AwsModule,
+
             // --- Utils
             LoggerModule,
             RedisModule,
