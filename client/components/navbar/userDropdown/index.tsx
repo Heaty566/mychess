@@ -6,11 +6,12 @@ import { AuthState } from '../../../store/auth/interface';
 export interface UserDropDownProps {
     authState: AuthState;
     handleLogoutUser: () => void;
+    reference?: React.RefObject<HTMLUListElement>;
 }
 
-const UserDropDown: React.FunctionComponent<UserDropDownProps> = ({ authState, handleLogoutUser }) => {
+const UserDropDown: React.FunctionComponent<UserDropDownProps> = ({ authState, handleLogoutUser, reference }) => {
     return (
-        <ul className="bg-woodsmoke">
+        <ul className="bg-woodsmoke" ref={reference}>
             <li>
                 <Link href={`${router.userProfile.link}/${authState.id}`}>
                     <a className="block w-full px-4 py-2 capitalize duration-300 cursor-pointer focus:outline-none hover:bg-woodsmoke-400">Profile</a>

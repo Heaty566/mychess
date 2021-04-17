@@ -14,12 +14,12 @@ export class DatabaseService {
       cronBackupDatabase() {
             const path = `${__dirname}/backup.sql`;
             exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${path}`, (err) => {
-                  if (err) this.logger.print('Create a backup database failed', 'error');
-                  this.logger.print(`Create a backup database in ${new Date()}`, 'info');
+                  if (err) this.logger.print('Create a backup database failed', 'database.service.ts', 'error');
+                  this.logger.print(`Create a backup database in ${new Date()}`, 'database.service.ts', 'info');
 
                   fs.readFile(path, async (err, data) => {
                         if (err) {
-                              this.logger.print('Read a backup database failed', 'error');
+                              this.logger.print('Read a backup database failed', 'database.service.ts', 'error');
                               return;
                         }
 
@@ -39,7 +39,7 @@ export class DatabaseService {
                         };
 
                         await this.awsService.uploadFile(databaseFile, 'database', 'system');
-                        this.logger.print(`Upload to aws backup database in ${new Date()}`, 'info');
+                        this.logger.print(`Upload to aws backup database in ${new Date()}`, 'database.service.ts', 'info');
                   });
             });
       }

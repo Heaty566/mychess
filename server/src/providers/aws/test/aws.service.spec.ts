@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 const mockS3Object = jest.fn();
 jest.mock('aws-sdk', () => {
       return {
+            ...jest.requireActual('aws-sdk'),
             config: {
                   update: jest.fn(),
             },
@@ -11,7 +12,7 @@ jest.mock('aws-sdk', () => {
 });
 
 //* Internal import
-import { initTestModule } from '../../../../test/initTest';
+import { initTestModule } from '../../../test/initTest';
 import { AwsService } from '../aws.service';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';

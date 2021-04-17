@@ -15,35 +15,37 @@ import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { fakeUser } from '../../../test/fakeEntity';
+import { fakeUser } from '../../test/fakeEntity';
 import { UserRepository } from '../entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { AuthService } from '../../auth/auth.service';
 import { RedisService } from '../../providers/redis/redis.service';
 import { UserService } from '../user.service';
 import { SmailService } from '../../providers/smail/smail.service';
 import { AwsService } from '../../providers/aws/aws.service';
 import { User } from '../entities/user.entity';
-import { fakeData } from '../../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 import { ResetPasswordDTO } from '../dto/resetPassword.dto';
 import { ChangePasswordDTO } from '../dto/changePassword.dto';
 import { OtpSmsDTO } from '../../auth/dto/otpSms.dto';
 import { UpdateUserDto } from '../dto/updateBasicUser.dto';
 import { UpdateEmailDTO } from '../dto/updateEmail.dto';
-import { defuse } from '../../../test/testHelper';
+import { defuse } from '../../test/test.helper';
+import { generateCookie } from '../../test/test.helper';
 
 jest.mock('twilio', () => {
       return {
             Twilio: TwilioMock,
       };
 });
-
+const mockS3Object = jest.fn();
 jest.mock('aws-sdk', () => {
       return {
+            ...jest.requireActual('aws-sdk'),
             config: {
                   update: jest.fn(),
             },
-            S3: jest.fn(() => ({ putObject: jest.fn() })),
+            S3: jest.fn(() => ({ putObject: mockS3Object })),
       };
 });
 
@@ -59,13 +61,16 @@ describe('UserController E2E', () => {
 
       let cookieData: Array<string>;
       let userDb: User;
+      let userDb2: User;
+      let resetDb: any;
 
       beforeAll(async () => {
-            const { getApp, module, cookie, getUser } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
-            userDb = getUser;
-            cookieData = cookie;
-
+            userDb = (await users[0]).user;
+            userDb2 = (await users[1]).user;
+            cookieData = generateCookie((await users[0]).reToken);
+            resetDb = resetDatabase;
             userRepository = module.get<UserRepository>(UserRepository);
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
@@ -162,8 +167,11 @@ describe('UserController E2E', () => {
                   });
 
                   it('Failed (email is taken)', async () => {
+                        userDb2.email = 'helloworld@gmail.com';
+                        await userRepository.save(userDb2);
+
                         otpMail = {
-                              email: 'haicao2805@gmail.com',
+                              email: 'helloworld@gmail.com',
                         };
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(400);
@@ -221,7 +229,7 @@ describe('UserController E2E', () => {
                         supertest(app.getHttpServer())
                               .put(`/api/user/avatar`)
                               .set({ cookie: cookieData })
-                              .attach('avatar', `${__dirname}/../../../test/testFile/${input}`);
+                              .attach('avatar', `${__dirname}/../../../src/test/testFile/${input}`);
 
                   it('Pass', async () => {
                         const awsSpy = jest.spyOn(awsService, 'uploadFile');
@@ -254,15 +262,38 @@ describe('UserController E2E', () => {
                   });
             });
 
-            describe('PUT /api/user/phone/:otp', () => {
+            describe('PUT /api/user/update-with-otp?key=', () => {
                   let redisKey: string;
-                  const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/phone/${redisKey}`).set({ cookie: cookieData }).send();
+                  const reqApi = (redisKey) =>
+                        supertest(app.getHttpServer()).put(`/api/user/update-with-otp?key=${redisKey}`).set({ cookie: cookieData }).send();
 
                   beforeAll(async () => {
                         redisKey = await authService.generateOTP(userDb, 2, 'sms');
                   });
 
                   it('Pass', async () => {
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(redisKey);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                  });
+
+                  it('Pass Email', async () => {
+                        userDb.email = 'helloworld@gmail.com';
+                        redisKey = await authService.generateOTP(userDb, 2, 'email');
+                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
+                        const res = await reqApi(redisKey);
+                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
+                        expect(res.status).toBe(200);
+                        expect(beforeRedisKey).toBeDefined();
+                        expect(afterRedisKey).toBeNull();
+                  });
+
+                  it('Pass Phone', async () => {
+                        userDb.phoneNumber = '+1234567890';
+                        redisKey = await authService.generateOTP(userDb, 2, 'email');
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(redisKey);
                         const afterRedisKey = await redisService.getObjectByKey(redisKey);
@@ -281,41 +312,20 @@ describe('UserController E2E', () => {
 
                         expect(res.status).toBe(403);
                   });
-            });
-            describe('PUT /api/user/email/:otp', () => {
-                  let redisKey: string;
-                  const reqApi = (redisKey) => supertest(app.getHttpServer()).put(`/api/user/email/${redisKey}`).set({ cookie: cookieData }).send();
 
-                  beforeAll(async () => {
-                        redisKey = await authService.generateOTP(userDb, 2, 'email');
-                  });
-
-                  it('Pass', async () => {
-                        const beforeRedisKey = await redisService.getObjectByKey(redisKey);
-                        const res = await reqApi(redisKey);
-                        const afterRedisKey = await redisService.getObjectByKey(redisKey);
-                        expect(res.status).toBe(200);
-                        expect(beforeRedisKey).toBeDefined();
-                        expect(afterRedisKey).toBeNull();
-                  });
-
-                  it('Failed (redis key is used)', async () => {
-                        const res = await reqApi(123456);
-
-                        expect(res.status).toBe(403);
-                  });
-
-                  it('Failed (redis expired)', async () => {
-                        const res = await reqApi(redisKey);
+                  it('Failed url does not provide key', async () => {
+                        const customApi = () => supertest(app.getHttpServer()).put(`/api/user/update-with-otp`).set({ cookie: cookieData }).send();
+                        const res = await customApi();
 
                         expect(res.status).toBe(403);
                   });
             });
-            describe('PUT /api/user/password/:otp', () => {
+
+            describe('PUT /api/user/reset-password?key=', () => {
                   let user: User;
                   let redisKey: string;
                   let body: ResetPasswordDTO;
-                  const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/password/${redisKey}`).send(body);
+                  const reqApi = (body, redisKey) => supertest(app.getHttpServer()).put(`/api/user/reset-password?key=${redisKey}`).send(body);
 
                   beforeAll(async () => {
                         user = fakeUser();
@@ -347,6 +357,14 @@ describe('UserController E2E', () => {
                   });
                   it('Failed redis expired', async () => {
                         const res = await reqApi(body, '123456');
+                        expect(res.status).toBe(403);
+                  });
+
+                  it('Failed url does not provide key', async () => {
+                        const customApi = (body) =>
+                              supertest(app.getHttpServer()).put(`/api/user/reset-password`).set({ cookie: cookieData }).send(body);
+                        const res = await customApi(body);
+
                         expect(res.status).toBe(403);
                   });
             });
@@ -392,9 +410,72 @@ describe('UserController E2E', () => {
                   });
             });
       });
+      describe('GET /user/search?name=&currentPage=&pageSize', () => {
+            const reqApi = (name: string, currentPage: string, pageSize: string) =>
+                  supertest(app.getHttpServer()).get(`/api/user/search?name=${name}&currentPage=${currentPage}&pageSize=${pageSize}`);
+
+            beforeAll(async () => {
+                  let exampleUser = fakeUser();
+                  exampleUser.name = '132hello1321';
+                  await userRepository.save(exampleUser);
+                  exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+            });
+
+            it('Pass get two', async () => {
+                  const res = await reqApi('hello', '0', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get zero currentPage 1000', async () => {
+                  const res = await reqApi('hello', '10000', '12');
+
+                  expect(res.body.data).toHaveLength(0);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get two currentPage -10', async () => {
+                  const res = await reqApi('hello', '-10', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get two currentPage=dksakdmksamk', async () => {
+                  const res = await reqApi('hello', 'dksakdmksamk', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass get two currentPage=dksakdmksamk', async () => {
+                  const res = await reqApi('hello', 'dksakdmksamk', '12');
+
+                  expect(res.body.data).toHaveLength(2);
+                  expect(res.status).toBe(200);
+            });
+
+            it('Pass get one pageSize=1', async () => {
+                  const res = await reqApi('hello', '0', '1');
+
+                  expect(res.body.data).toHaveLength(1);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass get all', async () => {
+                  const exampleUser = fakeUser();
+                  exampleUser.name = '123hello21cmaclksa';
+                  await userRepository.save(exampleUser);
+                  const res = await reqApi('', '0', '200');
+
+                  expect(res.body.data.length).toBeGreaterThan(2);
+                  expect(res.status).toBe(200);
+            });
+      });
 
       afterAll(async () => {
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDb();
             await app.close();
       });
 });

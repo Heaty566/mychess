@@ -7,7 +7,6 @@ import * as morgan from 'morgan';
 import * as helmet from 'helmet';
 import * as I18n from 'i18n';
 
-//* Internal import
 import { NotFoundApiHandler } from './app/exception/notfound.exception';
 import { RuntimeApiHandler } from './app/exception/runtime.exception';
 import * as doc from './public/swagger.json';

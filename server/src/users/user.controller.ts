@@ -1,25 +1,33 @@
-import { Controller, Get, UseGuards, Req, Param, Body, Put, Post, UsePipes, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Param, Body, Put, Post, UsePipes, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 
-import { SmailService } from '../providers/smail/smail.service';
+//---- Service
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { SmailService } from '../providers/smail/smail.service';
 import { SmsService } from '../providers/sms/sms.service';
 import { AwsService } from '../providers/aws/aws.service';
+import { RedisService } from '../providers/redis/redis.service';
 
-import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
-import { UserGuard } from '../auth/auth.guard';
-import { apiResponse } from '../app/interface/ApiResponse';
+//---- Entity
 import { User } from './entities/user.entity';
 
+//---- Pipe
+import { UserGuard } from '../auth/auth.guard';
+
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
+
+//---- DTO
 import { OtpSmsDTO, vOtpSmsDTO } from '../auth/dto/otpSms.dto';
 import { ResetPasswordDTO, vResetPasswordDTO } from './dto/resetPassword.dto';
 import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto';
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
+import { SearchUsersDTO, vSearchUsersDTO } from './dto/searchUsers';
 
-import { FileInterceptor } from '@nestjs/platform-express';
+//---- Common
+import { apiResponse } from '../app/interface/ApiResponse';
 
 @Controller('user')
 export class UserController {
@@ -36,9 +44,17 @@ export class UserController {
       @Get('/')
       @UseGuards(UserGuard)
       async cGetUser(@Req() req: Request) {
-            const user = await this.userService.getOneUserByField('id', req.user.id);
+            const user = await this.userService.getCurrentUser(req.user.id);
 
             return apiResponse.send<User>({ body: { data: user } });
+      }
+
+      @Get('/search')
+      async cSearchUsers(@Query() queries: SearchUsersDTO) {
+            const { value } = <{ value: SearchUsersDTO }>vSearchUsersDTO.validate(queries, { convert: true, stripUnknown: true });
+
+            const users = await this.userService.searchUsersByName(value.name, value.pageSize, value.currentPage);
+            return apiResponse.send<Array<User>>({ body: { data: users } });
       }
 
       @Get('/:id')
@@ -96,45 +112,39 @@ export class UserController {
             return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
-      @Put('/password/:otp')
-      async cUpdatePasswordByOtp(@Param('otp') otp: string, @Body(new JoiValidatorPipe(vResetPasswordDTO)) body: ResetPasswordDTO) {
-            const redisUser = await this.redisService.getObjectByKey<User>(otp);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
+      @Put('/reset-password')
+      async cUpdatePasswordByOtp(@Query('key') key: string, @Body(new JoiValidatorPipe(vResetPasswordDTO)) body: ResetPasswordDTO) {
+            if (!key) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
+
+            const redisUser = await this.redisService.getObjectByKey<User>(key);
+            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
             const user = await this.userService.findOneUserByField('username', redisUser.username);
 
             user.password = await this.authService.encryptString(body.newPassword);
             await this.userService.saveUser(user);
-            this.redisService.deleteByKey(otp);
+            this.redisService.deleteByKey(key);
 
             return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 
-      @Put('/email/:otp')
-      @UseGuards(UserGuard)
-      async cUpdateEmailByOTP(@Param('otp') otp: string) {
-            const redisUser = await this.redisService.getObjectByKey<User>(otp);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
+      @Put('/update-with-otp')
+      async cUpdateEmailByOTP(@Query('key') key: string) {
+            if (!key) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
 
-            const user = await this.userService.findOneUserByField('username', redisUser.username);
-            user.email = redisUser.email;
+            const redisUser = await this.redisService.getObjectByKey<User>(key);
+            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { details: { otp: 'user.not-allow-action' } } });
+
+            const user = await this.userService.findOneUserByField('id', redisUser.id);
+
+            if (user.email !== redisUser.email) {
+                  user.email = redisUser.email;
+            } else if (user.phoneNumber !== redisUser.phoneNumber) {
+                  user.phoneNumber = redisUser.phoneNumber;
+            }
 
             await this.userService.saveUser(user);
-            this.redisService.deleteByKey(otp);
+            this.redisService.deleteByKey(key);
 
-            return apiResponse.send<void>({ body: { message: 'user.update-success' } });
-      }
-
-      @Put('/phone/:otp')
-      @UseGuards(UserGuard)
-      async cUpdatePhoneByOTP(@Param('otp') otp: string) {
-            const redisUser = await this.redisService.getObjectByKey<User>(otp);
-            if (!redisUser) throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.not-allow-action' } });
-
-            const user = await this.userService.findOneUserByField('username', redisUser.username);
-            user.phoneNumber = redisUser.phoneNumber;
-            await this.userService.saveUser(user);
-
-            this.redisService.deleteByKey(otp);
             return apiResponse.send<void>({ body: { message: 'user.update-success' } });
       }
 

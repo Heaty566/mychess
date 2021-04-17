@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
+//---- Service
 import { LoggerService } from '../utils/logger/logger.service';
+
+//---- Repository
 import { UserRepository } from './entities/user.repository';
+
+//---- Entity
 import { UserRole } from './entities/user.userRole.enum';
 import { User } from './entities/user.entity';
 
@@ -16,7 +21,7 @@ export class AdminService {
       async toggleUserRole(user: User) {
             user.role = user.role === UserRole.USER ? UserRole.ADMIN : UserRole.USER;
             const updateUser = await this.userRepository.save(user);
-            this.logger.print(`User with Id ${updateUser.id} has changed role to: ${updateUser.role}`, 'info');
+            this.logger.print(`User with Id ${updateUser.id} has changed role to: ${updateUser.role}`, 'admin.service.ts', 'info');
 
             return updateUser;
       }
@@ -28,7 +33,7 @@ export class AdminService {
       async toggleUserStatus(user: User) {
             user.isDisabled = !user.isDisabled;
             const updateUser = await this.userRepository.save(user);
-            this.logger.print(`User with Id ${updateUser.id} has changed status to: ${updateUser.role}`, 'info');
+            this.logger.print(`User with Id ${updateUser.id} has changed status to: ${updateUser.role}`, 'admin.service.ts', 'info');
             return updateUser;
       }
 

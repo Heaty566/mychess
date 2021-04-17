@@ -1,7 +1,7 @@
 import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
 let mockPromise = Promise.resolve();
-import { defuse } from '../../../test/testHelper';
+import { defuse } from '../../test/test.helper';
 import { SmailService } from '../../providers/smail/smail.service';
 
 class TwilioMock {
@@ -19,9 +19,9 @@ class TwilioMock {
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { fakeUser } from '../../../test/fakeEntity';
-import { fakeData } from '../../../test/fakeData';
-import { initTestModule } from '../../../test/initTest';
+import { fakeUser } from '../../test/fakeEntity';
+import { fakeData } from '../../test/test.helper';
+import { initTestModule } from '../../test/initTest';
 
 import { UserRepository } from '../../users/entities/user.repository';
 
@@ -52,11 +52,13 @@ describe('AuthController', () => {
       let userService: UserService;
       let mailService: SmailService;
       let reTokenRepository: ReTokenRepository;
+      let resetDB: any;
 
       beforeAll(async () => {
-            const { getApp, module, getUser } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
-            userDB = getUser;
+            userDB = (await users[0]).user;
+            resetDB = resetDatabase;
             userRepository = module.get<UserRepository>(UserRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
             authService = module.get<AuthService>(AuthService);
@@ -274,8 +276,8 @@ describe('AuthController', () => {
                   });
             });
 
-            describe('POST /check-otp/:otp', () => {
-                  const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp/${input}`).send();
+            describe('POST /check-otp?key=', () => {
+                  const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp?key=${input}`).send();
 
                   it('Pass', async () => {
                         const otp = await authService.generateOTP(userDB, 10, 'email');
@@ -287,6 +289,14 @@ describe('AuthController', () => {
                   it('Failed (otp does not exist)', async () => {
                         try {
                               await reqApi('123456789');
+                        } catch (err) {
+                              expect(err.status).toBe(403);
+                        }
+                  });
+
+                  it('Failed (does not have key)', async () => {
+                        try {
+                              await reqApi('');
                         } catch (err) {
                               expect(err.status).toBe(403);
                         }
@@ -318,8 +328,7 @@ describe('AuthController', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

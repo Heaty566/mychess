@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { LoggerService } from '../../utils/logger/logger.service';
 
-//* Internal import
+//----- Service
+import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()
 export class AwsService {
@@ -34,7 +34,7 @@ export class AwsService {
                         return process.env.AWS_PREFIX + '/' + locationFile;
                   })
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'aws.service.ts', 'error');
                         return null;
                   });
       }

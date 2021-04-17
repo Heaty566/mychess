@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github';
 
+//---- Service
 import { UserService } from '../../users/user.service';
+
+//---- Entity
 import { User } from '../../users/entities/user.entity';
 
 @Injectable()

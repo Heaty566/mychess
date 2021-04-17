@@ -1,12 +1,19 @@
 import { Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 
-import { apiResponse } from '../app/interface/ApiResponse';
-import { Roles } from '../auth/roles.decorator';
+//----- Entity
+import { User } from './entities/user.entity';
 import { UserRole } from './entities/user.userRole.enum';
-import { UserGuard } from '../auth/auth.guard';
+import { Roles } from '../auth/roles.decorator';
+
+//----- Service
 import { AdminService } from './admin.service';
 import { UserService } from './user.service';
-import { User } from './entities/user.entity';
+
+//----- Pipe
+import { UserGuard } from '../auth/auth.guard';
+
+//----- Common
+import { apiResponse } from '../app/interface/ApiResponse';
 
 @Controller('admin')
 @UseGuards(UserGuard)

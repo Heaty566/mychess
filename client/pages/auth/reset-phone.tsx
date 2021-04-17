@@ -56,7 +56,9 @@ const ResetPhone: React.FunctionComponent = () => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
-                        <p className="py-2 text-mercury-800">Please enter your phone number, you will receive an OTP key.</p>
+                        <p className="py-2 text-mercury-800">
+                            Please enter the OTP code that we just sent your phone service. This may take a little while.
+                        </p>
 
                         {isSubmit && !apiState.isError && (
                             <>
