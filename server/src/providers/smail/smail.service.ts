@@ -33,7 +33,7 @@ export class SmailService {
                         return true;
                   })
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'smail.service.ts', 'error');
 
                         return false;
                   });

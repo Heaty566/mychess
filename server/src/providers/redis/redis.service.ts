@@ -29,7 +29,7 @@ export class RedisService {
             return new Promise<T>((res, rej) => {
                   this.redisRepository.get(key, (err, data) => {
                         if (err) {
-                              this.logger.print(err, 'error');
+                              this.logger.print(err, 'redis.service.ts', 'error');
                               return rej(null);
                         }
                         const convertToJson = JSON.parse(flat.unflatten(data));
@@ -51,7 +51,7 @@ export class RedisService {
             return new Promise((res, rej) => {
                   this.redisRepository.get(key, (err, data) => {
                         if (err) {
-                              this.logger.print(err, 'error');
+                              this.logger.print(err, 'redis.service.ts', 'error');
                               return rej(null);
                         }
 

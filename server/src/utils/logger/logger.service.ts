@@ -9,9 +9,13 @@ export class LoggerService {
        *
        * @description logger for system, allow tracking error when it occurs
        */
-      print(content: any, type: 'info' | 'error' | 'debug' | 'warn') {
+      print(content: any, where: string, type: 'info' | 'error' | 'debug' | 'warn') {
             if (process.env.NODE_ENV !== 'test') {
-                  return this.winstonLogger[type](content);
+                  const message = {
+                        content,
+                        where,
+                  };
+                  return this.winstonLogger[type](message);
             }
       }
 }

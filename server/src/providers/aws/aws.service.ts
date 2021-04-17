@@ -34,7 +34,7 @@ export class AwsService {
                         return process.env.AWS_PREFIX + '/' + locationFile;
                   })
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'aws.service.ts', 'error');
                         return null;
                   });
       }
