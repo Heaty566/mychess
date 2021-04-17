@@ -153,13 +153,17 @@ export class UserController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vOtpSmsDTO))
       async cCreateOTPBySmsWithGuard(@Body() body: OtpSmsDTO, @Req() req: Request) {
+            const userIp = this.authService.parseIp(req);
+            let canSendMore = await this.authService.isRateLimitKey(userIp, 6, 60);
+            if (!canSendMore) throw apiResponse.sendError({ body: { details: { userIp: 'user.request-many-time-60p' } } });
+
             let user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
             if (user) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.field-taken' } } });
 
             user = await this.userService.findOneUserByField('id', req.user.id);
             user.phoneNumber = body.phoneNumber;
 
-            const canSendMore = await this.authService.limitSendingEmailOrSms(user.phoneNumber, 3, 60);
+            canSendMore = await this.authService.isRateLimitKey(user.phoneNumber, 3, 60);
             if (!canSendMore) throw apiResponse.sendError({ body: { details: { phoneNumber: 'user.request-many-time-60p' } } });
 
             const otpKey = this.authService.generateOTP(user, 10, 'sms');
@@ -173,12 +177,17 @@ export class UserController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vUpdateEmailDTO))
       async cCreateOtpByEmailWithGuard(@Body() body: UpdateEmailDTO, @Req() req: Request) {
+            const userIp = this.authService.parseIp(req);
+            let canSendMore = await this.authService.isRateLimitKey(userIp, 10, 60);
+            if (!canSendMore) throw apiResponse.sendError({ body: { details: { userIp: 'user.request-many-time-60p' } } });
+
             let user = await this.userService.findOneUserByField('email', body.email);
             if (user) throw apiResponse.sendError({ body: { details: { email: 'user.field-taken' } } });
 
             user = req.user;
             user.email = body.email;
-            const canSendMore = await this.authService.limitSendingEmailOrSms(user.email, 5, 30);
+
+            canSendMore = await this.authService.isRateLimitKey(user.email, 5, 30);
             if (!canSendMore) throw apiResponse.sendError({ body: { details: { email: 'user.request-many-time-30p' } } });
 
             const redisKey = await this.authService.generateOTP(user, 30, 'email');

@@ -46,14 +46,16 @@ export class AuthService {
             return otpKey;
       }
 
-      async limitSendingEmailOrSms(emailOrPhoneNumber: string, maxSent: number, expiredTime: number) {
-            const isExist = await this.redisService.getByKey(emailOrPhoneNumber);
+      async isRateLimitKey(key: string, maxSent: number, expiredTime: number) {
+            const rateLimit = 'rate-limit-' + key;
+
+            const isExist = await this.redisService.getByKey(rateLimit);
             if (isExist) {
-                  const count = Number(await this.redisService.getByKey(emailOrPhoneNumber));
-                  if (count > maxSent) return false;
-                  await this.redisService.setByValue(emailOrPhoneNumber, count + 1, expiredTime);
+                  const count = Number(await this.redisService.getByKey(rateLimit));
+                  if (count >= maxSent) return false;
+                  await this.redisService.setByValue(rateLimit, count + 1, expiredTime);
             } else {
-                  await this.redisService.setByValue(emailOrPhoneNumber, 1, expiredTime);
+                  await this.redisService.setByValue(rateLimit, 1, expiredTime);
             }
             return true;
       }
@@ -130,18 +132,29 @@ export class AuthService {
       async decryptString(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
       }
-  
-      randomAvatar(): string {
-            let defaultAvatar: string[];
-            defaultAvatar = [
-                  'default-avatar-bishop.png',
-                  'default-avatar-king.png',
-                  'default-avatar-pawn.png',
-                  'default-avatar-queen.png',
-                  'default-avatar-rook.png',
-                  'default-avatar-knight.png',
-            ];
-            let randomNumber: number = Math.floor(Math.random() * (5 - 0 + 1)) + 0; // generate random 0->5
-            return 'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/' + defaultAvatar[randomNumber];
+
+      //--------------------------------User IP Service -------------------------------
+
+      parseIp(req: any) {
+            return (
+                  (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
+                  req.connection?.remoteAddress ||
+                  req.socket?.remoteAddress ||
+                  req.connection?.socket?.remoteAddress
+            );
       }
+
+      // randomAvatar(): string {
+      //       let defaultAvatar: string[];
+      //       defaultAvatar = [
+      //             'default-avatar-bishop.png',
+      //             'default-avatar-king.png',
+      //             'default-avatar-pawn.png',
+      //             'default-avatar-queen.png',
+      //             'default-avatar-rook.png',
+      //             'default-avatar-knight.png',
+      //       ];
+      //       let randomNumber: number = Math.floor(Math.random() * (5 - 0 + 1)) + 0; // generate random 0->5
+      //       return 'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/' + defaultAvatar[randomNumber];
+      // }
 }

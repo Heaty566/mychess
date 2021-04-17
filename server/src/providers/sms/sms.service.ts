@@ -25,7 +25,7 @@ export class SmsService {
       }
 
       public async sendOTP(phoneNumber: string, otpKey: string) {
-            const content = `Your verification code is : ${otpKey}, this code will be invalid in 5 minutes.`;
+            const content = `Your verification code is : ${otpKey}, this code will be invalid in 5 minutes. Please do not share this code with others`;
 
             return await this.sendSms(phoneNumber, content);
       }
