@@ -19,7 +19,7 @@ export class SmsService {
                   })
                   .then(() => true)
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'sms.service.ts', 'error');
                         return false;
                   });
       }
