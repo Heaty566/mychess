@@ -3,7 +3,7 @@ import { AxiosInstance } from 'axios';
 import http from '../axiosCommon';
 import { ApiResponse } from '../../store/api/interface';
 import { User } from '../../store/auth/interface';
-import { ResetUserPasswordDto, UpdateUserEmailDto, UpdateUserInfoDto, UpdateUserPhoneDto } from './dto';
+import { ResetUserPasswordDto, UpdateUserEmailDto, UpdateUserInfoDto, UpdateUserPhoneDto, CommonUser } from './dto';
 
 export class UserAPI {
     constructor(private readonly apiCall: AxiosInstance, private readonly prefix: string) {}
@@ -47,6 +47,12 @@ export class UserAPI {
         return res;
     }
 
+    async searchUsers(name: string, currentPage: string, pageSize: string) {
+        const url = `${this.prefix}/search?name=${name}&currentPage=${currentPage}&pageSize=${pageSize}`;
+
+        const res = await this.apiCall.get<ApiResponse<Array<CommonUser>>>(url);
+        return res;
+    }
     async updateUserPhoneCreateOTP(input: UpdateUserPhoneDto) {
         const url = `${this.prefix}/otp-sms`;
 
@@ -54,20 +60,14 @@ export class UserAPI {
         return res;
     }
 
-    async updateUserPhoneByOtp(input: string) {
-        const url = `${this.prefix}/phone/${input}`;
-        const res = await this.apiCall.put<ApiResponse<void>>(url);
-        return res;
-    }
-
-    async updateUserEmailByOtp(input: string) {
-        const url = `${this.prefix}/phone/${input}`;
+    async updateUserByOtp(input: string) {
+        const url = `${this.prefix}/update-with-otp?key=${input}`;
         const res = await this.apiCall.put<ApiResponse<void>>(url);
         return res;
     }
 
     async resetUserPassword(input: ResetUserPasswordDto, key: string) {
-        const url = `${this.prefix}/password/${key}`;
+        const url = `${this.prefix}/reset-password?key=${key}`;
         const res = await this.apiCall.put<ApiResponse<void>>(url, input);
         return res;
     }

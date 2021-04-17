@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import * as fs from 'fs';
 
-import { initTestModule } from '../../../../test/initTest';
+import { initTestModule } from '../../../test/initTest';
 import { DatabaseService } from '../database.service';
 import * as childProcess from 'child_process';
 import { AwsService } from '../../../providers/aws/aws.service';

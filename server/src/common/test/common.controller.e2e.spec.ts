@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 
 //* Internal import
 
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { SupportDTO } from '../dto/aboutUsDto';
 
 describe('commonController', () => {

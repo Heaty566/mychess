@@ -2,9 +2,14 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Reflector } from '@nestjs/core';
 
-import { UserRole } from '../users/entities/user.userRole.enum';
-import { apiResponse } from '../app/interface/ApiResponse';
+//---- Service
 import { AuthService } from './auth.service';
+
+//---- Entity
+import { UserRole } from '../users/entities/user.userRole.enum';
+
+//---- Common
+import { apiResponse } from '../app/interface/ApiResponse';
 
 @Injectable()
 export class UserGuard implements CanActivate {

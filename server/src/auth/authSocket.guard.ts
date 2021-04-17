@@ -1,7 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { SocketExtend } from 'socket.io';
 import * as Cookie from 'cookie';
+
+//---- Service
 import { RedisService } from '../providers/redis/redis.service';
+
+//---- Entity
 import User from '../users/entities/user.entity';
 
 @Injectable()

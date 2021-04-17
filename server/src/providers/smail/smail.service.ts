@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { MailService, MailDataRequired } from '@sendgrid/mail';
 
+//----- Service
 import { LoggerService } from '../../utils/logger/logger.service';
+
 @Injectable()
 export class SmailService {
       constructor(private readonly mailService: MailService, private readonly LoggerService: LoggerService) {}
@@ -31,7 +33,7 @@ export class SmailService {
                         return true;
                   })
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'smail.service.ts', 'error');
 
                         return false;
                   });
@@ -60,7 +62,7 @@ export class SmailService {
                   <h2>Hello</h2>
                   <p>You receiving this email because we received update email request for your account.</p>
                   </br>
-                  <p>Please click this link:</p><a href="${process.env.CLIENT_URL}/user/update-email/${OTP}">Click here</a>
+                  <p>Please click this link:</p><a href="${process.env.CLIENT_URL}/user/update-with-otp/${OTP}">Click here</a>
                   </br>
             </div>`,
             );

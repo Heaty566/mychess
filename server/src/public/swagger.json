@@ -166,7 +166,7 @@
                         }
                   }
             },
-            "/api/auth/check-otp/:otp": {
+            "/api/auth/check-otp?key=": {
                   "post": {
                         "tags": ["auth"],
                         "parameters": [{ "$ref": "#/components/parameters/OTPkey" }],
@@ -369,7 +369,7 @@
                         }
                   }
             },
-            "/api/user/password/:otp": {
+            "/api/user/reset-password?key=": {
                   "put": {
                         "tags": ["user"],
                         "description": "reset password with otp key",
@@ -397,10 +397,10 @@
                         }
                   }
             },
-            "/api/user/email/:otp": {
+            "/api/user/update-with-otp?key=": {
                   "put": {
                         "tags": ["user"],
-                        "description": "update email with otp key",
+                        "description": "update user information with otp key",
                         "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
                         "responses": {
                               "200": {
@@ -413,36 +413,8 @@
                                           }
                                     }
                               },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              }
-                        }
-                  }
-            },
-            "/api/user/phone/:otp": {
-                  "put": {
-                        "tags": ["user"],
-                        "description": "update phone with otp key",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
-                        "responses": {
-                              "200": {
-                                    "description": "update user successfully",
-                                    "content": {
-                                          "application/json": {
-                                                "schema": {
-                                                      "$ref": "#/components/schemas/CommonApiResponse"
-                                                }
-                                          }
-                                    }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
+                              "403": {
+                                    "$ref": "#/components/responses/403"
                               }
                         }
                   }
@@ -505,6 +477,25 @@
                               },
                               "500": {
                                     "$ref": "#/components/responses/500"
+                              }
+                        }
+                  }
+            },
+            "/api/user/search?name=&currentPage=&pageSize=": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "search user by name",
+                        "parameters": [{ "$ref": "#/components/parameters/searchUser" }],
+                        "responses": {
+                              "200": {
+                                    "description": "update user successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
                               }
                         }
                   }
@@ -962,7 +953,7 @@
                         }
                   },
                   "OTPkey": {
-                        "name": "id",
+                        "name": "key",
                         "description": "otp key",
                         "in": "query",
                         "required": true,
@@ -970,6 +961,29 @@
                         "schema": {
                               "type": "string",
                               "example": "123456789aa"
+                        }
+                  },
+                  "searchUser": {
+                        "name": "searchUserQuery",
+                        "in": "query",
+                        "required": true,
+                        "style": "form",
+                        "schema": {
+                              "type": "object",
+                              "properties": {
+                                    "name": {
+                                          "type": "string",
+                                          "example": "hello world"
+                                    },
+                                    "currentPage": {
+                                          "type": "number",
+                                          "example": 1
+                                    },
+                                    "pageSize": {
+                                          "type": "number",
+                                          "example": 1
+                                    }
+                              }
                         }
                   }
             }

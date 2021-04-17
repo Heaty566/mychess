@@ -6,6 +6,7 @@ export interface User {
     elo: number;
     email: string;
     phoneNumber: string;
+    createDate: string;
 }
 
 export interface AuthState extends User {

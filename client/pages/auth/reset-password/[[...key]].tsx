@@ -48,6 +48,7 @@ const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => {
                 router.push(routers.login.link);
             });
     };
+
     React.useEffect(() => {
         if (router.query.key && router.query.key[0]) {
             const key = router.query.key[0];

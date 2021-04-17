@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
+import { createLogger, transports, format } from 'winston';
+
+//----- Service
 import { LoggerService } from './logger.service';
 
-import { createLogger, transports, format } from 'winston';
 const { combine, prettyPrint, colorize, printf, label, timestamp } = format;
 const loggingFileURL = './log';
 

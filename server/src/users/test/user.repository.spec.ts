@@ -1,20 +1,21 @@
 import { INestApplication } from '@nestjs/common';
 
 import { UserRepository } from '../entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { User } from '../entities/user.entity';
-import { fakeData } from '../../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 
 describe('UserRepository', () => {
       let app: INestApplication;
       let userRepository: UserRepository;
       let userDb: User;
-
+      let resetDB: any;
       beforeAll(async () => {
-            const { getUser, getApp, module } = await initTestModule();
+            const { users, getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
-            userDb = getUser;
+            userDb = (await users[0]).user;
             userRepository = module.get<UserRepository>(UserRepository);
+            resetDB = resetDatabase;
       });
 
       describe('getUserByField', () => {
@@ -37,8 +38,15 @@ describe('UserRepository', () => {
             });
       });
 
+      describe('getAllUsers', () => {
+            it('Pass', async () => {
+                  const res = await userRepository.getAllUsers();
+                  expect(res).toBeDefined();
+            });
+      });
+
       afterAll(async () => {
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

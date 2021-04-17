@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Twilio } from 'twilio';
 
+//----- Service
 import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class SmsService {
                   })
                   .then(() => true)
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'sms.service.ts', 'error');
                         return false;
                   });
       }
