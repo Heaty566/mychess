@@ -46,14 +46,16 @@ export class AuthService {
             return otpKey;
       }
 
-      async limitSendingEmailOrSms(emailOrPhoneNumber: string, maxSent: number, expiredTime: number) {
-            const isExist = await this.redisService.getByKey(emailOrPhoneNumber);
+      async isRateLimitKey(key: string, maxSent: number, expiredTime: number) {
+            const rateLimit = 'rate-limit-' + key;
+
+            const isExist = await this.redisService.getByKey(rateLimit);
             if (isExist) {
-                  const count = Number(await this.redisService.getByKey(emailOrPhoneNumber));
-                  if (count > maxSent) return false;
-                  await this.redisService.setByValue(emailOrPhoneNumber, count + 1, expiredTime);
+                  const count = Number(await this.redisService.getByKey(rateLimit));
+                  if (count >= maxSent) return false;
+                  await this.redisService.setByValue(rateLimit, count + 1, expiredTime);
             } else {
-                  await this.redisService.setByValue(emailOrPhoneNumber, 1, expiredTime);
+                  await this.redisService.setByValue(rateLimit, 1, expiredTime);
             }
             return true;
       }
@@ -129,5 +131,16 @@ export class AuthService {
 
       async decryptString(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
+      }
+
+      //--------------------------------User IP Service -------------------------------
+
+      parseIp(req: any) {
+            return (
+                  (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
+                  req.connection?.remoteAddress ||
+                  req.socket?.remoteAddress ||
+                  req.connection?.socket?.remoteAddress
+            );
       }
 }

@@ -115,11 +115,15 @@ describe('UserController E2E', () => {
                   });
 
                   it('Pass', async () => {
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
+
                         otpSmsDTO = {
                               phoneNumber: fakeData(10, 'number'),
                         };
                         const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(201);
+
+                        mySpy.mockClear();
                   });
 
                   it('Failed (error of sms service)', async () => {
@@ -139,11 +143,24 @@ describe('UserController E2E', () => {
                         expect(res.status).toBe(400);
                   });
 
-                  it('Failed(request many time)', async () => {
+                  it('Failed (user ip request many time)', async () => {
                         otpSmsDTO = {
                               phoneNumber: '0862334006',
                         };
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(false));
+                        const res = await reqApi(otpSmsDTO);
+                        expect(res.status).toBe(400);
+                        mySpy.mockClear();
+                  });
+
+                  it('Failed (phone number request many time)', async () => {
+                        otpSmsDTO = {
+                              phoneNumber: '0862334006',
+                        };
+                        const mySpy = jest
+                              .spyOn(authService, 'isRateLimitKey')
+                              .mockImplementation(jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false));
+
                         const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(400);
                         mySpy.mockClear();
@@ -157,7 +174,7 @@ describe('UserController E2E', () => {
                         supertest(app.getHttpServer()).post('/api/user/otp-email').set({ cookie: cookieData }).send(input);
 
                   it('Pass', async () => {
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(true));
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
                         otpMail = {
                               email: `heaty566ex@gmail.com`,
                         };
@@ -190,11 +207,23 @@ describe('UserController E2E', () => {
                         mySpy.mockClear();
                   });
 
-                  it('Failed(request many time)', async () => {
+                  it('Failed (user ip request many time)', async () => {
                         otpMail = {
                               email: `heaty566ex@gmail.com`,
                         };
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(false));
+                        const res = await reqApi(otpMail);
+                        expect(res.status).toBe(400);
+                        mySpy.mockClear();
+                  });
+
+                  it('Failed (email request many time)', async () => {
+                        otpMail = {
+                              email: `heaty566ex@gmail.com`,
+                        };
+                        const mySpy = jest
+                              .spyOn(authService, 'isRateLimitKey')
+                              .mockImplementation(jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false));
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(400);
                         mySpy.mockClear();

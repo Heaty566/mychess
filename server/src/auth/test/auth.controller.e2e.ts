@@ -148,7 +148,7 @@ describe('AuthController', () => {
                   });
 
                   it('Pass', async () => {
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(true));
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
 
                         const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(201);
@@ -165,8 +165,22 @@ describe('AuthController', () => {
                         }
                   });
 
-                  it('Failed (spam sms', async () => {
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+                  it('Failed (spam ip)', async () => {
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(false));
+
+                        try {
+                              await reqApi(otpSmsDTO);
+                        } catch (err) {
+                              expect(err.status).toBe(400);
+                        }
+
+                        mySpy.mockClear();
+                  });
+
+                  it('Failed (spam sms)', async () => {
+                        const mySpy = jest
+                              .spyOn(authService, 'isRateLimitKey')
+                              .mockImplementation(jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false));
 
                         try {
                               await reqApi(otpSmsDTO);
@@ -178,12 +192,16 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (phone number is not correct)', async () => {
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
+
                         otpSmsDTO = {
                               phoneNumber: fakeData(10, 'number'),
                         };
                         const res = await reqApi(otpSmsDTO);
 
                         expect(res.status).toBe(400);
+
+                        mySpy.mockClear();
                   });
             });
 
@@ -198,7 +216,7 @@ describe('AuthController', () => {
                   });
 
                   it('Pass', async () => {
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(true));
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
 
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(201);
@@ -217,8 +235,22 @@ describe('AuthController', () => {
                         mySpy.mockClear();
                   });
 
+                  it('Failed (spam ip)', async () => {
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(false));
+
+                        try {
+                              await reqApi(otpMail);
+                        } catch (err) {
+                              expect(err.status).toBe(400);
+                        }
+
+                        mySpy.mockClear();
+                  });
+
                   it('Failed (spam email)', async () => {
-                        const mySpy = jest.spyOn(authService, 'limitSendingEmailOrSms').mockImplementation(() => Promise.resolve(false));
+                        const mySpy = jest
+                              .spyOn(authService, 'isRateLimitKey')
+                              .mockImplementation(jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false));
 
                         try {
                               await reqApi(otpMail);
@@ -230,11 +262,15 @@ describe('AuthController', () => {
                   });
 
                   it('Failed (email does not exist)', async () => {
+                        const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
+
                         otpMail = {
                               email: fakeData(10, 'lettersLowerCase') + '@gmail.com',
                         };
                         const res = await reqApi(otpMail);
                         expect(res.status).toBe(400);
+
+                        mySpy.mockClear();
                   });
             });
             describe('GET /socket-token', () => {
