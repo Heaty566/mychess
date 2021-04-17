@@ -40,4 +40,17 @@ export class UserService {
                   .skip(currentPage * pageSize)
                   .execute();
       }
+
+      randomAvatar() {
+            const defaultAvatar: string[] = [
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-bishop.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-king.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-pawn.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-queen.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-rook.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-knight.png',
+            ];
+            const randomNumber: number = Math.floor(Math.random() * (5 - 0 + 1)) + 0; // generate random 0->5
+            return defaultAvatar[randomNumber];
+      }
 }

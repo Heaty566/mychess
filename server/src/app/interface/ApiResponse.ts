@@ -16,19 +16,29 @@ type ErrorType =
       | 'UnauthorizedException'
       | 'NotFoundException'
       | 'ForbiddenException';
-export interface IApiResponse<T> {
-      message?: Dictionary;
-      data?: T;
-      details?: Record<string, Dictionary>;
-}
 
-export interface IApiBase<T> {
-      body: IApiResponse<T>;
+export interface MsgResponseItem {
+      type: Dictionary;
       context?: Record<string, string>;
 }
+export interface IApiResponse<T> {
+      message?: MsgResponseItem;
+      data?: T;
+      details?: Record<string, MsgResponseItem>;
+}
 
-export interface IApiError extends IApiBase<void> {
+export interface ApiBase<T> {
+      body: IApiResponse<T>;
+}
+
+export interface ApiError extends ApiBase<void> {
       type?: ErrorType;
+}
+
+export interface ServerResponse {
+      message?: string;
+      details?: Record<any, string>;
+      data?: any;
 }
 class ApiResponse {
       constructor(private readonly localeService: LocalesService) {}
@@ -37,28 +47,22 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public sendError({ body, type = 'BadRequestException', context = {} }: IApiError) {
-            if (body.message) body.message = this.localeService.translate(body.message, { ...context });
-
-            if (body.details) {
-                  for (const item in body.details) {
-                        body.details[item] = this.localeService.translate(body.details[item], { ...context });
-                  }
-            }
+      public sendError({ body, type = 'BadRequestException' }: ApiError) {
+            const res = this.localeService.translateResponse(body);
 
             switch (type) {
                   case 'BadGatewayException':
-                        return new BadGatewayException(body);
+                        return new BadGatewayException(res);
                   case 'BadRequestException':
-                        return new BadRequestException(body);
+                        return new BadRequestException(res);
                   case 'InternalServerErrorException':
-                        return new InternalServerErrorException(body);
+                        return new InternalServerErrorException(res);
                   case 'UnauthorizedException':
-                        return new UnauthorizedException(body);
+                        return new UnauthorizedException(res);
                   case 'NotFoundException':
-                        return new NotFoundException(body);
+                        return new NotFoundException(res);
                   case 'ForbiddenException':
-                        return new ForbiddenException(body);
+                        return new ForbiddenException(res);
             }
       }
 
@@ -66,10 +70,8 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public send<T>({ body, context }: IApiBase<T>) {
-            if (body.message) body.message = this.localeService.translate(body.message, { ...context });
-
-            return body;
+      public send<T>({ body }: ApiBase<T>): ServerResponse {
+            return this.localeService.translateResponse(body);
       }
 }
 
