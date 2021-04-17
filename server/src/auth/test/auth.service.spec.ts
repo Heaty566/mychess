@@ -29,27 +29,27 @@ describe('UserGuard', () => {
             redisService = module.get<RedisService>(RedisService);
       });
 
-      describe('limitSendingEmailOrSms', () => {
+      describe('isRateLimitKey', () => {
             beforeEach(async () => {
-                  await redisService.deleteByKey('email1@gmail.com');
-                  await redisService.deleteByKey('email2@gmail.com');
+                  await redisService.deleteByKey('rate-limit-email1@gmail.com');
+                  await redisService.deleteByKey('rate-limit-email2@gmail.com');
 
-                  await redisService.setByValue('email1@gmail.com', 1);
+                  await redisService.setByValue('rate-limit-email1@gmail.com', 1);
             });
 
             it('Pass (first send)', async () => {
-                  const result = await authService.limitSendingEmailOrSms('email2@gmail.com', 5, 30);
+                  const result = await authService.isRateLimitKey('email2@gmail.com', 5, 30);
                   expect(result).toBe(true);
             });
 
             it('Pass (do not oversend)', async () => {
-                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
                   expect(result).toBe(true);
             });
 
             it('Fail (oversend', async () => {
-                  await redisService.setByValue('email1@gmail.com', 6);
-                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  await redisService.setByValue('rate-limit-email1@gmail.com', 5);
+                  const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
                   expect(result).toBe(false);
             });
       });
@@ -178,6 +178,53 @@ describe('UserGuard', () => {
 
                   expect(otp).toBeDefined();
                   expect(otp.length).toBe(length);
+            });
+      });
+
+      describe('parseIp', () => {
+            it('Pass by req.headers[x-forwarded-for]', () => {
+                  const result = authService.parseIp({
+                        headers: {
+                              'x-forwarded-for': '127.0.0.1',
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+
+            it('Pass by req.connection.remoteAddress', () => {
+                  const result = authService.parseIp({
+                        headers: {},
+                        connection: {
+                              remoteAddress: '127.0.0.1',
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+
+            it('Pass by req.socket.remoteAddress', () => {
+                  const result = authService.parseIp({
+                        headers: {},
+                        socket: {
+                              remoteAddress: '127.0.0.1',
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+
+            it('Pass by req.connection.socket.remoteAddress', () => {
+                  const result = authService.parseIp({
+                        headers: {},
+                        connection: {
+                              socket: {
+                                    remoteAddress: '127.0.0.1',
+                              },
+                        },
+                  });
+
+                  expect(result).toBeDefined();
             });
       });
 
