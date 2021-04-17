@@ -1,6 +1,6 @@
 import * as i18n from 'i18n';
 import { ValidationError } from 'joi';
-import { IApiResponse, ServerResponse } from '../../app/interface/ApiResponse';
+import { ApiResponseBody, ApiServerResponse } from '../../app/interface/serverResponse';
 
 import baseLocales from './dictionaries/en.json';
 export type Dictionary = keyof typeof baseLocales;
@@ -20,8 +20,8 @@ export class LocalesService {
       /**
        * @description translate joi error message to different languages
        */
-      public translateResponse(res: IApiResponse<any>) {
-            const formatApi: ServerResponse = {
+      public translateResponse(res: ApiResponseBody<any>) {
+            const formatApi: ApiServerResponse = {
                   message: '',
                   details: {},
                   data: null,

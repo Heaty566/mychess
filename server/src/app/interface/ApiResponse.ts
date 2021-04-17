@@ -7,39 +7,9 @@ import {
       ForbiddenException,
 } from '@nestjs/common';
 
-import { Dictionary, LocalesService } from '../../utils/locales/locales.service';
+import { ApiError, ApiSuccess, ApiServerResponse } from './serverResponse';
+import { LocalesService } from '../../utils/locales/locales.service';
 
-type ErrorType =
-      | 'BadGatewayException'
-      | 'BadRequestException'
-      | 'InternalServerErrorException'
-      | 'UnauthorizedException'
-      | 'NotFoundException'
-      | 'ForbiddenException';
-
-export interface MsgResponseItem {
-      type: Dictionary;
-      context?: Record<string, string>;
-}
-export interface IApiResponse<T> {
-      message?: MsgResponseItem;
-      data?: T;
-      details?: Record<string, MsgResponseItem>;
-}
-
-export interface ApiBase<T> {
-      body: IApiResponse<T>;
-}
-
-export interface ApiError extends ApiBase<void> {
-      type?: ErrorType;
-}
-
-export interface ServerResponse {
-      message?: string;
-      details?: Record<any, string>;
-      data?: any;
-}
 class ApiResponse {
       constructor(private readonly localeService: LocalesService) {}
 
@@ -70,7 +40,7 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public send<T>({ body }: ApiBase<T>): ServerResponse {
+      public send<T>({ body }: ApiSuccess<T>): ApiServerResponse {
             return this.localeService.translateResponse(body);
       }
 }
