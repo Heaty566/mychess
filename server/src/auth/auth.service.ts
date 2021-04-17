@@ -143,6 +143,7 @@ export class AuthService {
                   req.connection?.socket?.remoteAddress
             );
       
+  
       randomAvatar(): string {
             let defaultAvatar: string[];
             defaultAvatar = [
