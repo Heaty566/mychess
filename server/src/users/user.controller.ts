@@ -25,6 +25,7 @@ import { ChangePasswordDTO, vChangePasswordDTO } from './dto/changePassword.dto'
 import { UpdateUserDto, vUpdateUserDto } from './dto/updateBasicUser.dto';
 import { UpdateEmailDTO, vUpdateEmailDTO } from './dto/updateEmail.dto';
 import { SearchUsersDTO, vSearchUsersDTO } from './dto/searchUsers';
+import { UserCustomDTO } from './dto/userCustom.dto';
 
 //---- Common
 import { apiResponse } from '../app/interface/ApiResponse';
@@ -46,9 +47,9 @@ export class UserController {
       @UseGuards(UserGuard)
       async cGetUser(@Req() req: Request) {
             //get user
-            const user = await this.userService.getCurrentUser(req.user.id);
+            const user = await this.userService.findOneUserByField('id', req.user.id);
 
-            return apiResponse.send<User>({ body: { data: user } });
+            return apiResponse.send<UserCustomDTO>({ body: { data: user } });
       }
 
       @Get('/search')
@@ -64,14 +65,14 @@ export class UserController {
       @Get('/:id')
       async cGetUserById(@Param('id') id: string) {
             //get user
-            const user = await this.userService.getOneUserByField('id', id);
+            const user = await this.userService.findOneUserWithoutSomeSensitiveFields('id', id);
             if (!user)
                   throw apiResponse.sendError({
                         body: { message: { type: 'user.invalid-input' } },
                         type: 'BadRequestException',
                   });
 
-            return apiResponse.send<User>({ body: { data: user } });
+            return apiResponse.send<UserCustomDTO>({ body: { data: user } });
       }
 
       //------------------Update user information------------------------------------------
@@ -123,7 +124,7 @@ export class UserController {
                   });
 
             //update user information
-            const user = await this.userService.getOneUserByField('id', req.user.id);
+            const user = await this.userService.findOneUserByField('id', req.user.id);
             user.avatarUrl = fileLocation;
             await this.userService.saveUser(user);
 

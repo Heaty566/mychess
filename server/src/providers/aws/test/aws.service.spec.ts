@@ -44,7 +44,7 @@ describe('TokenService', () => {
             });
 
             it('Pass', () => {
-                  const isCorrect = awsService.checkFileExtension(file);
+                  const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
 
                   expect(isCorrect).toBeTruthy();
             });
@@ -58,13 +58,13 @@ describe('TokenService', () => {
 
             it('Failed', () => {
                   file.originalname = 'test.txt';
-                  const isCorrect = awsService.checkFileExtension(file);
+                  const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
 
                   expect(isCorrect).toBeFalsy();
             });
             it('Failed no file', () => {
                   file.originalname = 'test';
-                  const isCorrect = awsService.checkFileExtension(file);
+                  const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
 
                   expect(isCorrect).toBeFalsy();
             });
