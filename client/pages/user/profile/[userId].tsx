@@ -1,26 +1,21 @@
 import * as React from 'react';
 import EditIcons from '../../../public/asset/icons/edit.svg';
-import { userAPI } from '../../../api/user';
+import axios from 'axios';
 import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
 import { AuthState, User } from '../../../store/auth/interface';
-import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import routers from '../../../common/constants/router';
 import SeoHead from '../../../components/common/seoHead';
 import Link from 'next/link';
+import { ApiResponse } from '../../../store/api/interface';
 
 export interface ProfileProps {
     user: User | null;
 }
 
 const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
-    const router = useRouter();
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
-
-    React.useEffect(() => {
-        if (!user) router.push('/404');
-    }, [user]);
 
     if (!user) return null;
     else
@@ -71,13 +66,14 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
 
 export async function getServerSideProps(context: GetServerSidePropsContext<{ userId: string }>): Promise<GetServerSidePropsResult<ProfileProps>> {
     const userId = context.params?.userId;
-    if (!userId) return { props: { user: null } };
+    if (!userId) return { redirect: { destination: '/404', permanent: false } };
     else {
         try {
-            const user = await userAPI.getUserById(userId).then((res) => res.data.data);
-            return { props: { user: JSON.parse(JSON.stringify(user)) } };
+            const user = await axios.get<ApiResponse<User>>(`${process.env.SERVER_INTER_URL}/user/${userId}`).then(({ data }) => data.data);
+
+            return { props: { user } };
         } catch (err) {
-            return { props: { user: null } };
+            return { redirect: { destination: '/404', permanent: false } };
         }
     }
 }

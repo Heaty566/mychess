@@ -15,7 +15,7 @@ import { AuthState } from '../../store/auth/interface';
 import authThunk from '../../store/auth/thunk';
 
 const Navbar: React.FunctionComponent = () => {
-    const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(true);
+    const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(false);
 
     const authState = useSelector<RootState, AuthState>((api) => api.auth);
 

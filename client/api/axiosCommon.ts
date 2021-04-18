@@ -29,8 +29,8 @@ axiosClient.interceptors.response.use(
         }
         if (error.response?.status === 401) {
             const cookies = new Cookies();
-            cookies.set('re-token', '', { maxAge: -999 });
-            cookies.set('auth-token', '', { maxAge: -999 });
+            // cookies.set('re-token', '', { maxAge: -999 });
+            // cookies.set('auth-token', '', { maxAge: -999 });
             store.dispatch(apiActions.updateErrorDetails(error.response.data.details));
         }
 

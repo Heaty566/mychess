@@ -214,6 +214,7 @@ export class AuthController {
       @UseGuards(AuthGuard('google'))
       async cGoogleAuthRedirect(@Req() req: Request, @Res() res: Response) {
             const reToken = await this.authService.createReToken(req.user);
+            console.log(reToken);
             return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
       }
 

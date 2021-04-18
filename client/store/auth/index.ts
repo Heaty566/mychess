@@ -43,8 +43,8 @@ const reducer = createSlice({
 
         builder.addCase(userThunk.getCurrentUser.rejected, (state) => {
             const cookies = new Cookies();
-            cookies.remove('re-token');
-            cookies.remove('auth-token');
+            // cookies.remove('re-token');
+            // cookies.remove('auth-token');
 
             return {
                 ...state,
