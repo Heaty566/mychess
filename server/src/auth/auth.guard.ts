@@ -43,6 +43,7 @@ export class UserGuard implements CanActivate {
             const refreshToken = req.cookies['re-token'] || '';
             const authToken = req.cookies['auth-token'] || '';
 
+            //checking re-token
             if (!refreshToken) {
                   res.cookie('re-token', '', { maxAge: 0 });
                   throw apiResponse.sendError({
@@ -50,6 +51,8 @@ export class UserGuard implements CanActivate {
                         type: 'UnauthorizedException',
                   });
             }
+
+            //checking auth-token
             if (authToken) {
                   const user = await this.authService.getUserByAuthToken(authToken);
                   if (!user) req.user = await this.getAuthToken(res, refreshToken);
