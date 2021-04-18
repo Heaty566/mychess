@@ -27,7 +27,6 @@ describe('UserService', () => {
       describe('findOneUserByField', () => {
             it('Pass', async () => {
                   const res = await userService.findOneUserByField('id', userDb.id);
-
                   expect(res).toBeDefined();
             });
             it('Failed user does not exist', async () => {
@@ -36,15 +35,14 @@ describe('UserService', () => {
             });
       });
 
-      describe('getOneUserByField', () => {
+      describe('findOneUserWithoutSomeSensitiveFields', () => {
             it('Pass', async () => {
-                  const res = await userService.getOneUserByField('id', userDb.id);
-
+                  const res = await userService.findOneUserWithoutSomeSensitiveFields('id', userDb.id);
                   expect(res).toBeDefined();
             });
             it('Failed user does not exist', async () => {
                   const id = uuidv4();
-                  const res = await userService.getOneUserByField('id', id);
+                  const res = await userService.findOneUserWithoutSomeSensitiveFields('id', id);
 
                   expect(res).toBeUndefined();
             });
