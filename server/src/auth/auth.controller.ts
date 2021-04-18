@@ -25,6 +25,7 @@ import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';
 //---- Common
 import { apiResponse } from '../app/interface/ApiResponse';
 import { config } from '../config';
+
 @Controller('auth')
 export class AuthController {
       constructor(
@@ -36,6 +37,7 @@ export class AuthController {
       ) {}
 
       //----------------------------------Common authentication-----------------------------------------------------------
+      // need to be fixed
       @Post('/login')
       @UsePipes(new JoiValidatorPipe(vLoginUserDto))
       async cLoginUser(@Body() body: LoginUserDTO, @Res() res: Response) {

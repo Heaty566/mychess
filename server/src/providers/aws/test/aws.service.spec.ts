@@ -16,6 +16,7 @@ import { initTestModule } from '../../../test/initTest';
 import { AwsService } from '../aws.service';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';
+
 describe('TokenService', () => {
       let app: INestApplication;
       let awsService: AwsService;
