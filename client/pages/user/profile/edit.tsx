@@ -43,8 +43,8 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
     const handleOnSubmit = async (data: EditUserForm) => {
         if (file) await userAPI.updateUserAvatar(file);
         if (data.name !== authState.name) await userAPI.updateUserInfo({ name: data.name });
-        if (data.email !== authState.email) await userAPI.updateUserEmailCreateOTP({ email: data.email });
-        if (data.phoneNumber !== authState.phoneNumber)
+        if (data.email && data.email !== authState.email) await userAPI.updateUserEmailCreateOTP({ email: data.email });
+        if (data.phoneNumber && data.phoneNumber !== authState.phoneNumber)
             await userAPI.updateUserPhoneCreateOTP({ phoneNumber: data.phoneNumber }).then(() => router.push(routers.updateWithOTP.link));
     };
 

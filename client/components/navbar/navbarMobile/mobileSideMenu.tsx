@@ -26,14 +26,16 @@ const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ is
             }`}
         >
             <ul className="text-cloud">
-                <li>
-                    <Link href={`${routers.userProfile.link}/${authState.id}`}>
-                        <div className="flex items-center p-4 space-x-2 capitalize duration-300 cursor-pointer hover:text-white">
-                            <img className="object-cover w-8 h-8" src={authState.avatarUrl} alt={authState.name} />
-                            <a href={`${routers.userProfile.link}/${authState.id}`}>{authState.name}</a>
-                        </div>
-                    </Link>
-                </li>
+                {authState.isLogin && (
+                    <li>
+                        <Link href={`${routers.userProfile.link}/${authState.id}`}>
+                            <div className="flex items-center p-4 space-x-2 capitalize duration-300 cursor-pointer hover:text-white">
+                                <img className="object-cover w-8 h-8" src={authState.avatarUrl} alt={authState.name} />
+                                <a href={`${routers.userProfile.link}/${authState.id}`}>{authState.name}</a>
+                            </div>
+                        </Link>
+                    </li>
+                )}
                 {navbarMenuConfig.map((item) => (
                     <li key={item.label} className="duration-300 hover:bg-woodsmoke-400">
                         <Link href={item.link}>
@@ -66,9 +68,11 @@ const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ is
                         <span className="mr-1 duration-300 hover:text-cloud-50">Language</span>
                     </ArrowDropDownMenu>
                 </li>
-                <li className="p-4 uppercase duration-300 cursor-pointer hover:bg-woodsmoke-400">
-                    <button onClick={() => handleLogoutUser()}>LOGOUT</button>
-                </li>
+                {authState.isLogin && (
+                    <li className="p-4 uppercase duration-300 cursor-pointer hover:bg-woodsmoke-400">
+                        <button onClick={() => handleLogoutUser()}>LOGOUT</button>
+                    </li>
+                )}
             </ul>
         </div>
     );
