@@ -85,7 +85,7 @@ export class AuthController {
       @UseGuards(UserGuard)
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
             //checking user is exist
-            const user = await this.userService.getOneUserByField('id', req.user.id);
+            const user = await this.userService.findOneUserByField('id', req.user.id);
             if (!user)
                   throw apiResponse.sendError({
                         body: { message: { type: 'user.invalid-input' } },

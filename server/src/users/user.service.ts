@@ -6,25 +6,21 @@ import { UserRepository } from './entities/user.repository';
 //---- Entity
 import { User } from './entities/user.entity';
 
+//---- DTO
+import { UserCustomDTO } from './dto/userCustom.dto';
+
 @Injectable()
 export class UserService {
       constructor(private userRepository: UserRepository) {}
 
-      async getCurrentUser(userId: string) {
-            const result = await this.userRepository
-                  .createQueryBuilder()
-                  .select('id, username, name, avatarUrl, createDate, elo, email, phoneNumber')
-                  .where('id = :id', { id: userId })
-                  .execute();
-            return result[0];
+      async findOneUserWithoutSomeSensitiveFields(field: keyof User, value: any) {
+            const userDB = await this.userRepository.findOneByField(field, value);
+            if (!userDB) return userDB;
+            return new UserCustomDTO(userDB);
       }
 
       async findOneUserByField(field: keyof User, value: any) {
             return await this.userRepository.findOneByField(field, value);
-      }
-
-      async getOneUserByField(field: keyof User, value: any) {
-            return await this.userRepository.getUserByField(field, value);
       }
 
       async saveUser(input: User): Promise<User> {
