@@ -15,7 +15,6 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
                   clientID: process.env.FACEBOOK_CLIENT_ID,
                   clientSecret: process.env.FACEBOOK_SECRET,
                   callbackURL: `${process.env.SERVER_URL}/auth/facebook/callback`,
-                  scope: ['email', 'profile'],
             });
       }
       async validate(accessToken: string, refreshToken: string, profile: Profile, done: (error: any, user?: any, info?: any) => void) {
@@ -25,7 +24,6 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
                         user = new User();
                         user.facebookId = profile.id;
                         user.name = profile.displayName;
-                        user.avatarUrl = profile.photos[0].value; // avatar??
                         user = await this.userService.saveUser(user);
                   }
                   done(null, user);

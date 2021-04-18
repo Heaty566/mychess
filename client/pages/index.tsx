@@ -10,8 +10,8 @@ export interface HomeProps {}
 
 const Home: React.FunctionComponent<HomeProps> = () => (
     <div className="flex-1 chess-bg">
-        <div className="max-w-4xl mx-auto my-16">
-            <div className="grid grid-cols-2 grid-rows-2 gap-10 ">
+        <div className="max-w-4xl mx-4 my-16 md:mx-auto ">
+            <div className="flex flex-col space-y-2 md:grid md:grid-cols-2 md:grid-rows-2 md:gap-10 md:space-y-0">
                 <Link href="/">
                     <a
                         href="/"
