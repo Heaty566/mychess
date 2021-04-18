@@ -24,7 +24,7 @@ import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';
 
 //---- Common
 import { apiResponse } from '../app/interface/ApiResponse';
-
+import { config } from '../config';
 @Controller('auth')
 export class AuthController {
       constructor(
@@ -55,7 +55,7 @@ export class AuthController {
 
             //return token
             const reToken = await this.authService.createReToken(isUserExist);
-            return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send();
+            return res.cookie('re-token', reToken, { maxAge: config.authController.loginCookieTime }).send();
       }
 
       @Post('/register')
@@ -68,6 +68,7 @@ export class AuthController {
                         body: { details: { username: { type: 'user.field-taken' } } },
                   });
 
+            //create and insert new user
             const newUser = new User();
             newUser.username = body.username;
             newUser.name = body.name;
@@ -77,26 +78,30 @@ export class AuthController {
 
             //return token
             const reToken = await this.authService.createReToken(insertedUser);
-            return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).send();
+            return res.cookie('re-token', reToken, { maxAge: config.authController.registerCookieTime }).send();
       }
 
       @Get('/socket-token')
       @UseGuards(UserGuard)
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
-            const user = await this.userService.getOneUserByField('id', req.user.id);
+            //checking user is exist
+            const user = await this.userService.findOneUserByField('id', req.user.id);
             if (!user)
                   throw apiResponse.sendError({
                         body: { message: { type: 'user.invalid-input' } },
                         type: 'UnauthorizedException',
                   });
+
+            //create socket io token
             const socketId = await this.authService.getSocketToken(user);
 
-            return res.cookie('io-token', socketId, { maxAge: 1000 * 60 * 60 * 24 }).send();
+            return res.cookie('io-token', socketId, { maxAge: config.authController.socketCookieTime }).send();
       }
 
       @Post('/logout')
       @UseGuards(UserGuard)
       async cLogout(@Req() req: Request, @Res() res: Response) {
+            // clear all token in database
             await this.authService.clearToken(req.user.id);
 
             return res.cookie('re-token', '', { maxAge: -999 }).cookie('auth-token', '', { maxAge: -999 }).send();
@@ -106,26 +111,38 @@ export class AuthController {
       @Post('/otp-email')
       @UsePipes(new JoiValidatorPipe(vUpdateEmailDTO))
       async cSendOTPByMail(@Body() body: UpdateEmailDTO, @Req() req: Request) {
+            //checking amount of time which user request before by ip
             const userIp = this.authService.parseIp(req);
-            let canSendMore = await this.authService.isRateLimitKey(userIp, 6, 60);
+            let canSendMore = await this.authService.isRateLimitKey(
+                  userIp,
+                  config.authController.OTPMailLimitTime * 2,
+                  config.authController.OTPMailBlockTime,
+            );
             if (!canSendMore)
                   throw apiResponse.sendError({
                         body: { details: { email: { type: 'user.request-many-time-60p' } } },
                   });
 
+            //checking email is exist
             const user = await this.userService.findOneUserByField('email', body.email);
             if (!user)
                   throw apiResponse.sendError({
                         body: { details: { email: { type: 'user.field.not-found' } } },
                   });
 
-            canSendMore = await this.authService.isRateLimitKey(user.email, 5, 30);
+            //checking amount of time which user request before by email
+            canSendMore = await this.authService.isRateLimitKey(
+                  user.email,
+                  config.authController.OTPMailLimitTime,
+                  config.authController.OTPMailBlockTime,
+            );
             if (!canSendMore)
                   throw apiResponse.sendError({
                         body: { details: { email: { type: 'user.request-many-time-30p' } } },
                   });
 
-            const redisKey = await this.authService.generateOTP(user, 30, 'email');
+            //generate otp key
+            const redisKey = await this.authService.generateOTP(user, config.authController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({
@@ -141,26 +158,38 @@ export class AuthController {
       @Post('/otp-sms')
       @UsePipes(new JoiValidatorPipe(vOtpSmsDTO))
       async cSendOTPBySms(@Body() body: OtpSmsDTO, @Req() req: Request) {
+            //checking amount of time which user request before by ip
             const userIp = this.authService.parseIp(req);
-            let canSendMore = await this.authService.isRateLimitKey(userIp, 6, 60);
+            let canSendMore = await this.authService.isRateLimitKey(
+                  userIp,
+                  config.authController.OTPPhoneLimitTime * 2,
+                  config.authController.OTPPhoneBlockTime,
+            );
             if (!canSendMore)
                   throw apiResponse.sendError({
                         body: { details: { phoneNumber: { type: 'user.request-many-time-60p' } } },
                   });
 
+            //checking phone is exist
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
             if (!user)
                   throw apiResponse.sendError({
                         body: { details: { phoneNumber: { type: 'user.field.not-found' } } },
                   });
 
-            canSendMore = await this.authService.isRateLimitKey(user.phoneNumber, 3, 60);
+            //checking amount of time which user request before by phone
+            canSendMore = await this.authService.isRateLimitKey(
+                  user.phoneNumber,
+                  config.authController.OTPPhoneLimitTime,
+                  config.authController.OTPPhoneBlockTime,
+            );
             if (!canSendMore)
                   throw apiResponse.sendError({
                         body: { details: { phoneNumber: { type: 'user.request-many-time-60p' } } },
                   });
 
-            const otpKey = this.authService.generateOTP(user, 5, 'sms');
+            //generate otp
+            const otpKey = this.authService.generateOTP(user, config.authController.OTPPhoneValidTime, 'sms');
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
             if (!isSent)
                   throw apiResponse.sendError({
@@ -175,6 +204,7 @@ export class AuthController {
 
       @Post('/check-otp')
       async cCheckOTP(@Query('key') key: string) {
+            //checking is valid otp
             if (!key)
                   throw apiResponse.sendError({
                         type: 'ForbiddenException',
@@ -185,6 +215,7 @@ export class AuthController {
                         },
                   });
 
+            //checking otp is exist
             const isExist = await this.redisService.getObjectByKey<User>(key);
             if (!isExist)
                   throw apiResponse.sendError({
@@ -214,7 +245,7 @@ export class AuthController {
       @UseGuards(AuthGuard('google'))
       async cGoogleAuthRedirect(@Req() req: Request, @Res() res: Response) {
             const reToken = await this.authService.createReToken(req.user);
-            return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+            return res.cookie('re-token', reToken, { maxAge: config.authController.googleUserCookieTime }).redirect(process.env.CLIENT_URL);
       }
 
       @Get('/facebook')
@@ -227,7 +258,7 @@ export class AuthController {
       @UseGuards(AuthGuard('facebook'))
       async cFacebookAuthRedirect(@Req() req: Request, @Res() res: Response) {
             const reToken = await this.authService.createReToken(req.user);
-            return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+            return res.cookie('re-token', reToken, { maxAge: config.authController.facebookUserCookieTime }).redirect(process.env.CLIENT_URL);
       }
 
       @Get('/github')
@@ -240,6 +271,6 @@ export class AuthController {
       @UseGuards(AuthGuard('github'))
       async cGithubAuthRedirect(@Req() req: Request, @Res() res: Response) {
             const reToken = await this.authService.createReToken(req.user);
-            return res.cookie('re-token', reToken, { maxAge: 1000 * 60 * 60 * 24 * 30 }).redirect(process.env.CLIENT_URL);
+            return res.cookie('re-token', reToken, { maxAge: config.authController.githubUserCookieTime }).redirect(process.env.CLIENT_URL);
       }
 }

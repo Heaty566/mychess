@@ -22,8 +22,11 @@ export class UserSocketGuard implements CanActivate {
             const client = await this.cookieParserSocket(context);
             if (!client.cookies) return false;
 
+            //get io-token
             const ioToken = client.cookies['io-token'] || '';
             if (!ioToken) return false;
+
+            //checking io-token
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
             if (!getUser) return false;
             client.user = getUser;

@@ -9,8 +9,8 @@ import { LoggerService } from '../../utils/logger/logger.service';
 @Injectable()
 export class AwsService {
       constructor(private readonly s3: S3, private readonly LoggerService: LoggerService) {}
-      checkFileExtension(file: Express.Multer.File, extend: string[] = []) {
-            const acceptTypes = ['.jpeg', '.jpg', '.png', '.bmp', ...extend];
+      checkFileExtension(file: Express.Multer.File, extend: Array<string>) {
+            const acceptTypes = [...extend];
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
 
             return acceptTypes.includes(fileType);
