@@ -25,9 +25,9 @@ import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';
 //---- Common
 import { apiResponse } from '../app/interface/ApiResponse';
 import { config } from '../config';
-import { IAuthController } from './interface/IAuthController';
+
 @Controller('auth')
-export class AuthController implements IAuthController {
+export class AuthController {
       constructor(
             private readonly authService: AuthService,
             private readonly userService: UserService,
