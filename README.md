@@ -5,21 +5,21 @@
 ## What is MyChess?
 
 My chess is an online web games allow people can play chess or tic tac toe and share their happiness across the world.
-This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](https://store.steampowered.com)
+This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](https://store.steampowered.com).
 
 ## Technology
 
 - Frontend
-     - NextJS - server side Rendering
-     - React-Hook-Form - flexible and extensible forms
-     - Tailwind - for styling
+     - NextJS - Server side Rendering
+     - React-Hook-Form - Flexible and extensible forms
+     - Tailwind - Styling
 - Backend
-     - NestJS - for server core
-     - Typeorm + mysql2 - for database
-     - Socket.io - for real-time connection
-     - Swagger - for documentation
+     - NestJS - Server core
+     - Typeorm + Mysql2 - Database
+     - Socket.io - Real-time connection
+     - Swagger - Documentation
      - Joi + our Joi package extension - validation data
-     - Sendgrid - email service
+     - Sendgrid - Email service
      - Twilio - SMS service
      - AWS S3 - Storage
 
