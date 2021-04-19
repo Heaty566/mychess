@@ -2,7 +2,7 @@
 
 ![MyChess Logo](doc/images/logo.svg)
 
-## What is MyChess?
+## What is MyChess? - [Live Demo](https://mychess.website)
 
 My chess is an online web games allow people can play chess or tic tac toe and share their happiness across the world.
 This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](https://store.steampowered.com).
