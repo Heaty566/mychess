@@ -23,7 +23,6 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
     const metaIndexPage = isIndexPage ? 'index' : 'noindex';
     const metaIsFollowPage = isFollowPage ? 'follow' : 'nofollow';
     const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
-    const canonicalLink = process.env.CLIENT_URL + canonical;
     const pageTitle = title === 'Home' ? 'MyChess' : `${title} | MyChess`;
 
     return (
@@ -38,7 +37,7 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
             <meta name="description" content={description} />
             <meta name="robots" content={metaRobots} />
             <meta name="keywords" content={keyword} />
-            <link href={canonicalLink} rel="canonical" />
+            <link href={canonical} rel="canonical" />
             {/* google header */}
             <meta property="og:type" content="article" />
             <meta property="og:title" content={pageTitle} />
