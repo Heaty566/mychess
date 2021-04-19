@@ -1,8 +1,7 @@
 {
       "user.auth-failed": "or password is not correct",
       "user.field-taken": "is already exist",
-      "user.request-many-time-30p": "is requested too many times, please try again after 30 minutes",
-      "user.request-many-time-60p": "is requested too many times, please try again after 60 minutes",
+      "user.request-many-time": "is requested too many times, please try again after {{time}} minutes",
       "user.not-allow-action": "is not allowed",
       "user.update-success": "update user successfully",
       "user.ban": "you is blocked by an administrator",

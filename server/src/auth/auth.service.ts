@@ -39,7 +39,7 @@ export class AuthService {
             return process.env.DOC === 'active' ? '1234567890' : result;
       }
 
-      generateOTP(user: User, expired: number, type: 'sms' | 'email') {
+      createOTP(user: User, expired: number, type: 'sms' | 'email') {
             const otpKey = this.generateOtpKey(type === 'email' ? 50 : 6, type);
 
             this.redisService.setObjectByKey(otpKey, user, expired);
@@ -54,9 +54,8 @@ export class AuthService {
                   const count = Number(await this.redisService.getByKey(rateLimit));
                   if (count >= maxSent) return false;
                   await this.redisService.setByValue(rateLimit, count + 1, expiredTime);
-            } else {
-                  await this.redisService.setByValue(rateLimit, 1, expiredTime);
-            }
+            } else await this.redisService.setByValue(rateLimit, 1, expiredTime);
+
             return true;
       }
 
