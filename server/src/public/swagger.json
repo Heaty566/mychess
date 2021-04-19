@@ -169,6 +169,7 @@
             "/api/auth/check-otp?key=": {
                   "post": {
                         "tags": ["auth"],
+                        "description": "Check-otp API is user to check a OTP code is exist or not.",
                         "parameters": [{ "$ref": "#/components/parameters/OTPkey" }],
                         "responses": {
                               "200": {
@@ -225,6 +226,7 @@
             "/api/auth/socket-token": {
                   "get": {
                         "tags": ["auth"],
+                        "description": "Create an io cookie and return it to clients.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "responses": {
                               "200": {
@@ -247,6 +249,7 @@
             "/api/user": {
                   "get": {
                         "tags": ["user"],
+                        "description": "This API get information of the current user from server and return it to client without some sensitive fields.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "responses": {
                               "200": {
@@ -295,6 +298,7 @@
             "/api/user/:id": {
                   "get": {
                         "tags": ["user"],
+                        "description": "This API get user information base on id parameter is provided and return it to client without some sensitive fields.",
                         "responses": {
                               "200": {
                                     "description": "The server returns any user information without some sensitive fields.",
