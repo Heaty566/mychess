@@ -1,5 +1,5 @@
 import * as React from 'react';
-import EditIcons from '../../../public/asset/icons/edit.svg';
+import EditIcons from '../../../public/asset/icons/edit';
 import axios from 'axios';
 import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
 import { AuthState, User } from '../../../store/auth/interface';

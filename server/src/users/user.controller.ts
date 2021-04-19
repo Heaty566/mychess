@@ -228,7 +228,7 @@ export class UserController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time-60p' } } },
+                        body: { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
                   });
 
             //checking phone is exist
@@ -249,12 +249,12 @@ export class UserController {
             if (!canSendMore)
                   throw apiResponse.sendError({
                         body: {
-                              details: { phoneNumber: { type: 'user.request-many-time-60p' } },
+                              details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } },
                         },
                   });
 
             //generate otp
-            const otpKey = this.authService.generateOTP(updateUser, config.userController.OTPPhoneValidTime, 'sms');
+            const otpKey = this.authService.createOTP(updateUser, config.userController.OTPPhoneValidTime, 'sms');
             const res = await this.smsService.sendOTP(updateUser.phoneNumber, otpKey);
             if (!res)
                   throw apiResponse.sendError({
@@ -280,7 +280,7 @@ export class UserController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time-60p' } } },
+                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
                   });
 
             //checking email is exist
@@ -301,11 +301,11 @@ export class UserController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time-30p' } } },
+                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
                   });
 
             //generate otp key
-            const redisKey = await this.authService.generateOTP(updateUser, config.userController.OTPMailValidTime, 'email');
+            const redisKey = await this.authService.createOTP(updateUser, config.userController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTPForUpdateEmail(updateUser.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({

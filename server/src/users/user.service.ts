@@ -9,6 +9,9 @@ import { User } from './entities/user.entity';
 //---- DTO
 import { UserCustomDTO } from './dto/userCustom.dto';
 
+//---- Common
+import { config } from '../config';
+
 @Injectable()
 export class UserService {
       constructor(private userRepository: UserRepository) {}
@@ -38,14 +41,7 @@ export class UserService {
       }
 
       randomAvatar() {
-            const defaultAvatar: string[] = [
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-bishop.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-king.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-pawn.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-queen.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-rook.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-knight.png',
-            ];
+            const defaultAvatar = config.userService.avatarDefaultImages;
             const randomNumber: number = Math.floor(Math.random() * (5 - 0 + 1)) + 0; // generate random 0->5
             return defaultAvatar[randomNumber];
       }
