@@ -74,7 +74,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                         />
                     </video>
                     <div className="relative w-full px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
-                        <form onSubmit={handleSubmit(handleOnSubmit)} className="flex space-x-10">
+                        <form onSubmit={handleSubmit(handleOnSubmit)} className="flex flex-col items-start space-x-0 md:flex-row md:space-x-10">
                             <div className="w-40 space-y-2">
                                 <div className="relative max-w-xs ">
                                     <img
@@ -85,7 +85,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                                     <FileUpload name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
                                 </div>
                             </div>
-                            <div className="w-64 space-y-2">
+                            <div className="w-full space-y-2 md:w-64">
                                 <h1 className="text-3xl text-white ">Update User</h1>
                                 <MsgSuccess message={apiState.message} />
                                 <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
