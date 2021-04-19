@@ -12,19 +12,19 @@ export interface SeoHeadProps {
 }
 
 const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
-    title = 'MyGame',
+    title = 'MyChess',
     isIndexPage = false,
     isFollowPage = true,
     description = '---------------comment--------',
     canonical = '/',
     keyword = '---------------comment--------',
-    imageUrl = '/asset/share/banner.png',
+    imageUrl = '/asset/images/chess-board-1.jpg',
 }) => {
     const metaIndexPage = isIndexPage ? 'index' : 'noindex';
     const metaIsFollowPage = isFollowPage ? 'follow' : 'nofollow';
     const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
     const canonicalLink = process.env.CLIENT_URL + canonical;
-    const pageTitle = title === 'Home' ? 'MyGame' : `${title} | MyGame`;
+    const pageTitle = title === 'Home' ? 'MyChess' : `${title} | MyChess`;
 
     return (
         <Head>

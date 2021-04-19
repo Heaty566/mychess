@@ -316,7 +316,7 @@ describe('AuthController', () => {
                   const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp?key=${input}`).send();
 
                   it('Pass', async () => {
-                        const otp = await authService.generateOTP(userDB, 10, 'email');
+                        const otp = await authService.createOTP(userDB, 10, 'email');
                         const res = await reqApi(otp);
 
                         expect(res.status).toBe(201);
