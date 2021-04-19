@@ -48,7 +48,7 @@ export const config: Config = {
 
             // /otp-sms
             OTPPhoneBlockTime: 60,
-            OTPPhoneLimitTime: 3,
+            OTPPhoneLimitTime: 5,
             OTPPhoneValidTime: 5,
       },
 };
