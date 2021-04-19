@@ -1,0 +1,18 @@
+import { UserRole } from '../users/entities/user.userRole.enum';
+import { User } from '../users/entities/user.entity';
+import { fakeData } from './test.helper';
+
+export const fakeUser = () => {
+      const user = new User();
+      user.name = fakeData(10, 'lettersLowerCase');
+      user.username = fakeData(10, 'lettersAndNumbersLowerCase');
+      user.password = '123abcAbc';
+      user.googleId = fakeData(10, 'lettersAndNumbersLowerCase');
+      user.facebookId = fakeData(10, 'lettersAndNumbersLowerCase');
+      user.githubId = fakeData(10, 'lettersAndNumbersLowerCase');
+      user.role = UserRole.USER;
+      user.phoneNumber = `+${fakeData(10, 'number')}`;
+      user.email = `${fakeData(10, 'letters')}@gmail.com`;
+
+      return user;
+};

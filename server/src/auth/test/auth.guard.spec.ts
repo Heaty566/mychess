@@ -1,46 +1,42 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../models/users/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { AuthService } from '../auth.service';
-import { User } from '../../models/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
 import { Request, Response } from 'express';
-import { MyAuthGuard } from '../auth.guard';
+import { UserGuard } from '../auth.guard';
 import { createMock } from 'ts-auto-mock';
 import { RedisService } from '../../providers/redis/redis.service';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../../models/users/entities/user.userRole.enum';
+import { UserRole } from '../../users/entities/user.userRole.enum';
 
 describe('MyAuthGuard', () => {
       let app: INestApplication;
       let user: User;
 
-      let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
 
       let authService: AuthService;
       let redisService: RedisService;
 
-      let authGuard: MyAuthGuard;
+      let authGuard: UserGuard;
       let reToken: string;
       let context: (cookies) => ExecutionContext;
-
+      let resetDB: any;
       beforeAll(async () => {
-            const { getApp, module, getReToken, getUser } = await initTestModule();
+            const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
-            user = getUser;
-            reToken = getReToken;
+            user = (await users[0]).user;
+            reToken = (await users[0]).reToken;
+            resetDB = resetDatabase;
 
-            userRepository = module.get<UserRepository>(UserRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
-
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
-
             const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.USER) });
-            authGuard = new MyAuthGuard(authService, reflector);
+            authGuard = new UserGuard(authService, reflector);
 
             context = (cookies) =>
                   createMock<ExecutionContext>({
@@ -54,11 +50,11 @@ describe('MyAuthGuard', () => {
       });
 
       describe('canActivate Admin Role', () => {
-            let authGuardAdmin: MyAuthGuard;
+            let authGuardAdmin: UserGuard;
 
             beforeAll(async () => {
                   const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.ADMIN) });
-                  authGuardAdmin = new MyAuthGuard(authService, reflector);
+                  authGuardAdmin = new UserGuard(authService, reflector);
             });
 
             it('Failed with role Admin', async () => {
@@ -194,8 +190,7 @@ describe('MyAuthGuard', () => {
       });
 
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

@@ -1,6 +1,8 @@
 import { RedisClient } from 'redis';
 import { Injectable, Inject } from '@nestjs/common';
 import * as flat from 'flat';
+
+//----- Service
 import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()
@@ -16,9 +18,7 @@ export class RedisService {
             const convertToString = JSON.stringify(flatValue);
 
             this.redisRepository.set(key, convertToString);
-            if (expired) {
-                  this.redisRepository.expire(key, expired * 60);
-            }
+            if (expired) this.redisRepository.expire(key, expired * 60);
       }
 
       deleteByKey(key: string) {
@@ -29,7 +29,7 @@ export class RedisService {
             return new Promise<T>((res, rej) => {
                   this.redisRepository.get(key, (err, data) => {
                         if (err) {
-                              this.logger.print(err, 'error');
+                              this.logger.print(err, 'redis.service.ts', 'error');
                               return rej(null);
                         }
                         const convertToJson = JSON.parse(flat.unflatten(data));
@@ -43,18 +43,15 @@ export class RedisService {
        * @param expired amount time for redis value to be expired( 1 = 60s )
        */
       setByValue(key: string, value: number | string, expired?: number) {
-            if (expired) {
-                  this.redisRepository.setex(key, expired * 60, String(value));
-            } else {
-                  this.redisRepository.set(key, String(value));
-            }
+            if (expired) this.redisRepository.setex(key, expired * 60, String(value));
+            else this.redisRepository.set(key, String(value));
       }
 
       getByKey(key: string): Promise<string> {
             return new Promise((res, rej) => {
                   this.redisRepository.get(key, (err, data) => {
                         if (err) {
-                              this.logger.print(err, 'error');
+                              this.logger.print(err, 'redis.service.ts', 'error');
                               return rej(null);
                         }
 

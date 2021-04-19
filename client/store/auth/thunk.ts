@@ -2,14 +2,18 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from '../../api/auth/dto';
 import { AuthAPI, authApi } from '../../api/auth';
-import { IApiResponse } from '../api/interface';
+import { ApiResponse } from '../api/interface';
 
 class AuthThunk {
     constructor(private readonly apiCall: AuthAPI) {}
 
     loginUser = createAsyncThunk<null, UserLoginDto>('UserLoginDto', async (input) => {
-        console.log('------------');
         await this.apiCall.loginUser(input);
+        return null;
+    });
+
+    logoutUser = createAsyncThunk<null, void>('LogoutUser', async () => {
+        await this.apiCall.logoutUser();
         return null;
     });
 
@@ -18,12 +22,12 @@ class AuthThunk {
         return null;
     });
 
-    forgotPasswordByEmail = createAsyncThunk<IApiResponse<void>, ForgotPasswordEmailDto>('ForgotPasswordEmailDto', async (input) => {
+    forgotPasswordByEmail = createAsyncThunk<ApiResponse<void>, ForgotPasswordEmailDto>('ForgotPasswordEmailDto', async (input) => {
         const res = await this.apiCall.forgotPasswordByEmail(input);
         return res.data;
     });
 
-    forgotPasswordByPhone = createAsyncThunk<IApiResponse<void>, ForgotPasswordPhoneDto>('ForgotPasswordPhoneDto', async (input) => {
+    forgotPasswordByPhone = createAsyncThunk<ApiResponse<void>, ForgotPasswordPhoneDto>('ForgotPasswordPhoneDto', async (input) => {
         const res = await this.apiCall.forgotPasswordByPhone(input);
         return res.data;
     });

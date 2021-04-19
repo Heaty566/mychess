@@ -6,11 +6,11 @@ import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
 import { ForgotPasswordPhoneDto } from '../../api/auth/dto';
 import { useTimer } from '../../common/hooks/useTimer';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 import { RootState, store } from '../../store';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
-import { RouteGuard } from '../../common/HOC/routeGuard';
+
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -18,6 +18,8 @@ import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
+import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
+import Link from 'next/link';
 
 const defaultValues: ForgotPasswordPhoneDto = {
     phoneNumber: '',
@@ -25,7 +27,7 @@ const defaultValues: ForgotPasswordPhoneDto = {
 
 const ResetPhone: React.FunctionComponent = () => {
     const { register, handleSubmit } = useForm<ForgotPasswordPhoneDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordPhoneDto>(defaultValues);
     const [isSubmit, setIsSubmit] = React.useState(false);
     const [timer, isDone, setTimerStatus] = useTimer(60, false);
@@ -47,26 +49,33 @@ const ResetPhone: React.FunctionComponent = () => {
     }, [apiState.isError]);
 
     return (
-        <>
+        <RouteProtectedWrapper>
             <SeoHead {...routers.forgotPasswordPhone.header} />
-            <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
+            <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
+                <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <h1 className="text-center text-4xl text-white mb-7">Reset Password</h1>
+                        <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
-                        <p className="text-mercury-800 py-2">Please enter your phone number, you will receive an OTP key.</p>
+                        <p className="py-2 text-mercury-800">
+                            Please enter your phone number, we will send an OTP code, This may take a little while and don't share it with others.
+                        </p>
 
                         {isSubmit && !apiState.isError && (
                             <>
                                 {/* ------------ Resend OTP start ------------------- */}
-                                <div className=" flex space-x-2">
+                                <div className="flex space-x-2 ">
                                     <p className="text-mercury-800">Send me an another OTP.</p>
                                     {!isDone ? (
-                                        <button className="duration-300 hover:text-malibu text-white focus:outline-none">Click Here</button>
+                                        <button className="text-white duration-300 hover:text-malibu focus:outline-none">Click Here</button>
                                     ) : (
                                         <p className="text-white">{timer}s</p>
                                     )}
                                 </div>
+                                <Link href={routers.resetPassword.link}>
+                                    <a href={routers.resetPassword.link} className="text-white duration-300 hover:text-malibu">
+                                        Click Here To Enter Your OTP
+                                    </a>
+                                </Link>
                                 {/* ------------ Resend OTP end ------------------- */}
                             </>
                         )}
@@ -92,8 +101,8 @@ const ResetPhone: React.FunctionComponent = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </RouteProtectedWrapper>
     );
 };
-const ResetPhoneRoute = (props: any) => RouteGuard({ Component: ResetPhone, props: { ...props } });
-export default ResetPhoneRoute;
+
+export default ResetPhone;

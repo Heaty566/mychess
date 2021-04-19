@@ -2,12 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { UserRepository } from '../models/users/entities/user.repository';
-import { ReTokenRepository } from './entities/re-token.repository';
-import { User } from '../models/users/entities/user.entity';
-import { ReToken } from './entities/re-token.entity';
+
+//---- Service
 import { RedisService } from '../providers/redis/redis.service';
-import { number } from 'joi';
+
+//---- Entity
+import { User } from '../users/entities/user.entity';
+import { ReToken } from './entities/re-token.entity';
+
+//---- Repository
+import { UserRepository } from '../users/entities/user.repository';
+import { ReTokenRepository } from './entities/re-token.repository';
 
 @Injectable()
 export class AuthService {
@@ -31,25 +36,26 @@ export class AuthService {
             const charactersLength = pattern[type].length;
             for (let i = 0; i < length; i++) result += characters.charAt(Math.floor(Math.random() * charactersLength));
 
-            return process.env.NODE_ENV === 'active' ? '1234567890' : result;
+            return process.env.DOC === 'active' ? '1234567890' : result;
       }
 
-      generateOTP(user: User, expired: number, type: 'sms' | 'email') {
+      createOTP(user: User, expired: number, type: 'sms' | 'email') {
             const otpKey = this.generateOtpKey(type === 'email' ? 50 : 6, type);
 
             this.redisService.setObjectByKey(otpKey, user, expired);
             return otpKey;
       }
 
-      async limitSendingEmailOrSms(emailOrPhoneNumber: string, maxSent: number, expiredTime: number) {
-            const isExist = await this.redisService.getByKey(emailOrPhoneNumber);
+      async isRateLimitKey(key: string, maxSent: number, expiredTime: number) {
+            const rateLimit = 'rate-limit-' + key;
+
+            const isExist = await this.redisService.getByKey(rateLimit);
             if (isExist) {
-                  const count = Number(await this.redisService.getByKey(emailOrPhoneNumber));
-                  if (count === maxSent) return false;
-                  await this.redisService.setByValue(emailOrPhoneNumber, count + 1, expiredTime);
-            } else {
-                  await this.redisService.setByValue(emailOrPhoneNumber, 1, expiredTime);
-            }
+                  const count = Number(await this.redisService.getByKey(rateLimit));
+                  if (count >= maxSent) return false;
+                  await this.redisService.setByValue(rateLimit, count + 1, expiredTime);
+            } else await this.redisService.setByValue(rateLimit, 1, expiredTime);
+
             return true;
       }
 
@@ -68,10 +74,17 @@ export class AuthService {
 
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
+            const authTokenId = String(uuidv4());
+
+            this.redisService.setByValue(authTokenId, encryptUser, 5);
+            return authTokenId;
+      }
+
+      async getSocketToken(user: User) {
             const authTokenId = uuidv4();
 
-            this.redisService.setByValue(String(authTokenId), encryptUser, 0.2);
-            return String(authTokenId);
+            this.redisService.setObjectByKey(authTokenId, user, 1440);
+            return authTokenId;
       }
 
       async getAuthTokenByReToken(reTokenId: string) {
@@ -117,5 +130,16 @@ export class AuthService {
 
       async decryptString(data: string, encryptedPassword: string): Promise<boolean> {
             return bcrypt.compare(data, encryptedPassword);
+      }
+
+      //--------------------------------User IP Service -------------------------------
+
+      parseIp(req: any) {
+            return (
+                  (typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].split(',').shift()) ||
+                  req.connection?.remoteAddress ||
+                  req.socket?.remoteAddress ||
+                  req.connection?.socket?.remoteAddress
+            );
       }
 }

@@ -1,56 +1,55 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { UserRepository } from '../../models/users/entities/user.repository';
-import { initTestModule } from '../../../test/initTest';
+import { initTestModule } from '../../test/initTest';
 import { AuthService } from '../auth.service';
-import { User } from '../../models/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { ReTokenRepository } from '../entities/re-token.repository';
-import { fakeData } from '../../../test/fakeData';
+import { fakeData } from '../../test/test.helper';
 import { RedisService } from '../../providers/redis/redis.service';
 
-describe('AuthService', () => {
+describe('UserGuard', () => {
       let app: INestApplication;
       let userDb: User;
 
-      let userRepository: UserRepository;
       let reTokenRepository: ReTokenRepository;
 
       let authService: AuthService;
       let redisService: RedisService;
+      let resetDB: any;
       beforeAll(async () => {
-            const { getUser, getApp, module } = await initTestModule();
+            const { users, getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
-            userDb = getUser;
+            userDb = (await users[0]).user;
+            resetDB = resetDatabase;
 
-            userRepository = module.get<UserRepository>(UserRepository);
             reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
 
             authService = module.get<AuthService>(AuthService);
             redisService = module.get<RedisService>(RedisService);
       });
 
-      describe('limitSendingEmailOrSms', () => {
+      describe('isRateLimitKey', () => {
             beforeEach(async () => {
-                  await redisService.deleteByKey('email1@gmail.com');
-                  await redisService.deleteByKey('email2@gmail.com');
+                  await redisService.deleteByKey('rate-limit-email1@gmail.com');
+                  await redisService.deleteByKey('rate-limit-email2@gmail.com');
 
-                  await redisService.setByValue('email1@gmail.com', 1);
+                  await redisService.setByValue('rate-limit-email1@gmail.com', 1);
             });
 
             it('Pass (first send)', async () => {
-                  const result = await authService.limitSendingEmailOrSms('email2@gmail.com', 5, 30);
+                  const result = await authService.isRateLimitKey('email2@gmail.com', 5, 30);
                   expect(result).toBe(true);
             });
 
             it('Pass (do not oversend)', async () => {
-                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
                   expect(result).toBe(true);
             });
 
             it('Fail (oversend', async () => {
-                  await redisService.setByValue('email1@gmail.com', 5);
-                  const result = await authService.limitSendingEmailOrSms('email1@gmail.com', 5, 30);
+                  await redisService.setByValue('rate-limit-email1@gmail.com', 5);
+                  const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
                   expect(result).toBe(false);
             });
       });
@@ -113,6 +112,15 @@ describe('AuthService', () => {
                   expect(userInformation.username).toBe(userInformation.username);
             });
       });
+      describe('getSocketToken', () => {
+            it('Pass', async () => {
+                  const authToken = await authService.getSocketToken(userDb);
+                  const user = await redisService.getObjectByKey<User>(authToken);
+
+                  expect(user.username).toBe(userDb.username);
+                  expect(user.id).toBe(userDb.id);
+            });
+      });
 
       describe('getAuthTokenByReToken', () => {
             it('Pass', async () => {
@@ -173,9 +181,55 @@ describe('AuthService', () => {
             });
       });
 
+      describe('parseIp', () => {
+            it('Pass by req.headers[x-forwarded-for]', () => {
+                  const result = authService.parseIp({
+                        headers: {
+                              'x-forwarded-for': '127.0.0.1',
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+
+            it('Pass by req.connection.remoteAddress', () => {
+                  const result = authService.parseIp({
+                        headers: {},
+                        connection: {
+                              remoteAddress: '127.0.0.1',
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+
+            it('Pass by req.socket.remoteAddress', () => {
+                  const result = authService.parseIp({
+                        headers: {},
+                        socket: {
+                              remoteAddress: '127.0.0.1',
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+
+            it('Pass by req.connection.socket.remoteAddress', () => {
+                  const result = authService.parseIp({
+                        headers: {},
+                        connection: {
+                              socket: {
+                                    remoteAddress: '127.0.0.1',
+                              },
+                        },
+                  });
+
+                  expect(result).toBeDefined();
+            });
+      });
+
       afterAll(async () => {
-            await reTokenRepository.createQueryBuilder().delete().execute();
-            await userRepository.createQueryBuilder().delete().execute();
+            await resetDB();
             await app.close();
       });
 });

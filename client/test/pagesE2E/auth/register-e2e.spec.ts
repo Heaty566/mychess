@@ -5,18 +5,11 @@ import { fakeData } from '../../helper/fakeData';
 import { Browser } from 'puppeteer';
 import router from '../../../common/constants/router';
 import { captureScreen } from '../../helper/captureScreen';
-
-//còn cái này e2e test máy nó nhập tự submit luôn
+import { config, user } from '../init-e2e';
 jest.setTimeout(60000);
-const url = 'http://localhost:3000/auth/register';
+const url = `${config.url}/auth/register`;
 
 describe('/auth/register', () => {
-    const user = {
-        name: 'hello world',
-        username: fakeData(10, 'lettersAndNumbersLowerCase'),
-        password: '1234567Aa',
-        confirmPassword: '1234567Aa',
-    };
     let page: Page;
     let browser: Browser;
 
@@ -36,7 +29,7 @@ describe('/auth/register', () => {
         await incogPage.type('#username', user.username);
         await incogPage.type('#password', user.password);
         await incogPage.type('#name', user.name);
-        await incogPage.type('#confirmPassword', user.confirmPassword);
+        await incogPage.type('#confirmPassword', user.password);
         await incogPage.click('button[type=submit]');
 
         expect(incogPage.url().endsWith('/')).toBeTruthy();

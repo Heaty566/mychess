@@ -1,14 +1,13 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { useSelector } from 'react-redux';
 
 import { apiReducer } from './api';
-import { IApiState } from './api/interface';
+import { ApiState } from './api/interface';
 import { authReducer } from './auth';
-import { IAuthState } from './auth/interface';
+import { AuthState } from './auth/interface';
 
 export interface RootState {
-    api: IApiState;
-    auth: IAuthState;
+    api: ApiState;
+    auth: AuthState;
 }
 
 const reducers = combineReducers<RootState>({

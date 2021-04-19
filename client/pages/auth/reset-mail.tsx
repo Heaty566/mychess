@@ -7,10 +7,10 @@ import routers from '../../common/constants/router';
 import { RootState, store } from '../../store';
 import { useTimer } from '../../common/hooks/useTimer';
 import { ForgotPasswordEmailDto } from '../../api/auth/dto';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
-import { RouteGuard } from '../../common/HOC/routeGuard';
+
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -19,6 +19,8 @@ import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
 import { useTestId } from '../../test/helper/data-testId';
+import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
+import MsgError from '../../components/form/msgError';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -26,7 +28,7 @@ const defaultValues: ForgotPasswordEmailDto = {
 
 const ResetEmail: React.FunctionComponent = () => {
     const { register, handleSubmit } = useForm<ForgotPasswordEmailDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<ForgotPasswordEmailDto>(defaultValues);
     const [isSubmit, setIsSubmit] = React.useState(false);
     const [timer, isRunning, setTimerStatus] = useTimer(60, false);
@@ -48,22 +50,25 @@ const ResetEmail: React.FunctionComponent = () => {
     }, [apiState.isError]);
 
     return (
-        <>
+        <RouteProtectedWrapper>
             <SeoHead {...routers.forgotPasswordEmail.header} />
-            <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <div className="bg-gray-800 px-4 md:px-10 py-12 w-full max-w-md rounded-sm fade-in ">
+            <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
+                <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`reset-mail`)}>
-                        <h1 className="text-center text-4xl text-white mb-7">Reset Password</h1>
+                        <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
-                        <p className="text-mercury-800 py-2">Please enter your email, you will receive an mail to reset your password</p>
+
+                        <p className="py-2 text-mercury-800">
+                            Please enter your email address. you will receive a link to create a new password via email.
+                        </p>
 
                         {isSubmit && !apiState.isError && (
                             <>
                                 {/* ------------ Resend email start ------------------- */}
-                                <div className=" flex space-x-2">
+                                <div className="flex space-x-2 ">
                                     <p className="text-mercury-800">Send me an another email.</p>
                                     {!isRunning ? (
-                                        <button className="duration-300 hover:text-malibu text-white focus:outline-none">Click Here</button>
+                                        <button className="text-white duration-300 hover:text-malibu focus:outline-none">Click Here</button>
                                     ) : (
                                         <p className="text-white">{timer}s</p>
                                     )}
@@ -93,8 +98,8 @@ const ResetEmail: React.FunctionComponent = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </RouteProtectedWrapper>
     );
 };
-const ResetMailRoute = (props: any) => RouteGuard({ Component: ResetEmail, props: { ...props } });
-export default ResetMailRoute;
+
+export default ResetEmail;

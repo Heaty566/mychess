@@ -1,7 +1,7 @@
 {
       "moduleFileExtensions": ["js", "json", "ts"],
       "rootDir": "src",
-      "testRegex": ".*\\.spec\\.ts$",
+      "testRegex": [".*\\.spec\\.ts$", ".*\\.e2e\\.ts$"],
       "transform": {
             "^.+\\.(t|j)s$": "ts-jest",
             ".(ts|tsx)": "ts-jest"
@@ -19,6 +19,7 @@
             "<rootDir>/router.ts",
             "<rootDir>/app/interface/ApiResponse.ts",
             "<rootDir>/app/exception",
-            "<rootDir>/utils/logger"
+            "<rootDir>/utils/logger",
+            "<rootDir>/test"
       ]
 }

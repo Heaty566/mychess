@@ -1,57 +1,79 @@
 import * as React from 'react';
-import { userAPI } from '../../../api/user';
-import { GetServerSideProps, GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
-import { IUser } from '../../../store/auth/interface';
+import EditIcons from '../../../public/asset/icons/edit';
+import axios from 'axios';
+import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
+import { AuthState, User } from '../../../store/auth/interface';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import routers from '../../../common/constants/router';
+import SeoHead from '../../../components/common/seoHead';
+import Link from 'next/link';
+import { ApiResponse } from '../../../store/api/interface';
 
 export interface ProfileProps {
-    user: IUser | null;
+    user: User | null;
 }
 
 const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
-    return (
-        <div className="relative">
-            <video
-                playsInline
-                autoPlay
-                muted
-                loop
-                className=" absolute top-0 z-0 w-full "
-                poster="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/d7d28a52bd829aeee6989e58c3214e6c1cdbc5e3.jpg"
-            >
-                <source
-                    src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/cba7f6ad5a2a96638ff91e5900e17fa671d0385e.webm?fbclid=IwAR2lnhDiu_UzKVt5H4VjGhULyMB1GPhEBEm0276riR0MeAyKUnWfj2qQtUw"
-                    type="video/webm"
-                />
-            </video>
-            <div className=" relative w-full md:w-5/6 xl:w-4/6 m-auto py-6 px-4 background-profile ">
-                {user ? (
-                    <div className="flex space-x-4">
-                        <div className="h-40 ">
-                            <img src="https://picsum.photos/160/160" alt="" />
-                        </div>
-                        <div>
-                            <h1 className="text-4xl text-white capitalize">{user.username}</h1>
-                            <h3 className="text-lg text-cloud-700 capitalize">{user.name}</h3>
-                            <h3 className="text-lg text-cloud mt-2">ELO: {user.elo}</h3>
+    const authState = useSelector<RootState, AuthState>((state) => state.auth);
+
+    if (!user) return null;
+    else
+        return (
+            <>
+                <SeoHead title={user.name} isFollowPage canonical={`${routers.userProfile.link}/${user.id}`} imageUrl={user.avatarUrl} />
+
+                <div className="relative flex flex-1">
+                    <video
+                        playsInline
+                        autoPlay
+                        muted
+                        loop
+                        className="absolute top-0 z-0 object-cover w-full h-full"
+                        poster="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/d7d28a52bd829aeee6989e58c3214e6c1cdbc5e3.jpg"
+                    >
+                        <source
+                            src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/cba7f6ad5a2a96638ff91e5900e17fa671d0385e.webm?fbclid=IwAR2lnhDiu_UzKVt5H4VjGhULyMB1GPhEBEm0276riR0MeAyKUnWfj2qQtUw"
+                            type="video/webm"
+                        />
+                    </video>
+                    <div className="relative flex-1 px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
+                        <div className="flex flex-col h-full space-x-0 space-y-4 md:space-y-0 md:space-x-4 md:flex-row">
+                            <div className="w-40 h-40 mx-auto md:mx-0">
+                                <img className="object-cover w-40 h-40" src={user.avatarUrl} alt={user.name} />
+                            </div>
+                            <div>
+                                <div className="flex items-center space-x-1 ">
+                                    <h1 className="text-4xl text-white capitalize">{user.name}</h1>
+                                    {authState.id === user.id && (
+                                        <Link href={routers.userEdit.link}>
+                                            <a href={routers.userEdit.link}>
+                                                <EditIcons />
+                                            </a>
+                                        </Link>
+                                    )}
+                                </div>
+                                <h3 className="text-lg capitalize text-cloud-700">{user.username}</h3>
+                                <h3 className="mt-2 text-lg text-cloud">ELO: {user.elo}</h3>
+                                <h3 className="mt-2 text-md text-cloud">JOIN: {user.createDate.split('T')[0]}</h3>
+                            </div>
                         </div>
                     </div>
-                ) : (
-                    <h1>Not Found</h1>
-                )}
-            </div>
-        </div>
-    );
+                </div>
+            </>
+        );
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext<{ userId: string }>): Promise<GetServerSidePropsResult<ProfileProps>> {
     const userId = context.params?.userId;
-    if (!userId) return { props: { user: null } };
+    if (!userId) return { redirect: { destination: '/404', permanent: false } };
     else {
         try {
-            const user = await userAPI.getUserById(userId).then((res) => res.data.data);
-            return { props: { user: JSON.parse(JSON.stringify(user)) } };
+            const user = await axios.get<ApiResponse<User>>(`${process.env.SERVER_INTER_URL}/user/${userId}`).then(({ data }) => data.data);
+
+            return { props: { user } };
         } catch (err) {
-            return { props: { user: null } };
+            return { redirect: { destination: '/404', permanent: false } };
         }
     }
 }

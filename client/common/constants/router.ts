@@ -4,7 +4,20 @@ interface IRouter {
     header: SeoHeadProps;
 }
 
-type TRouters = 'register' | 'login' | 'home' | 'community' | 'about' | 'support' | 'forgotPasswordEmail' | 'forgotPasswordPhone';
+type TRouters =
+    | 'register'
+    | 'login'
+    | 'home'
+    | 'community'
+    | 'about'
+    | 'support'
+    | 'forgotPasswordEmail'
+    | 'forgotPasswordPhone'
+    | 'userProfile'
+    | 'userEdit'
+    | 'resetPassword'
+    | '404'
+    | 'updateWithOTP';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -12,35 +25,32 @@ const config: Record<TRouters, IRouter> = {
         header: {
             title: 'Home',
             canonical: '/',
-            description: 'My Game',
+            description: 'My Chess',
             isIndexPage: true,
         },
     },
     community: {
-        link: '/',
+        link: '/community?name=&currentPage=0&pageSize=12',
         header: {
-            title: 'Home',
-            canonical: '/',
+            title: 'Community',
+            canonical: '/community?name=&currentPage=0&pageSize=12',
             description: 'My Game',
-            isIndexPage: true,
         },
     },
     about: {
-        link: '/',
+        link: '/about',
         header: {
-            title: 'Home',
-            canonical: '/',
+            title: 'About Us',
+            canonical: '/about',
             description: 'My Game',
-            isIndexPage: true,
         },
     },
     support: {
-        link: '/',
+        link: '/support',
         header: {
-            title: 'Home',
-            canonical: '/',
+            title: 'Support Center',
+            canonical: '/support',
             description: 'My Game',
-            isIndexPage: true,
         },
     },
     login: {
@@ -65,7 +75,6 @@ const config: Record<TRouters, IRouter> = {
             title: 'Reset Password',
             canonical: '/auth/reset-mail',
             description: 'Send a reset link to your email',
-            isFollowPage: false,
         },
     },
     forgotPasswordPhone: {
@@ -74,7 +83,46 @@ const config: Record<TRouters, IRouter> = {
             title: 'Reset Password',
             canonical: '/auth/reset-phone',
             description: 'Send an OTP to your phone number',
-            isFollowPage: false,
+        },
+    },
+    userProfile: {
+        link: '/user/profile',
+        header: {
+            title: 'Profile',
+            canonical: '/user/profile',
+            description: 'Send an OTP to your phone number',
+        },
+    },
+    userEdit: {
+        link: '/user/profile/edit',
+        header: {
+            title: 'Edit Profile',
+            canonical: '/user/profile/edit',
+            description: 'Send an OTP to your phone number',
+        },
+    },
+    resetPassword: {
+        link: '/auth/reset-password',
+        header: {
+            title: 'Reset Password',
+            canonical: '/auth/reset-phone',
+            description: 'Send an OTP to your phone number',
+        },
+    },
+    updateWithOTP: {
+        link: '/user/update-with-otp',
+        header: {
+            title: 'Update User',
+            canonical: '/user/update-with-otp',
+            description: 'Send an OTP to your phone number',
+        },
+    },
+    '404': {
+        link: '/404',
+        header: {
+            title: 'Not Found',
+            canonical: '/404',
+            description: 'Send an OTP to your phone number',
         },
     },
 };

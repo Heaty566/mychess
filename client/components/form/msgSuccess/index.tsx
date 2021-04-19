@@ -7,7 +7,7 @@ export interface MsgSuccessProps {
 
 const MsgSuccess: React.FunctionComponent<MsgSuccessProps> = ({ message }) => {
     return Boolean(message) ? (
-        <p className="text-first-uppercase text-green-500 fade-in" {...useTestId(`msgSuccess`)}>
+        <p className="text-green-500 text-first-uppercase fade-in" {...useTestId(`msgSuccess`)}>
             {message}
         </p>
     ) : null;

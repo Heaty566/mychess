@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'universal-cookie';
 
-import { IAuthState } from './interface';
+import { AuthState } from './interface';
 import { authThunk } from './thunk';
 import { userThunk } from './userThunk';
 
-const initialState: IAuthState = {
+const initialState: AuthState = {
     email: '',
     username: '',
     name: '',
@@ -13,6 +13,7 @@ const initialState: IAuthState = {
     id: '',
     phoneNumber: '',
     avatarUrl: '',
+    createDate: Date(),
     isLogin: false,
 };
 
@@ -38,6 +39,8 @@ const reducer = createSlice({
         });
         builder.addCase(authThunk.loginUser.fulfilled, (state) => ({ ...state, isLogin: true }));
         builder.addCase(authThunk.registerUser.fulfilled, (state) => ({ ...state, isLogin: true }));
+        builder.addCase(authThunk.logoutUser.fulfilled, () => ({ ...initialState }));
+
         builder.addCase(userThunk.getCurrentUser.rejected, (state) => {
             const cookies = new Cookies();
             cookies.remove('re-token');

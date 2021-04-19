@@ -2,12 +2,17 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Reflector } from '@nestjs/core';
 
-import { UserRole } from '../models/users/entities/user.userRole.enum';
-import { apiResponse } from '../app/interface/ApiResponse';
+//---- Service
 import { AuthService } from './auth.service';
 
+//---- Entity
+import { UserRole } from '../users/entities/user.userRole.enum';
+
+//---- Common
+import { apiResponse } from '../app/interface/ApiResponse';
+
 @Injectable()
-export class MyAuthGuard implements CanActivate {
+export class UserGuard implements CanActivate {
       constructor(private authService: AuthService, private readonly reflector: Reflector) {}
 
       private async deleteAllAuthToken(res: Response) {
@@ -20,7 +25,10 @@ export class MyAuthGuard implements CanActivate {
 
             if (!authTokenId) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ body: { message: 'user.invalid-token' }, type: 'UnauthorizedException' });
+                  throw apiResponse.sendError({
+                        body: { message: { type: 'user.invalid-token' } },
+                        type: 'UnauthorizedException',
+                  });
             }
             res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
             return await this.authService.getUserByAuthToken(authTokenId);
@@ -35,10 +43,16 @@ export class MyAuthGuard implements CanActivate {
             const refreshToken = req.cookies['re-token'] || '';
             const authToken = req.cookies['auth-token'] || '';
 
+            //checking re-token
             if (!refreshToken) {
                   res.cookie('re-token', '', { maxAge: 0 });
-                  throw apiResponse.sendError({ body: { message: 'user.invalid-token' }, type: 'UnauthorizedException' });
+                  throw apiResponse.sendError({
+                        body: { message: { type: 'user.invalid-token' } },
+                        type: 'UnauthorizedException',
+                  });
             }
+
+            //checking auth-token
             if (authToken) {
                   const user = await this.authService.getUserByAuthToken(authToken);
                   if (!user) req.user = await this.getAuthToken(res, refreshToken);
@@ -48,13 +62,19 @@ export class MyAuthGuard implements CanActivate {
             //checking isDisabled user
             if (req.user.isDisabled) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ type: 'ForbiddenException', body: { message: 'user.ban' } });
+                  throw apiResponse.sendError({
+                        type: 'ForbiddenException',
+                        body: { message: { type: 'user.ban' } },
+                  });
             }
 
             //checking role
             if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ body: { message: 'user.not-allow-action' }, type: 'ForbiddenException' });
+                  throw apiResponse.sendError({
+                        body: { message: { type: 'user.not-allow-action' } },
+                        type: 'ForbiddenException',
+                  });
             }
 
             return true;

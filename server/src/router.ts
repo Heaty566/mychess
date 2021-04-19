@@ -7,7 +7,6 @@ import * as morgan from 'morgan';
 import * as helmet from 'helmet';
 import * as I18n from 'i18n';
 
-//* Internal import
 import { NotFoundApiHandler } from './app/exception/notfound.exception';
 import { RuntimeApiHandler } from './app/exception/runtime.exception';
 import * as doc from './public/swagger.json';
@@ -17,6 +16,11 @@ I18n.configure({
       directory: `./src/utils/locales/dictionaries`,
       cookie: 'lang',
       defaultLocale: 'en',
+      missingKeyFn: (locale, value) => {
+            console.log(locale);
+            console.log(value);
+            return value;
+      },
 });
 
 export function router(app: INestApplication) {

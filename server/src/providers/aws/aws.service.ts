@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { LoggerService } from '../../utils/logger/logger.service';
 
-//* Internal import
+//----- Service
+import { LoggerService } from '../../utils/logger/logger.service';
 
 @Injectable()
 export class AwsService {
       constructor(private readonly s3: S3, private readonly LoggerService: LoggerService) {}
-      checkFileExtension(file: Express.Multer.File, extend: string[] = []) {
-            const acceptTypes = ['.jpeg', '.jpg', '.png', '.bmp', ...extend];
+      checkFileExtension(file: Express.Multer.File, extend: Array<string>) {
+            const acceptTypes = [...extend];
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
 
             return acceptTypes.includes(fileType);
@@ -24,16 +24,17 @@ export class AwsService {
       async uploadFile(file: Express.Multer.File, awsPath: string, prefix: 'user' | 'system') {
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
             const id = uuidv4();
+
             const locationFile = `${prefix}/${awsPath}/${id}${fileType}`;
 
             return await this.s3
                   .putObject({ Bucket: process.env.AWS_S3_BUCKET_NAME, Body: file.buffer, Key: locationFile, ContentType: file.mimetype })
                   .promise()
                   .then(() => {
-                        return locationFile;
+                        return process.env.AWS_PREFIX + '/' + locationFile;
                   })
                   .catch((error) => {
-                        this.LoggerService.print(error, 'error');
+                        this.LoggerService.print(error, 'aws.service.ts', 'error');
                         return null;
                   });
       }

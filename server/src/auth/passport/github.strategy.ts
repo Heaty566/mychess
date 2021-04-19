@@ -2,8 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github';
 
-import { UserService } from '../../models/users/user.service';
-import { User } from '../../models/users/entities/user.entity';
+//---- Service
+import { UserService } from '../../users/user.service';
+
+//---- Entity
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
@@ -12,7 +15,6 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
                   clientID: process.env.GITHUB_CLIENT_ID,
                   clientSecret: process.env.GITHUB_SECRET,
                   callbackURL: `${process.env.SERVER_URL}/auth/github/callback`,
-                  scope: ['email', 'profile'],
             });
       }
 

@@ -1,4 +1,4 @@
-export interface IUser {
+export interface User {
     id: string;
     username: string;
     name: string;
@@ -6,8 +6,9 @@ export interface IUser {
     elo: number;
     email: string;
     phoneNumber: string;
+    createDate: string;
 }
 
-export interface IAuthState extends IUser {
+export interface AuthState extends User {
     isLogin: boolean;
 }

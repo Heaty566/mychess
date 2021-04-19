@@ -13,8 +13,8 @@ class TwilioMock {
 
 import { INestApplication } from '@nestjs/common';
 
-import { fakeData } from '../../../../test/fakeData';
-import { initTestModule } from '../../../../test/initTest';
+import { fakeData } from '../../../test/test.helper';
+import { initTestModule } from '../../../test/initTest';
 import { SmsService } from '../sms.service';
 
 jest.mock('twilio', () => {
@@ -41,6 +41,11 @@ describe('TokenService', () => {
                   mockPromise = Promise.reject();
                   const res = await smsService['sendSms'](fakeData(11), fakeData(10));
                   expect(res).toBeFalsy();
+            });
+            it('Debug mode', async () => {
+                  process.env.DOC = 'active';
+                  const res = await smsService['sendSms'](fakeData(11), fakeData(10));
+                  expect(res).toBeTruthy();
             });
       });
 

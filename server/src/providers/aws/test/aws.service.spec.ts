@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 const mockS3Object = jest.fn();
 jest.mock('aws-sdk', () => {
       return {
+            ...jest.requireActual('aws-sdk'),
             config: {
                   update: jest.fn(),
             },
@@ -11,10 +12,11 @@ jest.mock('aws-sdk', () => {
 });
 
 //* Internal import
-import { initTestModule } from '../../../../test/initTest';
+import { initTestModule } from '../../../test/initTest';
 import { AwsService } from '../aws.service';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';
+
 describe('TokenService', () => {
       let app: INestApplication;
       let awsService: AwsService;
@@ -43,7 +45,7 @@ describe('TokenService', () => {
             });
 
             it('Pass', () => {
-                  const isCorrect = awsService.checkFileExtension(file);
+                  const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
 
                   expect(isCorrect).toBeTruthy();
             });
@@ -57,13 +59,13 @@ describe('TokenService', () => {
 
             it('Failed', () => {
                   file.originalname = 'test.txt';
-                  const isCorrect = awsService.checkFileExtension(file);
+                  const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
 
                   expect(isCorrect).toBeFalsy();
             });
             it('Failed no file', () => {
                   file.originalname = 'test';
-                  const isCorrect = awsService.checkFileExtension(file);
+                  const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
 
                   expect(isCorrect).toBeFalsy();
             });

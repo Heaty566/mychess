@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Head from 'next/head';
+import { capitalize } from '../../common/helpers/string.helper';
 export interface SeoHeadProps {
     title: string;
     description?: string;
@@ -11,19 +12,19 @@ export interface SeoHeadProps {
 }
 
 const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
-    title = 'MyGame',
+    title = 'MyChess',
     isIndexPage = false,
     isFollowPage = true,
     description = '---------------comment--------',
     canonical = '/',
     keyword = '---------------comment--------',
-    imageUrl = '/asset/share/banner.png',
+    imageUrl = '/asset/images/chess-board-1.jpg',
 }) => {
     const metaIndexPage = isIndexPage ? 'index' : 'noindex';
     const metaIsFollowPage = isFollowPage ? 'follow' : 'nofollow';
     const metaRobots = `${metaIndexPage},${metaIsFollowPage}`;
     const canonicalLink = process.env.CLIENT_URL + canonical;
-    const pageTitle = title === 'Home' ? 'MyGame' : `${title} | MyGame`;
+    const pageTitle = title === 'Home' ? 'MyChess' : `${title} | MyChess`;
 
     return (
         <Head>
@@ -33,7 +34,7 @@ const SeoHead: React.FunctionComponent<SeoHeadProps> = ({
             <meta name="google-site-verification" content="BWOjVaLMrQlDDZSMNRtScpbtQTBOWSuuZLoFe6IwjV4" />
 
             {/* common header */}
-            <title>{pageTitle}</title>
+            <title>{capitalize(pageTitle)}</title>
             <meta name="description" content={description} />
             <meta name="robots" content={metaRobots} />
             <meta name="keywords" content={keyword} />

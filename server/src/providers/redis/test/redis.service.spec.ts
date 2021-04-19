@@ -1,26 +1,31 @@
 import { INestApplication } from '@nestjs/common';
 
 //* Internal import
-import { initTestModule } from '../../../../test/initTest';
-import { fakeUser } from '../../../../test/fakeEntity';
-import { fakeData } from '../../../../test/fakeData';
-import { User } from '../../../models/users/entities/user.entity';
+import { initTestModule } from '../../../test/initTest';
+import { fakeUser } from '../../../test/fakeEntity';
+import { fakeData } from '../../../test/test.helper';
+import { User } from '../../../users/entities/user.entity';
 import { RedisService } from '../redis.service';
-import { createClient } from 'redis';
+import { createClient, RedisClient } from 'redis';
+
+import { LoggerService } from '../../../utils/logger/logger.service';
 
 describe('RedisService', () => {
       let app: INestApplication;
       let redisService: RedisService;
+      let redis: RedisClient;
 
       beforeAll(async () => {
+            process.env.REDIS_PORT = null;
+            process.env.REDIS_DB_NUMBER = '';
             const { getApp, module } = await initTestModule();
             app = getApp;
 
             const redisPort = Number(process.env.REDIS_PORT) || 7000;
-            const redis = createClient({ port: redisPort, host: process.env.REDIS_HOST || '' });
+            redis = createClient({ port: redisPort, host: process.env.REDIS_HOST || '' });
             redis.select(process.env.REDIS_DB_NUMBER || 1);
-
-            redisService = module.get<RedisService>(RedisService);
+            const logger = module.get<LoggerService>(LoggerService);
+            redisService = new RedisService(redis, logger);
       });
 
       describe('setObjectByKey', () => {
@@ -32,6 +37,11 @@ describe('RedisService', () => {
 
             it('Pass', async () => {
                   redisService.setObjectByKey('user', user);
+                  const res = await redisService.getObjectByKey<User>('user');
+                  expect(res).toBeDefined();
+            });
+            it('Pass with time', async () => {
+                  redisService.setObjectByKey('user', user, 10);
                   const res = await redisService.getObjectByKey<User>('user');
                   expect(res).toBeDefined();
             });
@@ -105,6 +115,7 @@ describe('RedisService', () => {
       });
 
       afterAll(async () => {
+            await redis.quit();
             await app.close();
       });
 });

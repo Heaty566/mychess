@@ -6,9 +6,9 @@ import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
 import { RootState, store } from '../../store';
 import { UserRegisterDto } from '../../api/auth/dto';
-import { IApiState } from '../../store/api/interface';
+import { ApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
-import { RouteGuard } from '../../common/HOC/routeGuard';
+
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -18,6 +18,7 @@ import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
 import { useTestId } from '../../test/helper/data-testId';
+import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: UserRegisterDto = {
     name: '',
@@ -29,18 +30,18 @@ const defaultValues: UserRegisterDto = {
 export interface RegisterProps {}
 const Register: React.FunctionComponent<RegisterProps> = () => {
     const { register, handleSubmit } = useForm<UserRegisterDto>({ defaultValues });
-    const apiState = useSelector<RootState, IApiState>((state) => state.api);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<UserRegisterDto>(defaultValues);
 
     const onSubmit = (data: UserRegisterDto) => store.dispatch(authThunk.registerUser(data));
 
     return (
-        <>
+        <RouteProtectedWrapper>
             <SeoHead {...routers.register.header} />
-            <div className="flex-1 chess-bg grid place-items-center grid-rows-max shadow-sm">
-                <div className="bg-gray-800 px-4 md:px-10 py-16 w-full max-w-md rounded-sm fade-in ">
+            <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
+                <div className="w-full max-w-md px-4 py-16 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`auth-register`)}>
-                        <h1 className="text-center text-4xl text-white mb-7">Register Account</h1>
+                        <h1 className="text-4xl text-center text-white mb-7">Register Account</h1>
                         <MsgSuccess message={apiState.message} />
                         <div className="space-y-2">
                             <TextField name="name" label="Name" error={errors.name} register={register} type="text" />
@@ -59,13 +60,12 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                         </div>
                         {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign Up" />}
                     </form>
-                    <p className="text-center my-4 text-mercury">Or continue with</p>
+                    <p className="my-4 text-center text-mercury">Or continue with</p>
                     <LoginSocial />
                 </div>
             </div>
-        </>
+        </RouteProtectedWrapper>
     );
 };
 
-const RegisterRoute = (props: RegisterProps) => RouteGuard<RegisterProps>({ Component: Register, props: { ...props } });
-export default RegisterRoute;
+export default Register;
