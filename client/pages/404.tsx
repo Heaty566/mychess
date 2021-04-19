@@ -7,7 +7,7 @@ import routers from '../common/constants/router';
 const NotFound: React.FunctionComponent = () => {
     return (
         <>
-            <SeoHead {...routers.support.header} />
+            <SeoHead {...routers[404].header} />
             <div className="flex items-center justify-center flex-1">
                 <div className="space-y-8 text-center">
                     <div className="space-y-2 ">
