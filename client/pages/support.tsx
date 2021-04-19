@@ -8,7 +8,7 @@ import { SupportDto } from '../api/common/dto';
 import BtnForm from '../components/btn/btnForm';
 import { store } from '../store';
 import commonThunk from '../store/api/thunk';
-
+import LogoDesktop from '../public/asset/icons/navbar-logo';
 const defaultValues: SupportDto = {
     message: '',
     email: '',
@@ -30,6 +30,7 @@ const Support: React.FunctionComponent<SupportProps> = () => {
         <div className="flex-1 p-4 md:p-8 chess-bg-2">
             <form className="max-w-3xl p-0 space-y-2 md:p-4 fade-in" onSubmit={handleSubmit(onSubmit)}>
                 <h1 className="text-4xl text-white">Support Form</h1>
+
                 <div className="max-w-xs">
                     <TextField error={errors.name} label="Name" name="name" register={register} type="text" />
                     <TextField error={errors.email} label="Email" name="email" register={register} type="text" />

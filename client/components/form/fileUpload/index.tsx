@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ImageIcon from '../../../public/asset/icons/image.svg';
+import ImageIcon from '../../../public/asset/icons/image';
 import MsgError from '../msgError';
 
 export interface FileUploadProps {
