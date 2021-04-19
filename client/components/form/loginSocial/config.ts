@@ -1,10 +1,10 @@
-import GoogleLoginIcon from '../../../public/asset/icons/google-login.svg';
-import FacebookLoginIcon from '../../../public/asset/icons/facebook-login.svg';
-import GithubLoginIcon from '../../../public/asset/icons/github-login.svg';
+import GoogleLoginIcon from '../../../public/asset/icons/google-login';
+import FacebookLoginIcon from '../../../public/asset/icons/facebook-login';
+import GithubLoginIcon from '../../../public/asset/icons/github-login';
 
 export interface ILoginSocial {
     label: string;
-    Icon: string;
+    Icon: any;
     url: string;
 }
 
