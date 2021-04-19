@@ -2,8 +2,8 @@ import Link from 'next/link';
 import * as React from 'react';
 import Cookies from 'universal-cookie';
 
-import LogoIcons from '../../public/asset/icons/navbar-logo.svg';
-import LogoMdIcons from '../../public/asset/icons/navbar-logo-md.svg';
+import LogoDesktop from '../../public/asset/icons/navbar-logo';
+import LogoMdIcons from '../../public/asset/icons/navbar-logo-md';
 
 import router from '../../common/constants/router';
 import NavbarMenu from './navbarMenu';
@@ -38,9 +38,9 @@ const Navbar: React.FunctionComponent = () => {
             />
             <div className="flex items-center">
                 <Link href={router.home.link}>
-                    <a href={router.home.link}>
+                    <a href={router.home.link} className="inline-block ">
                         <div className="hidden mr-14 md:block ">
-                            <LogoIcons />
+                            <LogoDesktop />
                         </div>
                         <div className="md:hidden">
                             <LogoMdIcons />

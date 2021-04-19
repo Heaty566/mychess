@@ -29,7 +29,6 @@ const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
                     {...useTestId(`loginSocial-${item.label}`)}
                 >
                     <item.Icon />
-
                     <span>{item.label}</span>
                 </div>
             ))}

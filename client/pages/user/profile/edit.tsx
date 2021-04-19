@@ -13,8 +13,6 @@ import BtnForm from '../../../components/btn/btnForm';
 import userAPI from '../../../api/user';
 import MsgSuccess from '../../../components/form/msgSuccess';
 import { ApiState } from '../../../store/api/interface';
-import { authActions } from '../../../store/auth';
-import userThunk from '../../../store/auth/userThunk';
 import routers from '../../../common/constants/router';
 import WaveLoading from '../../../components/loading/waveLoading';
 import { useRouter } from 'next/router';
