@@ -297,7 +297,7 @@ describe('UserController E2E', () => {
                         supertest(app.getHttpServer()).put(`/api/user/update-with-otp?key=${redisKey}`).set({ cookie: cookieData }).send();
 
                   beforeAll(async () => {
-                        redisKey = await authService.generateOTP(userDb, 2, 'sms');
+                        redisKey = await authService.createOTP(userDb, 2, 'sms');
                   });
 
                   it('Pass', async () => {
@@ -311,7 +311,7 @@ describe('UserController E2E', () => {
 
                   it('Pass Email', async () => {
                         userDb.email = 'helloworld@gmail.com';
-                        redisKey = await authService.generateOTP(userDb, 2, 'email');
+                        redisKey = await authService.createOTP(userDb, 2, 'email');
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(redisKey);
                         const afterRedisKey = await redisService.getObjectByKey(redisKey);
@@ -322,7 +322,7 @@ describe('UserController E2E', () => {
 
                   it('Pass Phone', async () => {
                         userDb.phoneNumber = '+1234567890';
-                        redisKey = await authService.generateOTP(userDb, 2, 'email');
+                        redisKey = await authService.createOTP(userDb, 2, 'email');
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(redisKey);
                         const afterRedisKey = await redisService.getObjectByKey(redisKey);
@@ -360,7 +360,7 @@ describe('UserController E2E', () => {
                         user = fakeUser();
                         user.email = 'heaty126@gmail.com';
                         await userService.saveUser(user);
-                        redisKey = await authService.generateOTP(user, 2, 'email');
+                        redisKey = await authService.createOTP(user, 2, 'email');
                         body = {
                               newPassword: 'Password123',
                               confirmNewPassword: 'Password123',
