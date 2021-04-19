@@ -9,6 +9,7 @@ import routers from '../../../common/constants/router';
 import SeoHead from '../../../components/common/seoHead';
 import Link from 'next/link';
 import { ApiResponse } from '../../../store/api/interface';
+import { capitalize } from '../../../common/helpers/string.helper';
 
 export interface ProfileProps {
     user: User | null;
@@ -21,7 +22,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     else
         return (
             <>
-                <SeoHead title={user.name} isFollowPage canonical={`${routers.userProfile.link}/${user.id}`} imageUrl={user.avatarUrl} />
+                <SeoHead title={capitalize(user.name)} isFollowPage canonical={`${routers.userProfile.link}/${user.id}`} imageUrl={user.avatarUrl} />
 
                 <div className="relative flex flex-1">
                     <video
