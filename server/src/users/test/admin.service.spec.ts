@@ -1,14 +1,19 @@
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
-import { initTestModule } from '../../test/initTest';
-import { fakeUser } from '../../test/fakeEntity';
+//---- Helper
+import { initTestModule } from '../../app/Helpers/test/initTest';
+import { fakeUser } from '../../app/Helpers/test/fakeEntity';
 
+//---- Repository
 import { UserRepository } from '../entities/user.repository';
 
+//---- Entity
 import { User } from '../entities/user.entity';
 
+//---- Service
 import { AdminService } from '../admin.service';
+
+//---- Enum
 import { UserRole } from '../entities/user.userRole.enum';
 
 describe('AdminService', () => {
@@ -25,7 +30,7 @@ describe('AdminService', () => {
             adminService = module.get<AdminService>(AdminService);
       });
 
-      describe('changeUserRole', () => {
+      describe('toggleUserRole', () => {
             let testUser: User;
             beforeAll(async () => {
                   testUser = fakeUser();
@@ -40,6 +45,7 @@ describe('AdminService', () => {
                   expect(user.role).toBe(UserRole.ADMIN);
                   expect(getUser.role).toBe(UserRole.ADMIN);
             });
+
             it('Pass Change to User', async () => {
                   const user = await adminService.toggleUserRole(testUser);
                   const getUser = await userRepository.findOneByField('id', testUser.id);
@@ -56,6 +62,7 @@ describe('AdminService', () => {
                   testUser = fakeUser();
                   testUser = await userRepository.save(testUser);
             });
+
             it('Pass Change to true', async () => {
                   const user = await adminService.toggleUserStatus(testUser);
                   const getUser = await userRepository.findOneByField('id', testUser.id);

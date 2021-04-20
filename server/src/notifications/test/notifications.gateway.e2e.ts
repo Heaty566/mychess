@@ -1,10 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 
-import { getIoClient } from '../../test/test.helper';
-import { initTestModule } from '../../test/initTest';
+//---- Helper
+import { getIoClient } from '../../app/Helpers/test/test.helper';
+import { initTestModule } from '../../app/Helpers/test/initTest';
+
+//---- Entity
 import { Notification } from '../entities/notification.entity';
+import { User } from '../../users/entities/user.entity';
+
+//---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
-import User from '../../users/entities/user.entity';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
@@ -18,6 +23,7 @@ describe('ChatsGateway', () => {
 
       let userRepository: UserRepository;
       let resetDB: any;
+
       beforeAll(async () => {
             const { configModule, users, resetDatabase } = await initTestModule();
             app = configModule;
@@ -57,28 +63,6 @@ describe('ChatsGateway', () => {
             });
       });
 
-      describe('update-notifications', () => {
-            beforeAll(async () => {
-                  const notification1 = new Notification();
-                  const notification2 = new Notification();
-
-                  user1.notifications = [notification1, notification2];
-                  await userRepository.save(user1);
-            });
-
-            beforeEach(async () => {
-                  await client1.connect();
-            });
-
-            it('Pass', async (done) => {
-                  client1.on('update-notifications-success', (data) => {
-                        expect(data).toHaveLength(2);
-                        done();
-                  });
-                  client1.emit('update-notifications', {});
-            });
-      });
-
       describe('send-notification', () => {
             beforeEach(async () => {
                   await client1.connect();
@@ -102,6 +86,28 @@ describe('ChatsGateway', () => {
                   });
                   client2.emit('connection-notification', {});
                   client1.emit('send-notification', { userId: user2.id });
+            });
+      });
+
+      describe('update-notifications', () => {
+            beforeAll(async () => {
+                  const notification1 = new Notification();
+                  const notification2 = new Notification();
+
+                  user1.notifications = [notification1, notification2];
+                  await userRepository.save(user1);
+            });
+
+            beforeEach(async () => {
+                  await client1.connect();
+            });
+
+            it('Pass', async (done) => {
+                  client1.on('update-notifications-success', (data) => {
+                        expect(data).toHaveLength(2);
+                        done();
+                  });
+                  client1.emit('update-notifications', {});
             });
       });
 
