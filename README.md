@@ -1,5 +1,3 @@
-# MyChess
-
 ![MyChess Logo](doc/images/logo.svg)
 
 ## What is MyChess? - [Live Demo](https://mychess.website)
