@@ -1,16 +1,24 @@
 import { ExecutionContext, INestApplication } from '@nestjs/common';
-
-//* Internal import
-import { initTestModule } from '../../test/initTest';
-import { AuthService } from '../auth.service';
-import { User } from '../../users/entities/user.entity';
-import { ReTokenRepository } from '../entities/re-token.repository';
 import { Request, Response } from 'express';
-import { UserGuard } from '../auth.guard';
-import { createMock } from 'ts-auto-mock';
-import { RedisService } from '../../providers/redis/redis.service';
 import { Reflector } from '@nestjs/core';
+import { createMock } from 'ts-auto-mock';
+
+//---- Service
+import { AuthService } from '../auth.service';
+import { RedisService } from '../../providers/redis/redis.service';
+
+//---- Repository
+import { ReTokenRepository } from '../entities/re-token.repository';
+
+//---- Entity
+import { User } from '../../users/entities/user.entity';
 import { UserRole } from '../../users/entities/user.userRole.enum';
+
+//---- Helper
+import { initTestModule } from '../../app/Helpers/test/initTest';
+
+//---- Pipe
+import { UserGuard } from '../auth.guard';
 
 describe('MyAuthGuard', () => {
       let app: INestApplication;
@@ -25,6 +33,7 @@ describe('MyAuthGuard', () => {
       let reToken: string;
       let context: (cookies) => ExecutionContext;
       let resetDB: any;
+
       beforeAll(async () => {
             const { getApp, module, users, resetDatabase } = await initTestModule();
             app = getApp;
@@ -49,143 +58,145 @@ describe('MyAuthGuard', () => {
                   });
       });
 
-      describe('canActivate Admin Role', () => {
-            let authGuardAdmin: UserGuard;
+      describe('canActivate', () => {
+            describe('canActivate Admin Role', () => {
+                  let authGuardAdmin: UserGuard;
 
-            beforeAll(async () => {
-                  const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.ADMIN) });
-                  authGuardAdmin = new UserGuard(authService, reflector);
-            });
-
-            it('Failed with role Admin', async () => {
-                  const contextTracker = context({ 're-token': reToken });
-                  try {
-                        await authGuardAdmin.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  }
-            });
-      });
-
-      describe('canActivate common case', () => {
-            it('Pass', async () => {
-                  const contextTracker = context({ 're-token': reToken });
-                  const res = await authGuard.canActivate(contextTracker);
-                  const getUser = contextTracker.switchToHttp().getRequest().user;
-
-                  expect(getUser.username).toBe(user.username);
-                  expect(res).toBeTruthy();
-            });
-
-            it('Pass has re-token but invalid auth-token', async () => {
-                  const contextTracker = context({ 're-token': reToken, 'auth-token': '123' });
-
-                  const res = await authGuard.canActivate(contextTracker);
-                  const getUser = contextTracker.switchToHttp().getRequest().user;
-
-                  expect(getUser.username).toBe(user.username);
-                  expect(res).toBeTruthy();
-            });
-
-            it('Pass have auth-token', async () => {
-                  const reTokenId = await authService.createReToken(user);
-                  const reToken = await reTokenRepository.findOneByField('id', reTokenId);
-
-                  const contextTracker = context({
-                        're-token': '132',
-                        'auth-token': reToken.data,
-                  });
-                  const res = await authGuard.canActivate(contextTracker);
-                  const getUser = contextTracker.switchToHttp().getRequest().user;
-                  expect(getUser.username).toBe(user.username);
-                  expect(res).toBeTruthy();
-            });
-
-            it('Failed invalid auth-token', async () => {
-                  const contextTracker = context({
-                        're-token': '132',
-                        'auth-token': '123',
+                  beforeAll(async () => {
+                        const reflector = createMock<Reflector>({ get: jest.fn().mockReturnValue(UserRole.ADMIN) });
+                        authGuardAdmin = new UserGuard(authService, reflector);
                   });
 
-                  try {
-                        await authGuard.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  } finally {
-                        const getUser = contextTracker.switchToHttp().getRequest().user;
-                        expect(getUser).toBeNull();
-                  }
-            });
-
-            it('Failed not token provide', async () => {
-                  const contextTracker = context({});
-                  try {
-                        await authGuard.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  } finally {
-                        const getUser = contextTracker.switchToHttp().getRequest().user;
-                        expect(getUser).toBeNull();
-                  }
-            });
-
-            it('Failed re-token no provide', async () => {
-                  const authToken = await authService.getAuthTokenByReToken(reToken);
-                  const contextTracker = context({
-                        'auth-token': authToken,
+                  it('Failed with role Admin', async () => {
+                        const contextTracker = context({ 're-token': reToken });
+                        try {
+                              await authGuardAdmin.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        }
                   });
-                  try {
-                        await authGuard.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  } finally {
-                        const getUser = contextTracker.switchToHttp().getRequest().user;
-                        expect(getUser).toBeNull();
-                  }
             });
 
-            it('Failed invalid re-token', async () => {
-                  const contextTracker = context({
-                        're-token': '123',
+            describe('canActivate common case', () => {
+                  it('Pass', async () => {
+                        const contextTracker = context({ 're-token': reToken });
+                        const res = await authGuard.canActivate(contextTracker);
+                        const getUser = contextTracker.switchToHttp().getRequest().user;
+
+                        expect(getUser.username).toBe(user.username);
+                        expect(res).toBeTruthy();
                   });
 
-                  try {
-                        await authGuard.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  } finally {
-                        const getUser = contextTracker.switchToHttp().getRequest().user;
-                        expect(getUser).toBeNull();
-                  }
-            });
+                  it('Pass has re-token but invalid auth-token', async () => {
+                        const contextTracker = context({ 're-token': reToken, 'auth-token': '123' });
 
-            it('Failed invalid re-token (invalid)', async () => {
-                  const authToken = await authService.createReToken(user);
-                  const reToken = await reTokenRepository.findOneByField('id', authToken);
-                  redisService.setByValue(reToken.data, '123', 0);
-                  const contextTracker = context({
-                        're-token': reToken.id,
+                        const res = await authGuard.canActivate(contextTracker);
+                        const getUser = contextTracker.switchToHttp().getRequest().user;
+
+                        expect(getUser.username).toBe(user.username);
+                        expect(res).toBeTruthy();
                   });
 
-                  try {
-                        await authGuard.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  } finally {
-                        const getUser = contextTracker.switchToHttp().getRequest().user;
-                        expect(getUser).toBeNull();
-                  }
-            });
+                  it('Pass have auth-token', async () => {
+                        const reTokenId = await authService.createReToken(user);
+                        const reToken = await reTokenRepository.findOneByField('id', reTokenId);
 
-            it('Failed (isDisable user)', async () => {
-                  user.isDisabled = true;
-                  const reToken = await authService.createReToken(user);
-                  const contextTracker = context({ 're-token': reToken });
-                  try {
-                        await authGuard.canActivate(contextTracker);
-                  } catch (err) {
-                        expect(err).toBeDefined();
-                  }
+                        const contextTracker = context({
+                              're-token': '132',
+                              'auth-token': reToken.data,
+                        });
+                        const res = await authGuard.canActivate(contextTracker);
+                        const getUser = contextTracker.switchToHttp().getRequest().user;
+                        expect(getUser.username).toBe(user.username);
+                        expect(res).toBeTruthy();
+                  });
+
+                  it('Failed invalid auth-token', async () => {
+                        const contextTracker = context({
+                              're-token': '132',
+                              'auth-token': '123',
+                        });
+
+                        try {
+                              await authGuard.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        } finally {
+                              const getUser = contextTracker.switchToHttp().getRequest().user;
+                              expect(getUser).toBeNull();
+                        }
+                  });
+
+                  it('Failed not token provide', async () => {
+                        const contextTracker = context({});
+                        try {
+                              await authGuard.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        } finally {
+                              const getUser = contextTracker.switchToHttp().getRequest().user;
+                              expect(getUser).toBeNull();
+                        }
+                  });
+
+                  it('Failed re-token no provide', async () => {
+                        const authToken = await authService.getAuthTokenByReToken(reToken);
+                        const contextTracker = context({
+                              'auth-token': authToken,
+                        });
+                        try {
+                              await authGuard.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        } finally {
+                              const getUser = contextTracker.switchToHttp().getRequest().user;
+                              expect(getUser).toBeNull();
+                        }
+                  });
+
+                  it('Failed invalid re-token', async () => {
+                        const contextTracker = context({
+                              're-token': '123',
+                        });
+
+                        try {
+                              await authGuard.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        } finally {
+                              const getUser = contextTracker.switchToHttp().getRequest().user;
+                              expect(getUser).toBeNull();
+                        }
+                  });
+
+                  it('Failed invalid re-token (invalid)', async () => {
+                        const authToken = await authService.createReToken(user);
+                        const reToken = await reTokenRepository.findOneByField('id', authToken);
+                        redisService.setByValue(reToken.data, '123', 0);
+                        const contextTracker = context({
+                              're-token': reToken.id,
+                        });
+
+                        try {
+                              await authGuard.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        } finally {
+                              const getUser = contextTracker.switchToHttp().getRequest().user;
+                              expect(getUser).toBeNull();
+                        }
+                  });
+
+                  it('Failed (isDisable user)', async () => {
+                        user.isDisabled = true;
+                        const reToken = await authService.createReToken(user);
+                        const contextTracker = context({ 're-token': reToken });
+                        try {
+                              await authGuard.canActivate(contextTracker);
+                        } catch (err) {
+                              expect(err).toBeDefined();
+                        }
+                  });
             });
       });
 

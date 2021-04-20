@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import DropdownIcons from '../../public/asset/icons/navbar-dropdown.svg';
+import DropdownIcons from '../../public/asset/icons/navbar-dropdown';
 
 export interface ArrowDropDownMenuProps {
     dropMenuPosition: 'left-0' | 'right-0';
