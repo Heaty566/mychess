@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 
 //---- Helper
-import { getIoClient } from '../../app/Helpers/test/test.helper';
-import { initTestModule } from '../../app/Helpers/test/initTest';
+import { getIoClient } from '../../test/test.helper';
+import { initTestModule } from '../../test/initTest';
 
 //---- Entity
 import { Notification } from '../entities/notification.entity';

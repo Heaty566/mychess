@@ -5,9 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserRepository } from '../entities/user.repository';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
-import { fakeData } from '../../app/Helpers/test/test.helper';
-import { fakeUser } from '../../app/Helpers/test/fakeEntity';
+import { initTestModule } from '../../test/initTest';
+import { fakeData } from '../../test/test.helper';
+import { fakeUser } from '../../test/fakeEntity';
 
 //---- Entity
 import { User } from '../entities/user.entity';

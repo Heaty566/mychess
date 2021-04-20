@@ -9,7 +9,7 @@ import { RedisService } from '../../providers/redis/redis.service';
 import { UserSocketGuard } from '../authSocket.guard';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
+import { initTestModule } from '../../test/initTest';
 
 jest.mock('cookie', () => {
       return {

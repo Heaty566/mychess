@@ -1,21 +1,23 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import TextField from '../../../components/form/textField';
-import { RootState, store } from '../../../store';
+
+import { RootState } from '../../../store';
 import { AuthState } from '../../../store/auth/interface';
 import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../api/user/dto';
-import useFormError from '../../../common/hooks/useFormError';
-import FileUpload from '../../../components/form/fileUpload';
 import { useUploadFile } from '../../../common/hooks/useUploadFile';
+import useFormError from '../../../common/hooks/useFormError';
+import { ApiState } from '../../../store/api/interface';
+import userAPI from '../../../api/user';
+import routers from '../../../common/constants/router';
+import { useRouter } from 'next/router';
+
+import FileUpload from '../../../components/form/fileUpload';
+import TextField from '../../../components/form/textField';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import BtnForm from '../../../components/btn/btnForm';
-import userAPI from '../../../api/user';
 import MsgSuccess from '../../../components/form/msgSuccess';
-import { ApiState } from '../../../store/api/interface';
-import routers from '../../../common/constants/router';
 import WaveLoading from '../../../components/loading/waveLoading';
-import { useRouter } from 'next/router';
 import SeoHead from '../../../components/common/seoHead';
 
 interface EditUserForm extends UpdateUserInfoDto, UpdateUserEmailDto, UpdateUserPhoneDto {

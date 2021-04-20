@@ -10,7 +10,6 @@ import { ForgotPasswordEmailDto } from '../../api/auth/dto';
 import { ApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
-
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -18,9 +17,7 @@ import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
-import { useTestId } from '../../test/helper/data-testId';
 import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
-import MsgError from '../../components/form/msgError';
 
 const defaultValues: ForgotPasswordEmailDto = {
     email: '',
@@ -54,7 +51,7 @@ const ResetEmail: React.FunctionComponent = () => {
             <SeoHead {...routers.forgotPasswordEmail.header} />
             <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
                 <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
-                    <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`reset-mail`)}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
                         <MsgSuccess message={apiState.message} />
 
