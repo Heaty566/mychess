@@ -38,7 +38,7 @@ const ResetPhone: React.FunctionComponent = () => {
         if (isSubmit) setTimerStatus(true);
     };
 
-    const onReset = () => {
+    const onSendMore = () => {
         store.dispatch(apiActions.resetState());
         setTimerStatus(false);
         setIsSubmit(false);
@@ -90,7 +90,7 @@ const ResetPhone: React.FunctionComponent = () => {
                             {apiState.isLoading ? (
                                 <WaveLoading />
                             ) : isSubmit && !apiState.isError ? (
-                                <BtnForm label="Change Another Phone Number" type="button" handleOnClick={onReset} />
+                                <BtnForm label="Change Another Phone Number" type="button" handleOnClick={onSendMore} />
                             ) : (
                                 <BtnForm label="Send An OTP" />
                             )}

@@ -2,7 +2,6 @@ import * as React from 'react';
 import Link from 'next/link';
 
 import routers from '../../../common/constants/router';
-
 import navbarMenuConfig from '../navbarMenu/config';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
 import config from './config';

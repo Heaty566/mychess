@@ -15,9 +15,9 @@ import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
 
 //---- Helper
-import { fakeUser } from '../../app/Helpers/test/fakeEntity';
-import { initTestModule } from '../../app/Helpers/test/initTest';
-import { fakeData, defuse, generateCookie } from '../../app/Helpers/test/test.helper';
+import { fakeUser } from '../../test/fakeEntity';
+import { initTestModule } from '../../test/initTest';
+import { fakeData, defuse, generateCookie } from '../../test/test.helper';
 
 //---- Repository
 import { UserRepository } from '../entities/user.repository';
@@ -360,7 +360,7 @@ describe('UserController E2E', () => {
                   });
 
                   it('Pass Phone', async () => {
-                        userDb.phoneNumber = '+1234567890';
+                        userDb.phoneNumber = '+84901345099';
                         redisKey = await authService.createOTP(userDb, 2, 'email');
                         const beforeRedisKey = await redisService.getObjectByKey(redisKey);
                         const res = await reqApi(redisKey);
@@ -405,11 +405,8 @@ describe('UserController E2E', () => {
 
                   it('Pass', async () => {
                         const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
+                        const res = await reqApi({ phoneNumber: '0904563877' });
 
-                        otpSmsDTO = {
-                              phoneNumber: fakeData(10, 'number'),
-                        };
-                        const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(201);
 
                         mySpy.mockClear();

@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 
 //---- Helper
-import { initTestModule } from '../../../app/Helpers/test/initTest';
+import { initTestModule } from '../../../test/initTest';
 
 //---- Service
 import { SmailService } from '../smail.service';

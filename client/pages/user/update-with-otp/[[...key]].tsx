@@ -1,23 +1,20 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 
 import SeoHead from '../../../components/common/seoHead';
 import routers from '../../../common/constants/router';
-import { ResetUserPasswordDto } from '../../../api/user/dto';
 import { RootState } from '../../../store';
 import { ApiState } from '../../../store/api/interface';
+import userAPI from '../../../api/user';
 
+import BtnLink from '../../../components/link/btnLink';
 import useFormError from '../../../common/hooks/useFormError';
-import { RouteProtectedWrapper } from '../../../common/HOC/routeProtectedWrapper';
 import TextField from '../../../components/form/textField';
 import BtnForm from '../../../components/btn/btnForm';
 import WaveLoading from '../../../components/loading/waveLoading';
 import MsgSuccess from '../../../components/form/msgSuccess';
-import userAPI from '../../../api/user';
-import authApi from '../../../api/auth';
-import { useRouter } from 'next/router';
-import BtnLink from '../../../components/link/btnLink';
 
 interface RestUserPasswordWithKey {
     otp: string;

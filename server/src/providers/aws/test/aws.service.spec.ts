@@ -3,7 +3,7 @@ import { Buffer } from 'buffer';
 import { Readable } from 'stream';
 
 //---- Helper
-import { initTestModule } from '../../../app/Helpers/test/initTest';
+import { initTestModule } from '../../../test/initTest';
 
 //---- Service
 import { AwsService } from '../aws.service';

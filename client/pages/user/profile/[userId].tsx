@@ -1,15 +1,17 @@
-import * as React from 'react';
-import EditIcons from '../../../public/asset/icons/edit';
-import axios from 'axios';
 import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
-import { AuthState, User } from '../../../store/auth/interface';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
-import routers from '../../../common/constants/router';
-import SeoHead from '../../../components/common/seoHead';
+import * as React from 'react';
 import Link from 'next/link';
-import { ApiResponse } from '../../../store/api/interface';
+import axios from 'axios';
+
+import { RootState } from '../../../store';
+import SeoHead from '../../../components/common/seoHead';
 import { capitalize } from '../../../common/helpers/string.helper';
+import { ApiResponse } from '../../../store/api/interface';
+import { AuthState, User } from '../../../store/auth/interface';
+
+import EditIcons from '../../../public/asset/icons/edit';
+import routers from '../../../common/constants/router';
 
 export interface ProfileProps {
     user: User | null;

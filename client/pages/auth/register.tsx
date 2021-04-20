@@ -8,7 +8,6 @@ import { RootState, store } from '../../store';
 import { UserRegisterDto } from '../../api/auth/dto';
 import { ApiState } from '../../store/api/interface';
 import useFormError from '../../common/hooks/useFormError';
-
 import authThunk from '../../store/auth/thunk';
 
 import TextField from '../../components/form/textField';
@@ -17,8 +16,7 @@ import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
 import MsgSuccess from '../../components/form/msgSuccess';
-import { useTestId } from '../../test/helper/data-testId';
-import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
+import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: UserRegisterDto = {
     name: '',
@@ -40,7 +38,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
             <SeoHead {...routers.register.header} />
             <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
                 <div className="w-full max-w-md px-4 py-16 bg-gray-800 rounded-sm md:px-10 fade-in ">
-                    <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`auth-register`)}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Register Account</h1>
                         <MsgSuccess message={apiState.message} />
                         <div className="space-y-2">

@@ -1,16 +1,17 @@
+import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import * as React from 'react';
+import Link from 'next/link';
+
 import routers from '../../common/constants/router';
 import { userAPI } from '../../api/user';
+import { useDebounce } from '../../common/hooks/useDebounce';
+import SeoHead from '../../components/common/seoHead';
 import { CommonUser } from '../../api/user/dto';
-import Link from 'next/link';
+
 import WaveLoading from '../../components/loading/waveLoading';
 import Pagination from '../../components/pagination';
-import { GetServerSidePropsContext } from 'next';
 import FindIcon from '../../public/asset/icons/find';
-import { useDebounce } from '../../common/hooks/useDebounce';
-
-import SeoHead from '../../components/common/seoHead';
 
 export interface CommunityQuery {
     currentPage: string;

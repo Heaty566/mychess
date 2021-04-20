@@ -2,7 +2,6 @@ import * as React from 'react';
 import Link from 'next/link';
 
 import router from '../../../common/constants/router';
-import { useTestId } from '../../../test/helper/data-testId';
 import { AuthState } from '../../../store/auth/interface';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
 import { useClickOutSide } from '../../../common/hooks/useClickOutside';
@@ -39,7 +38,7 @@ const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeLang
             ) : (
                 <div>
                     <Link href={router.login.link}>
-                        <a href={router.login.link} className="duration-300 hover:text-cloud-50" {...useTestId(`navbarUser-login`)}>
+                        <a href={router.login.link} className="duration-300 hover:text-cloud-50">
                             Login
                         </a>
                     </Link>

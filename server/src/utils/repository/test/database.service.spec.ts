@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as childProcess from 'child_process';
 
 //---- Helper
-import { initTestModule } from '../../../app/Helpers/test/initTest';
+import { initTestModule } from '../../../test/initTest';
 
 //---- Service
 import { DatabaseService } from '../database.service';

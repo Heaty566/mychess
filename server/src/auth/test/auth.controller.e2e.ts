@@ -16,9 +16,9 @@ import 'jest-ts-auto-mock';
 import { INestApplication } from '@nestjs/common';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
-import { fakeUser } from '../../app/Helpers/test/fakeEntity';
-import { fakeData, defuse } from '../../app/Helpers/test/test.helper';
+import { initTestModule } from '../../test/initTest';
+import { fakeUser } from '../../test/fakeEntity';
+import { fakeData, defuse } from '../../test/test.helper';
 
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
@@ -216,7 +216,6 @@ describe('AuthController', () => {
 
                   it('Pass', async () => {
                         const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
-
                         const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(201);
 
