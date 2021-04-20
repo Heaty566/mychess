@@ -231,7 +231,7 @@ export class AuthController {
 
             return apiResponse.send<void>({
                   body: {
-                        message: { type: 'server.success' },
+                        message: { type: '' },
                   },
             });
       }

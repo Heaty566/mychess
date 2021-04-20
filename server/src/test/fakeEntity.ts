@@ -1,5 +1,5 @@
-import { UserRole } from '../../../users/entities/user.userRole.enum';
-import { User } from '../../../users/entities/user.entity';
+import { UserRole } from '../users/entities/user.userRole.enum';
+import { User } from '../users/entities/user.entity';
 import { fakeData } from './test.helper';
 
 export const fakeUser = () => {
@@ -11,7 +11,7 @@ export const fakeUser = () => {
       user.facebookId = fakeData(10, 'lettersAndNumbersLowerCase');
       user.githubId = fakeData(10, 'lettersAndNumbersLowerCase');
       user.role = UserRole.USER;
-      user.phoneNumber = `+${fakeData(10, 'number')}`;
+      user.phoneNumber = `+8498${fakeData(7, 'number')}`;
       user.email = `${fakeData(10, 'letters')}@gmail.com`;
 
       return user;

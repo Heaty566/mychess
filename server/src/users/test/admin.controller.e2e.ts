@@ -8,9 +8,9 @@ import { UserRepository } from '../entities/user.repository';
 import { UserRole } from '../entities/user.userRole.enum';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
-import { fakeData } from '../../app/Helpers/test/test.helper';
-import { generateCookie } from '../../app/Helpers/test/test.helper';
+import { initTestModule } from '../../test/initTest';
+import { fakeData } from '../../test/test.helper';
+import { generateCookie } from '../../test/test.helper';
 
 //Entity
 import { User } from '../entities/user.entity';

@@ -3,7 +3,7 @@ import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
+import { initTestModule } from '../../test/initTest';
 
 //---- Controller
 import { AuthController } from '../auth.controller';

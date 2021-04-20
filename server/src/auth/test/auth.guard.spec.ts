@@ -15,7 +15,7 @@ import { User } from '../../users/entities/user.entity';
 import { UserRole } from '../../users/entities/user.userRole.enum';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
+import { initTestModule } from '../../test/initTest';
 
 //---- Pipe
 import { UserGuard } from '../auth.guard';

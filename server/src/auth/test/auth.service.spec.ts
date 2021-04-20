@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 
 //---- Helper
-import { initTestModule } from '../../app/Helpers/test/initTest';
-import { fakeData } from '../../app/Helpers/test/test.helper';
+import { initTestModule } from '../../test/initTest';
+import { fakeData } from '../../test/test.helper';
 
 //---- Service
 import { AuthService } from '../auth.service';

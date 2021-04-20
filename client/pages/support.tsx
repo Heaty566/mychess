@@ -1,15 +1,18 @@
 import * as React from 'react';
-import TextField from '../components/form/textField';
-import { useForm } from 'react-hook-form';
-import { useFormError } from '../common/hooks/useFormError';
-import TextareaField from '../components/form/textareaField';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { SupportDto } from '../api/common/dto';
-import BtnForm from '../components/btn/btnForm';
+import { useForm } from 'react-hook-form';
+
 import { store } from '../store';
-import commonThunk from '../store/api/thunk';
+import { useFormError } from '../common/hooks/useFormError';
+import { SupportDto } from '../api/common/dto';
 import routers from '../common/constants/router';
 import SeoHead from '../components/common/seoHead';
+import commonThunk from '../store/api/thunk';
+
+import TextareaField from '../components/form/textareaField';
+import TextField from '../components/form/textField';
+import BtnForm from '../components/btn/btnForm';
+
 const defaultValues: SupportDto = {
     message: '',
     email: '',

@@ -36,5 +36,10 @@
       "object.unknown": "object.unknown",
       "password.minOfUppercase": "should contain at least {{min}} uppercase characters",
       "password.minOfLowercase": "should contain at least {{min}} lowercase characters",
-      "password.minOfNumeric": "should contain at least {{min}} number"
+      "password.minOfNumeric": "should contain at least {{min}} number",
+      "phone.default": "should be the same format as {{country}}'s phone number",
+      "phone.internationalPhoneFormat": "should be the same format as {{country}}'s international phone number format",
+      "": "",
+      "phone.defaultPhoneFormat": "should be the same format as {#country}'s phone number",
+      "phone.bothPhoneFormat": "should be the {#country}'s phone number format or international phone number format"
 }
