@@ -3,15 +3,19 @@ import { Profile as FaceBookProfile } from 'passport-facebook';
 import { Profile as GitHubProfile } from 'passport-github';
 import { Profile as GoogleProfile } from 'passport-google-oauth20';
 
-import { initTestModule } from '../../test/initTest';
+//---- Helper
 import { fakeData } from '../../test/test.helper';
+import { initTestModule } from '../../test/initTest';
 
+//---- Passport Strategy
 import { GithubStrategy } from '../passport/github.strategy';
 import { GoogleStrategy } from '../passport/google.strategy';
 import { FacebookStrategy } from '../passport/facebook.strategy';
 
+//---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
 
+//---- Service
 import { UserService } from '../../users/user.service';
 
 describe('FacebookStrategy', () => {

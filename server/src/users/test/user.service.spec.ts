@@ -1,12 +1,19 @@
 import { INestApplication } from '@nestjs/common';
-
-import { UserRepository } from '../entities/user.repository';
-import { initTestModule } from '../../test/initTest';
-import { User } from '../entities/user.entity';
-import { fakeData } from '../../test/test.helper';
-import { UserService } from '../user.service';
 import { v4 as uuidv4 } from 'uuid';
+
+//---- Repository
+import { UserRepository } from '../entities/user.repository';
+
+//---- Helper
+import { initTestModule } from '../../test/initTest';
+import { fakeData } from '../../test/test.helper';
 import { fakeUser } from '../../test/fakeEntity';
+
+//---- Entity
+import { User } from '../entities/user.entity';
+
+//---- Service
+import { UserService } from '../user.service';
 
 describe('UserService', () => {
       let app: INestApplication;
@@ -24,17 +31,6 @@ describe('UserService', () => {
             resetDB = resetDatabase;
       });
 
-      describe('findOneUserByField', () => {
-            it('Pass', async () => {
-                  const res = await userService.findOneUserByField('id', userDb.id);
-                  expect(res).toBeDefined();
-            });
-            it('Failed user does not exist', async () => {
-                  const res = await userService.findOneUserByField('id', uuidv4());
-                  expect(res).toBeUndefined();
-            });
-      });
-
       describe('findOneUserWithoutSomeSensitiveFields', () => {
             it('Pass', async () => {
                   const res = await userService.findOneUserWithoutSomeSensitiveFields('id', userDb.id);
@@ -44,6 +40,17 @@ describe('UserService', () => {
                   const id = uuidv4();
                   const res = await userService.findOneUserWithoutSomeSensitiveFields('id', id);
 
+                  expect(res).toBeUndefined();
+            });
+      });
+
+      describe('findOneUserByField', () => {
+            it('Pass', async () => {
+                  const res = await userService.findOneUserByField('id', userDb.id);
+                  expect(res).toBeDefined();
+            });
+            it('Failed user does not exist', async () => {
+                  const res = await userService.findOneUserByField('id', uuidv4());
                   expect(res).toBeUndefined();
             });
       });
@@ -108,6 +115,10 @@ describe('UserService', () => {
 
                   expect(res.length).toBeGreaterThan(2);
             });
+      });
+
+      describe('randomAvatar', () => {
+            //
       });
 
       afterAll(async () => {

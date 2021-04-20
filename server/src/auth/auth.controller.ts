@@ -122,7 +122,7 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time-60p' } } },
+                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
                   });
 
             //checking email is exist
@@ -140,11 +140,11 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time-30p' } } },
+                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
                   });
 
             //generate otp key
-            const redisKey = await this.authService.generateOTP(user, config.authController.OTPMailValidTime, 'email');
+            const redisKey = await this.authService.createOTP(user, config.authController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
             if (!isSent)
                   throw apiResponse.sendError({
@@ -169,7 +169,7 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.request-many-time-60p' } } },
+                        body: { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
                   });
 
             //checking phone is exist
@@ -187,11 +187,11 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.request-many-time-60p' } } },
+                        body: { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
                   });
 
             //generate otp
-            const otpKey = this.authService.generateOTP(user, config.authController.OTPPhoneValidTime, 'sms');
+            const otpKey = this.authService.createOTP(user, config.authController.OTPPhoneValidTime, 'sms');
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
             if (!isSent)
                   throw apiResponse.sendError({
@@ -231,7 +231,7 @@ export class AuthController {
 
             return apiResponse.send<void>({
                   body: {
-                        message: { type: 'server.success' },
+                        message: { type: '' },
                   },
             });
       }

@@ -1,16 +1,17 @@
+import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import * as React from 'react';
+import Link from 'next/link';
+
 import routers from '../../common/constants/router';
 import { userAPI } from '../../api/user';
+import { useDebounce } from '../../common/hooks/useDebounce';
+import SeoHead from '../../components/common/seoHead';
 import { CommonUser } from '../../api/user/dto';
-import Link from 'next/link';
+
 import WaveLoading from '../../components/loading/waveLoading';
 import Pagination from '../../components/pagination';
-import { GetServerSidePropsContext } from 'next';
-import FindIcon from '../../public/asset/icons/find.svg';
-import TextField from '../../components/form/textField';
-import { useDebounce } from '../../common/hooks/useDebounce';
-import { useForm } from 'react-hook-form';
+import FindIcon from '../../public/asset/icons/find';
 
 export interface CommunityQuery {
     currentPage: string;
@@ -55,48 +56,51 @@ const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
     if (!isLoadUsers) return <WaveLoading />;
 
     return (
-        <div className="flex-1 p-4 space-y-4 chess-bg">
-            <div className="max-w-4xl mx-auto space-y-2 fade-in">
-                <div className="flex rounded-sm bg-tuna py-2 px-1.5 space-x-2">
-                    <div className="grid place-items-center">
-                        <FindIcon />
+        <>
+            <SeoHead {...routers.community.header} />
+            <div className="flex-1 p-4 space-y-4 chess-bg">
+                <div className="max-w-4xl mx-auto space-y-2 fade-in">
+                    <div className="flex rounded-sm bg-tuna py-2 px-1.5 space-x-2">
+                        <div className="grid place-items-center">
+                            <FindIcon />
+                        </div>
+                        <input
+                            name="name"
+                            className="block w-full bg-transparent focus:outline-none text-mercury"
+                            placeholder="Name..."
+                            onChange={handleOnChange}
+                        />
                     </div>
-                    <input
-                        name="name"
-                        className="block w-full bg-transparent focus:outline-none text-mercury"
-                        placeholder="Name..."
-                        onChange={handleOnChange}
-                    />
-                </div>
-                {Boolean(users.length) ? (
-                    users.map((item) => {
-                        return (
-                            <Link href={routers.userProfile.link + '/' + item.id} key={item.id}>
-                                <a
-                                    href={routers.userProfile.link + '/' + item.id}
-                                    className="flex justify-between px-4 py-2 duration-300 transform shadow-md cursor-pointer background-profile hover:scale-105"
-                                >
-                                    <div className="flex space-x-4 ">
-                                        <img src={item.avatarUrl} alt={item.name} className="object-cover w-12 h-12" />
+                    {Boolean(users.length) ? (
+                        users.map((item) => {
+                            return (
+                                <Link href={routers.userProfile.link + '/' + item.id} key={item.id}>
+                                    <a
+                                        href={routers.userProfile.link + '/' + item.id}
+                                        className="flex justify-between px-4 py-2 duration-300 transform shadow-md cursor-pointer background-profile hover:scale-105"
+                                    >
+                                        <div className="flex space-x-4 ">
+                                            <img src={item.avatarUrl} alt={item.name} className="object-cover w-12 h-12" />
 
-                                        <div>
-                                            <h1 className="text-base text-white capitalize md:text-4xl">{item.name}</h1>
-                                            <h3 className="text-sm capitalize md:text-lg text-cloud-700">{item.username}</h3>
+                                            <div>
+                                                <h1 className="text-base text-white capitalize md:text-4xl">{item.name}</h1>
+                                                <h3 className="text-sm capitalize md:text-lg text-cloud-700">{item.username}</h3>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <h3 className="text-lg text-cloud">ELO: {item.elo}</h3>
-                                </a>
-                            </Link>
-                        );
-                    })
-                ) : (
-                    <div>
-                        <div className="my-20 text-4xl text-center text-mercury">User Was Not Found</div>
-                    </div>
-                )}
-                <Pagination amount={5} currentPage={query.currentPage} />
+                                        <h3 className="text-lg text-cloud">ELO: {item.elo}</h3>
+                                    </a>
+                                </Link>
+                            );
+                        })
+                    ) : (
+                        <div>
+                            <div className="my-20 text-4xl text-center text-mercury">User Was Not Found</div>
+                        </div>
+                    )}
+                    <Pagination amount={5} currentPage={query.currentPage} />
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

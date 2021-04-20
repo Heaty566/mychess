@@ -1,8 +1,8 @@
 {
-        "name": "MyGame",
-        "short_name": "MyGame",
+        "name": "MyChess",
+        "short_name": "MyChess",
         "start_url": "/",
-        "theme_color": "#fefefe",
+        "theme_color": "#2A2D32",
         "display": "standalone",
         "scope": "/",
         "icons": [

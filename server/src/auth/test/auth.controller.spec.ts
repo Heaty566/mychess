@@ -1,8 +1,14 @@
 import { INestApplication } from '@nestjs/common';
 import { createMock } from 'ts-auto-mock';
 import { Request, Response } from 'express';
+
+//---- Helper
 import { initTestModule } from '../../test/initTest';
+
+//---- Controller
 import { AuthController } from '../auth.controller';
+
+//---- Entity
 import User from '../../users/entities/user.entity';
 
 describe('AuthController', () => {
@@ -27,10 +33,12 @@ describe('AuthController', () => {
                         const res = await authController.cGoogleAuth();
                         expect(res).toBeUndefined();
                   });
+
                   it('facebookAuth', async () => {
                         const res = await authController.cFacebookAuth();
                         expect(res).toBeUndefined();
                   });
+
                   it('githubAuth', async () => {
                         const res = await authController.cGithubAuth();
                         expect(res).toBeUndefined();
@@ -55,11 +63,13 @@ describe('AuthController', () => {
 
                         expect(output).toBe(process.env.CLIENT_URL);
                   });
+
                   it('facebookAuthRedirect', async () => {
                         const output = await authController.cFacebookAuthRedirect(req, res);
 
                         expect(output).toBe(process.env.CLIENT_URL);
                   });
+
                   it('githubAuthRedirect', async () => {
                         const output = await authController.cGithubAuthRedirect(req, res);
 

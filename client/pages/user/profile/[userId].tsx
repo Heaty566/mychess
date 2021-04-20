@@ -1,14 +1,17 @@
-import * as React from 'react';
-import EditIcons from '../../../public/asset/icons/edit.svg';
-import axios from 'axios';
 import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
-import { AuthState, User } from '../../../store/auth/interface';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
-import routers from '../../../common/constants/router';
-import SeoHead from '../../../components/common/seoHead';
+import * as React from 'react';
 import Link from 'next/link';
+import axios from 'axios';
+
+import { RootState } from '../../../store';
+import SeoHead from '../../../components/common/seoHead';
+import { capitalize } from '../../../common/helpers/string.helper';
 import { ApiResponse } from '../../../store/api/interface';
+import { AuthState, User } from '../../../store/auth/interface';
+
+import EditIcons from '../../../public/asset/icons/edit';
+import routers from '../../../common/constants/router';
 
 export interface ProfileProps {
     user: User | null;
@@ -21,7 +24,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     else
         return (
             <>
-                <SeoHead title={user.name} isFollowPage canonical={`${routers.userProfile.link}/${user.id}`} imageUrl={user.avatarUrl} />
+                <SeoHead title={capitalize(user.name)} isFollowPage canonical={`${routers.userProfile.link}/${user.id}`} imageUrl={user.avatarUrl} />
 
                 <div className="relative flex flex-1">
                     <video

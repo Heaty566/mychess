@@ -18,12 +18,12 @@ export const config: Config = {
 
             // /otp-email
             OTPMailBlockTime: 30,
-            OTPMailLimitTime: 5,
             OTPMailValidTime: 30,
+            OTPMailLimitTime: 5,
 
             // /otp-sms
             OTPPhoneBlockTime: 60,
-            OTPPhoneLimitTime: 3,
+            OTPPhoneLimitTime: 5,
             OTPPhoneValidTime: 5,
 
             // /socket-token
@@ -43,19 +43,30 @@ export const config: Config = {
 
             // /otp-email
             OTPMailBlockTime: 30,
-            OTPMailLimitTime: 5,
             OTPMailValidTime: 30,
+            OTPMailLimitTime: 5,
 
             // /otp-sms
             OTPPhoneBlockTime: 60,
             OTPPhoneLimitTime: 5,
             OTPPhoneValidTime: 5,
       },
+      userService: {
+            avatarDefaultImages: [
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-bishop.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-king.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-pawn.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-queen.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-rook.png',
+                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-knight.png',
+            ],
+      },
 };
 
 interface Config {
       authController: AuthControllerConfig;
       userController: UserControllerConfig;
+      userService: UserServiceConfig;
 }
 
 interface AuthControllerConfig {
@@ -189,5 +200,15 @@ interface UserControllerConfig {
        *@example  30 means users can not request send new otp in 30 minutes
        */
       OTPPhoneValidTime: number;
+      //--------------------------------------------------------------
+}
+interface UserServiceConfig {
+      //--------------------------------------------------------------
+      /**
+       *@description amount of time which user can request send otp by phone number until they has been blocked
+       *@example  5 means users request otp 5 times
+       */
+      avatarDefaultImages: Array<string>;
+
       //--------------------------------------------------------------
 }

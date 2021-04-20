@@ -1,14 +1,18 @@
 import * as React from 'react';
-import TextField from '../components/form/textField';
-import { useForm } from 'react-hook-form';
-import { useFormError } from '../common/hooks/useFormError';
-import TextareaField from '../components/form/textareaField';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { SupportDto } from '../api/common/dto';
-import BtnForm from '../components/btn/btnForm';
+import { useForm } from 'react-hook-form';
+
 import { store } from '../store';
+import { useFormError } from '../common/hooks/useFormError';
+import { SupportDto } from '../api/common/dto';
+import routers from '../common/constants/router';
+import SeoHead from '../components/common/seoHead';
 import commonThunk from '../store/api/thunk';
-import LogoDesktop from '../public/asset/icons/navbar-logo';
+
+import TextareaField from '../components/form/textareaField';
+import TextField from '../components/form/textField';
+import BtnForm from '../components/btn/btnForm';
+
 const defaultValues: SupportDto = {
     message: '',
     email: '',
@@ -27,23 +31,26 @@ const Support: React.FunctionComponent<SupportProps> = () => {
     };
 
     return (
-        <div className="flex-1 p-4 md:p-8 chess-bg-2">
-            <form className="max-w-3xl p-0 space-y-2 md:p-4 fade-in" onSubmit={handleSubmit(onSubmit)}>
-                <h1 className="text-4xl text-white">Support Form</h1>
-
-                <div className="max-w-xs">
-                    <TextField error={errors.name} label="Name" name="name" register={register} type="text" />
-                    <TextField error={errors.email} label="Email" name="email" register={register} type="text" />
-                </div>
-                <div className="">
-                    <TextareaField error={errors.message} label="Message" name="message" register={register} />
-                </div>
-                <ReCAPTCHA sitekey="6Ld6aKUaAAAAAJdiR8rHOe3eToUYVT7J-FXWkJyv" onChange={() => setVerify(true)} />
-                <div className="max-w-xs">
-                    <BtnForm label="Submit" />
-                </div>
-            </form>
-        </div>
+        <>
+            <SeoHead {...routers.support.header} />
+            <div className="flex-1 p-4 md:p-8 chess-bg-2">
+                <form className="max-w-3xl p-0 space-y-2 md:p-4 fade-in" onSubmit={handleSubmit(onSubmit)}>
+                    <h1 className="text-4xl text-white">Support Form</h1>
+                    <p className="text-mercury-700">Please send your feedback to us, this will help us to improve users experience with MyChess</p>
+                    <div className="max-w-xs">
+                        <TextField error={errors.name} label="Name" name="name" register={register} type="text" />
+                        <TextField error={errors.email} label="Email" name="email" register={register} type="text" />
+                    </div>
+                    <div className="">
+                        <TextareaField error={errors.message} label="Message" name="message" register={register} />
+                    </div>
+                    <ReCAPTCHA sitekey="6Ld6aKUaAAAAAJdiR8rHOe3eToUYVT7J-FXWkJyv" onChange={() => setVerify(true)} />
+                    <div className="max-w-xs">
+                        <BtnForm label="Submit" />
+                    </div>
+                </form>
+            </div>
+        </>
     );
 };
 

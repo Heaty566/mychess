@@ -1,9 +1,4 @@
-import * as supertest from 'supertest';
-import 'jest-ts-auto-mock';
 let mockPromise = Promise.resolve();
-import { defuse } from '../../test/test.helper';
-import { SmailService } from '../../providers/smail/smail.service';
-
 class TwilioMock {
       constructor() {
             //
@@ -16,25 +11,32 @@ class TwilioMock {
       };
 }
 
+import * as supertest from 'supertest';
+import 'jest-ts-auto-mock';
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
-import { fakeUser } from '../../test/fakeEntity';
-import { fakeData } from '../../test/test.helper';
+//---- Helper
 import { initTestModule } from '../../test/initTest';
+import { fakeUser } from '../../test/fakeEntity';
+import { fakeData, defuse } from '../../test/test.helper';
 
+//---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
+import { ReTokenRepository } from '../entities/re-token.repository';
 
+//---- Entity
+import { User } from '../../users/entities/user.entity';
+
+//---- Service
+import { SmailService } from '../../providers/smail/smail.service';
 import { AuthService } from '../auth.service';
 import { UserService } from '../../users/user.service';
 
+//---- DTO
 import { LoginUserDTO } from '../dto/loginUser.dto';
 import { RegisterUserDTO } from '../dto/registerUser.dto';
 import { UpdateEmailDTO } from '../../users/dto/updateEmail.dto';
 import { OtpSmsDTO } from '../dto/otpSms.dto';
-
-import { User } from '../../users/entities/user.entity';
-import { ReTokenRepository } from '../entities/re-token.repository';
 
 jest.mock('twilio', () => {
       return {
@@ -67,40 +69,6 @@ describe('AuthController', () => {
       });
 
       describe('Common Authentication', () => {
-            describe('POST /register', () => {
-                  let createUserData: RegisterUserDTO;
-                  const reqApi = (input: RegisterUserDTO) => supertest(app.getHttpServer()).post('/api/auth/register').send(input);
-
-                  beforeEach(() => {
-                        const getUser = fakeUser();
-                        createUserData = {
-                              name: getUser.name,
-                              username: getUser.username,
-                              password: getUser.password,
-                              confirmPassword: getUser.password,
-                        };
-                  });
-                  it('Pass', async () => {
-                        const res = await reqApi(createUserData);
-
-                        const token = res.headers['set-cookie'].join('');
-                        expect(token).toContain('re-token');
-                  });
-
-                  it('Failed (username is taken)', async () => {
-                        await reqApi(createUserData);
-                        const res = await reqApi(createUserData);
-                        expect(res.status).toBe(400);
-                  });
-
-                  it('Failed (confirmPassword does not match)', async () => {
-                        createUserData.confirmPassword = '12345678';
-                        const res = await reqApi(createUserData);
-
-                        expect(res.status).toBe(400);
-                  });
-            });
-
             describe('POST /login', () => {
                   let loginUserData: LoginUserDTO;
                   const reqApi = (input: LoginUserDTO) => supertest(app.getHttpServer()).post('/api/auth/login').send(input);
@@ -134,9 +102,108 @@ describe('AuthController', () => {
                         expect(res.status).toBe(400);
                   });
             });
+
+            describe('POST /register', () => {
+                  let createUserData: RegisterUserDTO;
+                  const reqApi = (input: RegisterUserDTO) => supertest(app.getHttpServer()).post('/api/auth/register').send(input);
+
+                  beforeEach(() => {
+                        const getUser = fakeUser();
+                        createUserData = {
+                              name: getUser.name,
+                              username: getUser.username,
+                              password: getUser.password,
+                              confirmPassword: getUser.password,
+                        };
+                  });
+
+                  it('Pass', async () => {
+                        const res = await reqApi(createUserData);
+
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).toContain('re-token');
+                  });
+
+                  it('Failed (username is taken)', async () => {
+                        await reqApi(createUserData);
+                        const res = await reqApi(createUserData);
+                        expect(res.status).toBe(400);
+                  });
+
+                  it('Failed (confirmPassword does not match)', async () => {
+                        createUserData.confirmPassword = '12345678';
+                        const res = await reqApi(createUserData);
+
+                        expect(res.status).toBe(400);
+                  });
+            });
+
+            describe('GET /socket-token', () => {
+                  let user: User;
+                  let reToken: string;
+                  const reqApi = (reToken: string) =>
+                        supertest(app.getHttpServer())
+                              .get('/api/auth/socket-token')
+                              .set({ cookie: `re-token=${reToken};` })
+                              .send();
+
+                  beforeEach(async () => {
+                        user = await userRepository.save(fakeUser());
+                        reToken = await authService.createReToken(user);
+                  });
+
+                  it('Pass', async () => {
+                        const res = await reqApi(reToken);
+
+                        const token = res.headers['set-cookie'].join('');
+
+                        expect(token).toContain('io-token');
+                        expect(res.status).toBe(200);
+                  });
+
+                  it('Failed invalid user', async () => {
+                        const res = await reqApi('');
+
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).not.toContain('io-token');
+                        expect(res.status).toBe(401);
+                  });
+
+                  it('Failed user does not exist ', async () => {
+                        await userRepository.createQueryBuilder().delete().where('id = :value', { value: user.id }).execute();
+                        const res = await reqApi(reToken);
+
+                        const token = res.headers['set-cookie'].join('');
+                        expect(token).not.toContain('io-token');
+                        expect(res.status).toBe(401);
+                  });
+            });
+
+            describe('POST /logout', () => {
+                  let user: User;
+                  let reToken: string;
+                  const reqApi = (reToken: string) =>
+                        supertest(app.getHttpServer())
+                              .post(`/api/auth/logout`)
+                              .set({ cookie: `re-token=${reToken};` })
+                              .send();
+
+                  beforeEach(async () => {
+                        user = await userRepository.save(fakeUser());
+                        reToken = await authService.createReToken(user);
+                  });
+
+                  it('Pass', async () => {
+                        const res = await reqApi(reToken);
+                        const checkToken = await reTokenRepository.findOne({ where: { userId: user.id } });
+
+                        expect(checkToken).toBe(undefined);
+                        expect(res.status).toBe(201);
+                  });
+            });
       });
 
-      describe('OTP sms and email', () => {
+      describe('OTP authentication without guard', () => {
             describe('POST /otp-sms', () => {
                   let otpSmsDTO: OtpSmsDTO;
                   const reqApi = (input: OtpSmsDTO) => supertest(app.getHttpServer()).post('/api/auth/otp-sms').send(input);
@@ -149,7 +216,6 @@ describe('AuthController', () => {
 
                   it('Pass', async () => {
                         const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(true));
-
                         const res = await reqApi(otpSmsDTO);
                         expect(res.status).toBe(201);
 
@@ -273,50 +339,12 @@ describe('AuthController', () => {
                         mySpy.mockClear();
                   });
             });
-            describe('GET /socket-token', () => {
-                  let user: User;
-                  let reToken: string;
-                  const reqApi = (reToken: string) =>
-                        supertest(app.getHttpServer())
-                              .get('/api/auth/socket-token')
-                              .set({ cookie: `re-token=${reToken};` })
-                              .send();
-
-                  beforeEach(async () => {
-                        user = await userRepository.save(fakeUser());
-                        reToken = await authService.createReToken(user);
-                  });
-
-                  it('Pass', async () => {
-                        const res = await reqApi(reToken);
-
-                        const token = res.headers['set-cookie'].join('');
-
-                        expect(token).toContain('io-token');
-                        expect(res.status).toBe(200);
-                  });
-                  it('Failed invalid user', async () => {
-                        const res = await reqApi('');
-
-                        const token = res.headers['set-cookie'].join('');
-                        expect(token).not.toContain('io-token');
-                        expect(res.status).toBe(401);
-                  });
-                  it('Failed user does not exist ', async () => {
-                        await userRepository.createQueryBuilder().delete().where('id = :value', { value: user.id }).execute();
-                        const res = await reqApi(reToken);
-
-                        const token = res.headers['set-cookie'].join('');
-                        expect(token).not.toContain('io-token');
-                        expect(res.status).toBe(401);
-                  });
-            });
 
             describe('POST /check-otp?key=', () => {
                   const reqApi = (input: string) => supertest(app.getHttpServer()).post(`/api/auth/check-otp?key=${input}`).send();
 
                   it('Pass', async () => {
-                        const otp = await authService.generateOTP(userDB, 10, 'email');
+                        const otp = await authService.createOTP(userDB, 10, 'email');
                         const res = await reqApi(otp);
 
                         expect(res.status).toBe(201);
@@ -337,29 +365,6 @@ describe('AuthController', () => {
                               expect(err.status).toBe(403);
                         }
                   });
-            });
-      });
-
-      describe('POST /logout', () => {
-            let user: User;
-            let reToken: string;
-            const reqApi = (reToken: string) =>
-                  supertest(app.getHttpServer())
-                        .post(`/api/auth/logout`)
-                        .set({ cookie: `re-token=${reToken};` })
-                        .send();
-
-            beforeEach(async () => {
-                  user = await userRepository.save(fakeUser());
-                  reToken = await authService.createReToken(user);
-            });
-
-            it('Pass', async () => {
-                  const res = await reqApi(reToken);
-                  const checkToken = await reTokenRepository.findOne({ where: { userId: user.id } });
-
-                  expect(checkToken).toBe(undefined);
-                  expect(res.status).toBe(201);
             });
       });
 

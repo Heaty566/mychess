@@ -1,21 +1,24 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import TextField from '../../../components/form/textField';
-import { RootState, store } from '../../../store';
+
+import { RootState } from '../../../store';
 import { AuthState } from '../../../store/auth/interface';
 import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../api/user/dto';
-import useFormError from '../../../common/hooks/useFormError';
-import FileUpload from '../../../components/form/fileUpload';
 import { useUploadFile } from '../../../common/hooks/useUploadFile';
+import useFormError from '../../../common/hooks/useFormError';
+import { ApiState } from '../../../store/api/interface';
+import userAPI from '../../../api/user';
+import routers from '../../../common/constants/router';
+import { useRouter } from 'next/router';
+
+import FileUpload from '../../../components/form/fileUpload';
+import TextField from '../../../components/form/textField';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import BtnForm from '../../../components/btn/btnForm';
-import userAPI from '../../../api/user';
 import MsgSuccess from '../../../components/form/msgSuccess';
-import { ApiState } from '../../../store/api/interface';
-import routers from '../../../common/constants/router';
 import WaveLoading from '../../../components/loading/waveLoading';
-import { useRouter } from 'next/router';
+import SeoHead from '../../../components/common/seoHead';
 
 interface EditUserForm extends UpdateUserInfoDto, UpdateUserEmailDto, UpdateUserPhoneDto {
     avatar: string;
@@ -55,49 +58,52 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
     }, [authState]);
 
     return (
-        <RouteProtectedWrapper isNeedLogin>
-            <div className="relative flex flex-1">
-                <video
-                    playsInline
-                    autoPlay
-                    muted
-                    loop
-                    className="absolute top-0 z-0 object-cover w-full h-full"
-                    poster="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/d7d28a52bd829aeee6989e58c3214e6c1cdbc5e3.jpg"
-                >
-                    <source
-                        src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/cba7f6ad5a2a96638ff91e5900e17fa671d0385e.webm?fbclid=IwAR2lnhDiu_UzKVt5H4VjGhULyMB1GPhEBEm0276riR0MeAyKUnWfj2qQtUw"
-                        type="video/webm"
-                    />
-                </video>
-                <div className="relative w-full px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
-                    <form onSubmit={handleSubmit(handleOnSubmit)} className="flex space-x-10">
-                        <div className="w-40 space-y-2">
-                            <div className="relative max-w-xs ">
-                                <img
-                                    src={file ? URL.createObjectURL(file) : authState.avatarUrl}
-                                    alt={authState.name}
-                                    className="object-cover w-40 h-40"
-                                />
-                                <FileUpload name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
+        <>
+            <SeoHead {...routers.userEdit.header} />
+            <RouteProtectedWrapper isNeedLogin>
+                <div className="relative flex flex-1">
+                    <video
+                        playsInline
+                        autoPlay
+                        muted
+                        loop
+                        className="absolute top-0 z-0 object-cover w-full h-full"
+                        poster="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/d7d28a52bd829aeee6989e58c3214e6c1cdbc5e3.jpg"
+                    >
+                        <source
+                            src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/items/1263950/cba7f6ad5a2a96638ff91e5900e17fa671d0385e.webm?fbclid=IwAR2lnhDiu_UzKVt5H4VjGhULyMB1GPhEBEm0276riR0MeAyKUnWfj2qQtUw"
+                            type="video/webm"
+                        />
+                    </video>
+                    <div className="relative w-full px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
+                        <form onSubmit={handleSubmit(handleOnSubmit)} className="flex flex-col items-start space-x-0 md:flex-row md:space-x-10">
+                            <div className="w-40 space-y-2">
+                                <div className="relative max-w-xs ">
+                                    <img
+                                        src={file ? URL.createObjectURL(file) : authState.avatarUrl}
+                                        alt={authState.name}
+                                        className="object-cover w-40 h-40"
+                                    />
+                                    <FileUpload name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="w-64 space-y-2">
-                            <h1 className="text-3xl text-white ">Update User</h1>
-                            <MsgSuccess message={apiState.message} />
-                            <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
-                            <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
-                            <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />
-                            {Boolean(authState.username) && (
-                                <TextField name="username" type="text" error="" label="Username" register={register} isDisable />
-                            )}
+                            <div className="w-full space-y-2 md:w-64">
+                                <h1 className="text-3xl text-white ">Update User</h1>
+                                <MsgSuccess message={apiState.message} />
+                                <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
+                                <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
+                                <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />
+                                {Boolean(authState.username) && (
+                                    <TextField name="username" type="text" error="" label="Username" register={register} isDisable />
+                                )}
 
-                            {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Update" />}
-                        </div>
-                    </form>
+                                {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Update" />}
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        </RouteProtectedWrapper>
+            </RouteProtectedWrapper>
+        </>
     );
 };
 

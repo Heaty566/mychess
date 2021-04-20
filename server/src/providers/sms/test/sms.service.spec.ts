@@ -13,8 +13,11 @@ class TwilioMock {
 
 import { INestApplication } from '@nestjs/common';
 
+//---- Helper
 import { fakeData } from '../../../test/test.helper';
 import { initTestModule } from '../../../test/initTest';
+
+//---- Service
 import { SmsService } from '../sms.service';
 
 jest.mock('twilio', () => {
@@ -49,7 +52,7 @@ describe('TokenService', () => {
             });
       });
 
-      describe('sendOtp', () => {
+      describe('sendOTP', () => {
             it('Pass', async () => {
                   const res = await smsService.sendOTP(fakeData(10), fakeData(6));
                   expect(res).toBeDefined();

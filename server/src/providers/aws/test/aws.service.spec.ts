@@ -1,4 +1,12 @@
 import { INestApplication } from '@nestjs/common';
+import { Buffer } from 'buffer';
+import { Readable } from 'stream';
+
+//---- Helper
+import { initTestModule } from '../../../test/initTest';
+
+//---- Service
+import { AwsService } from '../aws.service';
 
 const mockS3Object = jest.fn();
 jest.mock('aws-sdk', () => {
@@ -10,12 +18,6 @@ jest.mock('aws-sdk', () => {
             S3: jest.fn(() => ({ putObject: mockS3Object })),
       };
 });
-
-//* Internal import
-import { initTestModule } from '../../../test/initTest';
-import { AwsService } from '../aws.service';
-import { Buffer } from 'buffer';
-import { Readable } from 'stream';
 
 describe('TokenService', () => {
       let app: INestApplication;
@@ -63,6 +65,7 @@ describe('TokenService', () => {
 
                   expect(isCorrect).toBeFalsy();
             });
+
             it('Failed no file', () => {
                   file.originalname = 'test';
                   const isCorrect = awsService.checkFileExtension(file, ['.jpeg', '.jpg', '.png', '.bmp']);
@@ -70,6 +73,7 @@ describe('TokenService', () => {
                   expect(isCorrect).toBeFalsy();
             });
       });
+
       describe('checkFileSize', () => {
             let file: Express.Multer.File;
             const readable = new Readable();
@@ -131,6 +135,7 @@ describe('TokenService', () => {
                   expect(fileName).toBeDefined();
                   expect(fileName).toContain('.png');
             });
+
             it('Failed', async () => {
                   mockS3Object.mockImplementation(() => {
                         return {

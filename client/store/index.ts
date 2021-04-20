@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { useSelector } from 'react-redux';
 
 import { apiReducer } from './api';
 import { ApiState } from './api/interface';
