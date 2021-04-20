@@ -1,12 +1,16 @@
 import { INestApplication } from '@nestjs/common';
-
-//* Internal import
-import { initTestModule } from '../../../test/initTest';
-import { fakeUser } from '../../../test/fakeEntity';
-import { fakeData } from '../../../test/test.helper';
-import { User } from '../../../users/entities/user.entity';
-import { RedisService } from '../redis.service';
 import { createClient, RedisClient } from 'redis';
+
+//---- Helper
+import { initTestModule } from '../../../app/Helpers/test/initTest';
+import { fakeUser } from '../../../app/Helpers/test/fakeEntity';
+import { fakeData } from '../../../app/Helpers/test/test.helper';
+
+//---- Entity
+import { User } from '../../../users/entities/user.entity';
+
+//---- Service
+import { RedisService } from '../redis.service';
 
 import { LoggerService } from '../../../utils/logger/logger.service';
 
@@ -40,6 +44,7 @@ describe('RedisService', () => {
                   const res = await redisService.getObjectByKey<User>('user');
                   expect(res).toBeDefined();
             });
+
             it('Pass with time', async () => {
                   redisService.setObjectByKey('user', user, 10);
                   const res = await redisService.getObjectByKey<User>('user');

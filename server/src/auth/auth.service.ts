@@ -14,6 +14,9 @@ import { ReToken } from './entities/re-token.entity';
 import { UserRepository } from '../users/entities/user.repository';
 import { ReTokenRepository } from './entities/re-token.repository';
 
+//---- Helper
+import { spawnOtpCode } from '../app/Helpers/otp.helper';
+
 @Injectable()
 export class AuthService {
       constructor(
@@ -25,22 +28,8 @@ export class AuthService {
 
       //-------------------------------OTP Service --------------------------------------
 
-      private generateOtpKey(length: number, type: 'sms' | 'email') {
-            const pattern = {
-                  sms: '0123456789',
-                  email: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-            };
-
-            let result = '';
-            const characters = pattern[type];
-            const charactersLength = pattern[type].length;
-            for (let i = 0; i < length; i++) result += characters.charAt(Math.floor(Math.random() * charactersLength));
-
-            return process.env.DOC === 'active' ? '1234567890' : result;
-      }
-
       createOTP(user: User, expired: number, type: 'sms' | 'email') {
-            const otpKey = this.generateOtpKey(type === 'email' ? 50 : 6, type);
+            const otpKey = spawnOtpCode(type === 'email' ? 50 : 6, type);
 
             this.redisService.setObjectByKey(otpKey, user, expired);
             return otpKey;
