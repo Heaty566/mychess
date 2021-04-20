@@ -8,9 +8,8 @@ import { UserLoginDto } from '../../api/auth/dto';
 import { RootState, store } from '../../store';
 import authThunk from '../../store/auth/thunk';
 import { ApiState } from '../../store/api/interface';
-
 import useFormError from '../../common/hooks/useFormError';
-import { useTestId } from '../../test/helper/data-testId';
+
 import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
 import TextField from '../../components/form/textField';
 import SideLink from '../../components/link/sidelink';
@@ -40,7 +39,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
             <RouteProtectedWrapper>
                 <div className="grid flex-1 shadow-sm chess-bg place-items-center grid-rows-max">
                     <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
-                        <form onSubmit={handleSubmit(onSubmit)} {...useTestId(`auth-login`)}>
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <h1 className="text-4xl text-center text-white mb-7">Login Account</h1>
                             <MsgSuccess message={apiState.message} />
                             <div className="space-y-2">

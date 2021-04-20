@@ -4,8 +4,8 @@ import { Profile as GitHubProfile } from 'passport-github';
 import { Profile as GoogleProfile } from 'passport-google-oauth20';
 
 //---- Helper
-import { fakeData } from '../../app/Helpers/test/test.helper';
-import { initTestModule } from '../../app/Helpers/test/initTest';
+import { fakeData } from '../../test/test.helper';
+import { initTestModule } from '../../test/initTest';
 
 //---- Passport Strategy
 import { GithubStrategy } from '../passport/github.strategy';

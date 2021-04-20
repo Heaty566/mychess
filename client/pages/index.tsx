@@ -1,12 +1,14 @@
 import * as React from 'react';
+import Link from 'next/link';
+
+import routers from '../common/constants/router';
+import SeoHead from '../components/common/seoHead';
+
 import TicTacToeIcon from '../public/asset/icons/tictactoe';
 import RobotIcon from '../public/asset/icons/robot';
 import PlayerBlueIcon from '../public/asset/icons/player-blue';
 import PlayerIcon from '../public/asset/icons/player';
-import Link from 'next/link';
 import ChessBoardIcon from '../public/asset/icons/chess';
-import routers from '../common/constants/router';
-import SeoHead from '../components/common/seoHead';
 
 export interface HomeProps {}
 

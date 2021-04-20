@@ -14,8 +14,8 @@ class TwilioMock {
 import { INestApplication } from '@nestjs/common';
 
 //---- Helper
-import { fakeData } from '../../../app/Helpers/test/test.helper';
-import { initTestModule } from '../../../app/Helpers/test/initTest';
+import { fakeData } from '../../../test/test.helper';
+import { initTestModule } from '../../../test/initTest';
 
 //---- Service
 import { SmsService } from '../sms.service';

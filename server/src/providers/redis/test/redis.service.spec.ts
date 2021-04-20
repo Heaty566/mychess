@@ -2,9 +2,9 @@ import { INestApplication } from '@nestjs/common';
 import { createClient, RedisClient } from 'redis';
 
 //---- Helper
-import { initTestModule } from '../../../app/Helpers/test/initTest';
-import { fakeUser } from '../../../app/Helpers/test/fakeEntity';
-import { fakeData } from '../../../app/Helpers/test/test.helper';
+import { initTestModule } from '../../../test/initTest';
+import { fakeUser } from '../../../test/fakeEntity';
+import { fakeData } from '../../../test/test.helper';
 
 //---- Entity
 import { User } from '../../../users/entities/user.entity';

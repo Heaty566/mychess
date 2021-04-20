@@ -18,12 +18,12 @@ export const config: Config = {
 
             // /otp-email
             OTPMailBlockTime: 30,
-            OTPMailLimitTime: 5,
             OTPMailValidTime: 30,
+            OTPMailLimitTime: 5,
 
             // /otp-sms
             OTPPhoneBlockTime: 60,
-            OTPPhoneLimitTime: 3,
+            OTPPhoneLimitTime: 5,
             OTPPhoneValidTime: 5,
 
             // /socket-token
@@ -43,8 +43,8 @@ export const config: Config = {
 
             // /otp-email
             OTPMailBlockTime: 30,
-            OTPMailLimitTime: 5,
             OTPMailValidTime: 30,
+            OTPMailLimitTime: 5,
 
             // /otp-sms
             OTPPhoneBlockTime: 60,

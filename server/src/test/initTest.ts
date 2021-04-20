@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 //* Internal import
-import { router } from '../../../router';
-import { AppModule } from '../../../app.module';
+import { router } from '../router';
+import { AppModule } from '../app.module';
 import { fakeUser } from './fakeEntity';
-import { UserRepository } from '../../../users/entities/user.repository';
-import { AuthService } from '../../../auth/auth.service';
-import { UserRole } from '../../../users/entities/user.userRole.enum';
-import { NotificationRepository } from '../../../notifications/entities/notification.repository';
-import { ReTokenRepository } from '../../../auth/entities/re-token.repository';
+import { UserRepository } from '../users/entities/user.repository';
+import { AuthService } from '../auth/auth.service';
+import { UserRole } from '../users/entities/user.userRole.enum';
+import { NotificationRepository } from '../notifications/entities/notification.repository';
+import { ReTokenRepository } from '../auth/entities/re-token.repository';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
       return Array.from(Array(5)).map(async (_) => {
