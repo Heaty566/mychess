@@ -1,14 +1,6 @@
 version: "3"
 services:
-        redis:
-                image: redis
-                ports:
-                        - 7000:6379
-        client:
-                image: heaty566/my-chess-client:latest
-                ports:
-                        - 3000:3000
-        admin:
-                image: heaty566/my-chess-admin:latest
-                ports:
-                        - 3001:3001
+    redis:
+        image: redis
+        ports:
+            - 7000:6379

@@ -23,6 +23,7 @@ import { RepositoryModule } from './utils/repository/repository.module';
 import { User } from './users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { Notification } from './notifications/entities/notification.entity';
+import { ChatsModule } from './chats/chats.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -63,6 +64,7 @@ const DBConfig = TypeOrmModule.forRoot({
             LoggerModule,
             RedisModule,
             RepositoryModule,
+            ChatsModule,
       ],
       controllers: [],
 })
