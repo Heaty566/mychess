@@ -1,12 +1,18 @@
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
-import { initTestModule } from '../../test/initTest';
+//---- Helper
+import { initTestModule } from '../../app/Helpers/test/initTest';
+import { fakeData } from '../../app/Helpers/test/test.helper';
+
+//---- Service
 import { AuthService } from '../auth.service';
-import { User } from '../../users/entities/user.entity';
-import { ReTokenRepository } from '../entities/re-token.repository';
-import { fakeData } from '../../test/test.helper';
 import { RedisService } from '../../providers/redis/redis.service';
+
+//---- Entity
+import { User } from '../../users/entities/user.entity';
+
+//---- Repository
+import { ReTokenRepository } from '../entities/re-token.repository';
 
 describe('UserGuard', () => {
       let app: INestApplication;
@@ -17,6 +23,7 @@ describe('UserGuard', () => {
       let authService: AuthService;
       let redisService: RedisService;
       let resetDB: any;
+
       beforeAll(async () => {
             const { users, getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
@@ -29,202 +36,212 @@ describe('UserGuard', () => {
             redisService = module.get<RedisService>(RedisService);
       });
 
-      describe('isRateLimitKey', () => {
-            beforeEach(async () => {
-                  await redisService.deleteByKey('rate-limit-email1@gmail.com');
-                  await redisService.deleteByKey('rate-limit-email2@gmail.com');
+      describe('OTP Service', () => {
+            // describe('generateOtpKey', () => {
+            //       let length: number;
 
-                  await redisService.setByValue('rate-limit-email1@gmail.com', 1);
-            });
+            //       it('Pass by Sms', () => {
+            //             length = 6;
+            //             const otp = authService[`generateOtpKey`](length, 'sms');
 
-            it('Pass (first send)', async () => {
-                  const result = await authService.isRateLimitKey('email2@gmail.com', 5, 30);
-                  expect(result).toBe(true);
-            });
+            //             expect(otp).toBeDefined();
+            //             expect(otp.length).toBe(length);
+            //             expect(otp).not.toContain('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
+            //       });
 
-            it('Pass (do not oversend)', async () => {
-                  const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
-                  expect(result).toBe(true);
-            });
+            //       it('Pass by email', () => {
+            //             length = 10;
+            //             const otp = authService[`generateOtpKey`](length, 'email');
 
-            it('Fail (oversend', async () => {
-                  await redisService.setByValue('rate-limit-email1@gmail.com', 5);
-                  const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
-                  expect(result).toBe(false);
-            });
-      });
+            //             expect(otp).toBeDefined();
+            //             expect(otp.length).toBe(length);
+            //       });
+            // });
 
-      describe('getAuthTokenByReToken', () => {
-            let reToken: string;
+            describe('createOTP', () => {
+                  it('Pass by sms', async () => {
+                        const otp = authService.createOTP(userDb, 5, 'sms');
+                        const user = await redisService.getObjectByKey<User>(otp);
 
-            beforeEach(async () => {
-                  reToken = await authService.createReToken(userDb);
-            });
-
-            it('Pass', async () => {
-                  const authTokenId = await authService.getAuthTokenByReToken(reToken);
-                  const encryptedUser = await redisService.getByKey(authTokenId);
-                  const userInformation = await authService.decodeToken<User>(encryptedUser);
-                  expect(userInformation).toBeDefined();
-                  expect(userInformation.username).toBe(userInformation.username);
-            });
-
-            it('Failed', async () => {
-                  const userInformation = await authService.getAuthTokenByReToken(fakeData(12));
-                  expect(userInformation).toBeNull();
-            });
-            it('Failed', async () => {
-                  const userInformation = await authService.getAuthTokenByReToken(fakeData(5));
-                  expect(userInformation).toBeNull();
-            });
-      });
-
-      describe('getUserByAuthToken', () => {
-            let authToken: string;
-
-            beforeEach(async () => {
-                  authToken = await authService[`createAuthToken`](userDb);
-            });
-
-            it('Pass', async () => {
-                  const userInformation = await authService.getUserByAuthToken(authToken);
-                  expect(userInformation).toBeDefined();
-                  expect(userInformation.username).toBe(userInformation.username);
-            });
-
-            it('Failed', async () => {
-                  const userInformation = await authService.getUserByAuthToken(fakeData(12));
-                  expect(userInformation).toBeNull();
-            });
-            it('Failed', async () => {
-                  const userInformation = await authService.getUserByAuthToken(fakeData(5));
-                  expect(userInformation).toBeNull();
-            });
-      });
-
-      describe('createAuthToken', () => {
-            it('Pass', async () => {
-                  const authToken = await authService[`createAuthToken`](userDb);
-                  const encryptedUser = await redisService.getByKey(authToken);
-                  const userInformation = await authService.decodeToken<User>(encryptedUser);
-
-                  expect(userInformation).toBeDefined();
-                  expect(userInformation.username).toBe(userInformation.username);
-            });
-      });
-      describe('getSocketToken', () => {
-            it('Pass', async () => {
-                  const authToken = await authService.getSocketToken(userDb);
-                  const user = await redisService.getObjectByKey<User>(authToken);
-
-                  expect(user.username).toBe(userDb.username);
-                  expect(user.id).toBe(userDb.id);
-            });
-      });
-
-      describe('getAuthTokenByReToken', () => {
-            it('Pass', async () => {
-                  const reToken = await authService.createReToken(userDb);
-                  const authToken = await authService.getAuthTokenByReToken(reToken);
-                  const isExist = await redisService.getByKey(authToken);
-
-                  expect(isExist).toBeDefined();
-            });
-            it('Failed Still get', async () => {
-                  const reToken = await authService.createReToken(userDb);
-                  let getReToken = await reTokenRepository.findOne({ where: { id: reToken } });
-                  getReToken.data = 'hello';
-                  getReToken = await reTokenRepository.save(getReToken);
-                  const authToken = await authService.getAuthTokenByReToken(reToken);
-                  const isExist = await redisService.getByKey(authToken);
-                  const decodeUser = authService.decodeToken<User>(isExist);
-
-                  expect(userDb.username).toBe(decodeUser.username);
-                  expect(isExist).toBeDefined();
-                  expect(authToken).toBeDefined();
-            });
-      });
-
-      describe('createReToken', () => {
-            let reToken: string;
-            beforeEach(async () => {
-                  reToken = await authService.createReToken(userDb);
-            });
-            it('Pass', async () => {
-                  const refreshToken = await reTokenRepository.findOneByField('id', reToken);
-                  const encryptedUser = await redisService.getByKey(refreshToken.data);
-                  const userInformation = await authService.decodeToken<User>(encryptedUser);
-
-                  expect(userInformation).toBeDefined();
-                  expect(userInformation.username).toBe(userInformation.username);
-            });
-      });
-
-      describe('generateOtpKey', () => {
-            let length: number;
-
-            it('Pass by Sms', () => {
-                  length = 6;
-                  const otp = authService[`generateOtpKey`](length, 'sms');
-
-                  expect(otp).toBeDefined();
-                  expect(otp.length).toBe(length);
-                  expect(otp).not.toContain('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
-            });
-
-            it('Pass by email', () => {
-                  length = 10;
-                  const otp = authService[`generateOtpKey`](length, 'email');
-
-                  expect(otp).toBeDefined();
-                  expect(otp.length).toBe(length);
-            });
-      });
-
-      describe('parseIp', () => {
-            it('Pass by req.headers[x-forwarded-for]', () => {
-                  const result = authService.parseIp({
-                        headers: {
-                              'x-forwarded-for': '127.0.0.1',
-                        },
+                        expect(user.username).toBe(userDb.username);
+                        expect(user.id).toBe(userDb.id);
+                        expect(otp).toBeDefined();
                   });
 
-                  expect(result).toBeDefined();
+                  it('Pass by email', async () => {
+                        const otp = authService.createOTP(userDb, 5, 'email');
+                        const user = await redisService.getObjectByKey<User>(otp);
+
+                        expect(user.username).toBe(userDb.username);
+                        expect(user.id).toBe(userDb.id);
+                        expect(otp).toBeDefined();
+                  });
             });
 
-            it('Pass by req.connection.remoteAddress', () => {
-                  const result = authService.parseIp({
-                        headers: {},
-                        connection: {
-                              remoteAddress: '127.0.0.1',
-                        },
+            describe('isRateLimitKey', () => {
+                  beforeEach(async () => {
+                        await redisService.deleteByKey('rate-limit-email1@gmail.com');
+                        await redisService.deleteByKey('rate-limit-email2@gmail.com');
+
+                        await redisService.setByValue('rate-limit-email1@gmail.com', 1);
                   });
 
-                  expect(result).toBeDefined();
-            });
-
-            it('Pass by req.socket.remoteAddress', () => {
-                  const result = authService.parseIp({
-                        headers: {},
-                        socket: {
-                              remoteAddress: '127.0.0.1',
-                        },
+                  it('Pass (first send)', async () => {
+                        const result = await authService.isRateLimitKey('email2@gmail.com', 5, 30);
+                        expect(result).toBe(true);
                   });
 
-                  expect(result).toBeDefined();
+                  it('Pass (do not oversend)', async () => {
+                        const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
+                        expect(result).toBe(true);
+                  });
+
+                  it('Fail (oversend', async () => {
+                        await redisService.setByValue('rate-limit-email1@gmail.com', 5);
+                        const result = await authService.isRateLimitKey('email1@gmail.com', 5, 30);
+                        expect(result).toBe(false);
+                  });
+            });
+      });
+
+      describe('Token Service', () => {
+            describe('createReToken', () => {
+                  let reToken: string;
+
+                  beforeEach(async () => {
+                        reToken = await authService.createReToken(userDb);
+                  });
+
+                  it('Pass', async () => {
+                        const refreshToken = await reTokenRepository.findOneByField('id', reToken);
+                        const encryptedUser = await redisService.getByKey(refreshToken.data);
+                        const userInformation = await authService.decodeToken<User>(encryptedUser);
+
+                        expect(userInformation).toBeDefined();
+                        expect(userInformation.username).toBe(userInformation.username);
+                  });
             });
 
-            it('Pass by req.connection.socket.remoteAddress', () => {
-                  const result = authService.parseIp({
-                        headers: {},
-                        connection: {
+            describe('createAuthToken', () => {
+                  it('Pass', async () => {
+                        const authToken = await authService[`createAuthToken`](userDb);
+                        const encryptedUser = await redisService.getByKey(authToken);
+                        const userInformation = await authService.decodeToken<User>(encryptedUser);
+
+                        expect(userInformation).toBeDefined();
+                        expect(userInformation.username).toBe(userInformation.username);
+                  });
+            });
+
+            describe('getSocketToken', () => {
+                  it('Pass', async () => {
+                        const authToken = await authService.getSocketToken(userDb);
+                        const user = await redisService.getObjectByKey<User>(authToken);
+
+                        expect(user.username).toBe(userDb.username);
+                        expect(user.id).toBe(userDb.id);
+                  });
+            });
+
+            describe('getAuthTokenByReToken', () => {
+                  it('Pass', async () => {
+                        const reToken = await authService.createReToken(userDb);
+                        const authToken = await authService.getAuthTokenByReToken(reToken);
+                        const isExist = await redisService.getByKey(authToken);
+
+                        expect(isExist).toBeDefined();
+                  });
+
+                  it('Failed Still get', async () => {
+                        const reToken = await authService.createReToken(userDb);
+                        let getReToken = await reTokenRepository.findOne({ where: { id: reToken } });
+                        getReToken.data = 'hello';
+                        getReToken = await reTokenRepository.save(getReToken);
+                        const authToken = await authService.getAuthTokenByReToken(reToken);
+                        const isExist = await redisService.getByKey(authToken);
+                        const decodeUser = authService.decodeToken<User>(isExist);
+
+                        expect(userDb.username).toBe(decodeUser.username);
+                        expect(isExist).toBeDefined();
+                        expect(authToken).toBeDefined();
+                  });
+            });
+
+            describe('getUserByAuthToken', () => {
+                  let authToken: string;
+
+                  beforeEach(async () => {
+                        authToken = await authService[`createAuthToken`](userDb);
+                  });
+
+                  it('Pass', async () => {
+                        const userInformation = await authService.getUserByAuthToken(authToken);
+                        expect(userInformation).toBeDefined();
+                        expect(userInformation.username).toBe(userInformation.username);
+                  });
+
+                  it('Failed', async () => {
+                        const userInformation = await authService.getUserByAuthToken(fakeData(12));
+                        expect(userInformation).toBeNull();
+                  });
+
+                  it('Failed', async () => {
+                        const userInformation = await authService.getUserByAuthToken(fakeData(5));
+                        expect(userInformation).toBeNull();
+                  });
+            });
+
+            describe('clearToken', () => {
+                  // conntent
+            });
+      });
+
+      describe('User IP Service', () => {
+            describe('parseIp', () => {
+                  it('Pass by req.headers[x-forwarded-for]', () => {
+                        const result = authService.parseIp({
+                              headers: {
+                                    'x-forwarded-for': '127.0.0.1',
+                              },
+                        });
+
+                        expect(result).toBeDefined();
+                  });
+
+                  it('Pass by req.connection.remoteAddress', () => {
+                        const result = authService.parseIp({
+                              headers: {},
+                              connection: {
+                                    remoteAddress: '127.0.0.1',
+                              },
+                        });
+
+                        expect(result).toBeDefined();
+                  });
+
+                  it('Pass by req.socket.remoteAddress', () => {
+                        const result = authService.parseIp({
+                              headers: {},
                               socket: {
                                     remoteAddress: '127.0.0.1',
                               },
-                        },
+                        });
+
+                        expect(result).toBeDefined();
                   });
 
-                  expect(result).toBeDefined();
+                  it('Pass by req.connection.socket.remoteAddress', () => {
+                        const result = authService.parseIp({
+                              headers: {},
+                              connection: {
+                                    socket: {
+                                          remoteAddress: '127.0.0.1',
+                                    },
+                              },
+                        });
+
+                        expect(result).toBeDefined();
+                  });
             });
       });
 

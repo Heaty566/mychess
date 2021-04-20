@@ -1,9 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import * as fs from 'fs';
-
-import { initTestModule } from '../../../test/initTest';
-import { DatabaseService } from '../database.service';
 import * as childProcess from 'child_process';
+
+//---- Helper
+import { initTestModule } from '../../../app/Helpers/test/initTest';
+
+//---- Service
+import { DatabaseService } from '../database.service';
 import { AwsService } from '../../../providers/aws/aws.service';
 
 describe('RepositoryService', () => {
@@ -40,11 +43,13 @@ describe('RepositoryService', () => {
                   childProcessCallback(new Error('wrong'));
                   expect(awsFn).not.toBeCalled();
             });
+
             it('Failed readFile error', async () => {
                   childProcessCallback(null);
                   fsCallback(new Error('wrong'), null);
                   expect(awsFn).not.toBeCalled();
             });
+
             it('Pass', async () => {
                   childProcessCallback(null);
 

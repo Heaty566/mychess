@@ -2,9 +2,10 @@ import * as supertest from 'supertest';
 
 import { INestApplication } from '@nestjs/common';
 
-//* Internal import
+//---- Helper
+import { initTestModule } from '../../app/Helpers/test/initTest';
 
-import { initTestModule } from '../../test/initTest';
+//---- DTO
 import { SupportDTO } from '../dto/aboutUsDto';
 
 describe('commonController', () => {
