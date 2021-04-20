@@ -1,4 +1,4 @@
-import { RepositoryService } from 'src/utils/repository/repository.service';
+import { RepositoryService } from '../../utils/repository/repository.service';
 
 //---- Service
 import { EntityRepository } from 'typeorm';

@@ -24,6 +24,8 @@ import { User } from './users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { Notification } from './notifications/entities/notification.entity';
 import { ChatsModule } from './chats/chats.module';
+import { BelongChat } from './chats/entities/belongChat.entity';
+import { Chat } from './chats/entities/chat.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -39,7 +41,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken, Notification],
+      entities: [User, ReToken, Notification, BelongChat, Chat],
 });
 
 @Module({
