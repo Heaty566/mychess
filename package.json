@@ -20,7 +20,7 @@
         "name": "mygame-next-nest",
         "version": "1.0.0",
         "main": "index.js",
-        "repository": "https://github.com/Heaty566/MyGame-NEXT-NEST.git",
         "author": "heaty566 <heaty566@gmail.com>",
-        "license": "MIT"
+        "license": "MIT",
+        "repository": "https://github.com/Heaty566/mychess.git"
 }
