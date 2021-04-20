@@ -42,7 +42,7 @@
         "i18n": "^0.13.2",
         "joi": "^17.4.0",
         "joi-password": "^1.1.0",
-        "joi-phone-validation": "^1.0.5",
+        "joi-phone-validation": "^1.0.7",
         "jsonwebtoken": "^8.5.1",
         "morgan": "^1.10.0",
         "mysql2": "^2.2.5",
