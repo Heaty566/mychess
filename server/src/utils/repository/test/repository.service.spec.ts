@@ -1,11 +1,17 @@
 import { INestApplication } from '@nestjs/common';
 
-import { initTestModule } from '../../../test/initTest';
-import { fakeUser } from '../../../test/fakeEntity';
-import { fakeData } from '../../../test/test.helper';
+//---- Helper
+import { initTestModule } from '../../../app/Helpers/test/initTest';
+import { fakeUser } from '../../../app/Helpers/test/fakeEntity';
+import { fakeData } from '../../../app/Helpers/test/test.helper';
 
+//---- Repository
 import { UserRepository } from '../../../users/entities/user.repository';
+
+//---- Service
 import { RepositoryService } from '../repository.service';
+
+//---- Entity
 import { User } from '../../../users/entities/user.entity';
 
 describe('RepositoryService', () => {
@@ -69,36 +75,12 @@ describe('RepositoryService', () => {
             });
       });
 
-      describe('findManyByField', () => {
-            let user: User;
-
-            beforeEach(async () => {
-                  user = fakeUser();
-                  await userRepository.save(user);
-            });
-
-            it('Pass (field is not _id)', async () => {
-                  const res = await userRepository.findManyByField('name', user.name);
-                  expect(res[0]).toBeDefined();
-            });
-
-            it('Pass (field is _id)', async () => {
-                  const userData = await userRepository.findOneByField('name', user.name);
-                  const res = await userRepository.findManyByField('id', userData.id);
-                  expect(res[0]).toBeDefined();
-            });
-
-            it('Failed (is not valid _id)', async () => {
-                  const res = await userRepository.findManyByField('id', fakeData(10, 'lettersAndNumbers'));
-                  expect(res).toStrictEqual([]);
-            });
-      });
-
       describe('onlyUnique', () => {
             it('Pass ', () => {
                   const output = userRepository['onlyUnique'](1, 0, [1, 2, 3, 1]);
                   expect(output).toBeTruthy();
             });
+
             it('Failed Wrong index ', () => {
                   const output = userRepository['onlyUnique'](1, 1, [1, 2, 3, 1]);
                   expect(output).toBeFalsy();
