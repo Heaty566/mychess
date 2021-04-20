@@ -13,7 +13,12 @@ export class ChatsGateway {
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('connection-chat')
-      handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinChatDTO): WsResponse<null> {
+      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinChatDTO): Promise<WsResponse<null>> {
+            if (client.user) {
+                  const isBelong = this.chatsService.checkBelongChat(client.user.id, data.chatId);
+                  if (isBelong) client.join(data.chatId);
+            }
+
             return { event: 'connection-chat-success', data: null };
       }
 }

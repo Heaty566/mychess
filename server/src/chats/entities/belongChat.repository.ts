@@ -6,5 +6,5 @@ import { EntityRepository } from 'typeorm';
 //---- Entity
 import { BelongChat } from './belongChat.entity';
 
-@EntityRepository()
+@EntityRepository(BelongChat)
 export class BelongChatRepository extends RepositoryService<BelongChat> {}
