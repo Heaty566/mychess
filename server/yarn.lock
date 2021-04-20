@@ -4615,6 +4615,13 @@ joi-password@^1.1.0:
   dependencies:
     joi "^17.4.0"
 
+joi-phone-validation@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/joi-phone-validation/-/joi-phone-validation-1.0.5.tgz#5bac8c79044d51cab84d537a3fbd7ad8e0426c8a"
+  integrity sha512-DmuBpuvkQGltXv3AWqo90JeS/TFx2Y/JgqZTDZO+xhILTQp0JzhWEkK8SJdEHjl7nBPEta0NdexFUIrCbHsJbA==
+  dependencies:
+    joi "^17.4.0"
+
 joi@*, joi@^17.4.0:
   version "17.4.0"
   resolved "https://registry.yarnpkg.com/joi/-/joi-17.4.0.tgz#b5c2277c8519e016316e49ababd41a1908d9ef20"
