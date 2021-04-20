@@ -41,3 +41,4 @@
     "phone.default": "should be the same format as {{country}}'s phone number",
     "phone.internationalPhoneFormat": "should be the same format as {{country}}'s international phone number format"
 }
+
