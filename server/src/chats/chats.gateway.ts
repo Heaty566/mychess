@@ -3,6 +3,7 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, Conne
 import { SocketExtend, Server } from 'socket.io';
 import { UserSocketGuard } from 'src/auth/authSocket.guard';
 import { ChatsService } from './chats.service';
+import { JoinChatDTO } from './dto/joinChatDTO.dto';
 
 @WebSocketGateway({ namespace: 'chats' })
 export class ChatsGateway {
@@ -12,7 +13,7 @@ export class ChatsGateway {
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('connection-chat')
-      handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data): WsResponse<null> {
+      handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinChatDTO): WsResponse<null> {
             return { event: 'connection-chat-success', data: null };
       }
 }

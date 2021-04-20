@@ -1,5 +1,3 @@
-import { string } from 'joi';
-
-export const JoinChatDTO = {
-      chatId: string,
-};
+export class JoinChatDTO {
+      chatId: string;
+}
