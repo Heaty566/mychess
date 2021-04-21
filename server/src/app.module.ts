@@ -7,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
+import { TicTacToeModule } from './ticTacToe/ticTacToe.module';
 
 //---------Provider
 import { SmailModule } from './providers/smail/smail.module';
@@ -23,6 +24,7 @@ import { RepositoryModule } from './utils/repository/repository.module';
 import { User } from './users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { Notification } from './notifications/entities/notification.entity';
+import { TicTacToe } from './ticTacToe/entity/ticTacToe.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -38,7 +40,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken, Notification],
+      entities: [User, ReToken, Notification, TicTacToe],
 });
 
 @Module({
@@ -53,6 +55,7 @@ const DBConfig = TypeOrmModule.forRoot({
             UserModule,
             CommonModule,
             NotificationsModule,
+            TicTacToeModule,
 
             // --- Provider
             SmailModule,
