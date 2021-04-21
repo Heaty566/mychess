@@ -15,7 +15,6 @@ export class ChatsGateway {
       @SubscribeMessage('connection-chat')
       async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinChatDTO): Promise<WsResponse<null>> {
             if (client.user) {
-                  console.log(client.user.id, data.chatId);
                   const isBelong = this.chatsService.checkBelongChat(client.user.id, data.chatId);
                   if (isBelong) client.join(data.chatId);
             }

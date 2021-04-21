@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Message } from './message.entity';
 
 @Entity()
 export class Chat {
@@ -7,4 +8,7 @@ export class Chat {
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
+
+      @OneToMany(() => Message, (message) => message.chat)
+      messages: Message[];
 }
