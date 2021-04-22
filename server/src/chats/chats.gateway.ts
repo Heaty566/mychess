@@ -45,4 +45,16 @@ export class ChatsGateway {
             const message = await this.chatsService.saveMessage(data);
             return { event: 'send-message-success', data: message };
       }
+
+      /**
+       *
+       * This function listens on "disconnection-chat" event.
+       * Then delete the BelongChat which contains this user in the database
+       */
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage('disconnection-chat')
+      async handleLeaveChat(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<null>> {
+            if (client.user) await this.chatsService.deleteBelongChat(client.user.id);
+            return { event: 'disconnection-chat-success', data: null };
+      }
 }
