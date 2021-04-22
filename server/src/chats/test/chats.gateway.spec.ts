@@ -9,6 +9,7 @@ import User from '../../users/entities/user.entity';
 
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
+import { Chat } from '../entities/chat.entity';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
@@ -16,15 +17,18 @@ describe('ChatsGateway', () => {
       let client: SocketIOClient.Socket;
       let userSocketToken: string;
       let user: User;
+      let chat: Chat;
       let userRepository: UserRepository;
       let resetDB: any;
 
       beforeAll(async () => {
-            const { configModule, users, resetDatabase } = await initTestModule();
+            const { configModule, users, chats, resetDatabase } = await initTestModule();
             app = configModule;
 
             userSocketToken = (await users[0]).ioToken;
             user = (await users[0]).user;
+
+            chat = await chats;
 
             resetDB = resetDatabase;
             await app.listen(port);
@@ -45,12 +49,19 @@ describe('ChatsGateway', () => {
                   client.connect();
             });
 
-            it('Pass', async (done) => {
+            it('Pass(connection-chat-success)', async (done) => {
                   client.on('connection-chat-success', (data) => {
                         expect(data).toBeNull();
                         done();
                   });
-                  client.emit('connection-chat', { chatId: '123' });
+                  client.emit('connection-chat', { chatId: chat.id });
             });
+
+            // it('Pass(load-message-history)', async (done) => {
+            //       client.on('load-message-history', (data) => {
+            //             expect(typeof data).toBe('object');
+            //             done();
+            //       });
+            // });
       });
 });

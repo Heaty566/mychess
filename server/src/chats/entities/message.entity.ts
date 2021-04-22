@@ -14,4 +14,7 @@ export class Message {
 
       @ManyToOne(() => Chat, (chat) => chat.messages)
       chat: Chat;
+
+      @Column()
+      userId: string;
 }
