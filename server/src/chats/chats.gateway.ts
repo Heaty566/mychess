@@ -12,6 +12,12 @@ export class ChatsGateway {
       @WebSocketServer()
       server: Server;
 
+      /**
+       * This function listens on "connection-chat" event from client.
+       * After that, checking the user is belong to a chat or not.
+       * If yes, then load all the history and send them to client
+       * @param data chatId
+       */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('connection-chat')
       async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinChatDTO): Promise<WsResponse<null>> {
@@ -27,9 +33,15 @@ export class ChatsGateway {
             return { event: 'connection-chat-success', data: null };
       }
 
+      /**
+       * This function listens on "send-message" from client.
+       * And save this message into database, then send it back to client to display
+       * @param data A message from client
+       * @returns
+       */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('send-message')
-      async sendMessage(@MessageBody() data): Promise<WsResponse<Message>> {
+      async sendMessage(@MessageBody() data: Message): Promise<WsResponse<Message>> {
             const message = await this.chatsService.saveMessage(data);
             return { event: 'send-message-success', data: message };
       }
