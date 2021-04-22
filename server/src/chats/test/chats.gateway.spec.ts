@@ -60,7 +60,8 @@ describe('ChatsGateway', () => {
                   });
                   client.emit('connection-chat', { chatId: chat.id });
                   client.on('load-message-history', (data) => {
-                        expect(typeof data).toBe('object');
+                        console.log(data);
+                        expect(data).toBeDefined();
                   });
             });
       });
@@ -77,5 +78,10 @@ describe('ChatsGateway', () => {
                   });
                   client.emit('send-message', message);
             });
+      });
+
+      afterAll(async () => {
+            await resetDB();
+            await app.close();
       });
 });

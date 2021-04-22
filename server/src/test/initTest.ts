@@ -47,15 +47,19 @@ const resetDatabase = async (module: TestingModule) => {
       const notificationRepository = module.get<NotificationRepository>(NotificationRepository);
       const reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
       const chatRepository = module.get<ChatRepository>(ChatRepository);
+      const messageRepository = module.get<MessageRepository>(MessageRepository);
 
-      await reTokenRepository.clear();
       await reTokenRepository.createQueryBuilder().delete().execute();
-      await notificationRepository.clear();
+      await reTokenRepository.clear();
+
       await notificationRepository.createQueryBuilder().delete().execute();
+      await notificationRepository.clear();
       await userRepository.createQueryBuilder().delete().execute();
       await userRepository.clear();
       await chatRepository.createQueryBuilder().delete().execute();
       await chatRepository.clear();
+      await messageRepository.createQueryBuilder().delete().execute();
+      await messageRepository.clear();
 };
 
 export const initTestModule = async () => {

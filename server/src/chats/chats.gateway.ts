@@ -20,7 +20,7 @@ export class ChatsGateway {
                   if (isBelong) {
                         client.join(data.chatId);
                         let messages: Message[] = await this.chatsService.loadMessage(data.chatId);
-                        this.server.to(data.chatId).emit('load-message-history', { messages: messages });
+                        this.server.to(data.chatId).emit('load-message-history', messages);
                   }
             }
 
