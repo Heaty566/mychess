@@ -26,4 +26,11 @@ export class ChatsGateway {
 
             return { event: 'connection-chat-success', data: null };
       }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage('send-message')
+      async sendMessage(@ConnectedSocket() client: SocketExtend, @MessageBody() data): Promise<WsResponse<null>> {
+            console.log(data);
+            return { event: 'send-message-success', data: null };
+      }
 }

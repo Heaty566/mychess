@@ -17,6 +17,8 @@ import { ReTokenRepository } from '../auth/entities/re-token.repository';
 import { NotificationRepository } from '../notifications/entities/notification.repository';
 import { ChatRepository } from '../chats/entities/chat.repository';
 import { BelongChatRepository } from '../chats/entities/belongChat.repository';
+import { MessageRepository } from '../chats/entities/message.repository';
+import { Message } from '../chats/entities/message.entity';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
       return Array.from(Array(5)).map(async (_) => {
@@ -88,12 +90,21 @@ export const initTestModule = async () => {
       belongChats.user = (await users[0]).user;
       belongChatRepository.save(belongChats);
 
+      // create a fake message
+      const messageRepository = module.get<MessageRepository>(MessageRepository);
+      const messages = new Message();
+      messages.text = 'Hai dep trai';
+      messages.chat = chats;
+      messages.userId = (await users[0]).user.id;
+      messageRepository.save(messages);
+
       return {
             getApp,
             module,
             configModule,
             users,
             chats,
+            messages,
             belongChats,
             resetDatabase: async () => await resetDatabase(module),
             getAdmin: {

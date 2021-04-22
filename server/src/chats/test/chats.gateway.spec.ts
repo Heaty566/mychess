@@ -60,4 +60,18 @@ describe('ChatsGateway', () => {
                   });
             });
       });
+
+      describe('send-message', () => {
+            beforeEach(async () => {
+                  client.connect();
+            });
+
+            it('Pass(send-message-success)', async (done) => {
+                  client.on('send-message-success', (data) => {
+                        expect(data).toBeNull();
+                        done();
+                  });
+                  client.emit('send-message', 123);
+            });
+      });
 });
