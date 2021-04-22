@@ -60,7 +60,6 @@ describe('ChatsGateway', () => {
                   });
                   client.emit('connection-chat', { chatId: chat.id });
                   client.on('load-message-history', (data) => {
-                        console.log(data);
                         expect(data).toBeDefined();
                   });
             });
@@ -77,6 +76,20 @@ describe('ChatsGateway', () => {
                         done();
                   });
                   client.emit('send-message', message);
+            });
+      });
+
+      describe('disconnection-chat', () => {
+            beforeEach(async () => {
+                  client.connect();
+            });
+
+            it('Pass(disconnection-chat-success)', async (done) => {
+                  client.on('disconnection-chat-success', (data) => {
+                        expect(data).toBeNull();
+                        done();
+                  });
+                  client.emit('disconnection-chat');
             });
       });
 

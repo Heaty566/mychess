@@ -23,4 +23,8 @@ export class ChatsService {
       async saveMessage(message: Message) {
             return await this.messageRepository.save(message);
       }
+
+      async deleteBelongChat(userId: string): Promise<BelongChat> {
+            return await this.belongChatRepository.createQueryBuilder().select('*').where('userId = :userId', { userId: userId }).execute();
+      }
 }
