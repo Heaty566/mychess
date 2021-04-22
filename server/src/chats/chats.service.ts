@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BelongChat } from './entities/belongChat.entity';
 import { BelongChatRepository } from './entities/belongChat.repository';
+import { Message } from './entities/message.entity';
 import { MessageRepository } from './entities/message.repository';
 
 @Injectable()
@@ -17,5 +18,9 @@ export class ChatsService {
 
       async loadMessage(chatId: string) {
             return await this.messageRepository.createQueryBuilder().select('*').where('chatId = :chatId', { chatId: chatId }).execute();
+      }
+
+      async saveMessage(message: Message) {
+            return await this.messageRepository.save(message);
       }
 }

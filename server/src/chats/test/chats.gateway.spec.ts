@@ -10,6 +10,7 @@ import User from '../../users/entities/user.entity';
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
 import { Chat } from '../entities/chat.entity';
+import { Message } from '../entities/message.entity';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
@@ -18,17 +19,20 @@ describe('ChatsGateway', () => {
       let userSocketToken: string;
       let user: User;
       let chat: Chat;
+      let message: Message;
       let userRepository: UserRepository;
       let resetDB: any;
 
       beforeAll(async () => {
-            const { configModule, users, chats, resetDatabase } = await initTestModule();
+            const { configModule, users, messages, chats, resetDatabase } = await initTestModule();
             app = configModule;
 
             userSocketToken = (await users[0]).ioToken;
             user = (await users[0]).user;
 
             chat = await chats;
+
+            message = await messages;
 
             resetDB = resetDatabase;
             await app.listen(port);
@@ -68,10 +72,10 @@ describe('ChatsGateway', () => {
 
             it('Pass(send-message-success)', async (done) => {
                   client.on('send-message-success', (data) => {
-                        expect(data).toBeNull();
+                        expect(data).toBeDefined();
                         done();
                   });
-                  client.emit('send-message', 123);
+                  client.emit('send-message', message);
             });
       });
 });
