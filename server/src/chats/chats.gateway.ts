@@ -19,9 +19,8 @@ export class ChatsGateway {
                   const isBelong = this.chatsService.checkBelongChat(client.user.id, data.chatId);
                   if (isBelong) {
                         client.join(data.chatId);
-                        // let messages: Message[] = await this.chatsService.loadMessage(data.chatId);
-                        // if (messages) this.server.to(data.chatId).emit('load-message-history', { messages: messages });
-                        // else this.server.to(data.chatId).emit('load-message-history', { message: [] });
+                        let messages: Message[] = await this.chatsService.loadMessage(data.chatId);
+                        this.server.to(data.chatId).emit('load-message-history', { messages: messages });
                   }
             }
 

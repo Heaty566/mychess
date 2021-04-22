@@ -55,13 +55,9 @@ describe('ChatsGateway', () => {
                         done();
                   });
                   client.emit('connection-chat', { chatId: chat.id });
+                  client.on('load-message-history', (data) => {
+                        expect(typeof data).toBe('object');
+                  });
             });
-
-            // it('Pass(load-message-history)', async (done) => {
-            //       client.on('load-message-history', (data) => {
-            //             expect(typeof data).toBe('object');
-            //             done();
-            //       });
-            // });
       });
 });
