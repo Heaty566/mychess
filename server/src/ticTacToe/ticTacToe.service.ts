@@ -6,6 +6,7 @@ import { UserService } from '../users/user.service';
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
 import { ObjectLiteral } from 'typeorm';
 import { TicTacToe } from './entity/ticTacToe.entity';
+import { TicTacToeStatus } from './entity/ticTacToeStatus';
 
 @Injectable()
 export class TicTacToeService {
@@ -25,6 +26,21 @@ export class TicTacToeService {
                   .getMany();
             return res;
       }
+
+      async isFull(roomId: string) {
+            const isFull = await this.getMatchByQuery('id = :roomId', { roomId });
+            console.log(isFull);
+      }
+
+      async isPlaying(userId: string) {
+            const currentPlay = await this.getMatchByQuery('status = :status and user.id = :userId', {
+                  status: TicTacToeStatus.PLAYING,
+                  userId,
+            });
+
+            return Boolean(currentPlay.length);
+      }
+
       async saveTicTacToe(ticTacToe: TicTacToe) {
             return await this.ticTacToeRepository.save(ticTacToe);
       }

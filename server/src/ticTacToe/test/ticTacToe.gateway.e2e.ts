@@ -17,6 +17,9 @@ import { UserRepository } from '../../users/entities/user.repository';
 import { AuthService } from '../../auth/auth.service';
 import { TicTacToeStatus } from '../entity/ticTacToeStatus';
 import { TicTacToeGateway } from '../ticTacToe.gateway';
+//---- Common
+import { SocketResponseAction } from '../../app/interface/socket.action';
+import { TTTAction } from '../../ticTacToe/ticTacToe.action';
 
 describe('TicTacToeGateway ', () => {
       let app: INestApplication;
@@ -58,7 +61,7 @@ describe('TicTacToeGateway ', () => {
                   client.on('join-test', () => {
                         done();
                   });
-                  client.on('player-create-match-success', async (data: ApiServerResponse) => {
+                  client.on(TTTAction.TTT_CREATE_ROOM, async (data: ApiServerResponse) => {
                         const isExist = await ticTacToeRepository
                               .createQueryBuilder('tic')
                               .leftJoinAndSelect('tic.users', 'user')
@@ -71,7 +74,7 @@ describe('TicTacToeGateway ', () => {
                         ticTacToeGateWay.server.to(`tic-tac-toe-${isExist.id}`).emit('join-test', {});
                   });
 
-                  client.emit('player-create-match', {});
+                  client.emit(TTTAction.TTT_CREATE_ROOM, {});
             });
 
             it('Failed User is Playing', async (done) => {
@@ -80,13 +83,35 @@ describe('TicTacToeGateway ', () => {
                   ticTacToe.status = TicTacToeStatus.PLAYING;
                   await ticTacToeRepository.save(ticTacToe);
 
-                  client.on('player-create-match-failed', (data: ApiServerResponse) => {
+                  client.on(SocketResponseAction.BAD_REQUEST, (data: ApiServerResponse) => {
                         expect(data).toBeDefined();
                         expect(data.details).toBeDefined();
                         done();
                   });
 
-                  client.emit('player-create-match', {});
+                  client.emit(TTTAction.TTT_CREATE_ROOM, {});
+            });
+      });
+      describe('player-create-match', () => {
+            let client: SocketIOClient.Socket;
+            let user: User;
+            beforeEach(async () => {
+                  user = await userRepository.save(fakeUser());
+                  const socketToken = await authService.getSocketToken(user);
+                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
+
+                  await client.connect();
+            });
+            it('dsa', (done) => {
+                  client.on(SocketResponseAction.BAD_REQUEST, (res) => {
+                        console.log(res);
+                        done();
+                  });
+                  client.emit(TTTAction.TTT_JOIN_ROOM, {});
+            });
+
+            afterEach(async () => {
+                  client.disconnect();
             });
       });
 
