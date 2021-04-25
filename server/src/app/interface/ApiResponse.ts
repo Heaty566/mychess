@@ -7,8 +7,8 @@ import {
       ForbiddenException,
 } from '@nestjs/common';
 
-import { ApiError, ApiSuccess, ApiServerResponse } from './serverResponse';
 import { LocalesService } from '../../utils/locales/locales.service';
+import { ResponseBody, ErrorType } from './api.interface';
 
 class ApiResponse {
       constructor(private readonly localeService: LocalesService) {}
@@ -17,7 +17,7 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public sendError({ body, type = 'BadRequestException' }: ApiError) {
+      public sendError<T>(body: ResponseBody<T>, type: ErrorType) {
             const res = this.localeService.translateResponse(body);
 
             switch (type) {
@@ -40,7 +40,7 @@ class ApiResponse {
        *
        * @description allow translate message before send back to client
        */
-      public send<T>({ body }: ApiSuccess<T>): ApiServerResponse {
+      public send<T>(body: ResponseBody<T>) {
             return this.localeService.translateResponse(body);
       }
 }

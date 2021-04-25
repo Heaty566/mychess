@@ -28,7 +28,7 @@ import { SearchUsersDTO, vSearchUsersDTO } from './dto/searchUsers';
 import { UserCustomDTO } from './dto/userCustom.dto';
 
 //---- Common
-import { apiResponse } from '../app/interface/ApiResponse';
+import { apiResponse } from '../app/interface/apiResponse';
 import { config } from '../config';
 
 @Controller('user')
@@ -49,7 +49,7 @@ export class UserController {
             //get user
             const user = await this.userService.findOneUserByField('id', req.user.id);
 
-            return apiResponse.send<UserCustomDTO>({ body: { data: user } });
+            return apiResponse.send<UserCustomDTO>({ data: user });
       }
 
       @Get('/search')
@@ -59,20 +59,16 @@ export class UserController {
 
             //get user
             const users = await this.userService.searchUsersByName(value.name, value.pageSize, value.currentPage);
-            return apiResponse.send<Array<User>>({ body: { data: users } });
+            return apiResponse.send<Array<User>>({ data: users });
       }
 
       @Get('/:id')
       async cGetUserById(@Param('id') id: string) {
             //get user
             const user = await this.userService.findOneUserWithoutSomeSensitiveFields('id', id);
-            if (!user)
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'user.invalid-input' } },
-                        type: 'BadRequestException',
-                  });
+            if (!user) throw apiResponse.sendError({ message: { type: 'user.invalid-input' } }, 'BadRequestException');
 
-            return apiResponse.send<UserCustomDTO>({ body: { data: user } });
+            return apiResponse.send<UserCustomDTO>({ data: user });
       }
 
       //------------------Update user information------------------------------------------
@@ -86,9 +82,7 @@ export class UserController {
             user.name = body.name;
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({
-                  body: { message: { type: 'user.update-success' } },
-            });
+            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
       }
 
       @Put('/avatar')
@@ -96,41 +90,33 @@ export class UserController {
       @UseInterceptors(FileInterceptor('avatar'))
       async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
             //checking file is exist
-            if (!file)
-                  throw apiResponse.sendError({
-                        body: { details: { avatar: { type: 'any.required' } } },
-                  });
+            if (!file) throw apiResponse.sendError({ details: { avatar: { type: 'any.required' } } }, 'BadRequestException');
 
             //checking size
             const isCorrectSize = this.awsService.checkFileSize(file, config.userController.avatarLimitSize);
             if (!isCorrectSize)
-                  throw apiResponse.sendError({
-                        body: { details: { avatar: { type: 'aws.file-too-big', context: { size: String(config.userController.avatarLimitSize) } } } },
-                  });
+                  throw apiResponse.sendError(
+                        {
+                              details: { avatar: { type: 'aws.file-too-big', context: { size: String(config.userController.avatarLimitSize) } } },
+                        },
+                        'BadRequestException',
+                  );
 
             //checking extension
             const isCorrectFileExtension = this.awsService.checkFileExtension(file, config.userController.avatarAllowExtension);
             if (!isCorrectFileExtension)
-                  throw apiResponse.sendError({
-                        body: { details: { avatar: { type: 'aws.file-wrong-extension' } } },
-                  });
+                  throw apiResponse.sendError({ details: { avatar: { type: 'aws.file-wrong-extension' } } }, 'BadRequestException');
 
             //upload file to aws
             const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');
-            if (!fileLocation)
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'server.some-wrong' } },
-                        type: 'InternalServerErrorException',
-                  });
+            if (!fileLocation) throw apiResponse.sendError({ message: { type: 'server.some-wrong' } }, 'InternalServerErrorException');
 
             //update user information
             const user = await this.userService.findOneUserByField('id', req.user.id);
             user.avatarUrl = fileLocation;
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({
-                  body: { message: { type: 'user.update-success' } },
-            });
+            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
       }
 
       @Put('/password')
@@ -139,36 +125,23 @@ export class UserController {
             //checking old password is correct
             const user = await this.userService.findOneUserByField('username', req.user.username);
             const isCorrectPassword = await this.authService.decryptString(body.currentPassword, user.password);
-            if (!isCorrectPassword)
-                  throw apiResponse.sendError({
-                        body: { details: { username: { type: 'user.auth-failed' } } },
-                  });
+            if (!isCorrectPassword) throw apiResponse.sendError({ details: { username: { type: 'user.auth-failed' } } }, 'BadRequestException');
 
             //update user
             user.password = await this.authService.encryptString(body.newPassword);
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({
-                  body: { message: { type: 'user.update-success' } },
-            });
+            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
       }
 
       @Put('/reset-password')
       async cUpdatePasswordByOtp(@Query('key') key: string, @Body(new JoiValidatorPipe(vResetPasswordDTO)) body: ResetPasswordDTO) {
             //checking otp key
-            if (!key)
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: { details: { otp: { type: 'user.not-allow-action' } } },
-                  });
+            if (!key) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
 
             //checking otp key is exist
             const redisUser = await this.redisService.getObjectByKey<User>(key);
-            if (!redisUser)
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: { details: { otp: { type: 'user.not-allow-action' } } },
-                  });
+            if (!redisUser) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
 
             //update user
             const user = await this.userService.findOneUserByField('username', redisUser.username);
@@ -176,27 +149,17 @@ export class UserController {
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(key);
 
-            return apiResponse.send<void>({
-                  body: { message: { type: 'user.update-success' } },
-            });
+            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
       }
 
       @Put('/update-with-otp')
       async cUpdateEmailByOTP(@Query('key') key: string) {
             //checking otp key
-            if (!key)
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: { details: { otp: { type: 'user.not-allow-action' } } },
-                  });
+            if (!key) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
 
             //checking otp key is exist
             const redisUser = await this.redisService.getObjectByKey<User>(key);
-            if (!redisUser)
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: { details: { otp: { type: 'user.not-allow-action' } } },
-                  });
+            if (!redisUser) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
 
             //update user
             const user = await this.userService.findOneUserByField('id', redisUser.id);
@@ -209,9 +172,7 @@ export class UserController {
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(key);
 
-            return apiResponse.send<void>({
-                  body: { message: { type: 'user.update-success' } },
-            });
+            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
       }
 
       //-----------------------------------Create-OTP--WITH GUARD-------------------------------
@@ -227,16 +188,14 @@ export class UserController {
                   config.userController.OTPPhoneLimitTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
+                        'BadRequestException',
+                  );
 
             //checking phone is exist
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (user)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.field-taken' } } },
-                  });
+            if (user) throw apiResponse.sendError({ details: { phoneNumber: { type: 'user.field-taken' } } }, 'BadRequestException');
 
             //checking amount of time which user request before by phone
             const updateUser = await this.userService.findOneUserByField('id', req.user.id);
@@ -247,24 +206,17 @@ export class UserController {
                   config.userController.OTPPhoneLimitTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: {
-                              details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } },
-                        },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
+                        'BadRequestException',
+                  );
 
             //generate otp
             const otpKey = this.authService.createOTP(updateUser, config.userController.OTPPhoneValidTime, 'sms');
             const res = await this.smsService.sendOTP(updateUser.phoneNumber, otpKey);
-            if (!res)
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'server.some-wrong' } },
-                        type: 'InternalServerErrorException',
-                  });
+            if (!res) throw apiResponse.sendError({ message: { type: 'server.some-wrong' } }, 'InternalServerErrorException');
 
-            return apiResponse.send({
-                  body: { message: { type: 'server.send-phone-otp' } },
-            });
+            return apiResponse.send({ message: { type: 'server.send-phone-otp' } });
       }
 
       @Post('/otp-email')
@@ -279,16 +231,14 @@ export class UserController {
                   config.userController.OTPMailLimitTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
+                        'BadRequestException',
+                  );
 
             //checking email is exist
             const user = await this.userService.findOneUserByField('email', body.email);
-            if (user)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.field-taken' } } },
-                  });
+            if (user) throw apiResponse.sendError({ details: { email: { type: 'user.field-taken' } } }, 'BadRequestException');
 
             const updateUser = req.user;
             updateUser.email = body.email;
@@ -300,21 +250,16 @@ export class UserController {
                   config.userController.OTPMailLimitTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
+                        'BadRequestException',
+                  );
 
             //generate otp key
             const redisKey = await this.authService.createOTP(updateUser, config.userController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTPForUpdateEmail(updateUser.email, redisKey);
-            if (!isSent)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'server.some-wrong' } } },
-                        type: 'InternalServerErrorException',
-                  });
+            if (!isSent) throw apiResponse.sendError({ details: { email: { type: 'server.some-wrong' } } }, 'InternalServerErrorException');
 
-            return apiResponse.send({
-                  body: { message: { type: 'server.send-email-otp' } },
-            });
+            return apiResponse.send({ message: { type: 'server.send-email-otp' } });
       }
 }
