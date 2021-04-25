@@ -11,14 +11,12 @@ import { fakeUser } from '../../test/fakeEntity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
 //---- Repository
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
-import { ApiServerResponse } from '../../app/interface/serverResponse';
 import { UserRepository } from '../../users/entities/user.repository';
 
 import { AuthService } from '../../auth/auth.service';
 import { TicTacToeStatus } from '../entity/ticTacToeStatus';
 import { TicTacToeGateway } from '../ticTacToe.gateway';
 //---- Common
-import { SocketResponseAction } from '../../app/interface/socket.action';
 import { TTTAction } from '../../ticTacToe/ticTacToe.action';
 
 describe('TicTacToeGateway ', () => {
@@ -61,7 +59,7 @@ describe('TicTacToeGateway ', () => {
                   client.on('join-test', () => {
                         done();
                   });
-                  client.on(TTTAction.TTT_CREATE_ROOM, async (data: ApiServerResponse) => {
+                  client.on(TTTAction.TTT_CREATE_ROOM, async (data) => {
                         const isExist = await ticTacToeRepository
                               .createQueryBuilder('tic')
                               .leftJoinAndSelect('tic.users', 'user')
@@ -69,8 +67,7 @@ describe('TicTacToeGateway ', () => {
                               .getOne();
 
                         expect(isExist).toBeDefined();
-                        expect(data).toBeDefined();
-                        expect(data.details).toBeUndefined();
+                        expect(data.statusCode).toBe(200);
                         ticTacToeGateWay.server.to(`tic-tac-toe-${isExist.id}`).emit('join-test', {});
                   });
 
@@ -83,7 +80,7 @@ describe('TicTacToeGateway ', () => {
                   ticTacToe.status = TicTacToeStatus.PLAYING;
                   await ticTacToeRepository.save(ticTacToe);
 
-                  client.on(SocketResponseAction.BAD_REQUEST, (data: ApiServerResponse) => {
+                  client.on('exception', (data) => {
                         expect(data).toBeDefined();
                         expect(data.details).toBeDefined();
                         done();
@@ -103,8 +100,8 @@ describe('TicTacToeGateway ', () => {
                   await client.connect();
             });
             it('dsa', (done) => {
-                  client.on(SocketResponseAction.BAD_REQUEST, (res) => {
-                        console.log(res);
+                  client.on('exception', (res) => {
+                        expect(res.statusCode).toBe(400);
                         done();
                   });
                   client.emit(TTTAction.TTT_JOIN_ROOM, {});

@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { SocketExtend } from 'socket.io';
+import { ioResponse } from '../app/interface/socketResponse';
 import * as Cookie from 'cookie';
 
 //---- Service
@@ -20,15 +21,15 @@ export class UserSocketGuard implements CanActivate {
 
       async canActivate(context: ExecutionContext) {
             const client = await this.cookieParserSocket(context);
-            if (!client.cookies) return false;
+            if (!client.cookies) throw ioResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
 
             //get io-token
             const ioToken = client.cookies['io-token'] || '';
-            if (!ioToken) return false;
+            if (!ioToken) throw ioResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
 
             //checking io-token
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
-            if (!getUser) return false;
+            if (!getUser) throw ioResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
             client.user = getUser;
 
             return true;

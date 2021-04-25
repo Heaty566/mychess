@@ -14,12 +14,5 @@
       },
       "coverageDirectory": "../coverage",
       "testEnvironment": "node",
-      "coveragePathIgnorePatterns": [
-            "<rootDir>/main.ts",
-            "<rootDir>/router.ts",
-            "<rootDir>/app/interface/ApiResponse.ts",
-            "<rootDir>/app/exception",
-            "<rootDir>/utils/logger",
-            "<rootDir>/test"
-      ]
+      "coveragePathIgnorePatterns": ["<rootDir>/main.ts", "<rootDir>/router.ts", "<rootDir>/app", "<rootDir>/utils/logger", "<rootDir>/test"]
 }

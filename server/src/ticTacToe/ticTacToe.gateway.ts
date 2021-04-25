@@ -1,62 +1,39 @@
 import { UseGuards } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
-import { SocketResponse } from '../app/interface/socketResponse';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, SocketExtend } from 'socket.io';
 import { UserSocketGuard } from '../auth/authSocket.guard';
 import { TicTacToeService } from './ticTacToe.service';
-import { TicTacToeStatus } from './entity/ticTacToeStatus';
+import { ioResponse } from '../app/interface/socketResponse';
 import { TicTacToe } from './entity/ticTacToe.entity';
 import { JoinRoomDto, vJoinRoomDto } from './dto/joinRoomDto';
 import { SocketJoiValidatorPipe } from '../utils/validator/SocketValidator.pipe';
 import { TTTAction } from './ticTacToe.action';
-import { SocketResponseAction } from '../app/interface/socket.action';
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {
       constructor(private readonly ticTacToeService: TicTacToeService) {}
-
-      // ------------ Event
 
       @WebSocketServer()
       server: Server;
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_CREATE_ROOM)
-      async handleCreateMatch(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<SocketResponse<null>>> {
+      async handleCreateMatch(@ConnectedSocket() client: SocketExtend) {
             const isPlaying = await this.ticTacToeService.isPlaying(client.user.id);
-            if (isPlaying)
-                  return {
-                        event: SocketResponseAction.BAD_REQUEST,
-                        data: {
-                              isSuccess: false,
-                              data: null,
-                              details: { message: { type: 'user.not-allow-action' } },
-                        },
-                  };
+            if (isPlaying) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
 
             const tic = new TicTacToe();
             tic.users = [client.user];
             const insertNewTTT = await this.ticTacToeService.saveTicTacToe(tic);
             await client.join(`tic-tac-toe-${insertNewTTT.id}`);
 
-            return { event: TTTAction.TTT_CREATE_ROOM, data: { isSuccess: true } };
+            return ioResponse.send(TTTAction.TTT_CREATE_ROOM, {});
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_JOIN_ROOM)
-      async handleJoinMatch(
-            @ConnectedSocket() client: SocketExtend,
-            @MessageBody(new SocketJoiValidatorPipe(vJoinRoomDto)) body: JoinRoomDto,
-      ): Promise<WsResponse<SocketResponse<null>>> {
+      async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vJoinRoomDto)) body: JoinRoomDto) {
             const isPlaying = await this.ticTacToeService.isPlaying(client.user.id);
-            if (isPlaying)
-                  return {
-                        event: SocketResponseAction.BAD_REQUEST,
-                        data: {
-                              isSuccess: false,
-                              data: null,
-                              details: { message: { type: 'user.not-allow-action' } },
-                        },
-                  };
+            if (isPlaying) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
 
             const getRoom = await this.ticTacToeService.isFull(body.roomId);
             console.log(getRoom);
