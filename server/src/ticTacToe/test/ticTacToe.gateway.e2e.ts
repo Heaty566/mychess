@@ -19,8 +19,7 @@ import { TicTacToeGateway } from '../ticTacToe.gateway';
 //---- Common
 import { TTTAction } from '../../ticTacToe/ticTacToe.action';
 import { SocketServerResponse } from '../../app/interface/socketResponse';
-import { TicTacToeService } from '../ticTacToe.service';
-import { Console } from 'node:console';
+import { JoinRoomDto } from '../dto/joinRoomDto';
 
 describe('TicTacToeGateway ', () => {
       let app: INestApplication;
@@ -30,17 +29,16 @@ describe('TicTacToeGateway ', () => {
       let userRepository: UserRepository;
       let resetDB: any;
       let ticTacToeGateWay: TicTacToeGateway;
-      let ticTacToeService: TicTacToeService;
+      let createFakeUser: () => Promise<User>;
       beforeAll(async () => {
-            const { configModule, resetDatabase } = await initTestModule();
+            const { configModule, resetDatabase, getFakeUser } = await initTestModule();
             app = configModule;
-
+            createFakeUser = getFakeUser;
             resetDB = resetDatabase;
             await app.listen(port);
             ticTacToeRepository = app.get<TicTacToeRepository>(TicTacToeRepository);
             userRepository = app.get<UserRepository>(UserRepository);
             authService = app.get<AuthService>(AuthService);
-            ticTacToeService = app.get<TicTacToeService>(TicTacToeService);
             ticTacToeGateWay = app.get<TicTacToeGateway>(TicTacToeGateway);
       });
 
@@ -98,6 +96,7 @@ describe('TicTacToeGateway ', () => {
             let client: SocketIOClient.Socket;
             let user: User;
             let tTT: TicTacToe;
+            let data: JoinRoomDto;
             beforeEach(async () => {
                   user = await userRepository.save(fakeUser());
                   const socketToken = await authService.getSocketToken(user);
@@ -108,6 +107,9 @@ describe('TicTacToeGateway ', () => {
                   tTT = await ticTacToeRepository.save(tic);
                   tTT.users = [];
                   await client.connect();
+                  data = {
+                        roomId: tTT.id,
+                  };
             });
             it('Pass', (done) => {
                   client.on('test-join', () => {
@@ -118,8 +120,9 @@ describe('TicTacToeGateway ', () => {
                         ticTacToeGateWay.server.to(`tic-tac-toe-${tTT.id}`).emit('test-join', {});
                         expect(res.statusCode).toBe(200);
                   });
-                  client.emit(TTTAction.TTT_JOIN_ROOM, { roomId: tTT.id });
+                  client.emit(TTTAction.TTT_JOIN_ROOM, data);
             });
+
             it('Failed invalid input', (done) => {
                   client.on('exception', (res: SocketServerResponse<null>) => {
                         expect(res.statusCode).toBe(400);
@@ -137,7 +140,20 @@ describe('TicTacToeGateway ', () => {
                         expect(res.statusCode).toBe(400);
                         done();
                   });
-                  client.emit(TTTAction.TTT_JOIN_ROOM, { roomId: '12333' });
+                  client.emit(TTTAction.TTT_JOIN_ROOM, data);
+            });
+
+            it('Failed room full', async (done) => {
+                  const user1 = await createFakeUser();
+                  const user2 = await createFakeUser();
+                  tTT.users.push(user1, user2);
+                  await ticTacToeRepository.save(tTT);
+
+                  client.on('exception', (res: SocketServerResponse<null>) => {
+                        expect(res.statusCode).toBe(400);
+                        done();
+                  });
+                  client.emit(TTTAction.TTT_JOIN_ROOM, data);
             });
 
             it('Failed room does not exist', (done) => {
@@ -145,8 +161,9 @@ describe('TicTacToeGateway ', () => {
                         expect(res.statusCode).toBe(404);
                         done();
                   });
+                  data.roomId = '12321573721';
 
-                  client.emit(TTTAction.TTT_JOIN_ROOM, { roomId: '120939129321921' });
+                  client.emit(TTTAction.TTT_JOIN_ROOM, data);
             });
 
             afterEach(async () => {

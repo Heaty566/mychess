@@ -25,6 +25,7 @@ import { User } from './users/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { Notification } from './notifications/entities/notification.entity';
 import { TicTacToe } from './ticTacToe/entity/ticTacToe.entity';
+import { TicTacToeMove } from './ticTacToe/entity/ticTacToeMove.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -40,7 +41,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken, Notification, TicTacToe],
+      entities: [User, ReToken, Notification, TicTacToe, TicTacToeMove],
 });
 
 @Module({

@@ -66,6 +66,7 @@ export const initTestModule = async () => {
             configModule,
             users,
             resetDatabase: async () => await resetDatabase(module),
+            getFakeUser: async () => await userRepository.save(fakeUser()),
             getAdmin: {
                   user: adminUser,
                   reToken: adminReToken,
