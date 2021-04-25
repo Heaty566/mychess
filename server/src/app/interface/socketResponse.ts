@@ -1,8 +1,11 @@
 import { WsException } from '@nestjs/websockets';
 import { LocalesService } from '../../utils/locales/locales.service';
-import { ResponseBody, ErrorType } from './api.interface';
+import { ResponseBody, ErrorType, ServerResponse } from './api.interface';
 
 export interface SocketResponse<T> extends ResponseBody<T> {
+      statusCode: number;
+}
+export interface SocketServerResponse<T> extends ServerResponse<T> {
       statusCode: number;
 }
 
@@ -10,7 +13,7 @@ export class IOResponse {
       constructor(private readonly localeService: LocalesService) {}
 
       public sendError<T>(body: ResponseBody<T>, type: ErrorType) {
-            const data: SocketResponse<T> = { ...this.localeService.translateResponse(body), statusCode: null };
+            const data: SocketServerResponse<T> = { ...this.localeService.translateResponse(body), statusCode: null };
 
             switch (type) {
                   case 'BadGatewayException':
@@ -36,7 +39,7 @@ export class IOResponse {
       }
 
       public send<T>(event: string, body: ResponseBody<T>) {
-            const data: SocketResponse<T> = {
+            const data: SocketServerResponse<T> = {
                   ...this.localeService.translateResponse(body),
                   statusCode: 200,
             };

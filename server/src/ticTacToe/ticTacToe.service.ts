@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { UserRepository } from '../users/entities/user.repository';
-import User from '../users/entities/user.entity';
-import { UserService } from '../users/user.service';
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
 import { ObjectLiteral } from 'typeorm';
 import { TicTacToe } from './entity/ticTacToe.entity';
@@ -10,30 +7,27 @@ import { TicTacToeStatus } from './entity/ticTacToeStatus';
 
 @Injectable()
 export class TicTacToeService {
-      constructor(
-            private readonly userService: UserService,
-            private readonly ticTacToeRepository: TicTacToeRepository,
-            private readonly userRepository: UserRepository,
-      ) {
+      constructor(private readonly ticTacToeRepository: TicTacToeRepository) {
             //
       }
 
-      async getMatchByQuery(where: string, parameters: ObjectLiteral) {
-            const res = await this.ticTacToeRepository
-                  .createQueryBuilder('tic')
-                  .leftJoinAndSelect('tic.users', 'user')
-                  .where(where, parameters)
-                  .getMany();
+      async getManyMatchByQuery(where: string, parameters: ObjectLiteral) {
+            const res = await this.ticTacToeRepository.getManyTTTByField(where, parameters);
+
+            return res;
+      }
+      async getOneMatchByFiled(where: string, parameters: ObjectLiteral) {
+            const res = await this.ticTacToeRepository.getOneTTTByFiled(where, parameters);
+
             return res;
       }
 
-      async isFull(roomId: string) {
-            const isFull = await this.getMatchByQuery('id = :roomId', { roomId });
-            console.log(isFull);
+      async isFull(tTT: TicTacToe, capacity: number) {
+            return tTT.users.length >= capacity;
       }
 
       async isPlaying(userId: string) {
-            const currentPlay = await this.getMatchByQuery('status = :status and user.id = :userId', {
+            const currentPlay = await this.ticTacToeRepository.getManyTTTByField('status = :status and user.id = :userId', {
                   status: TicTacToeStatus.PLAYING,
                   userId,
             });
@@ -43,16 +37,5 @@ export class TicTacToeService {
 
       async saveTicTacToe(ticTacToe: TicTacToe) {
             return await this.ticTacToeRepository.save(ticTacToe);
-      }
-
-      async calculateElo(user: User, eloStatus: 'win' | 'loss' | 'draw') {
-            switch (eloStatus) {
-                  case 'loss':
-                        user.elo -= 5;
-                  case 'win':
-                        user.elo += 5;
-            }
-
-            return await this.userService.saveUser(user);
       }
 }
