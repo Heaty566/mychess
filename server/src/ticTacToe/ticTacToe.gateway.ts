@@ -35,7 +35,17 @@ export class TicTacToeGateway {
             const isPlaying = await this.ticTacToeService.isPlaying(client.user.id);
             if (isPlaying) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
 
-            const getRoom = await this.ticTacToeService.isFull(body.roomId);
-            console.log(getRoom);
+            const getRoom = await this.ticTacToeService.getOneMatchByFiled('tic.id = :roomId', { roomId: body.roomId });
+            if (!getRoom) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'NotFoundException');
+
+            const isFull = await this.ticTacToeService.isFull(getRoom, 2);
+            if (isFull) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
+
+            getRoom.users.push(client.user);
+            await this.ticTacToeService.saveTicTacToe(getRoom);
+
+            await client.join(`tic-tac-toe-${getRoom.id}`);
+
+            return ioResponse.send(TTTAction.TTT_JOIN_ROOM, {});
       }
 }

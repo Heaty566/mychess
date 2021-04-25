@@ -13,3 +13,8 @@ export interface ResponseBody<T> {
       data?: T;
       details?: Record<string, JoiErrorItem>;
 }
+export interface ServerResponse<T> {
+      message?: string;
+      data?: T;
+      details?: Record<string, string>;
+}

@@ -36,7 +36,7 @@ describe('UserGuard', () => {
                   newTicTacToe.users = [userDb];
                   const saveTicTacToe = await ticTacToeRepository.save(newTicTacToe);
 
-                  const getTicTacToe = await ticTacToeService.getMatchByQuery('user.id = :userId', { userId: userDb.id });
+                  const getTicTacToe = await ticTacToeService.getManyMatchByQuery('user.id = :userId', { userId: userDb.id });
                   expect(getTicTacToe.length).toBeGreaterThanOrEqual(1);
                   expect(getTicTacToe[0].id).toBe(saveTicTacToe.id);
             });
