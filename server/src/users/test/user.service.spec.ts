@@ -21,14 +21,16 @@ describe('UserService', () => {
       let userService: UserService;
       let userDb: User;
       let resetDB: any;
+      let generateFakeUser: () => Promise<User>;
 
       beforeAll(async () => {
-            const { users, getApp, module, resetDatabase } = await initTestModule();
+            const { users, getApp, module, resetDatabase, getFakeUser } = await initTestModule();
             app = getApp;
             userDb = (await users[0]).user;
             userRepository = module.get<UserRepository>(UserRepository);
             userService = module.get<UserService>(UserService);
             resetDB = resetDatabase;
+            generateFakeUser = getFakeUser;
       });
 
       describe('findOneUserWithoutSomeSensitiveFields', () => {
@@ -77,19 +79,15 @@ describe('UserService', () => {
       });
 
       describe('searchUsersByName', () => {
+            let name1: string;
             beforeAll(async () => {
-                  let exampleUser = fakeUser();
-                  exampleUser.name = '132hello1321';
-                  await userRepository.save(exampleUser);
-                  exampleUser = fakeUser();
-
-                  exampleUser.name = '123hello21cmaclksa';
-                  await userRepository.save(exampleUser);
+                  const user1 = await generateFakeUser();
+                  name1 = user1.name;
             });
 
             it('Pass get two', async () => {
-                  const res = await userService.searchUsersByName('hello', 12, 0);
-                  expect(res).toHaveLength(2);
+                  const res = await userService.searchUsersByName(name1, 12, 0);
+                  expect(res).toHaveLength(1);
             });
 
             it('Pass get zero currentPage 1000', async () => {
@@ -97,13 +95,8 @@ describe('UserService', () => {
                   expect(res).toHaveLength(0);
             });
 
-            it('Pass get two default currentPage and pageSize', async () => {
-                  const res = await userService.searchUsersByName('hello');
-                  expect(res).toHaveLength(2);
-            });
-
             it('Pass get one pageSize=1', async () => {
-                  const res = await userService.searchUsersByName('hello', 1, 0);
+                  const res = await userService.searchUsersByName(name1, 1, 0);
                   expect(res).toHaveLength(1);
             });
 
@@ -113,7 +106,7 @@ describe('UserService', () => {
                   await userRepository.save(exampleUser);
                   const res = await userService.searchUsersByName('', 200, 0);
 
-                  expect(res.length).toBeGreaterThan(2);
+                  expect(res.length).toBeGreaterThan(1);
             });
       });
 

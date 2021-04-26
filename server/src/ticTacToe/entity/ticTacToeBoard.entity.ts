@@ -1,9 +1,10 @@
 import { TicTacToe } from './ticTacToe.entity';
 import { TicTacToeFlag } from './ticTacToeFlag.type';
-
+import { TicTacToePlayer } from './ticTacToePlayer';
 export class TicTacToeBoard {
       board: Array<Array<TicTacToeFlag>>;
-      readyTotal: number;
+      currentTurn: boolean;
+      users: [TicTacToePlayer, TicTacToePlayer];
 
       constructor(readonly info: TicTacToe) {
             const initRow: Array<TicTacToeFlag> = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
@@ -23,6 +24,12 @@ export class TicTacToeBoard {
                   [...initRow],
                   [...initRow],
             ];
-            this.readyTotal = 0;
+            const playingTime = 15 * 1000 * 60;
+            this.users = [
+                  { id: null, ready: false, flag: 0, time: playingTime },
+                  { id: null, ready: false, flag: 1, time: playingTime },
+            ];
+
+            this.currentTurn = Boolean(Math.random() < 0.5);
       }
 }

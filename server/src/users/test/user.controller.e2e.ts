@@ -102,10 +102,10 @@ describe('UserController E2E', () => {
 
             beforeAll(async () => {
                   let exampleUser = fakeUser();
-                  exampleUser.name = '132hello1321';
+                  exampleUser.name = `132hello${fakeData(10)}`;
                   await userRepository.save(exampleUser);
                   exampleUser = fakeUser();
-                  exampleUser.name = '123hello21cmaclksa';
+                  exampleUser.name = `123hello${fakeData(10)}`;
                   await userRepository.save(exampleUser);
             });
 

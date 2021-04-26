@@ -29,13 +29,68 @@ export class TicTacToeService {
             return true;
       }
 
+      async toggleReadyStatePlayer(boardId: string, user: User) {
+            const board = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
+            if (!board) return false;
+
+            const player = board.users.find((item) => item.id === user.id);
+            if (!player) return false;
+
+            if (board.users[0].id && board.users[1].id) {
+                  board.users[player.flag].ready = !board.users[player.flag].ready;
+            } else return false;
+
+            this.redisService.setObjectByKey(boardId, board);
+            return true;
+      }
+
+      async joinGame(boardId: string, user: User) {
+            const board = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
+            if (!board) return false;
+            const userIds = board.users.map((item) => item.id);
+
+            if (!userIds.includes(user.id) && (!board.users[0].id || !board.users[1].id)) {
+                  if (!board.users[0].id) {
+                        board.users[0].id = user.id;
+                  } else board.users[1].id = user.id;
+            } else return false;
+
+            this.redisService.setObjectByKey(boardId, board);
+            return true;
+      }
+
+      async leaveGame(boardId: string, user: User) {
+            const board = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
+            if (!board) return false;
+            const userIds = board.users.map((item) => item.id);
+
+            if (userIds.includes(user.id)) {
+                  if (board.users[0].id === user.id) {
+                        board.users[0].id = null;
+                  } else board.users[1].id = null;
+            } else return false;
+
+            board.users[0].ready = false;
+            board.users[1].ready = false;
+
+            if (!board.users[0].id && !board.users[1].id) {
+                  this.redisService.deleteByKey(boardId);
+                  await this.ticTacToeRepository.createQueryBuilder().delete().where('id = :id', { id: board.info.id }).execute();
+            } else this.redisService.setObjectByKey(boardId, board);
+            return true;
+      }
+
       async startGame(boardId: string, user: User) {
             const board = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
-            const userIndex = board.info.users.map((item) => item.id).indexOf(user.id);
-            // if (userIndex !== -1 && board.readyTotal >= 2) {
-            if (userIndex !== -1) {
+            if (!board) return false;
+
+            const player = board.users.find((item) => item.id === user.id);
+            if (!player) return false;
+
+            if (board.users[0].ready && board.users[1].ready) {
                   board.info.status = TicTacToeStatus.PLAYING;
-                  await this.redisService.setObjectByKey(`ttt-${board.info.id}`, board);
+                  board.info.startDate = new Date();
+                  await this.redisService.setObjectByKey(boardId, board);
                   return true;
             }
             return false;
@@ -49,11 +104,13 @@ export class TicTacToeService {
             const tTTBoard = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
             if (!tTTBoard || !(tTTBoard.info.status === TicTacToeStatus.PLAYING)) return false;
 
-            const userIndex = tTTBoard.info.users.map((item) => item.id).indexOf(user.id);
+            const player = tTTBoard.users.find((item) => item.id === user.id);
+            if (!player) return false;
+            const currentTurn = tTTBoard.currentTurn ? 0 : 1;
 
-            if (userIndex !== -1 && tTTBoard.board[x][y] === -1) {
-                  if (user.id === tTTBoard.info.users[0].id) tTTBoard.board[x][y] = 0;
-                  else tTTBoard.board[x][y] = 1;
+            if (tTTBoard.board[x][y] === -1 && currentTurn === player.flag) {
+                  tTTBoard.board[x][y] = player.flag;
+                  tTTBoard.currentTurn = !tTTBoard.currentTurn;
             } else return false;
 
             await this.redisService.setObjectByKey(`ttt-${tTTBoard.info.id}`, tTTBoard);
@@ -91,7 +148,7 @@ export class TicTacToeService {
                               ) {
                                     tTTBoard.info.winner = center;
                                     tTTBoard.info.status = TicTacToeStatus.END;
-                                    this.redisService.setObjectByKey(`ttt-${tTTBoard.info.id}`, tTTBoard);
+                                    this.redisService.setObjectByKey(boardId, tTTBoard);
 
                                     return true;
                               }
@@ -113,7 +170,7 @@ export class TicTacToeService {
                   }
 
             tTTBoard.info.endDate = new Date();
-            this.redisService.setObjectByKey(`ttt-${tTTBoard.info.id}`, tTTBoard, 60);
+            this.redisService.setObjectByKey(boardId, tTTBoard, 60);
             return await this.ticTacToeRepository.save(tTTBoard.info);
       }
 }
