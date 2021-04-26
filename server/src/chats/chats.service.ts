@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { BelongChat } from './entities/belongChat.entity';
-import { BelongChatRepository } from './entities/belongChat.repository';
-import { Message } from './entities/message.entity';
+
+//---- Repository
+import { ChatRepository } from './entities/chat.repository';
 import { MessageRepository } from './entities/message.repository';
+
+//---- Entity
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class ChatsService {
-      constructor(private readonly belongChatRepository: BelongChatRepository, private readonly messageRepository: MessageRepository) {}
-      async checkBelongChat(userId: string, chatId: string): Promise<BelongChat> {
-            return await this.belongChatRepository
-                  .createQueryBuilder()
-                  .select('*')
-                  .where('userId = :userId', { userId: userId })
-                  .andWhere('chatId = :chatId', { chatId: chatId })
-                  .execute();
+      constructor(private readonly chatRepository: ChatRepository, private readonly messageRepository: MessageRepository) {}
+      async checkUserBelongToChat(userId: string, chatId: string) {
+            const listChat = await this.chatRepository
+                  .createQueryBuilder('chat')
+                  .innerJoinAndSelect('chat.users', 'user')
+                  .where('chatId = :chatId', { chatId: chatId })
+                  .getMany();
+
+            return listChat[0]['userId'] === userId;
       }
 
       async loadMessage(chatId: string) {
@@ -22,9 +26,5 @@ export class ChatsService {
 
       async saveMessage(message: Message) {
             return await this.messageRepository.save(message);
-      }
-
-      async deleteBelongChat(userId: string): Promise<BelongChat> {
-            return await this.belongChatRepository.createQueryBuilder().select('*').where('userId = :userId', { userId: userId }).execute();
       }
 }

@@ -6,11 +6,12 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Entity
 import User from '../../users/entities/user.entity';
+import { Chat } from '../entities/chat.entity';
+import { Message } from '../entities/message.entity';
 
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
-import { Chat } from '../entities/chat.entity';
-import { Message } from '../entities/message.entity';
+import { ChatRepository } from '../entities/chat.repository';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
@@ -21,23 +22,27 @@ describe('ChatsGateway', () => {
       let chat: Chat;
       let message: Message;
       let userRepository: UserRepository;
+      let chatRepository: ChatRepository;
       let resetDB: any;
 
       beforeAll(async () => {
             const { configModule, users, messages, chats, resetDatabase } = await initTestModule();
             app = configModule;
 
+            userRepository = app.get<UserRepository>(UserRepository);
+            chatRepository = app.get<ChatRepository>(ChatRepository);
+
             userSocketToken = (await users[0]).ioToken;
             user = (await users[0]).user;
 
             chat = await chats;
+            chat.users = [user];
+            await chatRepository.save(chat);
 
             message = await messages;
 
             resetDB = resetDatabase;
             await app.listen(port);
-
-            userRepository = app.get<UserRepository>(UserRepository);
       });
 
       beforeEach(async () => {
@@ -76,20 +81,6 @@ describe('ChatsGateway', () => {
                         done();
                   });
                   client.emit('send-message', message);
-            });
-      });
-
-      describe('disconnection-chat', () => {
-            beforeEach(async () => {
-                  client.connect();
-            });
-
-            it('Pass(disconnection-chat-success)', async (done) => {
-                  client.on('disconnection-chat-success', (data) => {
-                        expect(data).toBeNull();
-                        done();
-                  });
-                  client.emit('disconnection-chat');
             });
       });
 

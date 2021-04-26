@@ -1,3 +1,3 @@
-export class JoinChatDTO {
+export class JoinOrLeaveChatDTO {
       chatId: string;
 }

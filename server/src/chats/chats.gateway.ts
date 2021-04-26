@@ -3,7 +3,7 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, Conne
 import { SocketExtend, Server } from 'socket.io';
 import { UserSocketGuard } from '../auth/authSocket.guard';
 import { ChatsService } from './chats.service';
-import { JoinChatDTO } from './dto/joinChatDTO.dto';
+import { JoinOrLeaveChatDTO } from './dto/joinChatDTO.dto';
 import { Message } from './entities/message.entity';
 
 @WebSocketGateway({ namespace: 'chats' })
@@ -20,16 +20,15 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage('connection-chat')
-      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinChatDTO): Promise<WsResponse<null>> {
+      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinOrLeaveChatDTO): Promise<WsResponse<null>> {
             if (client.user) {
-                  const isBelong = this.chatsService.checkBelongChat(client.user.id, data.chatId);
-                  if (isBelong) {
+                  const isBelongTo = await this.chatsService.checkUserBelongToChat(client.user.id, data.chatId);
+                  if (isBelongTo) {
                         client.join(data.chatId);
-                        let messages: Message[] = await this.chatsService.loadMessage(data.chatId);
+                        let messages = await this.chatsService.loadMessage(data.chatId);
                         this.server.to(data.chatId).emit('load-message-history', messages);
                   }
             }
-
             return { event: 'connection-chat-success', data: null };
       }
 
@@ -44,17 +43,5 @@ export class ChatsGateway {
       async sendMessage(@MessageBody() data: Message): Promise<WsResponse<Message>> {
             const message = await this.chatsService.saveMessage(data);
             return { event: 'send-message-success', data: message };
-      }
-
-      /**
-       *
-       * This function listens on "disconnection-chat" event.
-       * Then delete the BelongChat which contains this user in the database
-       */
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage('disconnection-chat')
-      async handleLeaveChat(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<null>> {
-            if (client.user) await this.chatsService.deleteBelongChat(client.user.id);
-            return { event: 'disconnection-chat-success', data: null };
       }
 }
