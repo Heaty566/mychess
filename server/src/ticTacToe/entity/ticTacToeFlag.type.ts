@@ -1,1 +1,1 @@
-export type TicTacToeFlag = 0 | 1 | 2;
+export type TicTacToeFlag = -1 | 0 | 1;

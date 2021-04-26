@@ -23,12 +23,22 @@ export class TicTacToeService {
             if (!getGame || getGame.status === TicTacToeStatus.END || getGame.status === TicTacToeStatus.PLAYING) return false;
 
             const tTTBoard = new TicTacToeBoard(getGame);
-            tTTBoard.info.status = TicTacToeStatus.PLAYING;
-            await this.ticTacToeRepository.save(tTTBoard.info);
             getGame.moves.forEach((item) => (tTTBoard.board[item.x][item.y] = item.flag));
 
             this.redisService.setObjectByKey(`ttt-${getGame.id}`, tTTBoard);
             return true;
+      }
+
+      async startGame(boardId: string, user: User) {
+            const board = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
+            const userIndex = board.info.users.map((item) => item.id).indexOf(user.id);
+            // if (userIndex !== -1 && board.readyTotal >= 2) {
+            if (userIndex !== -1) {
+                  board.info.status = TicTacToeStatus.PLAYING;
+                  await this.redisService.setObjectByKey(`ttt-${board.info.id}`, board);
+                  return true;
+            }
+            return false;
       }
 
       async getBoard(boardId: string) {
@@ -37,13 +47,17 @@ export class TicTacToeService {
 
       async addMoveToBoard(boardId: string, user: User, x: number, y: number) {
             const tTTBoard = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
+            if (!tTTBoard || !(tTTBoard.info.status === TicTacToeStatus.PLAYING)) return false;
 
-            const userIndex = tTTBoard.info.users.indexOf(user);
-            if (userIndex !== -1 && !tTTBoard.board[x][y]) {
-                  if (userIndex === 0) tTTBoard.board[x][y] = 0;
+            const userIndex = tTTBoard.info.users.map((item) => item.id).indexOf(user.id);
+
+            if (userIndex !== -1 && tTTBoard.board[x][y] === -1) {
+                  if (user.id === tTTBoard.info.users[0].id) tTTBoard.board[x][y] = 0;
                   else tTTBoard.board[x][y] = 1;
-            }
-            this.redisService.setObjectByKey(`ttt-${boardId}`, tTTBoard);
+            } else return false;
+
+            await this.redisService.setObjectByKey(`ttt-${tTTBoard.info.id}`, tTTBoard);
+            return true;
       }
 
       async isWin(boardId: string) {

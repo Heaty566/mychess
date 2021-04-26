@@ -19,6 +19,7 @@ export class RedisService {
 
             this.redisRepository.set(key, convertToString);
             if (expired) this.redisRepository.expire(key, expired * 60);
+            return Promise.resolve();
       }
 
       deleteByKey(key: string) {

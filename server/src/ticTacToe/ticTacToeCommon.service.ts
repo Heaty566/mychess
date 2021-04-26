@@ -22,10 +22,6 @@ export class TicTacToeCommonService {
             return res;
       }
 
-      async isFull(tTT: TicTacToe, capacity: number) {
-            return tTT.users.length >= capacity;
-      }
-
       async isPlaying(userId: string) {
             const currentPlay = await this.ticTacToeRepository.getManyTTTByField('status = :status and user.id = :userId', {
                   status: TicTacToeStatus.PLAYING,
