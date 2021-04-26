@@ -5,7 +5,7 @@ services:
                 expose:
                         - 6379
         server:
-                image: heaty566/my-chess-server:latest
+                image: heaty566/my-chess-server:1.0.0-beta
                 ports:
                         - 4000:4000
                 env_file:
