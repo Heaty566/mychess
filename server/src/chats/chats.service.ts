@@ -17,7 +17,7 @@ export class ChatsService {
                   .where('chatId = :chatId', { chatId: chatId })
                   .getMany();
 
-            return listChat[0]['userId'] === userId;
+            return listChat[0].users[0].id === userId;
       }
 
       async loadMessage(chatId: string) {

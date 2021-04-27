@@ -1,14 +1,23 @@
 import { UseGuards } from '@nestjs/common';
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, WsResponse } from '@nestjs/websockets';
 import { SocketExtend, Server } from 'socket.io';
+
+//---- Pipe
 import { UserSocketGuard } from '../auth/authSocket.guard';
+
+//---- Service
+import { RedisService } from '..//providers/redis/redis.service';
 import { ChatsService } from './chats.service';
+
+//---- DTO
 import { JoinOrLeaveChatDTO } from './dto/joinChatDTO.dto';
+
+//---- Entity
 import { Message } from './entities/message.entity';
 
 @WebSocketGateway({ namespace: 'chats' })
 export class ChatsGateway {
-      constructor(private readonly chatsService: ChatsService) {}
+      constructor(private readonly chatsService: ChatsService, private readonly redisService: RedisService) {}
       @WebSocketServer()
       server: Server;
 
@@ -26,6 +35,8 @@ export class ChatsGateway {
                   if (isBelongTo) {
                         client.join(data.chatId);
                         let messages = await this.chatsService.loadMessage(data.chatId);
+                        // save messages into cache
+                        await this.redisService.setByValue('messages-array', JSON.stringify(messages));
                         this.server.to(data.chatId).emit('load-message-history', messages);
                   }
             }
@@ -42,6 +53,11 @@ export class ChatsGateway {
       @SubscribeMessage('send-message')
       async sendMessage(@MessageBody() data: Message): Promise<WsResponse<Message>> {
             const message = await this.chatsService.saveMessage(data);
+            // get messages from cache
+            const messages: Message[] = JSON.parse(await this.redisService.getByKey('messages-array'));
+
+            messages.push(message);
+            await this.redisService.setByValue('messages-array', JSON.stringify(messages));
             return { event: 'send-message-success', data: message };
       }
 }
