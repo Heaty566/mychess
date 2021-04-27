@@ -53,48 +53,48 @@ describe('ChatsGateway', () => {
             await client.disconnect();
       });
 
-      describe('connection-chat', () => {
+      describe('chat-connection-chat', () => {
             beforeEach(async () => {
                   client.connect();
             });
 
-            it('Pass(connection-chat-success)', async (done) => {
-                  client.on('connection-chat-success', (data) => {
-                        expect(data).toBeNull();
+            it('Pass(chat-connection-chat)', async (done) => {
+                  client.on('chat-connection-chat', (data) => {
+                        expect(data).toBeDefined();
                         done();
                   });
-                  client.emit('connection-chat', { chatId: chat.id });
-                  client.on('load-message-history', (data) => {
+                  client.emit('chat-connection-chat', { chatId: chat.id });
+                  client.on('chat-load-message-history', (data) => {
                         expect(data).toBeDefined();
                   });
             });
       });
 
-      describe('send-message', () => {
+      describe('chat-send-message', () => {
             beforeEach(async () => {
                   client.connect();
             });
 
-            it('Pass(send-message-success)', async (done) => {
-                  client.on('send-message-success', (data) => {
+            it('Pass(chat-send-message)', async (done) => {
+                  client.on('chat-send-message', (data) => {
                         expect(data).toBeDefined();
                         done();
                   });
-                  client.emit('send-message', message);
+                  client.emit('chat-send-message', { message: message, chatId: chat.id });
             });
       });
 
-      describe('disconnection-chat', () => {
+      describe('chat-disconnection-chat', () => {
             beforeEach(async () => {
                   client.connect();
             });
 
-            it('Pass(disconnection-chat-success', async (done) => {
-                  client.on('disconnection-chat-success', (data) => {
-                        expect(data).toBeNull();
+            it('Pass(chat-disconnection-chat', async (done) => {
+                  client.on('chat-disconnection-chat', (data) => {
+                        expect(data).toBeDefined();
                         done();
                   });
-                  client.emit('disconnection-chat');
+                  client.emit('chat-disconnection-chat');
             });
       });
 
