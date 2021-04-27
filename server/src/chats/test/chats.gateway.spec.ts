@@ -84,6 +84,20 @@ describe('ChatsGateway', () => {
             });
       });
 
+      describe('disconnection-chat', () => {
+            beforeEach(async () => {
+                  client.connect();
+            });
+
+            it('Pass(disconnection-chat-success', async (done) => {
+                  client.on('disconnection-chat-success', (data) => {
+                        expect(data).toBeNull();
+                        done();
+                  });
+                  client.emit('disconnection-chat');
+            });
+      });
+
       afterAll(async () => {
             await resetDB();
             await app.close();
