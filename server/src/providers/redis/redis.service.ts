@@ -78,7 +78,7 @@ export class RedisService {
                               return rej(null);
                         }
                         const convertToJson = JSON.parse(data);
-                        res(convertToJson);
+                        res(convertToJson as T[]);
                   });
             });
       }
