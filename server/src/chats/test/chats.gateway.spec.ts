@@ -58,9 +58,9 @@ describe('ChatsGateway', () => {
                   client.connect();
             });
 
-            it('Pass(chat-connection-chat-success)', async (done) => {
+            it('Pass(chat-connection-chat)', async (done) => {
                   client.on('chat-connection-chat', (data) => {
-                        expect(data).toBeNull();
+                        expect(data).toBeDefined();
                         done();
                   });
                   client.emit('chat-connection-chat', { chatId: chat.id });
@@ -75,12 +75,12 @@ describe('ChatsGateway', () => {
                   client.connect();
             });
 
-            it('Pass(chat-send-message-success)', async (done) => {
-                  client.on('chat-send-message-success', (data) => {
+            it('Pass(chat-send-message)', async (done) => {
+                  client.on('chat-send-message', (data) => {
                         expect(data).toBeDefined();
                         done();
                   });
-                  client.emit('chat-send-message', message);
+                  client.emit('chat-send-message', { message: message, chatId: chat.id });
             });
       });
 
@@ -89,9 +89,9 @@ describe('ChatsGateway', () => {
                   client.connect();
             });
 
-            it('Pass(chat-disconnection-chat-success', async (done) => {
-                  client.on('chat-disconnection-chat-success', (data) => {
-                        expect(data).toBeNull();
+            it('Pass(chat-disconnection-chat', async (done) => {
+                  client.on('chat-disconnection-chat', (data) => {
+                        expect(data).toBeDefined();
                         done();
                   });
                   client.emit('chat-disconnection-chat');

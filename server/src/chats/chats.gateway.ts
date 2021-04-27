@@ -16,6 +16,7 @@ import { JoinOrLeaveChatDTO } from './dto/joinChatDTO.dto';
 import { Message } from './entities/message.entity';
 import { CHATAction } from './chats.action';
 import { ioResponse } from '../app/interface/socketResponse';
+import { SendMessageDTO } from './dto/sendMessageDTO';
 
 @WebSocketGateway({ namespace: 'chats' })
 export class ChatsGateway {
@@ -31,7 +32,7 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_CONNECTION_CHAT)
-      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinOrLeaveChatDTO): Promise<WsResponse<null>> {
+      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinOrLeaveChatDTO) {
             const isBelongTo = await this.chatsService.checkUserBelongToChat(client.user.id, data.chatId);
             if (!isBelongTo) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
 
@@ -40,8 +41,7 @@ export class ChatsGateway {
             this.server.to(data.chatId).emit(CHATAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
             // init a cache to save new message
             await this.redisService.setArrayByKey('messages-array', []);
-
-            return { event: 'chat-connection-chat', data: null };
+            return ioResponse.send(CHATAction.CHAT_CONNECTION_CHAT, {});
       }
 
       /**
@@ -52,13 +52,15 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_SEND_MESSAGE)
-      async sendMessage(@MessageBody() data: Message): Promise<WsResponse<Message>> {
+      async sendMessage(@MessageBody() data: SendMessageDTO) {
             // get messages array from cache
             const messages: Message[] = await this.redisService.getArrayByKey<Message>('messages-array');
-            messages.push(data);
+            messages.push(data.message);
 
             await this.redisService.setArrayByKey('messages-array', messages);
-            return { event: 'chat-send-message-success', data: data };
+            this.server.to(data.chatId).emit(CHATAction.CHAT_SEND_MESSAGE, data.message);
+
+            return ioResponse.send(CHATAction.CHAT_SEND_MESSAGE, {});
       }
 
       /**
@@ -69,12 +71,12 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_DISCONNECTION_CHAT)
-      async handleEndChat(): Promise<WsResponse<null>> {
+      async handleEndChat() {
             // get messages array from cache
             const messages: Message[] = await this.redisService.getArrayByKey<Message>('messages-array');
             messages.forEach(async (message) => await this.chatsService.saveMessage(message));
 
             await this.redisService.deleteByKey('messages-array');
-            return { event: 'chat-disconnection-chat-success', data: null };
+            return ioResponse.send(CHATAction.CHAT_DISCONNECTION_CHAT, {});
       }
 }
