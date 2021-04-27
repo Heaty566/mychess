@@ -29,7 +29,7 @@ export class SmailService {
             };
             return this.mailService
                   .send(msg)
-                  .then(() => {
+                  .then((msg) => {
                         return true;
                   })
                   .catch((error) => {

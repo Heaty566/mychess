@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { UserRole } from '../users/entities/user.userRole.enum';
 
 //---- Common
-import { apiResponse } from '../app/interface/ApiResponse';
+import { apiResponse } from '../app/interface/apiResponse';
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -25,10 +25,7 @@ export class UserGuard implements CanActivate {
 
             if (!authTokenId) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'user.invalid-token' } },
-                        type: 'UnauthorizedException',
-                  });
+                  throw apiResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
             }
             res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
             return await this.authService.getUserByAuthToken(authTokenId);
@@ -46,10 +43,7 @@ export class UserGuard implements CanActivate {
             //checking re-token
             if (!refreshToken) {
                   res.cookie('re-token', '', { maxAge: 0 });
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'user.invalid-token' } },
-                        type: 'UnauthorizedException',
-                  });
+                  throw apiResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
             }
 
             //checking auth-token
@@ -62,19 +56,13 @@ export class UserGuard implements CanActivate {
             //checking isDisabled user
             if (req.user.isDisabled) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: { message: { type: 'user.ban' } },
-                  });
+                  throw apiResponse.sendError({ message: { type: 'user.ban' } }, 'ForbiddenException');
             }
 
             //checking role
             if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'user.not-allow-action' } },
-                        type: 'ForbiddenException',
-                  });
+                  throw apiResponse.sendError({ message: { type: 'user.not-allow-action' } }, 'ForbiddenException');
             }
 
             return true;
