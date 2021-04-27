@@ -13,6 +13,7 @@ export class TicTacToeRepository extends RepositoryService<TicTacToe> {
 
             return res;
       }
+
       async getOneTTTByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('tic').leftJoinAndSelect('tic.users', 'user').where(where, parameters).getOne();
 
