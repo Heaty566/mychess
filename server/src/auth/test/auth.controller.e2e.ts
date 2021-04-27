@@ -231,6 +231,15 @@ describe('AuthController', () => {
                         }
                   });
 
+                  it('Failed (phone does not exist)', async () => {
+                        otpSmsDTO.phoneNumber = '+84904233099';
+                        try {
+                              await reqApi(otpSmsDTO);
+                        } catch (err) {
+                              expect(err.status).toBe(400);
+                        }
+                  });
+
                   it('Failed (spam ip)', async () => {
                         const mySpy = jest.spyOn(authService, 'isRateLimitKey').mockImplementation(() => Promise.resolve(false));
 

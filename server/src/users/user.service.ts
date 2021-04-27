@@ -30,7 +30,7 @@ export class UserService {
             return await this.userRepository.save(input);
       }
 
-      async searchUsersByName(name: string, pageSize = 12, currentPage = 0) {
+      async searchUsersByName(name: string, pageSize: number, currentPage: number) {
             return await this.userRepository
                   .createQueryBuilder()
                   .select('id, username, name, avatarUrl, createDate, elo')

@@ -9,7 +9,6 @@ import { SmailService } from '../smail.service';
 describe('SmailService', () => {
       let app: INestApplication;
       let smailService: SmailService;
-
       beforeAll(async () => {
             const { getApp, module } = await initTestModule();
             app = getApp;

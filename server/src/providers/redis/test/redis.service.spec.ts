@@ -52,6 +52,28 @@ describe('RedisService', () => {
             });
       });
 
+      describe('setArrayByKey', () => {
+            let user: User;
+            const users: User[] = [];
+
+            beforeEach(() => {
+                  user = fakeUser();
+                  users.push(user);
+            });
+
+            it('Pass', async () => {
+                  redisService.setArrayByKey('user', users);
+                  const res = await redisService.getArrayByKey<Array<User>>('user');
+                  expect(res).toBeDefined();
+            });
+
+            it('Pass with time', async () => {
+                  redisService.setArrayByKey('user', users, 10);
+                  const res = await redisService.getArrayByKey<Array<User>>('user');
+                  expect(res).toBeDefined();
+            });
+      });
+
       describe('deleteByKey', () => {
             let user: User;
 
@@ -77,6 +99,21 @@ describe('RedisService', () => {
 
             it('Pass', async () => {
                   const res = await redisService.getObjectByKey<User>('user');
+                  expect(res).toBeDefined();
+            });
+      });
+
+      describe('getArrayByKey', () => {
+            const users: User[] = [];
+            let user: User;
+            beforeEach(() => {
+                  user = fakeUser();
+                  users.push(user);
+                  redisService.setArrayByKey('user', users);
+            });
+
+            it('Pass', async () => {
+                  const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
       });
