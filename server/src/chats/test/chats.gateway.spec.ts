@@ -12,6 +12,7 @@ import { Message } from '../entities/message.entity';
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
 import { ChatRepository } from '../entities/chat.repository';
+import { MessageRepository } from '../entities/message.repository';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
@@ -23,23 +24,31 @@ describe('ChatsGateway', () => {
       let message: Message;
       let userRepository: UserRepository;
       let chatRepository: ChatRepository;
+      let messageRepository: MessageRepository;
       let resetDB: any;
 
       beforeAll(async () => {
-            const { configModule, users, messages, chats, resetDatabase } = await initTestModule();
+            const { configModule, users, resetDatabase } = await initTestModule();
             app = configModule;
 
             userRepository = app.get<UserRepository>(UserRepository);
             chatRepository = app.get<ChatRepository>(ChatRepository);
+            messageRepository = app.get<MessageRepository>(MessageRepository);
 
             userSocketToken = (await users[0]).ioToken;
             user = (await users[0]).user;
 
-            chat = await chats;
+            // create a fake chat
+            chat = new Chat();
             chat.users = [user];
             await chatRepository.save(chat);
 
-            message = await messages;
+            // create a fake message
+            message = new Message();
+            message.text = 'Hai dep trai';
+            message.chat = chat;
+            message.userId = (await users[0]).user.id;
+            messageRepository.save(message);
 
             resetDB = resetDatabase;
             await app.listen(port);
