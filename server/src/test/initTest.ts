@@ -8,15 +8,12 @@ import { AuthService } from '../auth/auth.service';
 import { UserRole } from '../users/entities/user.userRole.enum';
 
 //---- Entity
-import { Chat } from '../chats/entities/chat.entity';
-import { Message } from '../chats/entities/message.entity';
 import { ChatRepository } from '../chats/entities/chat.repository';
 
 //---- Repository
 import { UserRepository } from '../users/entities/user.repository';
 import { ReTokenRepository } from '../auth/entities/re-token.repository';
 import { NotificationRepository } from '../notifications/entities/notification.repository';
-import { MessageRepository } from '../chats/entities/message.repository';
 import { TicTacToeRepository } from '../ticTacToe/entity/ticTacToe.repository';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
@@ -33,12 +30,6 @@ export const initUsers = async (repository: UserRepository, authService: AuthSer
                   ioToken,
             };
       });
-};
-
-export const initChats = async (repository: ChatRepository) => {
-      let chat = new Chat();
-      chat = await repository.save(chat);
-      return chat;
 };
 
 const resetDatabase = async (module: TestingModule) => {
@@ -74,10 +65,6 @@ export const initTestModule = async () => {
       router(configModule);
       const getApp = await configModule.init();
 
-      // create a fake chat
-      const chatRepository = module.get<ChatRepository>(ChatRepository);
-      const chats = await initChats(chatRepository);
-
       //create a fake user and token
       const userRepository = module.get<UserRepository>(UserRepository);
       const authService = module.get<AuthService>(AuthService);
@@ -89,21 +76,11 @@ export const initTestModule = async () => {
       adminUser = await userRepository.save(adminUser);
       const adminReToken = await authService.createReToken(adminUser);
 
-      // create a fake message
-      const messageRepository = module.get<MessageRepository>(MessageRepository);
-      const messages = new Message();
-      messages.text = 'Hai dep trai';
-      messages.chat = chats;
-      messages.userId = (await users[0]).user.id;
-      await messageRepository.save(messages);
-
       return {
             getApp,
             module,
             configModule,
             users,
-            chats,
-            messages,
             resetDatabase: async () => await resetDatabase(module),
             getFakeUser: async () => await userRepository.save(fakeUser()),
             getAdmin: {
