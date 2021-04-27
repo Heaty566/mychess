@@ -16,7 +16,7 @@ export class TicTacToe {
       @Column({ default: TicTacToeStatus['NOT-YET'] })
       status: TicTacToeStatus;
 
-      @Column({ default: 0 })
+      @Column({ default: -1 })
       winner: TicTacToeFlag;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })

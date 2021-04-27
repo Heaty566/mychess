@@ -362,27 +362,312 @@ describe('ticTacToeService', () => {
             });
       });
 
-      // describe('addMoveToBoard', () => {
-      //       it('Pass user 1 play', async () => {
-      //             await ticTacToeService.loadGameToCache(tTTGame.id);
-      //             await ticTacToeService.startGame(`ttt-${tTTGame.id}`, user1);
+      describe('addMoveToBoard', () => {
+            beforeEach(async () => {
+                  await ticTacToeService.loadGameToCache(tTTGame.id);
+                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user1);
+                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user2);
+                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user1);
+                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user2);
+                  await ticTacToeService.startGame(`ttt-${tTTGame.id}`, user2);
+            });
 
-      //             const addToBoard = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user1, 0, 0);
-      //             const board = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-      //             expect(addToBoard).toBeTruthy();
-      //             expect(board.board[0][0]).toBe(0);
-      //       });
-      //       it('Pass user 2 play', async () => {
-      //             await ticTacToeService.loadGameToCache(tTTGame.id);
-      //             await ticTacToeService.startGame(`ttt-${tTTGame.id}`, user1);
+            it('Pass User1 add ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.currentTurn = true;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user1, 0, 0);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
 
-      //             const addToBoard = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user2, 0, 0);
-      //             const board = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-      //             expect(addToBoard).toBeTruthy();
-      //             expect(board.board[0][0]).toBe(1);
-      //             console.log(await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`));
-      //       });
-      // });
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(afterBoardUpdate.board[0][0]).toBe(afterBoardUpdate.users[0].flag);
+                  expect(afterBoardUpdate.currentTurn).toBeFalsy();
+                  expect(isAddMove).toBeTruthy();
+            });
+            it('Pass User2 add ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.currentTurn = false;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user2, 0, 0);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(isAddMove).toBeTruthy();
+                  expect(afterBoardUpdate.board[0][0]).toBe(afterBoardUpdate.users[1].flag);
+                  expect(afterBoardUpdate.currentTurn).toBeTruthy();
+            });
+
+            it('Pass User2 wrong turn ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.currentTurn = true;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user2, 0, 0);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(isAddMove).toBeFalsy();
+                  expect(afterBoardUpdate.board[0][0]).not.toBe(afterBoardUpdate.users[1].flag);
+                  expect(afterBoardUpdate.currentTurn).toBeTruthy();
+            });
+
+            it('Failed User2 add exist position ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[1][1] = 0;
+                  beforeBoardUpdate.currentTurn = false;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user2, 1, 1);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(isAddMove).toBeFalsy();
+                  expect(afterBoardUpdate.board[1][1]).not.toBe(afterBoardUpdate.users[1].flag);
+                  expect(afterBoardUpdate.currentTurn).toBeFalsy();
+            });
+
+            it('Failed User is not a player ', async () => {
+                  const user3 = await generateFakeUser();
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user3, 0, 0);
+
+                  const getBoard = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  expect(getBoard.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(getBoard.board[0][0]).toBe(-1);
+                  expect(isAddMove).toBeFalsy();
+            });
+
+            it('Failed Game is not playing yet ', async () => {
+                  const ticTicToe = new TicTacToe();
+                  ticTicToe.users = [user1, user2];
+                  const newTicTac = await ticTacToeRepository.save(ticTicToe);
+                  await ticTacToeService.loadGameToCache(newTicTac.id);
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${newTicTac.id}`, user2, 0, 0);
+
+                  const getBoard = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${newTicTac.id}`);
+                  expect(getBoard.info.status).toBe(TicTacToeStatus['NOT-YET']);
+                  expect(getBoard.board[0][0]).toBe(-1);
+                  expect(isAddMove).toBeFalsy();
+            });
+
+            it('Failed not found ', async () => {
+                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-hello-world`, user2, 0, 0);
+
+                  const getBoard = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  expect(getBoard.board[0][0]).toBe(-1);
+                  expect(isAddMove).toBeFalsy();
+            });
+      });
+
+      describe('isWin', () => {
+            beforeEach(async () => {
+                  await ticTacToeService.loadGameToCache(tTTGame.id);
+                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user1);
+                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user2);
+                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user1);
+                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user2);
+                  await ticTacToeService.startGame(`ttt-${tTTGame.id}`, user2);
+            });
+
+            it('Pass diagonal left to right, top to bottom ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 1;
+                  beforeBoardUpdate.board[1][1] = 1;
+                  beforeBoardUpdate.board[2][2] = 1;
+                  beforeBoardUpdate.board[3][3] = 1;
+                  beforeBoardUpdate.board[4][4] = 1;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
+                  expect(afterBoardUpdate.info.winner).toBe(afterBoardUpdate.users[1].flag);
+                  expect(isWin).toBeTruthy();
+            });
+
+            it('Failed diagonal left to right, top to bottom  miss one', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 1;
+                  beforeBoardUpdate.board[1][1] = 0;
+                  beforeBoardUpdate.board[2][2] = 1;
+                  beforeBoardUpdate.board[3][3] = 1;
+                  beforeBoardUpdate.board[4][4] = 1;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(afterBoardUpdate.info.winner).toBe(-1);
+                  expect(isWin).toBeFalsy();
+            });
+            it('Pass diagonal left to right, bottom to top ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][4] = 0;
+                  beforeBoardUpdate.board[1][3] = 0;
+                  beforeBoardUpdate.board[2][2] = 0;
+                  beforeBoardUpdate.board[3][1] = 0;
+                  beforeBoardUpdate.board[4][0] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
+                  expect(afterBoardUpdate.info.winner).toBe(afterBoardUpdate.users[0].flag);
+                  expect(isWin).toBeTruthy();
+            });
+
+            it('Failed diagonal left to right, bottom to top miss one', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][4] = 0;
+                  beforeBoardUpdate.board[1][3] = -1;
+                  beforeBoardUpdate.board[2][2] = 0;
+                  beforeBoardUpdate.board[3][1] = 0;
+                  beforeBoardUpdate.board[4][0] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(afterBoardUpdate.info.winner).toBe(-1);
+                  expect(isWin).toBeFalsy();
+            });
+            it('Pass diagonal left to right', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 0;
+                  beforeBoardUpdate.board[1][0] = 0;
+                  beforeBoardUpdate.board[2][0] = 0;
+                  beforeBoardUpdate.board[3][0] = 0;
+                  beforeBoardUpdate.board[4][0] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
+                  expect(afterBoardUpdate.info.winner).toBe(afterBoardUpdate.users[0].flag);
+                  expect(isWin).toBeTruthy();
+            });
+
+            it('Failed diagonal left to right miss one', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 0;
+                  beforeBoardUpdate.board[1][0] = -1;
+                  beforeBoardUpdate.board[2][0] = 0;
+                  beforeBoardUpdate.board[3][0] = 0;
+                  beforeBoardUpdate.board[4][0] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(afterBoardUpdate.info.winner).toBe(-1);
+                  expect(isWin).toBeFalsy();
+            });
+
+            it('Pass diagonal top to bottom', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 0;
+                  beforeBoardUpdate.board[0][1] = 0;
+                  beforeBoardUpdate.board[0][2] = 0;
+                  beforeBoardUpdate.board[0][3] = 0;
+                  beforeBoardUpdate.board[0][4] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
+                  expect(afterBoardUpdate.info.winner).toBe(afterBoardUpdate.users[0].flag);
+                  expect(isWin).toBeTruthy();
+            });
+
+            it('Failed diagonal top to bottom miss one', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 0;
+                  beforeBoardUpdate.board[0][1] = -1;
+                  beforeBoardUpdate.board[0][2] = 0;
+                  beforeBoardUpdate.board[0][3] = 0;
+                  beforeBoardUpdate.board[0][4] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  const isWin = await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(afterBoardUpdate.info.winner).toBe(-1);
+                  expect(isWin).toBeFalsy();
+            });
+
+            it('Failed Game is not playing yet ', async () => {
+                  const ticTicToe = new TicTacToe();
+                  ticTicToe.users = [user1, user2];
+                  const newTicTac = await ticTacToeRepository.save(ticTicToe);
+                  await ticTacToeService.loadGameToCache(newTicTac.id);
+                  const isWin = await ticTacToeService.isWin(`ttt-${newTicTac.id}`);
+
+                  const getBoard = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${newTicTac.id}`);
+                  expect(getBoard.info.status).toBe(TicTacToeStatus['NOT-YET']);
+                  expect(isWin).toBeFalsy();
+            });
+
+            it('Failed not found ', async () => {
+                  const isWin = await ticTacToeService.isWin(`ttt-hello-world`);
+
+                  expect(isWin).toBeFalsy();
+            });
+      });
+
+      describe('updateToDatabase', () => {
+            beforeEach(async () => {
+                  await ticTacToeService.loadGameToCache(tTTGame.id);
+                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user1);
+                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user2);
+                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user1);
+                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user2);
+                  await ticTacToeService.startGame(`ttt-${tTTGame.id}`, user2);
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.board[0][0] = 1;
+                  beforeBoardUpdate.board[1][1] = 1;
+                  beforeBoardUpdate.board[2][2] = 1;
+                  beforeBoardUpdate.board[3][3] = 1;
+                  beforeBoardUpdate.board[4][4] = 1;
+                  beforeBoardUpdate.board[5][5] = 0;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+                  await ticTacToeService.isWin(`ttt-${tTTGame.id}`);
+            });
+
+            it('Pass', async () => {
+                  const isUpdate = await ticTacToeService.updateToDatabase(`ttt-${tTTGame.id}`);
+                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  const getGame = await ticTacToeRepository
+                        .createQueryBuilder('tic')
+                        .leftJoinAndSelect('tic.users', 'user')
+                        .leftJoinAndSelect('tic.moves', 'tic-tac-toe-move')
+                        .where('tic.id = :id', { id: tTTGame.id })
+                        .getOne();
+
+                  expect(getGame).toBeDefined();
+                  expect(getGame.status).toBe(TicTacToeStatus.END);
+                  expect(getGame.endDate).toBeDefined();
+                  expect(getGame.users).toHaveLength(2);
+                  expect(getGame.winner).toBe(1);
+                  expect(getGame.moves.length).toBeGreaterThanOrEqual(5);
+                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
+                  expect(isUpdate).toBeTruthy();
+            });
+
+            it('Failed Game is playing ', async () => {
+                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  beforeBoardUpdate.info.status = TicTacToeStatus.PLAYING;
+                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
+
+                  const isUpdate = await ticTacToeService.updateToDatabase(`ttt-${tTTGame.id}`);
+
+                  const getBoard = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
+                  expect(getBoard.info.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(isUpdate).toBeFalsy();
+            });
+
+            it('Failed not found ', async () => {
+                  const isUpdate = await ticTacToeService.updateToDatabase(`ttt-hello-world`);
+
+                  expect(isUpdate).toBeFalsy();
+            });
+      });
 
       afterAll(async () => {
             await resetDB();

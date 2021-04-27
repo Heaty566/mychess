@@ -9,14 +9,15 @@ import { UserRole } from '../users/entities/user.userRole.enum';
 
 //---- Entity
 import { Chat } from '../chats/entities/chat.entity';
+import { Message } from '../chats/entities/message.entity';
+import { ChatRepository } from '../chats/entities/chat.repository';
 
 //---- Repository
 import { UserRepository } from '../users/entities/user.repository';
 import { ReTokenRepository } from '../auth/entities/re-token.repository';
 import { NotificationRepository } from '../notifications/entities/notification.repository';
-import { ChatRepository } from '../chats/entities/chat.repository';
 import { MessageRepository } from '../chats/entities/message.repository';
-import { Message } from '../chats/entities/message.entity';
+import { TicTacToeRepository } from '../ticTacToe/entity/ticTacToe.repository';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
       return Array.from(Array(5)).map(async (_) => {
@@ -45,13 +46,13 @@ const resetDatabase = async (module: TestingModule) => {
       const notificationRepository = module.get<NotificationRepository>(NotificationRepository);
       const reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
       const chatRepository = module.get<ChatRepository>(ChatRepository);
-      const messageRepository = module.get<MessageRepository>(MessageRepository);
+      const ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
+
+      await ticTacToeRepository.createQueryBuilder().delete().execute();
+      await ticTacToeRepository.clear();
 
       await reTokenRepository.createQueryBuilder().delete().execute();
       await reTokenRepository.clear();
-
-      await messageRepository.createQueryBuilder().delete().execute();
-      await messageRepository.clear();
 
       await notificationRepository.createQueryBuilder().delete().execute();
       await notificationRepository.clear();
@@ -94,7 +95,7 @@ export const initTestModule = async () => {
       messages.text = 'Hai dep trai';
       messages.chat = chats;
       messages.userId = (await users[0]).user.id;
-      messageRepository.save(messages);
+      await messageRepository.save(messages);
 
       return {
             getApp,
