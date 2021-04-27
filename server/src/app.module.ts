@@ -28,6 +28,7 @@ import { ChatsModule } from './chats/chats.module';
 import { Chat } from './chats/entities/chat.entity';
 import { Message } from './chats/entities/message.entity';
 import { TicTacToe } from './ticTacToe/entity/ticTacToe.entity';
+import { TicTacToeMove } from './ticTacToe/entity/ticTacToeMove.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -43,8 +44,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken, Notification, Chat, Message, TicTacToe],
-
+      entities: [User, ReToken, Notification, Chat, Message, TicTacToe, TicTacToeMove],
 });
 
 @Module({

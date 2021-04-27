@@ -37,7 +37,7 @@ export class ChatsGateway {
             if (!isBelongTo) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
 
             await client.join(data.chatId);
-            let messages = await this.chatsService.loadMessage(data.chatId);
+            const messages = await this.chatsService.loadMessage(data.chatId);
             this.server.to(data.chatId).emit(CHATAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
             // init a cache to save new message
             await this.redisService.setArrayByKey('messages-array', []);

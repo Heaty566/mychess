@@ -54,7 +54,7 @@ describe('RedisService', () => {
 
       describe('setArrayByKey', () => {
             let user: User;
-            let users: User[] = [];
+            const users: User[] = [];
 
             beforeEach(() => {
                   user = fakeUser();
@@ -104,7 +104,7 @@ describe('RedisService', () => {
       });
 
       describe('getArrayByKey', () => {
-            let users: User[] = [];
+            const users: User[] = [];
             let user: User;
             beforeEach(() => {
                   user = fakeUser();

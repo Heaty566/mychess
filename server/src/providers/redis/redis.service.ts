@@ -19,6 +19,7 @@ export class RedisService {
 
             this.redisRepository.set(key, convertToString);
             if (expired) this.redisRepository.expire(key, expired * 60);
+            return Promise.resolve();
       }
 
       deleteByKey(key: string) {
@@ -32,7 +33,8 @@ export class RedisService {
                               this.logger.print(err, 'redis.service.ts', 'error');
                               return rej(null);
                         }
-                        const convertToJson = JSON.parse(flat.unflatten(data));
+
+                        const convertToJson = flat.unflatten(JSON.parse(data));
                         res(convertToJson as T);
                   });
             });
