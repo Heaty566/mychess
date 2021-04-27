@@ -54,7 +54,7 @@ export class ChatsGateway {
       @SubscribeMessage(CHATAction.CHAT_SEND_MESSAGE)
       async sendMessage(@MessageBody() data: SendMessageDTO) {
             // get messages array from cache
-            const messages: Message[] = await this.redisService.getArrayByKey<Message>('messages-array');
+            const messages = await this.redisService.getArrayByKey<Array<Message>>('messages-array');
             messages.push(data.message);
 
             await this.redisService.setArrayByKey('messages-array', messages);
@@ -73,7 +73,8 @@ export class ChatsGateway {
       @SubscribeMessage(CHATAction.CHAT_DISCONNECTION_CHAT)
       async handleEndChat() {
             // get messages array from cache
-            const messages: Message[] = await this.redisService.getArrayByKey<Message>('messages-array');
+            const messages = await this.redisService.getArrayByKey<Array<Message>>('messages-array');
+
             messages.forEach(async (message) => await this.chatsService.saveMessage(message));
 
             await this.redisService.deleteByKey('messages-array');
