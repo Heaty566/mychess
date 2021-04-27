@@ -13,6 +13,7 @@ import { Message } from '../entities/message.entity';
 import { UserRepository } from '../../users/entities/user.repository';
 import { ChatRepository } from '../entities/chat.repository';
 import { MessageRepository } from '../entities/message.repository';
+import { SocketServerResponse } from '../../app/interface/socketResponse';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
@@ -21,6 +22,7 @@ describe('ChatsGateway', () => {
       let userSocketToken: string;
       let user: User;
       let chat: Chat;
+      let chat2: Chat;
       let message: Message;
       let userRepository: UserRepository;
       let chatRepository: ChatRepository;
@@ -42,6 +44,9 @@ describe('ChatsGateway', () => {
             chat = new Chat();
             chat.users = [user];
             await chatRepository.save(chat);
+
+            chat2 = new Chat();
+            await chatRepository.save(chat2);
 
             // create a fake message
             message = new Message();
@@ -76,6 +81,17 @@ describe('ChatsGateway', () => {
                   client.on('chat-load-message-history', (data) => {
                         expect(data).toBeDefined();
                   });
+            });
+
+            it('Fail(chat-connection-chat)(user is not belong to chat)', async (done) => {
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.statusCode).toBe(400);
+                        expect(data.details).toBeDefined();
+                        done();
+                  });
+
+                  client.emit('chat-connection-chat', { chatId: chat2.id });
             });
       });
 
