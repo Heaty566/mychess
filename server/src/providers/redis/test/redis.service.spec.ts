@@ -63,13 +63,13 @@ describe('RedisService', () => {
 
             it('Pass', async () => {
                   redisService.setArrayByKey('user', users);
-                  const res = await redisService.getArrayByKey<User>('user');
+                  const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
 
             it('Pass with time', async () => {
                   redisService.setArrayByKey('user', users, 10);
-                  const res = await redisService.getArrayByKey<User>('user');
+                  const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
       });
@@ -113,7 +113,7 @@ describe('RedisService', () => {
             });
 
             it('Pass', async () => {
-                  const res = await redisService.getArrayByKey<User>('user');
+                  const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
       });
