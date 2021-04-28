@@ -5,6 +5,7 @@ import { Card, Row, Col, Image } from 'antd';
 import { RootState } from '../store';
 import { IAuthState } from '../store/auth/dto';
 import { useSelector } from 'react-redux';
+import { title } from 'node:process';
 
 export interface InformationProps {}
 
@@ -13,12 +14,11 @@ const Information: React.FunctionComponent<InformationProps> = () => {
     return (
         <Row justify="center" align="middle" className="h-full">
             <Col>
-                <Card title="Information" style={{ width: 300 }}>
-                    <Image width={200} src={authState.avatarUrl} />
-                    <p>{`Username: ${authState.username}`}</p>
-                    <p>{`Name: ${authState.name}`}</p>
-                    <p>{`Role: ${authState.role}`}</p>
-                    <p>{`Email: ${authState.email ? authState.email : ''}`}</p>
+                <Card hoverable style={{ width: 240 }} cover={<img alt="example" src={authState.avatarUrl} />}>
+                    <p style={{ fontSize: 16, marginBottom: 0 }}>{`Username: ${authState.username}`}</p>
+                    <p style={{ fontSize: 16, marginBottom: 0 }}>{`Name: ${authState.name}`}</p>
+                    <p style={{ fontSize: 16, marginBottom: 0 }}>{`Role: ${authState.role}`}</p>
+                    <p style={{ fontSize: 16, marginBottom: 0 }}>{`Email: ${authState.email ? authState.email : ''}`}</p>
                 </Card>
             </Col>
         </Row>
