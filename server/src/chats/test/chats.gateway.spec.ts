@@ -48,7 +48,7 @@ describe('ChatsGateway', () => {
             message.text = 'Hai dep trai';
             message.chat = chat;
             message.userId = (await users[0]).user.id;
-            messageRepository.save(message);
+            await messageRepository.save(message);
 
             resetDB = resetDatabase;
             await app.listen(port);

@@ -8,9 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 import { TicTacToeMoveRepository } from './entity/ticTacToeMove.repository';
+import { TicTacToeBotService } from './ticTacToeBot.service';
 
 @Module({
       imports: [TypeOrmModule.forFeature([TicTacToeRepository, TicTacToeMoveRepository]), AuthModule, RedisModule, UserModule],
-      providers: [TicTacToeGateway, TicTacToeService, TicTacToeCommonService],
+      providers: [TicTacToeGateway, TicTacToeService, TicTacToeCommonService, TicTacToeBotService],
 })
 export class TicTacToeModule {}
