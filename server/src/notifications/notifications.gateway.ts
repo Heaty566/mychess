@@ -25,17 +25,17 @@ export class NotificationsGateway {
       server: Server;
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(NotificationAction.NOTI_CONNECTION)
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_CONNECTION)
       handleInitNotification(@ConnectedSocket() client: SocketExtend): WsResponse<null> {
             if (client.user) {
                   client.join(client.user.id);
             }
 
-            return { event: NotificationAction.NOTI_CONNECTION, data: null };
+            return { event: NotificationAction.NOTIFICATIONS_CONNECTION, data: null };
       }
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(NotificationAction.NOTI_SEND)
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_SEND)
       async sendRequest(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendNotificationDto): Promise<WsResponse<any>> {
             const receiverUser = await this.userService.findOneUserByField('id', data.userId);
 
@@ -44,16 +44,16 @@ export class NotificationsGateway {
                   receiverUser.notifications = [newNotification];
                   await this.userService.saveUser(receiverUser);
 
-                  this.server.to(receiverUser.id).emit(NotificationAction.NOTI_NEW, {});
-                  return { event: NotificationAction.NOTI_SEND, data: { message: 'ok' } };
+                  this.server.to(receiverUser.id).emit(NotificationAction.NOTIFICATIONS_NEW, {});
+                  return { event: NotificationAction.NOTIFICATIONS_SEND, data: { message: 'ok' } };
             }
       }
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(NotificationAction.NOTI_REFRESH)
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_REFRESH)
       async getNotifications(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<any>> {
             const notifications = await this.notificationsService.getNotificationByUserId(client.user.id);
 
-            return { event: NotificationAction.NOTI_REFRESH, data: notifications };
+            return { event: NotificationAction.NOTIFICATIONS_REFRESH, data: notifications };
       }
 }
