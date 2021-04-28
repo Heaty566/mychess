@@ -2,6 +2,7 @@ import './App.css';
 import React from 'react';
 import Login from './containers/login';
 import Register from './containers/register';
+import Information from './containers/information';
 import Navbar from './components/navbar';
 import Layout from 'antd/lib/layout/layout';
 
@@ -28,6 +29,9 @@ function App() {
                     </Route>
                     <Route path="/register">
                         <Register />
+                    </Route>
+                    <Route path="/information">
+                        <Information />
                     </Route>
                 </Switch>
             </Layout>

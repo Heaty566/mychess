@@ -35,7 +35,9 @@ const Navbar: React.FunctionComponent<NavbarProps> = () => {
                     </React.Fragment>
                 ) : (
                     <React.Fragment>
-                        <Menu.Item key="3">{`Hello ${authState.name}`}</Menu.Item>
+                        <Menu.Item key="3">
+                            <Link to="/Information">{`Hello ${authState.name}`}</Link>
+                        </Menu.Item>
                         <Menu.Item key="4">
                             <div onClick={() => logout()}>Logout</div>
                         </Menu.Item>
