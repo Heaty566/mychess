@@ -2,11 +2,11 @@ import { Typography } from 'antd';
 import { Form, Input, Button, Row, Col } from 'antd';
 import { Spin } from 'antd';
 import { useSelector } from 'react-redux';
-import { UserLoginDto, UserRegisterDto } from '../api/auth/dto';
+import { UserRegisterDto } from '../store/auth/dto';
 import useFormError from '../common/hooks/useFormError';
 import { RootState, store } from '../store';
 import { IApiState } from '../store/api/interface';
-import authApi from '../api/auth';
+import { registerUser } from '../store/auth/action';
 import { useEffect } from 'react';
 export interface LoginProps {}
 
@@ -33,8 +33,7 @@ function Register() {
     const [form] = Form.useForm();
 
     const onSubmit = (data: UserRegisterDto) => {
-        // console.log(data);
-        store.dispatch(authApi.registerUser(data));
+        store.dispatch(registerUser(data));
     };
 
     useEffect(() => {

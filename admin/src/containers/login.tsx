@@ -1,13 +1,18 @@
+import { useEffect } from 'react';
+
 import { Typography } from 'antd';
 import { Form, Input, Button, Row, Col } from 'antd';
 import { Spin } from 'antd';
-import { useSelector } from 'react-redux';
-import { UserLoginDto } from '../api/auth/dto';
+
 import useFormError from '../common/hooks/useFormError';
+
+import { useSelector } from 'react-redux';
+import { UserLoginDto } from '../store/auth/dto';
 import { RootState, store } from '../store';
 import { IApiState } from '../store/api/interface';
-import authApi from '../api/auth';
-import { useEffect } from 'react';
+// import authApi from '../api/auth';
+import { loginUser } from '../store/auth/action';
+
 export interface LoginProps {}
 
 const { Title } = Typography;
@@ -30,7 +35,9 @@ function Login() {
 
     const [form] = Form.useForm();
 
-    const onSubmit = (data: UserLoginDto) => store.dispatch(authApi.loginUser(data));
+    const onSubmit = (data: UserLoginDto) => {
+        store.dispatch(loginUser(data));
+    };
 
     useEffect(() => {
         form.setFields([

@@ -1,8 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { apiReducer } from './api';
-import { IApiState } from './api/interface';
 import { authReducer } from './auth';
-import { IAuthState } from './auth/interface';
+
+import { IApiState } from './api/interface';
+import { IAuthState } from './auth/dto';
 
 export interface RootState {
     api: IApiState;

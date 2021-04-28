@@ -4,15 +4,20 @@ import Login from './containers/login';
 import Register from './containers/register';
 import Navbar from './components/navbar';
 import Layout from 'antd/lib/layout/layout';
-import Cookies from 'universal-cookie';
+
+import { useSelector } from 'react-redux';
+import { IAuthState } from './store/auth/dto';
+import { store, RootState } from './store';
+
+import { getUserInfo } from './store/auth/action';
 
 import { Route, Switch } from 'react-router-dom';
 
 function App() {
+    const authState = useSelector<RootState, IAuthState>((state) => state.auth);
     React.useEffect(() => {
-        const cookies = new Cookies();
-        cookies.get('re-token');
-    }, []);
+        store.dispatch(getUserInfo());
+    }, [authState.isLogin]);
     return (
         <div className="App h-screen ">
             <Layout className="h-full">

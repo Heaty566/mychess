@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IAuthState } from './interface';
-import authApi from '../../api/auth';
+import { IAuthState } from './dto';
+// import authApi from '../../api/auth';
+import { loginUser, getUserInfo } from './action';
 
 const initialState: IAuthState = {
     email: '',
     name: '',
     avatarUrl: '',
     isLogin: false,
-    isPremium: false,
     role: 'USER',
     username: '',
 };
@@ -21,9 +21,17 @@ const reducer = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(authApi.loginUser.fulfilled, (state) => {
+        builder.addCase(loginUser.fulfilled, (state) => {
             const newState = { ...state };
             newState.isLogin = true;
+            return newState;
+        });
+        builder.addCase(getUserInfo.fulfilled, (state, { payload }) => {
+            const { avatarUrl, email, name, role, username } = payload;
+            const newState = { ...state, avatarUrl, email, name, role, username };
+            newState.isLogin = true;
+            console.log(newState);
+
             return newState;
         });
     },
