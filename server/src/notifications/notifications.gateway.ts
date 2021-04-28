@@ -11,9 +11,10 @@ import { Notification } from './entities/notification.entity';
 
 //---- Pipe
 import { UserSocketGuard } from '../auth/authSocket.guard';
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- DTO
-import { SendNotificationDto } from './dto/sendNotificationDto';
+import { SendNotificationDto, vSendNotificationDto } from './dto/sendNotificationDto';
 
 //---- ENum
 import { NotificationAction } from './notifications.action';
@@ -36,8 +37,11 @@ export class NotificationsGateway {
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(NotificationAction.NOTIFICATIONS_SEND)
-      async sendRequest(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendNotificationDto): Promise<WsResponse<any>> {
-            const receiverUser = await this.userService.findOneUserByField('id', data.userId);
+      async sendRequest(
+            @ConnectedSocket() client: SocketExtend,
+            @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto,
+      ): Promise<WsResponse<any>> {
+            const receiverUser = await this.userService.findOneUserByField('id', data.id);
 
             if (receiverUser) {
                   const newNotification = new Notification();
