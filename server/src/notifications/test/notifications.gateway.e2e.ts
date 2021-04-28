@@ -83,7 +83,7 @@ describe('ChatsGateway', () => {
                         expect(data).toBeDefined();
                   });
                   client2.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
-                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, { userId: user2.id });
+                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, { id: user2.id });
             });
       });
 
