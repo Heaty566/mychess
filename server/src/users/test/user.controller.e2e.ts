@@ -398,7 +398,7 @@ describe('UserController E2E', () => {
 
                   it('Failed (error of sms service)', async () => {
                         otpSmsDTO = {
-                              phoneNumber: fakeData(10, 'number'),
+                              phoneNumber: `098${fakeData(7, 'number')}`,
                         };
                         mockPromise = defuse(new Promise((resolve, reject) => reject(new Error('Oops'))));
                         try {

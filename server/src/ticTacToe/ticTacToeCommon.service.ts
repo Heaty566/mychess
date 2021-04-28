@@ -16,11 +16,11 @@ export class TicTacToeCommonService {
 
             return res;
       }
-      async getOneMatchByFiled(where: string, parameters: ObjectLiteral) {
-            const res = await this.ticTacToeRepository.getOneTTTByFiled(where, parameters);
+      // async getOneMatchByFiled(where: string, parameters: ObjectLiteral) {
+      //       const res = await this.ticTacToeRepository.getOneTTTByFiled(where, parameters);
 
-            return res;
-      }
+      //       return res;
+      // }
 
       async isPlaying(userId: string) {
             const currentPlay = await this.ticTacToeRepository.getManyTTTByField('status = :status and user.id = :userId', {
