@@ -95,6 +95,7 @@ export class TicTacToeService {
             if (board.users[0].ready && board.users[1].ready) {
                   board.info.status = TicTacToeStatus.PLAYING;
                   board.info.startDate = new Date();
+                  board.lastTurn = new Date();
                   await this.redisService.setObjectByKey(boardId, board);
                   return true;
             }
@@ -114,8 +115,18 @@ export class TicTacToeService {
             const currentTurn = tTTBoard.currentTurn ? 0 : 1;
 
             if (tTTBoard.board[x][y] === -1 && currentTurn === player.flag) {
-                  tTTBoard.board[x][y] = player.flag;
-                  tTTBoard.currentTurn = !tTTBoard.currentTurn;
+                  const currentTime = new Date();
+                  const differentTime = currentTime.getTime() - new Date(tTTBoard.lastTurn).getTime();
+
+                  if (tTTBoard.users[currentTurn].time - differentTime >= 0) {
+                        tTTBoard.board[x][y] = player.flag;
+                        tTTBoard.currentTurn = !tTTBoard.currentTurn;
+                        tTTBoard.users[currentTurn].time -= differentTime;
+                        tTTBoard.lastTurn = currentTime;
+                  } else {
+                        await this.surrenderGame(boardId, user);
+                        return false;
+                  }
             } else return false;
 
             await this.redisService.setObjectByKey(`ttt-${tTTBoard.info.id}`, tTTBoard);
@@ -126,17 +137,17 @@ export class TicTacToeService {
             const tTTBoard = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
             if (!tTTBoard || !(tTTBoard.info.status === TicTacToeStatus.PLAYING)) return false;
 
-            for (let i = 2; i < tTTBoard.board.length - 2; i++)
-                  for (let j = 0; j < tTTBoard.board[i].length; j++) {
+            for (let i = 0; i < tTTBoard.board.length; i++)
+                  for (let j = 2; j < tTTBoard.board[i].length - 2; j++) {
                         if (tTTBoard.board[i][j] !== -1) {
                               const center: TicTacToeFlag = tTTBoard.board[i][j];
 
                               if (
                                     // line left -> right
-                                    tTTBoard.board[i - 2][j] === center &&
-                                    tTTBoard.board[i - 1][j] === center &&
-                                    tTTBoard.board[i + 1][j] === center &&
-                                    tTTBoard.board[i + 2][j] === center
+                                    tTTBoard.board[i][j - 2] === center &&
+                                    tTTBoard.board[i][j - 1] === center &&
+                                    tTTBoard.board[i][j + 1] === center &&
+                                    tTTBoard.board[i][j + 2] === center
                               ) {
                                     tTTBoard.info.winner = center;
                                     tTTBoard.info.status = TicTacToeStatus.END;
@@ -145,17 +156,17 @@ export class TicTacToeService {
                               }
                         }
                   }
-            for (let i = 0; i < tTTBoard.board.length; i++)
-                  for (let j = 2; j < tTTBoard.board[i].length - 2; j++) {
+            for (let i = 2; i < tTTBoard.board.length - 2; i++)
+                  for (let j = 0; j < tTTBoard.board[i].length; j++) {
                         if (tTTBoard.board[i][j] !== -1) {
                               const center: TicTacToeFlag = tTTBoard.board[i][j];
 
                               if (
                                     // line top -> bottom
-                                    tTTBoard.board[i][j - 2] === center &&
-                                    tTTBoard.board[i][j - 1] === center &&
-                                    tTTBoard.board[i][j + 1] === center &&
-                                    tTTBoard.board[i][j + 2] === center
+                                    tTTBoard.board[i - 2][j] === center &&
+                                    tTTBoard.board[i - 1][j] === center &&
+                                    tTTBoard.board[i + 1][j] === center &&
+                                    tTTBoard.board[i + 2][j] === center
                               ) {
                                     tTTBoard.info.winner = center;
                                     tTTBoard.info.status = TicTacToeStatus.END;
@@ -190,6 +201,19 @@ export class TicTacToeService {
                         }
                   }
             return false;
+      }
+
+      async surrenderGame(boardId: string, user: User) {
+            const tTTBoard = await this.redisService.getObjectByKey<TicTacToeBoard>(boardId);
+            if (!tTTBoard || !(tTTBoard.info.status === TicTacToeStatus.PLAYING)) return false;
+
+            const player = tTTBoard.users.find((item) => item.id === user.id);
+            if (!player) return false;
+
+            tTTBoard.info.winner = player.flag === 1 ? 0 : 1;
+            tTTBoard.info.status = TicTacToeStatus.END;
+            this.redisService.setObjectByKey(boardId, tTTBoard);
+            return true;
       }
 
       async updateToDatabase(boardId: string) {
