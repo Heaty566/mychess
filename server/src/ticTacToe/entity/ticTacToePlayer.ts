@@ -1,6 +1,6 @@
 import { TicTacToeFlag } from './ticTacToeFlag.type';
 
-export class TicTacToePlayer {
+export interface TicTacToePlayer {
       id: string;
       flag: TicTacToeFlag;
       time: number;
