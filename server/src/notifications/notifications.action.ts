@@ -1,6 +1,6 @@
 export enum NotificationAction {
-      NOTI_CONNECTION = 'connection-notification',
-      NOTI_SEND = 'send-notification',
-      NOTI_REFRESH = 'refresh-notification',
-      NOTI_NEW = 'new-notification',
+      NOTIFICATIONS_CONNECTION = 'notifications-connection',
+      NOTIFICATIONS_SEND = 'notifications-send',
+      NOTIFICATIONS_REFRESH = 'notifications-refresh',
+      NOTIFICATIONS_NEW = 'notifications-new',
 }

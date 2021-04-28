@@ -4,19 +4,19 @@ import { INestApplication } from '@nestjs/common';
 import { initTestModule } from '../../test/initTest';
 
 //---- Service
+// import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 
 //---- Entity
 import { User } from '../../users/entities/user.entity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
 import { TicTacToeService } from '../ticTacToe.service';
+import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 import { TicTacToeStatus } from '../entity/ticTacToeStatus';
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
-
-//---- Repository
-import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';
+//---- Repository
 
 describe('ticTacToeService', () => {
       let app: INestApplication;
@@ -381,7 +381,6 @@ describe('ticTacToeService', () => {
 
                   expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
                   expect(afterBoardUpdate.board[0][0]).toBe(afterBoardUpdate.users[0].flag);
-                  expect(afterBoardUpdate.users[0].time).toBeLessThan(15 * 1000 * 60);
                   expect(afterBoardUpdate.currentTurn).toBeFalsy();
                   expect(isAddMove).toBeTruthy();
             });
@@ -394,7 +393,6 @@ describe('ticTacToeService', () => {
 
                   expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
                   expect(isAddMove).toBeTruthy();
-                  expect(afterBoardUpdate.users[1].time).toBeLessThan(15 * 1000 * 60);
                   expect(afterBoardUpdate.board[0][0]).toBe(afterBoardUpdate.users[1].flag);
                   expect(afterBoardUpdate.currentTurn).toBeTruthy();
             });
@@ -407,7 +405,6 @@ describe('ticTacToeService', () => {
                   const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
 
                   expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
-                  expect(afterBoardUpdate.users[1].time).toBe(15 * 1000 * 60);
                   expect(isAddMove).toBeFalsy();
                   expect(afterBoardUpdate.board[0][0]).not.toBe(afterBoardUpdate.users[1].flag);
                   expect(afterBoardUpdate.currentTurn).toBeTruthy();
@@ -423,32 +420,8 @@ describe('ticTacToeService', () => {
 
                   expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
                   expect(isAddMove).toBeFalsy();
-                  expect(afterBoardUpdate.users[1].time).toBe(15 * 1000 * 60);
                   expect(afterBoardUpdate.board[1][1]).not.toBe(afterBoardUpdate.users[1].flag);
                   expect(afterBoardUpdate.currentTurn).toBeFalsy();
-            });
-
-            it('Failed User is out of time', async () => {
-                  const beforeBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-                  beforeBoardUpdate.currentTurn = false;
-                  beforeBoardUpdate.users[1].time = 0;
-                  await redisService.setObjectByKey(`ttt-${tTTGame.id}`, beforeBoardUpdate);
-                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user2, 0, 0);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-
-                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
-                  expect(isAddMove).toBeFalsy();
-                  expect(afterBoardUpdate.users[1].time).toBeLessThanOrEqual(0);
-            });
-
-            it('Failed User is not a player ', async () => {
-                  const user3 = await generateFakeUser();
-                  const isAddMove = await ticTacToeService.addMoveToBoard(`ttt-${tTTGame.id}`, user3, 0, 0);
-
-                  const getBoard = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-                  expect(getBoard.info.status).toBe(TicTacToeStatus.PLAYING);
-                  expect(getBoard.board[0][0]).toBe(-1);
-                  expect(isAddMove).toBeFalsy();
             });
 
             it('Failed User is not a player ', async () => {
@@ -635,51 +608,6 @@ describe('ticTacToeService', () => {
                   const isWin = await ticTacToeService.isWin(`ttt-hello-world`);
 
                   expect(isWin).toBeFalsy();
-            });
-      });
-
-      describe('surrenderGame', () => {
-            beforeEach(async () => {
-                  await ticTacToeService.loadGameToCache(tTTGame.id);
-                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user1);
-                  await ticTacToeService.joinGame(`ttt-${tTTGame.id}`, user2);
-                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user1);
-                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${tTTGame.id}`, user2);
-                  await ticTacToeService.startGame(`ttt-${tTTGame.id}`, user2);
-            });
-
-            it('Pass user1 surrender ', async () => {
-                  const isSurrender = await ticTacToeService.surrenderGame(`ttt-${tTTGame.id}`, user1);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-
-                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
-                  expect(afterBoardUpdate.info.winner).toBe(afterBoardUpdate.users[1].flag);
-                  expect(isSurrender).toBeTruthy();
-            });
-
-            it('Pass user2 surrender ', async () => {
-                  const isSurrender = await ticTacToeService.surrenderGame(`ttt-${tTTGame.id}`, user2);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-
-                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.END);
-                  expect(afterBoardUpdate.info.winner).toBe(afterBoardUpdate.users[0].flag);
-                  expect(isSurrender).toBeTruthy();
-            });
-
-            it('Failed user3 is not a player ', async () => {
-                  const user3 = await generateFakeUser();
-                  const isSurrender = await ticTacToeService.surrenderGame(`ttt-${tTTGame.id}`, user3);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${tTTGame.id}`);
-
-                  expect(afterBoardUpdate.info.status).toBe(TicTacToeStatus.PLAYING);
-                  expect(afterBoardUpdate.info.winner).toBe(-1);
-                  expect(isSurrender).toBeFalsy();
-            });
-
-            it('Failed not found ', async () => {
-                  const isSurrender = await ticTacToeService.surrenderGame(`ttt-hello-world`, user1);
-
-                  expect(isSurrender).toBeFalsy();
             });
       });
 

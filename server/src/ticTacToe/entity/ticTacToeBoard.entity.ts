@@ -4,7 +4,6 @@ import { TicTacToePlayer } from './ticTacToePlayer';
 export class TicTacToeBoard {
       board: Array<Array<TicTacToeFlag>>;
       currentTurn: boolean;
-      lastTurn: Date;
       users: [TicTacToePlayer, TicTacToePlayer];
 
       constructor(readonly info: TicTacToe) {
