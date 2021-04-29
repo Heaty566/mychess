@@ -13,7 +13,7 @@ import { TicTacToeService } from '../ticTacToe.service';
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-import { TicTacToeStatus } from '../entity/ticTacToeStatus';
+import { TicTacToeStatus } from '../entity/ticTacToe.interface';
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
 import { TicTacToeBotService } from '../ticTacToeBot.service';
 import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';

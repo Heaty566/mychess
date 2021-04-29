@@ -1,6 +1,6 @@
 import { TicTacToe } from './ticTacToe.entity';
-import { TicTacToeFlag } from './ticTacToeFlag.type';
-import { TicTacToePlayer } from './ticTacToePlayer';
+import { TicTacToeFlag } from './ticTacToe.interface';
+import { TicTacToePlayer } from './ticTacToe.interface';
 export class TicTacToeBoard {
       board: Array<Array<TicTacToeFlag>>;
       currentTurn: boolean;

@@ -1,12 +1,11 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { TicTacToeFlag } from './ticTacToeFlag.type';
+import { TicTacToeFlag } from './ticTacToe.interface';
 import { TicTacToe } from './ticTacToe.entity';
 
 @Entity()
 export class TicTacToeMove {
       @PrimaryGeneratedColumn('uuid')
       id: string;
-
       @Column()
       x: number;
 
