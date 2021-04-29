@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { TicTacToeMovePoint } from './entity/ticTacToe.interface';
 
-import { TicTacToeFlag } from './entity/ticTacToeFlag.type';
+import { TicTacToeFlag } from './entity/ticTacToe.interface';
 
 @Injectable()
 export class TicTacToeBotService {
       async findBestMove(board: Array<Array<TicTacToeFlag>>, flag: TicTacToeFlag) {
             const length = board.length;
-            const testCase: Array<{ x: number; y: number; point: number }> = [];
+            const testCase: Array<TicTacToeMovePoint> = [];
 
             for (let i = 0; i < length; i++)
                   for (let j = 0; j < length; j++)
@@ -23,7 +24,7 @@ export class TicTacToeBotService {
                               const total = Math.max(totalRight, totalTopLeft, totalBottomLeft, totalTop);
                               if (total) testCase.push({ x: i, y: j, point: total });
                         }
-            const max: { x: number; y: number; point: number } = { point: -Infinity, x: 0, y: 0 };
+            const max: TicTacToeMovePoint = { point: -Infinity, x: 0, y: 0 };
             for (const item of testCase) {
                   if (item.point === max.point) {
                         if (Math.random() >= 0.5) {
