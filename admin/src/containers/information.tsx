@@ -5,7 +5,8 @@ import { Card, Row, Col, Image } from 'antd';
 import { RootState } from '../store';
 import { IAuthState } from '../store/auth/dto';
 import { useSelector } from 'react-redux';
-import { title } from 'node:process';
+
+import RouterHOC from '../HOC/routerHOC';
 
 export interface InformationProps {}
 
@@ -25,4 +26,6 @@ const Information: React.FunctionComponent<InformationProps> = () => {
     );
 };
 
-export default Information;
+const InformationRouter = (props: any) => <RouterHOC Component={Information} props={props} />;
+
+export default InformationRouter;

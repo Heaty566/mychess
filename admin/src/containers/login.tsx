@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 import { UserLoginDto } from '../store/auth/dto';
 import { RootState, store } from '../store';
 import { IApiState } from '../store/api/interface';
-// import authApi from '../api/auth';
 import { loginUser } from '../store/auth/action';
 
 export interface LoginProps {}

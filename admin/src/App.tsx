@@ -13,6 +13,7 @@ import { store, RootState } from './store';
 import { getUserInfo } from './store/auth/action';
 
 import { Route, Switch } from 'react-router-dom';
+import RouterHOC from './HOC/routerHOC';
 
 function App() {
     const authState = useSelector<RootState, IAuthState>((state) => state.auth);
