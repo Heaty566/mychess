@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
 import { ObjectLiteral } from 'typeorm';
 import { TicTacToe } from './entity/ticTacToe.entity';
-import { TicTacToeStatus } from './entity/ticTacToeStatus';
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
+import User from '../users/entities/user.entity';
 
 @Injectable()
 export class TicTacToeCommonService {
@@ -16,10 +17,19 @@ export class TicTacToeCommonService {
 
             return res;
       }
+
       async getOneMatchByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.ticTacToeRepository.getOneTTTByFiled(where, parameters);
 
             return res;
+      }
+
+      async createNewGame(user: User) {
+            const tic = new TicTacToe();
+            tic.users = [user];
+            const insertNewTTT = await this.saveTicTacToe(tic);
+
+            return insertNewTTT.id;
       }
 
       async isPlaying(userId: string) {
