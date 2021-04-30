@@ -16,6 +16,7 @@ import { LoggerModule } from '../utils/logger/logger.module';
 import { SmsModule } from '../providers/sms/sms.module';
 import { AwsModule } from '../providers/aws/aws.module';
 import { SmailModule } from '../providers/smail/smail.module';
+import { UserGateway } from './user.gateway';
 
 //----- Service
 import { UserService } from './user.service';
@@ -35,7 +36,7 @@ import { UserRepository } from './entities/user.repository';
             AwsModule,
       ],
       controllers: [UserController, AdminController],
-      providers: [UserService, AdminService],
+      providers: [UserService, AdminService, UserGateway],
       exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}

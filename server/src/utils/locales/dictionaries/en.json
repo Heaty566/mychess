@@ -48,5 +48,8 @@
       "game.already-playing": "is playing",
       "game.is-not-playing": "is already exist",
       "game.wait-more-player": "please wait for another player",
-      "game.already-join-other": "you are playing another game"
+      "game.wait-ready-player": "please wait for another is ready",
+      "game.already-join-other": "you are playing another game",
+      "game.already-chose": "this cell is already picked",
+      "game.wrong-turn": "this is not your turn"
 }

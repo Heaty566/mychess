@@ -17,6 +17,8 @@ export class ChatsService {
                   .where('chatId = :chatId', { chatId: chatId })
                   .getMany();
 
+            if (listChat.length === 0) return false;
+
             return listChat[0].users[0].id === userId;
       }
 

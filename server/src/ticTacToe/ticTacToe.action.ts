@@ -7,4 +7,7 @@ export enum TTTAction {
       TTT_LEAVE = 'ttt-leave',
       TTT_SURRENDER = 'ttt-surrender',
       TTT_BOT_NEXT_MOVE = 'ttt-bot-next-next',
+      TTT_ADD_MOVE = 'ttt-add-move',
+      TTT_WIN = 'ttt-win',
+      EXCEPTION = 'exception',
 }
