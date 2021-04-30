@@ -50,5 +50,6 @@
       "game.wait-more-player": "please wait for another player",
       "game.wait-ready-player": "please wait for another is ready",
       "game.already-join-other": "you are playing another game",
-      "game.already-chose": "this cell is already picked"
+      "game.already-chose": "this cell is already picked",
+      "game.wrong-turn": "this is not your turn"
 }

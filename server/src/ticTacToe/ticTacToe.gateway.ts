@@ -11,7 +11,6 @@ import { TicTacToeCommonService } from './ticTacToeCommon.service';
 import { TicTacToeStatus } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
-import { ErrorType, ResponseBody } from '../app/interface/api.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {
@@ -151,18 +150,23 @@ export class TicTacToeGateway {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isOwner(getCacheGame, client);
 
-            if (getCacheGame.board[body.x][body.y] === -1)
+            if (getCacheGame.board[body.x][body.y] !== -1)
                   return this.socketServer().socketEmitToRoomError('BadRequestException', client.user.id, {
                         details: { message: { type: 'game.already-chose' } },
                   });
 
+            const isAddMove = await this.ticTacToeService.addMoveToBoard(body.roomId, client.user, body.x, body.y);
+            if (!isAddMove)
+                  return this.socketServer().socketEmitToRoomError('BadRequestException', client.user.id, {
+                        details: { message: { type: 'game.wrong-turn' } },
+                  });
+
             const isWin = await this.ticTacToeService.isWin(body.roomId);
+
             if (isWin) {
                   this.socketServer().socketEmitToRoom(TTTAction.TTT_WIN, getCacheGame.info.id, {}, 'tic-tac-toe');
                   await this.ticTacToeService.updateToDatabase(body.roomId);
             }
-
-            await this.ticTacToeService.addMoveToBoard(body.roomId, client.user, body.x, body.y);
             return this.socketServer().socketEmitToRoom(TTTAction.TTT_ADD_MOVE, getCacheGame.info.id, {}, 'tic-tac-toe');
       }
 
