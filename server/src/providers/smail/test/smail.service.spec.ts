@@ -21,6 +21,11 @@ describe('SmailService', () => {
                   const res = await smailService['sendMail']('heaty566@gmail.com', '123');
                   expect(res).toBeTruthy();
             });
+            it('Pass', async () => {
+                  process.env.DOC = 'ACTIVE';
+                  const res = await smailService['sendMail']('heaty566@gmail.com', '123');
+                  expect(res).toBeTruthy();
+            });
 
             it('Failed wrong email', async () => {
                   const res = await smailService['sendMail']('heaty566', '123');

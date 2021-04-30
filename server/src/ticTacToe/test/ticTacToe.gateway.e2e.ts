@@ -23,6 +23,8 @@ import { RoomIdDTO } from '../dto/roomIdDto';
 import { TicTacToeService } from '../ticTacToe.service';
 import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
+import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+import { AddMoveDto } from '../dto/addMoveDto';
 
 describe('TicTacToeGateway ', () => {
       let app: INestApplication;
@@ -34,6 +36,7 @@ describe('TicTacToeGateway ', () => {
       let ticTacToeGateWay: TicTacToeGateway;
       let createFakeUser: () => Promise<User>;
       let ticTacToeService: TicTacToeService;
+      let ticTacToeCommonService: TicTacToeCommonService;
       let redisService: RedisService;
       beforeAll(async () => {
             const { configModule, resetDatabase, getFakeUser } = await initTestModule();
@@ -47,6 +50,8 @@ describe('TicTacToeGateway ', () => {
             authService = app.get<AuthService>(AuthService);
             ticTacToeGateWay = app.get<TicTacToeGateway>(TicTacToeGateway);
             ticTacToeService = app.get<TicTacToeService>(TicTacToeService);
+            ticTacToeCommonService = app.get<TicTacToeCommonService>(TicTacToeCommonService);
+
             jest.spyOn(ticTacToeGateWay.server, 'to').mockImplementation().mockReturnThis();
       });
 
@@ -620,6 +625,149 @@ describe('TicTacToeGateway ', () => {
                   });
 
                   client3.emit(TTTAction.TTT_LEAVE, { roomId: ttt.id });
+            });
+      });
+
+      describe(`${TTTAction.TTT_ADD_MOVE}`, () => {
+            let client2: SocketIOClient.Socket;
+            let client3: SocketIOClient.Socket;
+            let client1: SocketIOClient.Socket;
+            let user2: User;
+            let user1: User;
+            let ttt: TicTacToe;
+            beforeEach(async () => {
+                  user1 = await createFakeUser();
+                  user2 = await createFakeUser();
+                  const ticTacToe = new TicTacToe();
+                  ticTacToe.users = [user1];
+                  ttt = await ticTacToeRepository.save(ticTacToe);
+
+                  await ticTacToeService.loadGameToCache(ttt.id);
+                  await ticTacToeService.joinGame(ttt.id, user1);
+                  await ticTacToeService.joinGame(ttt.id, user2);
+                  await ticTacToeService.toggleReadyStatePlayer(ttt.id, user1);
+                  await ticTacToeService.toggleReadyStatePlayer(ttt.id, user2);
+                  await ticTacToeService.startGame(ttt.id, user2);
+
+                  const socketToken1 = await authService.getSocketToken(user2);
+                  client1 = await getIoClient(port, 'tic-tac-toe', socketToken1);
+                  await client1.connect();
+
+                  const socketToken2 = await authService.getSocketToken(user2);
+                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken2);
+                  await client2.connect();
+
+                  const user3 = await createFakeUser();
+                  const socketToken3 = await authService.getSocketToken(user3);
+                  client3 = await getIoClient(port, 'tic-tac-toe', socketToken3);
+                  await client3.connect();
+            });
+
+            afterEach(async () => {
+                  client2.disconnect();
+                  client3.disconnect();
+            });
+
+            it('Pass ', async (done) => {
+                  const updateTurn = await ticTacToeCommonService.getBoard(ttt.id);
+                  updateTurn.currentTurn = false;
+                  await ticTacToeCommonService.setBoard(ttt.id, updateTurn);
+
+                  const input: AddMoveDto = {
+                        roomId: ttt.id,
+                        x: 1,
+                        y: 1,
+                  };
+
+                  client2.on(TTTAction.TTT_ADD_MOVE, async (data: SocketServerResponse<null>) => {
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        expect(getGameRedis.board[input.x][input.y]).toBe(1);
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_ADD_MOVE, input);
+            });
+
+            it('Pass win ', async (done) => {
+                  const updateTurn = await ticTacToeCommonService.getBoard(ttt.id);
+                  updateTurn.currentTurn = false;
+                  updateTurn.board[0][0] = 1;
+                  updateTurn.board[1][1] = 1;
+                  updateTurn.board[2][2] = 1;
+                  updateTurn.board[3][3] = 1;
+                  await ticTacToeCommonService.setBoard(ttt.id, updateTurn);
+
+                  const input: AddMoveDto = {
+                        roomId: ttt.id,
+                        x: 4,
+                        y: 4,
+                  };
+
+                  client2.on(TTTAction.TTT_ADD_MOVE, async (data: SocketServerResponse<null>) => {
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        const getTicDB = await ticTacToeRepository
+                              .createQueryBuilder('tic')
+                              .leftJoinAndSelect('tic.users', 'user')
+                              .where('tic.id = :id ', { id: ttt.id })
+                              .getOne();
+
+                        expect(getTicDB.winner).toBe(1);
+                        expect(getTicDB.status).toBe(TicTacToeStatus.END);
+                        expect(getGameRedis.info.winner).toBe(1);
+                        expect(getGameRedis.info.status).toBe(TicTacToeStatus.END);
+                        expect(getGameRedis.board[input.x][input.y]).toBe(1);
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_ADD_MOVE, input);
+            });
+
+            it('Failed cell is already picked ', async (done) => {
+                  const updateTurn = await ticTacToeCommonService.getBoard(ttt.id);
+                  updateTurn.currentTurn = false;
+                  updateTurn.board[1][1] = 0;
+                  await ticTacToeCommonService.setBoard(ttt.id, updateTurn);
+
+                  const input: AddMoveDto = {
+                        roomId: ttt.id,
+                        x: 1,
+                        y: 1,
+                  };
+
+                  client2.on('exception', async (data: SocketServerResponse<null>) => {
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        expect(getGameRedis.board[input.x][input.y]).toBe(0);
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_ADD_MOVE, input);
+            });
+            it('Failed wrong turn ', async (done) => {
+                  const updateTurn = await ticTacToeCommonService.getBoard(ttt.id);
+                  updateTurn.currentTurn = true;
+                  await ticTacToeCommonService.setBoard(ttt.id, updateTurn);
+
+                  const input: AddMoveDto = {
+                        roomId: ttt.id,
+                        x: 1,
+                        y: 1,
+                  };
+
+                  client2.on('exception', async (data: SocketServerResponse<null>) => {
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        expect(getGameRedis.board[input.x][input.y]).not.toBe(1);
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_ADD_MOVE, input);
             });
       });
 

@@ -101,6 +101,7 @@ export class TicTacToeService {
 
             const player = tTTBoard.users.find((item) => item.id === user.id);
             if (!player) return false;
+
             const currentTurn = tTTBoard.currentTurn ? 0 : 1;
 
             if (tTTBoard.board[x][y] === -1 && currentTurn === player.flag) {
