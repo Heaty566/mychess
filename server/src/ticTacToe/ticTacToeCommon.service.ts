@@ -56,4 +56,7 @@ export class TicTacToeCommonService {
       async setBoard(boardId: string, board: TicTacToeBoard) {
             await this.redisService.setObjectByKey(`ttt-${boardId}`, board);
       }
+      async deleteBoard(boardId: string) {
+            await this.redisService.deleteByKey(`ttt-${boardId}`);
+      }
 }
