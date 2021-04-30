@@ -1,22 +1,25 @@
 import { UseGuards } from '@nestjs/common';
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, WsResponse } from '@nestjs/websockets';
 import { SocketExtend, Server } from 'socket.io';
+import { ioResponse } from '../app/interface/socketResponse';
 
 //---- Pipe
 import { UserSocketGuard } from '../auth/authSocket.guard';
+import { SocketJoiValidatorPipe } from '../utils/validator/SocketValidator.pipe';
 
 //---- Service
-import { RedisService } from '..//providers/redis/redis.service';
+import { RedisService } from '../providers/redis/redis.service';
 import { ChatsService } from './chats.service';
 
 //---- DTO
-import { JoinOrLeaveChatDTO } from './dto/joinChatDTO.dto';
+import { JoinChatDTO, vJoinChatDTO } from './dto/joinChatDTO.dto';
+import { SendMessageDTO } from './dto/sendMessageDTO';
 
 //---- Entity
 import { Message } from './entities/message.entity';
+
+//---- Enum
 import { CHATAction } from './chats.action';
-import { ioResponse } from '../app/interface/socketResponse';
-import { SendMessageDTO } from './dto/sendMessageDTO';
 
 @WebSocketGateway({ namespace: 'chats' })
 export class ChatsGateway {
@@ -32,7 +35,7 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_CONNECTION_CHAT)
-      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody() data: JoinOrLeaveChatDTO) {
+      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vJoinChatDTO)) data: JoinChatDTO) {
             const isBelongTo = await this.chatsService.checkUserBelongToChat(client.user.id, data.chatId);
             if (!isBelongTo) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
 
@@ -40,7 +43,7 @@ export class ChatsGateway {
             const messages = await this.chatsService.loadMessage(data.chatId);
             this.server.to(data.chatId).emit(CHATAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
             // init a cache to save new message
-            await this.redisService.setArrayByKey('messages-array', []);
+            await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, []);
             return ioResponse.send(CHATAction.CHAT_CONNECTION_CHAT, {});
       }
 
@@ -52,12 +55,12 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_SEND_MESSAGE)
-      async sendMessage(@MessageBody() data: SendMessageDTO) {
+      async sendMessage(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendMessageDTO) {
             // get messages array from cache
-            const messages = await this.redisService.getArrayByKey<Array<Message>>('messages-array');
+            const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
             messages.push(data.message);
 
-            await this.redisService.setArrayByKey('messages-array', messages);
+            await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, messages);
             this.server.to(data.chatId).emit(CHATAction.CHAT_SEND_MESSAGE, data.message);
 
             return ioResponse.send(CHATAction.CHAT_SEND_MESSAGE, {});
@@ -71,13 +74,13 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_DISCONNECTION_CHAT)
-      async handleEndChat() {
+      async handleEndChat(@ConnectedSocket() client: SocketExtend) {
             // get messages array from cache
-            const messages = await this.redisService.getArrayByKey<Array<Message>>('messages-array');
+            const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
 
             messages.forEach(async (message) => await this.chatsService.saveMessage(message));
 
-            await this.redisService.deleteByKey('messages-array');
+            await this.redisService.deleteByKey(`messages-array-${client.user.id}`);
             return ioResponse.send(CHATAction.CHAT_DISCONNECTION_CHAT, {});
       }
 }
