@@ -43,7 +43,7 @@ export class ChatsGateway {
             const messages = await this.chatsService.loadMessage(data.chatId);
             this.server.to(data.chatId).emit(CHATAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
             // init a cache to save new message
-            await this.redisService.setArrayByKey('messages-array', []);
+            await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, []);
             return ioResponse.send(CHATAction.CHAT_CONNECTION_CHAT, {});
       }
 
@@ -55,12 +55,12 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_SEND_MESSAGE)
-      async sendMessage(@MessageBody() data: SendMessageDTO) {
+      async sendMessage(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendMessageDTO) {
             // get messages array from cache
-            const messages = await this.redisService.getArrayByKey<Array<Message>>('messages-array');
+            const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
             messages.push(data.message);
 
-            await this.redisService.setArrayByKey('messages-array', messages);
+            await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, messages);
             this.server.to(data.chatId).emit(CHATAction.CHAT_SEND_MESSAGE, data.message);
 
             return ioResponse.send(CHATAction.CHAT_SEND_MESSAGE, {});
@@ -74,13 +74,13 @@ export class ChatsGateway {
        */
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(CHATAction.CHAT_DISCONNECTION_CHAT)
-      async handleEndChat() {
+      async handleEndChat(@ConnectedSocket() client: SocketExtend) {
             // get messages array from cache
-            const messages = await this.redisService.getArrayByKey<Array<Message>>('messages-array');
+            const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
 
             messages.forEach(async (message) => await this.chatsService.saveMessage(message));
 
-            await this.redisService.deleteByKey('messages-array');
+            await this.redisService.deleteByKey(`messages-array-${client.user.id}`);
             return ioResponse.send(CHATAction.CHAT_DISCONNECTION_CHAT, {});
       }
 }
