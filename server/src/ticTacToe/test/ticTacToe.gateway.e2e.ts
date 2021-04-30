@@ -705,6 +705,10 @@ describe('TicTacToeGateway ', () => {
                         y: 4,
                   };
 
+                  client2.on(TTTAction.TTT_WIN, () => {
+                        done();
+                  });
+
                   client2.on(TTTAction.TTT_ADD_MOVE, async (data: SocketServerResponse<null>) => {
                         const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
@@ -720,7 +724,6 @@ describe('TicTacToeGateway ', () => {
                         expect(getGameRedis.info.status).toBe(TicTacToeStatus.END);
                         expect(getGameRedis.board[input.x][input.y]).toBe(1);
                         expect(data.statusCode).toBe(200);
-                        done();
                   });
 
                   client2.emit(TTTAction.TTT_ADD_MOVE, input);

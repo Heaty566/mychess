@@ -17,10 +17,11 @@ import { User } from '../../../users/entities/user.entity';
 describe('RepositoryService', () => {
       let app: INestApplication;
       let userRepository: RepositoryService<User>;
-
+      let resetDb: () => Promise<void>;
       beforeAll(async () => {
-            const { getApp, module } = await initTestModule();
+            const { getApp, module, resetDatabase } = await initTestModule();
             app = getApp;
+            resetDb = resetDatabase;
 
             userRepository = module.get<RepositoryService<User>>(UserRepository);
       });
@@ -130,7 +131,7 @@ describe('RepositoryService', () => {
       });
 
       afterAll(async () => {
-            await userRepository.clear();
+            await resetDb();
             await app.close();
       });
 });

@@ -13,7 +13,7 @@ import { TicTacToeService } from '../ticTacToe.service';
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-import { TicTacToeStatus } from '../entity/ticTacToe.interface';
+
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
 import { TicTacToeBotService } from '../ticTacToeBot.service';
 import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';
@@ -173,6 +173,25 @@ describe('ticTacToeBotService', () => {
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
                   expect(userBestMove.point).toBe(30);
                   expect(botBestMove.point).toBe(10);
+            });
+      });
+
+      describe('addMoveToBoardBot', () => {
+            let boardGame: TicTacToe;
+            beforeEach(async () => {
+                  const ticTicToe = new TicTacToe();
+                  boardGame = await ticTacToeRepository.save(ticTicToe);
+                  await ticTacToeService.loadGameToCache(boardGame.id);
+            });
+
+            it('Pass', async () => {
+                  const getBoardGameBefore = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  await ticTacToeBotService.addMoveToBoardBot(boardGame.id, 1, 1);
+                  const getBoardGameAfter = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+
+                  expect(getBoardGameAfter).toBeDefined();
+                  expect(getBoardGameAfter.currentTurn).not.toBe(getBoardGameBefore.currentTurn);
+                  expect(getBoardGameAfter.board[1][1]).toBe(1);
             });
       });
 
