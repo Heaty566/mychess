@@ -4,22 +4,19 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import User from '../../users/entities/user.entity';
 
 @Entity()
-export class Notification {
+export class NotificationConnectType {
       @PrimaryGeneratedColumn('uuid')
       id: string;
-
-      @Column({ default: false })
-      status: boolean;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
 
       @Column()
-      objectTypeId: string;
+      content: string;
 
       @Column()
-      notificationType: string;
+      link: string;
 
       @ManyToOne(() => User, (user) => user.notifications)
-      receiver: User;
+      sender: User;
 }
