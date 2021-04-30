@@ -17,6 +17,6 @@ export class NotificationConnectType {
       @Column()
       link: string;
 
-      @ManyToOne(() => User, (user) => user.notifications)
-      sender: User;
+      // @ManyToOne(() => User, (user) => user.notifications)
+      // sender: User;
 }

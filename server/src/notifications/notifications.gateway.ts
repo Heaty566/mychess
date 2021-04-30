@@ -41,7 +41,7 @@ export class NotificationsGateway {
             @ConnectedSocket() client: SocketExtend,
             @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto,
       ): Promise<WsResponse<any>> {
-            const receiverUser = await this.userService.findOneUserByField('id', data.id);
+            const receiverUser = await this.userService.findOneUserByField('id', data.receiver);
 
             if (receiverUser) {
                   const newNotification = new Notification();

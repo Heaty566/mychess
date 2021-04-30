@@ -12,7 +12,7 @@ import { User } from '../../users/entities/user.entity';
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
 
-describe('ChatsGateway', () => {
+describe('NotificationsGateWay', () => {
       let app: INestApplication;
       const port = 5208;
       let client1: SocketIOClient.Socket;
@@ -83,7 +83,7 @@ describe('ChatsGateway', () => {
                         expect(data).toBeDefined();
                   });
                   client2.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
-                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, { id: user2.id });
+                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, { receiver: user2.id });
             });
       });
 
