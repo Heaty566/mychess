@@ -13,6 +13,8 @@ const { getJoiSchemas } = ValidatorService.joiSchemaGenerator<Notification>(noti
 
 export class SendNotificationDto {
       receiver: string;
+      notificationType: string;
+      link?: string;
 }
 
 export const vSendNotificationDto = Joi.object({

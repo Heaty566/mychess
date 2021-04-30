@@ -14,10 +14,10 @@ export class Notification {
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
 
-      @Column()
+      @Column({ default: null })
       objectTypeId: string;
 
-      @Column()
+      @Column({ default: null })
       notificationType: string;
 
       @ManyToOne(() => User, (user) => user.notifications)
