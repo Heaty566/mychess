@@ -11,10 +11,10 @@ export class NotificationConnectType {
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
 
-      @Column()
+      @Column({ default: null })
       content: string;
 
-      @Column()
+      @Column({ default: null })
       link: string;
 
       // @ManyToOne(() => User, (user) => user.notifications)
