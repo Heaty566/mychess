@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { NotificationAction } from '../notifications.action';
 
 //---- Helper
 import { getIoClient } from '../../test/test.helper';
@@ -55,11 +56,11 @@ describe('ChatsGateway', () => {
             });
 
             it('Pass', async (done) => {
-                  client1.on('connection-notification-success', (data) => {
+                  client1.on(NotificationAction.NOTIFICATIONS_CONNECTION, (data) => {
                         expect(data).toBeNull();
                         done();
                   });
-                  client1.emit('connection-notification', {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
             });
       });
 
@@ -69,10 +70,7 @@ describe('ChatsGateway', () => {
                   await client2.connect();
             });
             it('Pass', async (done) => {
-                  client1.on('new-notification', () => {
-                        expect(1 + 1).toBeUndefined();
-                  });
-                  client1.on('send-notification', async () => {
+                  client1.on(NotificationAction.NOTIFICATIONS_SEND, async () => {
                         const getUser = await userRepository
                               .createQueryBuilder('user')
                               .leftJoinAndSelect('user.notifications', 'notification')
@@ -81,11 +79,11 @@ describe('ChatsGateway', () => {
                         expect(getUser.notifications.length).toBeGreaterThanOrEqual(1);
                         done();
                   });
-                  client2.on('new-notification', (data) => {
+                  client2.on(NotificationAction.NOTIFICATIONS_NEW, (data) => {
                         expect(data).toBeDefined();
                   });
-                  client2.emit('connection-notification', {});
-                  client1.emit('send-notification', { userId: user2.id });
+                  client2.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, { id: user2.id });
             });
       });
 
@@ -103,11 +101,11 @@ describe('ChatsGateway', () => {
             });
 
             it('Pass', async (done) => {
-                  client1.on('update-notifications-success', (data) => {
+                  client1.on(NotificationAction.NOTIFICATIONS_REFRESH, (data) => {
                         expect(data).toHaveLength(2);
                         done();
                   });
-                  client1.emit('update-notifications', {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_REFRESH, {});
             });
       });
 

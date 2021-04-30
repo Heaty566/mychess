@@ -11,9 +11,13 @@ import { Notification } from './entities/notification.entity';
 
 //---- Pipe
 import { UserSocketGuard } from '../auth/authSocket.guard';
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- DTO
-import { SendNotificationDto } from './dto/sendNotificationDto';
+import { SendNotificationDto, vSendNotificationDto } from './dto/sendNotificationDto';
+
+//---- ENum
+import { NotificationAction } from './notifications.action';
 
 @WebSocketGateway({ namespace: 'notifications' })
 export class NotificationsGateway {
@@ -22,35 +26,38 @@ export class NotificationsGateway {
       server: Server;
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage('connection-notification')
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_CONNECTION)
       handleInitNotification(@ConnectedSocket() client: SocketExtend): WsResponse<null> {
             if (client.user) {
                   client.join(client.user.id);
             }
 
-            return { event: 'connection-notification-success', data: null };
+            return { event: NotificationAction.NOTIFICATIONS_CONNECTION, data: null };
       }
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage('send-notification')
-      async sendRequest(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendNotificationDto): Promise<WsResponse<any>> {
-            const receiverUser = await this.userService.findOneUserByField('id', data.userId);
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_SEND)
+      async sendRequest(
+            @ConnectedSocket() client: SocketExtend,
+            @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto,
+      ): Promise<WsResponse<any>> {
+            const receiverUser = await this.userService.findOneUserByField('id', data.id);
 
             if (receiverUser) {
                   const newNotification = new Notification();
                   receiverUser.notifications = [newNotification];
                   await this.userService.saveUser(receiverUser);
 
-                  this.server.to(receiverUser.id).emit('new-notification', {});
-                  return { event: 'send-notification', data: { message: 'ok' } };
+                  this.server.to(receiverUser.id).emit(NotificationAction.NOTIFICATIONS_NEW, {});
+                  return { event: NotificationAction.NOTIFICATIONS_SEND, data: { message: 'ok' } };
             }
       }
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage('update-notifications')
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_REFRESH)
       async getNotifications(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<any>> {
             const notifications = await this.notificationsService.getNotificationByUserId(client.user.id);
 
-            return { event: 'update-notifications-success', data: notifications };
+            return { event: NotificationAction.NOTIFICATIONS_REFRESH, data: notifications };
       }
 }

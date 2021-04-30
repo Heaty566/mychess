@@ -17,7 +17,7 @@ import { SocketServerResponse } from '../../app/interface/socketResponse';
 
 describe('ChatsGateway', () => {
       let app: INestApplication;
-      const port = 5208;
+      const port = 5248;
       let client: SocketIOClient.Socket;
       let userSocketToken: string;
       let user: User;

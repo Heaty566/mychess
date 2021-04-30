@@ -14,13 +14,15 @@ import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { UserRepository } from '../../users/entities/user.repository';
 
 import { AuthService } from '../../auth/auth.service';
-import { TicTacToeStatus } from '../entity/ticTacToeStatus';
+import { TicTacToeStatus } from '../entity/ticTacToe.interface';
 import { TicTacToeGateway } from '../ticTacToe.gateway';
 //---- Common
-import { TTTAction } from '../../ticTacToe/ticTacToe.action';
+import { TTTAction } from '../ticTacToe.action';
 import { SocketServerResponse } from '../../app/interface/socketResponse';
+import { RoomIdDTO } from '../dto/roomIdDto';
 import { TicTacToeService } from '../ticTacToe.service';
-import { Console } from 'node:console';
+import { RedisService } from '../../providers/redis/redis.service';
+import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
 describe('TicTacToeGateway ', () => {
       let app: INestApplication;
@@ -30,21 +32,24 @@ describe('TicTacToeGateway ', () => {
       let userRepository: UserRepository;
       let resetDB: any;
       let ticTacToeGateWay: TicTacToeGateway;
+      let createFakeUser: () => Promise<User>;
       let ticTacToeService: TicTacToeService;
+      let redisService: RedisService;
       beforeAll(async () => {
-            const { configModule, resetDatabase } = await initTestModule();
+            const { configModule, resetDatabase, getFakeUser } = await initTestModule();
             app = configModule;
-
+            createFakeUser = getFakeUser;
             resetDB = resetDatabase;
             await app.listen(port);
             ticTacToeRepository = app.get<TicTacToeRepository>(TicTacToeRepository);
             userRepository = app.get<UserRepository>(UserRepository);
+            redisService = app.get<RedisService>(RedisService);
             authService = app.get<AuthService>(AuthService);
-            ticTacToeService = app.get<TicTacToeService>(TicTacToeService);
             ticTacToeGateWay = app.get<TicTacToeGateway>(TicTacToeGateway);
+            ticTacToeService = app.get<TicTacToeService>(TicTacToeService);
       });
 
-      describe('player-create-match', () => {
+      describe(`${TTTAction.TTT_CREATE}`, () => {
             let client: SocketIOClient.Socket;
             let user: User;
             beforeEach(async () => {
@@ -63,19 +68,22 @@ describe('TicTacToeGateway ', () => {
                   client.on('join-test', () => {
                         done();
                   });
-                  client.on(TTTAction.TTT_CREATE_ROOM, async (data: SocketServerResponse<null>) => {
-                        const isExist = await ticTacToeRepository
+                  client.on(TTTAction.TTT_CREATE, async (data: SocketServerResponse<RoomIdDTO>) => {
+                        const ttt = await ticTacToeRepository
                               .createQueryBuilder('tic')
                               .leftJoinAndSelect('tic.users', 'user')
                               .where('user.id = :userId and status = :status', { userId: user.id, status: TicTacToeStatus['NOT-YET'] })
                               .getOne();
+                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
 
-                        expect(isExist).toBeDefined();
+                        expect(getGameRedis.users[0].id).toBe(user.id);
+                        expect(ttt).toBeDefined();
+                        expect(data.data.roomId).toBeDefined();
                         expect(data.statusCode).toBe(200);
-                        ticTacToeGateWay.server.to(`tic-tac-toe-${isExist.id}`).emit('join-test', {});
+                        ticTacToeGateWay.server.to(`tic-tac-toe-${ttt.id}`).emit('join-test', {});
                   });
 
-                  client.emit(TTTAction.TTT_CREATE_ROOM, {});
+                  client.emit(TTTAction.TTT_CREATE, {});
             });
 
             it('Failed User is Playing', async (done) => {
@@ -91,66 +99,335 @@ describe('TicTacToeGateway ', () => {
                         done();
                   });
 
-                  client.emit(TTTAction.TTT_CREATE_ROOM, {});
+                  client.emit(TTTAction.TTT_CREATE, {});
             });
       });
-      describe('join-match', () => {
+
+      describe(`${TTTAction.TTT_JOIN}`, () => {
             let client: SocketIOClient.Socket;
-            let user: User;
-            let tTT: TicTacToe;
+            let user2: User;
+            let user1: User;
+            let ttt: TicTacToe;
             beforeEach(async () => {
-                  user = await userRepository.save(fakeUser());
-                  const socketToken = await authService.getSocketToken(user);
+                  user1 = await createFakeUser();
+                  const ticTacToe = new TicTacToe();
+                  ticTacToe.users = [user1];
+                  ttt = await ticTacToeRepository.save(ticTacToe);
+
+                  await ticTacToeService.loadGameToCache(ttt.id);
+                  await ticTacToeService.joinGame(ttt.id, user1);
+
+                  user2 = await createFakeUser();
+                  const socketToken = await authService.getSocketToken(user2);
                   client = await getIoClient(port, 'tic-tac-toe', socketToken);
-
-                  const tic = new TicTacToe();
-
-                  tTT = await ticTacToeRepository.save(tic);
-                  tTT.users = [];
                   await client.connect();
-            });
-            it('Pass', (done) => {
-                  client.on('test-join', () => {
-                        done();
-                  });
-
-                  client.on(TTTAction.TTT_JOIN_ROOM, (res: SocketServerResponse<null>) => {
-                        ticTacToeGateWay.server.to(`tic-tac-toe-${tTT.id}`).emit('test-join', {});
-                        expect(res.statusCode).toBe(200);
-                  });
-                  client.emit(TTTAction.TTT_JOIN_ROOM, { roomId: tTT.id });
-            });
-            it('Failed invalid input', (done) => {
-                  client.on('exception', (res: SocketServerResponse<null>) => {
-                        expect(res.statusCode).toBe(400);
-                        done();
-                  });
-                  client.emit(TTTAction.TTT_JOIN_ROOM, {});
-            });
-
-            it('Failed user playing', async (done) => {
-                  tTT.users.push(user);
-                  tTT.status = TicTacToeStatus.PLAYING;
-                  await ticTacToeRepository.save(tTT);
-
-                  client.on('exception', (res: SocketServerResponse<null>) => {
-                        expect(res.statusCode).toBe(400);
-                        done();
-                  });
-                  client.emit(TTTAction.TTT_JOIN_ROOM, { roomId: '12333' });
-            });
-
-            it('Failed room does not exist', (done) => {
-                  client.on('exception', (res: SocketServerResponse<null>) => {
-                        expect(res.statusCode).toBe(404);
-                        done();
-                  });
-
-                  client.emit(TTTAction.TTT_JOIN_ROOM, { roomId: '120939129321921' });
             });
 
             afterEach(async () => {
                   client.disconnect();
+            });
+
+            it('Pass', (done) => {
+                  client.on(TTTAction.TTT_JOIN, async () => {
+                        const getGame = await ticTacToeRepository
+                              .createQueryBuilder('tic')
+                              .leftJoinAndSelect('tic.users', 'user')
+                              .where('tic.id = :id', { id: ttt.id })
+                              .getOne();
+
+                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+
+                        expect(getGameRedis).toBeDefined();
+                        expect(getGameRedis.users.filter((item) => item.id === user2.id)).toHaveLength(1);
+                        expect(getGame.users.filter((item) => item.id === user2.id)).toHaveLength(1);
+                        done();
+                  });
+                  client.emit(TTTAction.TTT_JOIN, { roomId: ttt.id });
+            });
+
+            it('Failed roomId was not found', async (done) => {
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_JOIN, { roomId: 'hello-world' });
+            });
+
+            it('Failed user is playing game', async (done) => {
+                  ttt.users.push(user2);
+                  ttt.status = TicTacToeStatus.PLAYING;
+                  await ticTacToeRepository.save(ttt);
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_JOIN, { roomId: ttt.id });
+            });
+
+            it('Failed room is full', async (done) => {
+                  const user3 = await createFakeUser();
+                  ttt.users.push(user3);
+                  await ticTacToeRepository.save(ttt);
+                  await ticTacToeService.loadGameToCache(ttt.id);
+
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_JOIN, { roomId: ttt.id });
+            });
+
+            it('Failed game is already start', async (done) => {
+                  ttt.status = TicTacToeStatus.PLAYING;
+                  const getGame = await ticTacToeRepository.save(ttt);
+                  const tTTBoard = new TicTacToeBoard(getGame);
+                  redisService.setObjectByKey(`ttt-${getGame.id}`, tTTBoard);
+
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_JOIN, { roomId: ttt.id });
+            });
+            it('Failed game is not exist in database', async (done) => {
+                  await ticTacToeRepository.createQueryBuilder().delete().where(`id = :id`, { id: ttt.id }).execute();
+
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_JOIN, { roomId: ttt.id });
+            });
+
+            it('Failed game is already start', async (done) => {
+                  ttt.status = TicTacToeStatus.PLAYING;
+                  const getGame = await ticTacToeRepository.save(ttt);
+                  const tTTBoard = new TicTacToeBoard(getGame);
+                  redisService.setObjectByKey(`ttt-${getGame.id}`, tTTBoard);
+
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_JOIN, { roomId: ttt.id });
+            });
+      });
+
+      describe(`${TTTAction.TTT_GET}`, () => {
+            let client: SocketIOClient.Socket;
+            let client2: SocketIOClient.Socket;
+            let user2: User;
+            let ttt: TicTacToe;
+            beforeEach(async () => {
+                  user2 = await createFakeUser();
+                  const ticTacToe = new TicTacToe();
+                  ticTacToe.users = [user2];
+                  ttt = await ticTacToeRepository.save(ticTacToe);
+                  await ticTacToeService.loadGameToCache(ttt.id);
+
+                  const socketToken = await authService.getSocketToken(user2);
+                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
+                  await client.connect();
+
+                  const user3 = await createFakeUser();
+                  const socketToken3 = await authService.getSocketToken(user3);
+                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken3);
+                  await client2.connect();
+            });
+
+            afterEach(async () => {
+                  client.disconnect();
+                  client2.disconnect();
+            });
+
+            it('Pass ', async (done) => {
+                  client.on(TTTAction.TTT_GET, (data: SocketServerResponse<TicTacToeBoard>) => {
+                        expect(data.data.info.users[0].id).toBeDefined();
+                        expect(data.data.info.users[0].password).toBeUndefined();
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_GET, { roomId: ttt.id });
+            });
+
+            it('Failed roomId was not found', async (done) => {
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_GET, { roomId: 'hello-world' });
+            });
+            it('Failed user is not owner', async (done) => {
+                  client2.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_GET, { roomId: ttt.id });
+            });
+      });
+
+      describe(`${TTTAction.TTT_READY}`, () => {
+            let client: SocketIOClient.Socket;
+            let client2: SocketIOClient.Socket;
+            let user2: User;
+            let ttt: TicTacToe;
+            beforeEach(async () => {
+                  user2 = await createFakeUser();
+                  const ticTacToe = new TicTacToe();
+                  ticTacToe.users = [user2];
+                  ttt = await ticTacToeRepository.save(ticTacToe);
+                  await ticTacToeService.loadGameToCache(ttt.id);
+
+                  const socketToken = await authService.getSocketToken(user2);
+                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
+                  await client.connect();
+
+                  const user3 = await createFakeUser();
+                  const socketToken3 = await authService.getSocketToken(user3);
+                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken3);
+                  await client2.connect();
+            });
+
+            afterEach(async () => {
+                  client.disconnect();
+                  client2.disconnect();
+            });
+
+            // it('Pass ', async (done) => {
+            //       const user1 = await createFakeUser();
+            //       ttt.users.push(user1);
+            //       ttt = await ticTacToeRepository.save(ttt);
+            //       await ticTacToeService.loadGameToCache(ttt.id);
+
+            //       client.on(TTTAction.TTT_READY, async (data: SocketServerResponse<null>) => {
+            //             const getGame = await ticTacToeRepository
+            //                   .createQueryBuilder('tic')
+            //                   .leftJoinAndSelect('tic.users', 'user')
+            //                   .where('tic.id = :id', { id: ttt.id })
+            //                   .getOne();
+
+            //             const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+            //             console.log(getGameRedis.users);
+            //             expect(getGameRedis.users.filter((item) => item.ready)).toHaveLength(1);
+            //             expect(getGame.status).toBe(TicTacToeStatus['NOT-YET']);
+            //             expect(data.statusCode).toBe(200);
+            //             done();
+            //       });
+
+            //       client.emit(TTTAction.TTT_READY, { roomId: ttt.id });
+            // });
+            it('Failed miss one player ', async (done) => {
+                  client.on('exception', async (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(400);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_READY, { roomId: ttt.id });
+            });
+
+            it('Failed roomId was not found', async (done) => {
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_READY, { roomId: 'hello-world' });
+            });
+
+            it('Failed user is not owner', async (done) => {
+                  client2.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_READY, { roomId: ttt.id });
+            });
+      });
+
+      describe(`${TTTAction.TTT_START}`, () => {
+            let client: SocketIOClient.Socket;
+            let client2: SocketIOClient.Socket;
+            let user2: User;
+            let ttt: TicTacToe;
+            beforeEach(async () => {
+                  user2 = await createFakeUser();
+                  const ticTacToe = new TicTacToe();
+                  ticTacToe.users = [user2];
+                  ttt = await ticTacToeRepository.save(ticTacToe);
+                  await ticTacToeService.loadGameToCache(ttt.id);
+
+                  const socketToken = await authService.getSocketToken(user2);
+                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
+                  await client.connect();
+
+                  const user3 = await createFakeUser();
+                  const socketToken3 = await authService.getSocketToken(user3);
+                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken3);
+                  await client2.connect();
+            });
+
+            afterEach(async () => {
+                  client.disconnect();
+                  client2.disconnect();
+            });
+
+            it('Pass ', async (done) => {
+                  client.on(TTTAction.TTT_START, (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_START, { roomId: ttt.id });
+            });
+
+            it('Failed roomId was not found', async (done) => {
+                  client.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTAction.TTT_START, { roomId: 'hello-world' });
+            });
+            it('Failed user is not owner', async (done) => {
+                  client2.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_START, { roomId: ttt.id });
             });
       });
 

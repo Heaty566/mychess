@@ -5,10 +5,10 @@ import { TicTacToe } from '../entity/ticTacToe.entity';
 
 const { getJoiSchema } = ValidatorService.joiSchemaGenerator<TicTacToe>(roomJoiSchema);
 
-export class JoinRoomDto {
+export class RoomIdDTO {
       roomId: string;
 }
 
-export const vJoinRoomDto = Joi.object({
+export const vRoomIdDto = Joi.object({
       roomId: getJoiSchema('id'),
 });
