@@ -1,18 +1,18 @@
 import { UseGuards } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, SocketExtend } from 'socket.io';
 import { UserSocketGuard } from '../auth/authSocket.guard';
 import { UserAction } from './user.action';
 
 import { ioResponse } from '../app/interface/socketResponse';
-import { ResponseBody } from '../app/interface/api.interface';
 
 @WebSocketGateway()
 export class UserGateway {
       @WebSocketServer()
+      server: Server;
+
       socketServer = () => ioResponse.getSocketServer(this.server);
 
-      server: Server;
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(UserAction.USER_CONNECT)
       async handleCreateMatch(@ConnectedSocket() client: SocketExtend) {
