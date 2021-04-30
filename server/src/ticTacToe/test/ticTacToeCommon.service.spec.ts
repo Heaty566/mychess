@@ -11,6 +11,7 @@ import { User } from '../../users/entities/user.entity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { TicTacToeService } from '../ticTacToe.service';
+import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
 //---- Repository
 
@@ -61,7 +62,7 @@ describe('ticTacToeCommonService', () => {
       });
 
       describe('getBoard', () => {
-            it('Pass get correct', async () => {
+            it('Pass', async () => {
                   const res = await ticTacToeService.loadGameToCache(tTTGame.id);
                   const board = await ticTacToeCommonService.getBoard(tTTGame.id);
                   expect(board).toBeDefined();
@@ -71,6 +72,27 @@ describe('ticTacToeCommonService', () => {
             it('Failed no found', async () => {
                   const board = await ticTacToeCommonService.getBoard(`ttt-hello-world`);
                   expect(board).toBeNull();
+            });
+      });
+      describe('setBoard', () => {
+            it('Pass', async () => {
+                  const tttBoard = new TicTacToeBoard(tTTGame);
+                  await ticTacToeCommonService.setBoard(tTTGame.id, tttBoard);
+                  const board = await ticTacToeCommonService.getBoard(tTTGame.id);
+
+                  expect(board).toBeDefined();
+            });
+      });
+      describe('deleteBoard', () => {
+            it('Pass', async () => {
+                  const tttBoard = new TicTacToeBoard(tTTGame);
+                  await ticTacToeCommonService.setBoard(tTTGame.id, tttBoard);
+                  const boardBefore = await ticTacToeCommonService.getBoard(tTTGame.id);
+                  await ticTacToeCommonService.deleteBoard(tTTGame.id);
+                  const boardAfter = await ticTacToeCommonService.getBoard(tTTGame.id);
+
+                  expect(boardBefore).toBeDefined();
+                  expect(boardAfter).toBeNull();
             });
       });
       afterAll(async () => {

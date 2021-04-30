@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { UserService } from '../users/user.service';
+import User from '../users/entities/user.entity';
 import { TicTacToeMovePoint } from './entity/ticTacToe.interface';
 
 import { TicTacToeFlag } from './entity/ticTacToe.interface';
+import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+import { TicTacToeCommonService } from './ticTacToeCommon.service';
 
 @Injectable()
 export class TicTacToeBotService {
+      constructor(private readonly ticTacToeCommonService: TicTacToeCommonService, private readonly userService: UserService) {}
+
       async findBestMove(board: Array<Array<TicTacToeFlag>>, flag: TicTacToeFlag) {
             const length = board.length;
             const testCase: Array<TicTacToeMovePoint> = [];
@@ -24,15 +30,17 @@ export class TicTacToeBotService {
                               const total = Math.max(totalRight, totalTopLeft, totalBottomLeft, totalTop);
                               if (total) testCase.push({ x: i, y: j, point: total });
                         }
-            const max: TicTacToeMovePoint = { point: -Infinity, x: 0, y: 0 };
+            const max: TicTacToeMovePoint = { point: -Infinity, x: null, y: null };
             for (const item of testCase) {
-                  if (item.point === max.point) {
-                        if (Math.random() >= 0.5) {
+                  if (item.point > max.point) {
+                        max.point = item.point;
+                        max.x = item.x;
+                        max.y = item.y;
+                  } else if (item.point === max.point) {
+                        if (Math.random() >= 0.5 || max.x === null || max.y === null) {
                               max.x = item.x;
                               max.y = item.y;
                         }
-                  } else if (item.point > max.point) {
-                        max.point = item.point;
                   }
             }
             return max;
@@ -127,5 +135,25 @@ export class TicTacToeBotService {
             }
 
             return total;
+      }
+
+      async addMoveToBoardBot(boardId: string, x: number, y: number) {
+            const tTTBoard = await this.ticTacToeCommonService.getBoard(boardId);
+
+            tTTBoard.board[x][y] = 1;
+            tTTBoard.currentTurn = !tTTBoard.currentTurn;
+
+            await this.ticTacToeCommonService.setBoard(tTTBoard.info.id, tTTBoard);
+            return true;
+      }
+
+      getBotInfo() {
+            const user = new User();
+            user.elo = 200;
+            user.name = 'BOT';
+            user.username = 'BOT';
+            user.avatarUrl = this.userService.randomAvatar();
+
+            return user;
       }
 }
