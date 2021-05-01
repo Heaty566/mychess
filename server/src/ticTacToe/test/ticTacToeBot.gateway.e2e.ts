@@ -5,28 +5,31 @@ import { fakeData, getIoClient } from '../../test/test.helper';
 import { initTestModule } from '../../test/initTest';
 
 //---- Entity
-
-import { User } from '../../users/entities/user.entity';
-import { fakeUser } from '../../test/fakeEntity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
+import { User } from '../../users/entities/user.entity';
+import { TicTacToeStatus } from '../entity/ticTacToe.interface';
+import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
+
+//---- Service
+import { TicTacToeService } from '../ticTacToe.service';
+import { AuthService } from '../../auth/auth.service';
+import { RedisService } from '../../providers/redis/redis.service';
+import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+
 //---- Repository
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { UserRepository } from '../../users/entities/user.repository';
 
-import { AuthService } from '../../auth/auth.service';
-import { TicTacToeStatus } from '../entity/ticTacToe.interface';
-import { TicTacToeGateway } from '../ticTacToe.gateway';
-//---- Common
-import { TTTAction } from '../ticTacToe.action';
-import { SocketServerResponse } from '../../app/interface/socketResponse';
+//---- Dto
 import { RoomIdDTO } from '../dto/roomIdDto';
-import { TicTacToeService } from '../ticTacToe.service';
-import { RedisService } from '../../providers/redis/redis.service';
-import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 import { AddMoveDto } from '../dto/addMoveDto';
-import { TicTacToeBotGateway } from '../ticTacToeBot.gateway';
+
+//---- Common
+import { SocketServerResponse } from '../../app/interface/socketResponse';
 import { TTTBotAction } from '../ticTacToeBot.action';
+
+//---- Gateway
+import { TicTacToeBotGateway } from '../ticTacToeBot.gateway';
 
 describe('TicTacToeBotGateway ', () => {
       let app: INestApplication;
