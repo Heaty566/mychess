@@ -8,4 +8,5 @@ export enum TTTAction {
       TTT_SURRENDER = 'ttt-surrender',
       TTT_ADD_MOVE = 'ttt-add-move',
       TTT_WIN = 'ttt-win',
+      TTT_CONNECT = 'connect-user',
 }

@@ -61,14 +61,16 @@ describe('TicTacToeGateway ', () => {
             jest.spyOn(ticTacToeGateWay.server, 'to').mockImplementation().mockReturnThis();
       });
 
-      describe(`${TTTAction.TTT_CREATE}`, () => {
+      describe(`${TTTAction.TTT_CONNECT}`, () => {
             let client: SocketIOClient.Socket;
-            let user: User;
-            beforeEach(async () => {
-                  user = await userRepository.save(fakeUser());
-                  const socketToken = await authService.getSocketToken(user);
-                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
 
+            let user2: User;
+
+            beforeEach(async () => {
+                  user2 = await createFakeUser();
+
+                  const socketToken = await authService.getSocketToken(user2);
+                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
                   await client.connect();
             });
 
@@ -76,16 +78,42 @@ describe('TicTacToeGateway ', () => {
                   client.disconnect();
             });
 
-            it('Pass', async (done) => {
-                  client.on('join-test', () => {
+            it('Pass ', async (done) => {
+                  client.on(TTTAction.TTT_CONNECT, (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(200);
                         done();
                   });
-                  client.on(TTTAction.TTT_CREATE, async (data: SocketServerResponse<RoomIdDTO>) => {
+
+                  client.emit(TTTAction.TTT_CONNECT, {});
+            });
+      });
+
+      describe(`${TTTAction.TTT_CREATE}`, () => {
+            let client3: SocketIOClient.Socket;
+            let user: User;
+            beforeEach(async () => {
+                  user = await userRepository.save(fakeUser());
+                  const socketToken = await authService.getSocketToken(user);
+                  client3 = await getIoClient(port, 'tic-tac-toe', socketToken);
+
+                  await client3.connect();
+            });
+
+            afterEach(async () => {
+                  client3.disconnect();
+            });
+
+            it('Pass', async (done) => {
+                  client3.on('join-test', () => {
+                        done();
+                  });
+                  client3.on(TTTAction.TTT_CREATE, async (data: SocketServerResponse<RoomIdDTO>) => {
                         const ttt = await ticTacToeRepository
                               .createQueryBuilder('tic')
                               .leftJoinAndSelect('tic.users', 'user')
                               .where('user.id = :userId and status = :status', { userId: user.id, status: TicTacToeStatus['NOT-YET'] })
                               .getOne();
+
                         const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
                         expect(getGameRedis.users[0].id).toBe(user.id);
@@ -95,7 +123,7 @@ describe('TicTacToeGateway ', () => {
                         ticTacToeGateWay.server.to(`tic-tac-toe-${ttt.id}`).emit('join-test', {});
                   });
 
-                  client.emit(TTTAction.TTT_CREATE, {});
+                  client3.emit(TTTAction.TTT_CREATE, {});
             });
 
             it('Failed User is Playing', async (done) => {
@@ -104,14 +132,14 @@ describe('TicTacToeGateway ', () => {
                   ticTacToe.status = TicTacToeStatus.PLAYING;
                   await ticTacToeRepository.save(ticTacToe);
 
-                  client.on('exception', (data: SocketServerResponse<null>) => {
+                  client3.on('exception', (data: SocketServerResponse<null>) => {
                         expect(data).toBeDefined();
                         expect(data.details).toBeDefined();
                         expect(data.statusCode).toBe(400);
                         done();
                   });
 
-                  client.emit(TTTAction.TTT_CREATE, {});
+                  client3.emit(TTTAction.TTT_CREATE, {});
             });
       });
 
