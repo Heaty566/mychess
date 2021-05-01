@@ -1,16 +1,26 @@
 import { UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, SocketExtend } from 'socket.io';
+
+//---- Pipe
+import { SocketJoiValidatorPipe } from '../utils/validator/socketValidator.pipe';
+
+//---- Service
 import { UserSocketGuard } from '../auth/authSocket.guard';
 import { TicTacToeService } from './ticTacToe.service';
-import { ioResponse } from '../app/interface/socketResponse';
-import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
-import { SocketJoiValidatorPipe } from '../utils/validator/SocketValidator.pipe';
-import { TTTAction } from './ticTacToe.action';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
-import { TicTacToeStatus } from './entity/ticTacToe.interface';
+
+//---- Entity
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
+
+//---- Dto
+import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
 import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
+
+//---- Common
+import { ioResponse } from '../app/interface/socketResponse';
+import { TTTAction } from './ticTacToe.action';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {

@@ -1,3 +1,4 @@
+//---- Entity
 import { TicTacToe } from './ticTacToe.entity';
 import { TicTacToeFlag } from './ticTacToe.interface';
 import { TicTacToePlayer } from './ticTacToe.interface';

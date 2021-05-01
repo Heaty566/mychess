@@ -1,18 +1,28 @@
 import { UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server, SocketExtend } from 'socket.io';
-import { UserSocketGuard } from '../auth/authSocket.guard';
-import { TicTacToeService } from './ticTacToe.service';
-import { ioResponse } from '../app/interface/socketResponse';
-import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
-import { SocketJoiValidatorPipe } from '../utils/validator/SocketValidator.pipe';
-import { TTTBotAction } from './ticTacToeBot.action';
-import { TicTacToeCommonService } from './ticTacToeCommon.service';
-import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
-import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
-import { TicTacToe } from './entity/ticTacToe.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Server, SocketExtend } from 'socket.io';
+
+//---- pipe
+import { SocketJoiValidatorPipe } from '../utils/validator/socketValidator.pipe';
+import { UserSocketGuard } from '../auth/authSocket.guard';
+
+//---- Service
 import { TicTacToeBotService } from './ticTacToeBot.service';
+import { TicTacToeCommonService } from './ticTacToeCommon.service';
+import { TicTacToeService } from './ticTacToe.service';
+
+//---- DTO
+import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
+import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
+
+//---- Entity
+import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+import { TicTacToe } from './entity/ticTacToe.entity';
+
+//---- Common
+import { ioResponse } from '../app/interface/socketResponse';
+import { TTTBotAction } from './ticTacToeBot.action';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe-bot' })
 export class TicTacToeBotGateway {

@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
-
-import { TicTacToeRepository } from './entity/ticTacToe.repository';
 import { ObjectLiteral } from 'typeorm';
-import { TicTacToe } from './entity/ticTacToe.entity';
-import { TicTacToeStatus } from './entity/ticTacToe.interface';
-import User from '../users/entities/user.entity';
+
+//---- Service
 import { RedisService } from '../providers/redis/redis.service';
+
+//---- Entity
+import { TicTacToe } from './entity/ticTacToe.entity';
+import User from '../users/entities/user.entity';
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+
+//---- Repository
+import { TicTacToeRepository } from './entity/ticTacToe.repository';
 
 @Injectable()
 export class TicTacToeCommonService {
-      constructor(private readonly ticTacToeRepository: TicTacToeRepository, private readonly redisService: RedisService) {
-            //
-      }
+      constructor(private readonly ticTacToeRepository: TicTacToeRepository, private readonly redisService: RedisService) {}
 
       async getManyMatchByQuery(where: string, parameters: ObjectLiteral) {
             const res = await this.ticTacToeRepository.getManyTTTByField(where, parameters);

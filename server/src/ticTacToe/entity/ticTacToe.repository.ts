@@ -5,7 +5,6 @@ import { TicTacToe } from './ticTacToe.entity';
 
 //---- Repository
 import { RepositoryService } from '../../utils/repository/repository.service';
-import User from '../../users/entities/user.entity';
 
 @EntityRepository(TicTacToe)
 export class TicTacToeRepository extends RepositoryService<TicTacToe> {

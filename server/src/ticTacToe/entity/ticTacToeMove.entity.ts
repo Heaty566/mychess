@@ -1,6 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { TicTacToeFlag } from './ticTacToe.interface';
+
+//---- Entity
 import { TicTacToe } from './ticTacToe.entity';
+import { TicTacToeFlag } from './ticTacToe.interface';
 
 @Entity()
 export class TicTacToeMove {
