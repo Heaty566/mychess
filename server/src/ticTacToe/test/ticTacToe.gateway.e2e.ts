@@ -80,7 +80,7 @@ describe('TicTacToeGateway ', () => {
                               .leftJoinAndSelect('tic.users', 'user')
                               .where('user.id = :userId and status = :status', { userId: user.id, status: TicTacToeStatus['NOT-YET'] })
                               .getOne();
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
                         expect(getGameRedis.users[0].id).toBe(user.id);
                         expect(ttt).toBeDefined();
@@ -141,7 +141,7 @@ describe('TicTacToeGateway ', () => {
                               .where('tic.id = :id', { id: ttt.id })
                               .getOne();
 
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
                         expect(getGameRedis).toBeDefined();
                         expect(getGameRedis.users.filter((item) => item.id === user2.id)).toHaveLength(1);
@@ -337,7 +337,7 @@ describe('TicTacToeGateway ', () => {
                               .leftJoinAndSelect('tic.users', 'user')
                               .where('tic.id = :id', { id: ttt.id })
                               .getOne();
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
                         expect(getGameRedis.users.filter((item) => item.ready)).toHaveLength(1);
                         expect(getGame.status).toBe(TicTacToeStatus['NOT-YET']);
@@ -356,7 +356,7 @@ describe('TicTacToeGateway ', () => {
                               .leftJoinAndSelect('tic.users', 'user')
                               .where('tic.id = :id', { id: ttt.id })
                               .getOne();
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
                         expect(getGameRedis.users.filter((item) => item.id === user2.id)[0].ready).toBeFalsy();
                         expect(getGame.status).toBe(TicTacToeStatus['NOT-YET']);
@@ -513,8 +513,7 @@ describe('TicTacToeGateway ', () => {
 
             it('Pass ', async (done) => {
                   client2.on(TTTAction.TTT_SURRENDER, async (data: SocketServerResponse<null>) => {
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
-
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
                         expect(getGameRedis.info.winner).not.toBe(getGameRedis.users[1].flag);
                         expect(getGameRedis.info.status).toBe(TicTacToeStatus.END);
                         expect(data.statusCode).toBe(200);
@@ -582,7 +581,7 @@ describe('TicTacToeGateway ', () => {
 
             it('Pass ', async (done) => {
                   client2.on(TTTAction.TTT_LEAVE, async (data: SocketServerResponse<null>) => {
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
 
                         expect(getGameRedis.users.filter((item) => !item.ready)).toHaveLength(2);
                         expect(data.statusCode).toBe(200);
@@ -595,7 +594,7 @@ describe('TicTacToeGateway ', () => {
             it('Pass ', async (done) => {
                   await ticTacToeService.leaveGame(ttt.id, user1);
                   client2.on(TTTAction.TTT_LEAVE, async (data: SocketServerResponse<null>) => {
-                        const getGameRedis = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${ttt.id}`);
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
                         const getTTT = await ticTacToeRepository.getOneTTTByFiled('tic.id = :id', { id: ttt.id });
                         expect(getTTT).toBeUndefined();
                         expect(getGameRedis).toBeNull();
