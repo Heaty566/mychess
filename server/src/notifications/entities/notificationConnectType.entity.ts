@@ -5,6 +5,12 @@ import User from '../../users/entities/user.entity';
 
 @Entity()
 export class NotificationConnectType {
+      constructor(content: string, link: string, sender: string) {
+            this.content = content;
+            this.link = link;
+            this.sender = sender;
+      }
+
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
@@ -17,6 +23,6 @@ export class NotificationConnectType {
       @Column({ default: null })
       link: string;
 
-      // @ManyToOne(() => User, (user) => user.notifications)
-      // sender: User;
+      @Column({ default: null })
+      sender: string;
 }

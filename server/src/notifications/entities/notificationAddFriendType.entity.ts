@@ -4,26 +4,21 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import User from '../../users/entities/user.entity';
 
 @Entity()
-export class Notification {
-      constructor(notificationType: string) {
-            this.notificationType = notificationType;
+export class NotificationAddFriendType {
+      constructor(content: string, sender: string) {
+            this.content = content;
+            this.sender = sender;
       }
 
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
-      @Column({ default: false })
-      status: boolean;
-
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
 
       @Column({ default: null })
-      objectTypeId: string;
+      content: string;
 
       @Column({ default: null })
-      notificationType: string;
-
-      @ManyToOne(() => User, (user) => user.notifications)
-      receiver: User;
+      sender: string;
 }

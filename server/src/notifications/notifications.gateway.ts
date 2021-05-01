@@ -21,6 +21,7 @@ import { SendNotificationDto, vSendNotificationDto } from './dto/sendNotificatio
 import { NotificationAction } from './notifications.action';
 import { NotificationType } from './entities/notification.type.enum';
 import { NotificationContent } from './entities/notification.content.enum';
+import { NotificationAddFriendType } from './entities/notificationAddFriendType.entity';
 
 @WebSocketGateway({ namespace: 'notifications' })
 export class NotificationsGateway {
@@ -47,19 +48,18 @@ export class NotificationsGateway {
             const receiverUser = await this.userService.findOneUserByField('id', data.receiver);
 
             if (receiverUser) {
-                  const newNotification = new Notification();
+                  const newNotification = new Notification(data.notificationType);
                   let notificationObjectType;
 
                   switch (data.notificationType) {
+                        case NotificationType.CONNECT:
+                              notificationObjectType = new NotificationConnectType(NotificationContent.CONNECT_CONTENT, data.link, data.sender);
+
                         case NotificationType.ADD_FRIEND:
-                              newNotification.notificationType = NotificationType.ADD_FRIEND;
-
-                              notificationObjectType = new NotificationConnectType();
-                              notificationObjectType.link = data.link;
-                              notificationObjectType.content = NotificationContent.ADD_FRIEND_CONTENT;
-
-                              newNotification.objectTypeId = notificationObjectType.id;
+                              notificationObjectType = new NotificationAddFriendType(NotificationContent.ADD_FRIEND_CONTENT, data.sender);
                   }
+
+                  newNotification.objectTypeId = notificationObjectType.id;
 
                   receiverUser.notifications = [newNotification];
                   await this.userService.saveUser(receiverUser);
