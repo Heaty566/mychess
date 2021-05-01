@@ -13,6 +13,9 @@ const reducer = createSlice({
     initialState,
     reducers: {
         initReq: (state) => ({ ...state, isLoading: true, isError: false }),
+        setLoading: (state, { payload: { isLoading } }) => {
+            console.log(isLoading);
+        },
         resetState: (state) => ({ ...initialState }),
         updateErrorDetails: (state, { payload }: PayloadAction<IJoiError>) => {
             const newState = { ...state };

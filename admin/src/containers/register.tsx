@@ -10,6 +10,8 @@ import { registerUser } from '../store/auth/action';
 import { useEffect } from 'react';
 export interface LoginProps {}
 
+import RouterHOC from '../HOC/routerHOC';
+
 const { Title } = Typography;
 
 const layout = {
@@ -26,7 +28,7 @@ const defaultValues: UserRegisterDto = {
     confirmPassword: '',
 };
 
-function Register() {
+const Register: React.FunctionComponent = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserRegisterDto>(defaultValues);
 
@@ -80,6 +82,5 @@ function Register() {
             </Col>
         </Row>
     );
-}
-
+};
 export default Register;

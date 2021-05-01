@@ -11,6 +11,7 @@ import { UserLoginDto } from '../store/auth/dto';
 import { RootState, store } from '../store';
 import { IApiState } from '../store/api/interface';
 import { loginUser } from '../store/auth/action';
+import RouterHOC from '../HOC/routerHOC';
 
 export interface LoginProps {}
 
@@ -28,7 +29,7 @@ const defaultValues: UserLoginDto = {
     username: '',
 };
 
-function Login() {
+const Login: React.FunctionComponent<LoginProps> = () => {
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const errors = useFormError<UserLoginDto>(defaultValues);
 
@@ -73,6 +74,6 @@ function Login() {
             </Col>
         </Row>
     );
-}
+};
 
 export default Login;

@@ -12,8 +12,9 @@ import { store, RootState } from './store';
 
 import { getUserInfo } from './store/auth/action';
 
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import RouterHOC from './HOC/routerHOC';
+import AuthRouter from './HOC/authRouter';
 
 function App() {
     const authState = useSelector<RootState, IAuthState>((state) => state.auth);
@@ -25,15 +26,9 @@ function App() {
             <Layout className="h-full">
                 <Navbar />
                 <Switch>
-                    <Route path="/login">
-                        <Login />
-                    </Route>
-                    <Route path="/register">
-                        <Register />
-                    </Route>
-                    <Route path="/information">
-                        <Information />
-                    </Route>
+                    <AuthRouter path={'/login'} Component={Login} />
+                    <AuthRouter path={'/register'} Component={Register} />
+                    <RouterHOC path="/information" Component={Information} redirectTo="./login" />
                 </Switch>
             </Layout>
         </div>
