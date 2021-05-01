@@ -48,7 +48,7 @@ export class User {
       @Column({ default: null })
       phoneNumber: string;
 
-      @OneToMany(() => Notification, (notification) => notification.user, { cascade: true })
+      @OneToMany(() => Notification, (notification) => notification.receiver, { cascade: true })
       notifications: Notification[];
 }
 

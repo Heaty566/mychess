@@ -4,17 +4,19 @@ import * as Joi from 'joi';
 import { ValidatorService } from '../../utils/validator/validator.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { Notification } from '../../notifications/entities/notification.entity';
 
 //---- Common
-import { userJoiSchema } from '../../utils/validator/schema/user.validator';
+import { notificationJoiSchema } from '../../utils/validator/schema/notification.validator';
 
-const { getJoiSchemas } = ValidatorService.joiSchemaGenerator<User>(userJoiSchema);
+const { getJoiSchemas } = ValidatorService.joiSchemaGenerator<Notification>(notificationJoiSchema);
 
 export class SendNotificationDto {
-      id: string;
+      receiver: string;
+      notificationType: string;
+      link?: string;
 }
 
 export const vSendNotificationDto = Joi.object({
-      ...getJoiSchemas(['id']),
+      ...getJoiSchemas(['receiver']),
 });
