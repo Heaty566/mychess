@@ -1,5 +1,7 @@
-import User from '../../users/entities/user.entity';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+//---- Entity
+import User from '../../users/entities/user.entity';
 import { TicTacToeStatus } from './ticTacToe.interface';
 import { TicTacToeFlag } from './ticTacToe.interface';
 import { TicTacToeMove } from './ticTacToeMove.entity';

@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
+
+//---- Service
 import { UserService } from '../users/user.service';
+import { TicTacToeCommonService } from './ticTacToeCommon.service';
+
+//---- Entity
 import User from '../users/entities/user.entity';
 import { TicTacToeMovePoint } from './entity/ticTacToe.interface';
-
 import { TicTacToeFlag } from './entity/ticTacToe.interface';
-import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
-import { TicTacToeCommonService } from './ticTacToeCommon.service';
 
 @Injectable()
 export class TicTacToeBotService {

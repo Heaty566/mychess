@@ -3,21 +3,19 @@ import { INestApplication } from '@nestjs/common';
 //---- Helper
 import { initTestModule } from '../../test/initTest';
 
-//---- Service
-// import { TicTacToeCommonService } from '../ticTacToeCommon.service';
-
 //---- Entity
 import { User } from '../../users/entities/user.entity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
-import { TicTacToeService } from '../ticTacToe.service';
-import { TicTacToeRepository } from '../entity/ticTacToe.repository';
-import { RedisService } from '../../providers/redis/redis.service';
-import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
+
+//---- Service
+import { TicTacToeService } from '../ticTacToe.service';
+import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeBotService } from '../ticTacToeBot.service';
-import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';
+import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 //---- Repository
+import { TicTacToeRepository } from '../entity/ticTacToe.repository';
+import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';
 
 describe('ticTacToeBotService', () => {
       let app: INestApplication;
@@ -30,6 +28,8 @@ describe('ticTacToeBotService', () => {
       let redisService: RedisService;
       let ticTacToeBotService: TicTacToeBotService;
       let ticTacToeMoveRepository: TicTacToeMoveRepository;
+      let ticTacToeCommonService: TicTacToeCommonService;
+
       beforeAll(async () => {
             const { getApp, module, resetDatabase, getFakeUser } = await initTestModule();
             app = getApp;
@@ -42,6 +42,7 @@ describe('ticTacToeBotService', () => {
             ticTacToeMoveRepository = module.get<TicTacToeMoveRepository>(TicTacToeMoveRepository);
             redisService = module.get<RedisService>(RedisService);
             ticTacToeBotService = module.get<TicTacToeBotService>(TicTacToeBotService);
+            ticTacToeCommonService = module.get<TicTacToeCommonService>(TicTacToeCommonService);
       });
 
       beforeEach(async () => {
@@ -73,11 +74,11 @@ describe('ticTacToeBotService', () => {
             });
 
             it('Pass', async () => {
-                  const getBoardGame = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGame = await ticTacToeCommonService.getBoard(boardGame.id);
                   getBoardGame.board[0][0] = 0;
                   getBoardGame.board[0][2] = 0;
-                  await redisService.setObjectByKey(`ttt-${boardGame.id}`, getBoardGame);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  await ticTacToeCommonService.setBoard(boardGame.id, getBoardGame);
+                  const afterBoardUpdate = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   const botBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 0);
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
@@ -86,14 +87,14 @@ describe('ticTacToeBotService', () => {
             });
 
             it('Pass', async () => {
-                  const getBoardGame = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGame = await ticTacToeCommonService.getBoard(boardGame.id);
                   getBoardGame.board[0][0] = 0;
                   getBoardGame.board[0][2] = 0;
                   getBoardGame.board[0][3] = 0;
                   getBoardGame.board[0][4] = 0;
                   getBoardGame.board[0][5] = 1;
                   await redisService.setObjectByKey(`ttt-${boardGame.id}`, getBoardGame);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const afterBoardUpdate = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   const botBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 0);
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
@@ -102,7 +103,7 @@ describe('ticTacToeBotService', () => {
             });
 
             it('Pass', async () => {
-                  const getBoardGame = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGame = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   getBoardGame.board[0][2] = 0;
                   getBoardGame.board[0][3] = 0;
@@ -111,7 +112,7 @@ describe('ticTacToeBotService', () => {
                   getBoardGame.board[3][6] = 1;
                   getBoardGame.board[3][7] = 1;
                   await redisService.setObjectByKey(`ttt-${boardGame.id}`, getBoardGame);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const afterBoardUpdate = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   const botBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 0);
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
@@ -119,7 +120,7 @@ describe('ticTacToeBotService', () => {
                   expect(botBestMove.point).toBe(30);
             });
             it('Pass', async () => {
-                  const getBoardGame = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGame = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   getBoardGame.board[13][2] = 0;
                   getBoardGame.board[13][3] = 0;
@@ -128,7 +129,7 @@ describe('ticTacToeBotService', () => {
                   getBoardGame.board[4][13] = 1;
                   getBoardGame.board[5][13] = 1;
                   await redisService.setObjectByKey(`ttt-${boardGame.id}`, getBoardGame);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const afterBoardUpdate = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   const botBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 0);
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
@@ -136,7 +137,7 @@ describe('ticTacToeBotService', () => {
                   expect(botBestMove.point).toBe(30);
             });
             it('Pass', async () => {
-                  const getBoardGame = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGame = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   getBoardGame.board[13][0] = 0;
                   getBoardGame.board[13][1] = 0;
@@ -147,7 +148,7 @@ describe('ticTacToeBotService', () => {
                   getBoardGame.board[2][13] = 1;
                   getBoardGame.board[3][13] = 1;
                   await redisService.setObjectByKey(`ttt-${boardGame.id}`, getBoardGame);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const afterBoardUpdate = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   const botBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 0);
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
@@ -156,7 +157,7 @@ describe('ticTacToeBotService', () => {
             });
 
             it('Pass', async () => {
-                  const getBoardGame = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGame = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   getBoardGame.board[13][0] = 0;
                   getBoardGame.board[13][1] = 0;
@@ -167,7 +168,7 @@ describe('ticTacToeBotService', () => {
                   getBoardGame.board[2][13] = 1;
                   getBoardGame.board[3][13] = 1;
                   await redisService.setObjectByKey(`ttt-${boardGame.id}`, getBoardGame);
-                  const afterBoardUpdate = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const afterBoardUpdate = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   const botBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 0);
                   const userBestMove = await ticTacToeBotService.findBestMove(afterBoardUpdate.board, 1);
@@ -185,9 +186,9 @@ describe('ticTacToeBotService', () => {
             });
 
             it('Pass', async () => {
-                  const getBoardGameBefore = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGameBefore = await ticTacToeCommonService.getBoard(boardGame.id);
                   await ticTacToeBotService.addMoveToBoardBot(boardGame.id, 1, 1);
-                  const getBoardGameAfter = await redisService.getObjectByKey<TicTacToeBoard>(`ttt-${boardGame.id}`);
+                  const getBoardGameAfter = await ticTacToeCommonService.getBoard(boardGame.id);
 
                   expect(getBoardGameAfter).toBeDefined();
                   expect(getBoardGameAfter.currentTurn).not.toBe(getBoardGameBefore.currentTurn);

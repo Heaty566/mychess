@@ -5,15 +5,15 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Service
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+import { TicTacToeService } from '../ticTacToe.service';
 
 //---- Entity
 import { User } from '../../users/entities/user.entity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
-import { TicTacToeRepository } from '../entity/ticTacToe.repository';
-import { TicTacToeService } from '../ticTacToe.service';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
 //---- Repository
+import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 
 describe('ticTacToeCommonService', () => {
       let app: INestApplication;

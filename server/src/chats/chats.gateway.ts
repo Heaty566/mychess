@@ -5,7 +5,7 @@ import { ioResponse } from '../app/interface/socketResponse';
 
 //---- Pipe
 import { UserSocketGuard } from '../auth/authSocket.guard';
-import { SocketJoiValidatorPipe } from '../utils/validator/SocketValidator.pipe';
+import { SocketJoiValidatorPipe } from '../utils/validator/socketValidator.pipe';
 
 //---- Service
 import { RedisService } from '../providers/redis/redis.service';
