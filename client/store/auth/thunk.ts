@@ -17,6 +17,11 @@ class AuthThunk {
         return null;
     });
 
+    getSocketToken = createAsyncThunk<null, void>('getSocketToken', async () => {
+        await this.apiCall.getSocketToken();
+        return null;
+    });
+
     registerUser = createAsyncThunk<null, UserRegisterDto>('UserRegisterDto', async (input) => {
         await this.apiCall.registerUser(input);
         return null;

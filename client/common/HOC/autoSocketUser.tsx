@@ -14,22 +14,22 @@ const AutoSocketUser: React.FunctionComponent<AutoSocketUserProps> = ({ children
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
     const ioUser = io.connect(`http://localhost:4000/${namespace}`);
     React.useEffect(() => {
-        if (authState.isLoginSocket) {
+        if (authState.isSocketLogin) {
             console.log('call socket');
             ioUser.on('exception', (data: any) => {
                 console.log('hello');
                 console.log(data);
             });
-            ioUser.on('user-connect', (data: any) => {
+            ioUser.on('connect-user', (data: any) => {
                 console.log('hello');
                 console.log(data);
             });
 
-            ioUser.emit('user-connect', {});
+            ioUser.emit('connect-user', {});
         } else {
-            store.dispatch(authThunk.getIoToken());
+            store.dispatch(authThunk.getSocketToken());
         }
-    }, [authState.isLoginSocket]);
+    }, [authState.isSocketLogin]);
     return <>{children}</>;
 };
 

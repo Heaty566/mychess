@@ -208,10 +208,27 @@ describe('TicTacToeBotGateway ', () => {
 
                   client.emit(TTTBotAction.TTT_BOT_START, { roomId: ttt.id });
             });
+            it('Failed room not found ', async (done) => {
+                  client.on('exception', async (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTBotAction.TTT_BOT_START, { roomId: 'hello' });
+            });
+            it('Failed not an owner ', async (done) => {
+                  client2.on('exception', async (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client2.emit(TTTBotAction.TTT_BOT_START, { roomId: ttt.id });
+            });
       });
 
       describe(`${TTTBotAction.TTT_BOT_MOVE}`, () => {
             let client: SocketIOClient.Socket;
+            let client3: SocketIOClient.Socket;
 
             let user2: User;
             let ttt: TicTacToe;
@@ -233,10 +250,16 @@ describe('TicTacToeBotGateway ', () => {
                   const socketToken = await authService.getSocketToken(user2);
                   client = await getIoClient(port, 'tic-tac-toe-bot', socketToken);
                   await client.connect();
+
+                  const user3 = await createFakeUser();
+                  const socketToken3 = await authService.getSocketToken(user3);
+                  client3 = await getIoClient(port, 'tic-tac-toe-bot', socketToken3);
+                  await client3.connect();
             });
 
             afterEach(async () => {
                   client.disconnect();
+                  client3.disconnect();
             });
 
             it('Pass', (done) => {
@@ -338,7 +361,7 @@ describe('TicTacToeBotGateway ', () => {
 
                   client.emit(TTTBotAction.TTT_BOT_MOVE, input);
             });
-            it('Pass wrong turn', async (done) => {
+            it('Failed wrong turn', async (done) => {
                   const beforeUpdate = await ticTacToeCommonService.getBoard(ttt.id);
                   beforeUpdate.currentTurn = false;
 
@@ -361,17 +384,37 @@ describe('TicTacToeBotGateway ', () => {
                   client.emit(TTTBotAction.TTT_BOT_MOVE, input);
             });
 
-            it('Failed user not ready yet ', async (done) => {
-                  const beforeUpdate = await ticTacToeCommonService.getBoard(ttt.id);
-                  beforeUpdate.users[0].ready = false;
-                  await ticTacToeCommonService.setBoard(ttt.id, beforeUpdate);
+            it('Failed not found', async (done) => {
+                  const input: AddMoveDto = {
+                        roomId: 'hello',
+                        x: 0,
+                        y: 0,
+                  };
 
                   client.on('exception', async (data: SocketServerResponse<null>) => {
-                        expect(data.statusCode).toBe(400);
+                        const afterUpdate = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        expect(afterUpdate.board[0][0]).toBe(-1);
+                        expect(data.statusCode).toBe(404);
                         done();
                   });
 
-                  client.emit(TTTBotAction.TTT_BOT_START, { roomId: ttt.id });
+                  client.emit(TTTBotAction.TTT_BOT_MOVE, input);
+            });
+
+            it('Failed not an owner ', async (done) => {
+                  const input: AddMoveDto = {
+                        roomId: ttt.id,
+                        x: 0,
+                        y: 0,
+                  };
+
+                  client3.on('exception', async (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client3.emit(TTTBotAction.TTT_BOT_MOVE, input);
             });
       });
 
@@ -414,6 +457,23 @@ describe('TicTacToeBotGateway ', () => {
                   });
 
                   client.emit(TTTBotAction.TTT_BOT_LEAVE, { roomId: ttt.id });
+            });
+
+            it('Failed room not found ', async (done) => {
+                  client.on('exception', async (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client.emit(TTTBotAction.TTT_BOT_LEAVE, { roomId: 'hello' });
+            });
+            it('Failed not the owner', async (done) => {
+                  client2.on('exception', async (data: SocketServerResponse<null>) => {
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client2.emit(TTTBotAction.TTT_BOT_LEAVE, { roomId: ttt.id });
             });
       });
 

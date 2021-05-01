@@ -37,7 +37,7 @@ const TicTacToeBot: React.FunctionComponent<TicTacToeBotProps> = () => {
     }, [clientTTTBot]);
 
     const handleoo = () => {
-        console.log(TTTBotAction.TTT_BOT_GET);
+        console.log('hello');
         clientTTTBot.emit('ttt-bot-get', { roomId: '21321' });
     };
 

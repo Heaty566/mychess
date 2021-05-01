@@ -697,6 +697,7 @@ describe('TicTacToeGateway ', () => {
             });
 
             afterEach(async () => {
+                  client1.disconnect();
                   client2.disconnect();
                   client3.disconnect();
             });
@@ -804,6 +805,42 @@ describe('TicTacToeGateway ', () => {
                   });
 
                   client2.emit(TTTAction.TTT_ADD_MOVE, input);
+            });
+
+            it('Failed no found game ', async (done) => {
+                  const input: AddMoveDto = {
+                        roomId: 'hello',
+                        x: 1,
+                        y: 1,
+                  };
+
+                  client2.on('exception', async (data: SocketServerResponse<null>) => {
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        expect(getGameRedis.board[input.x][input.y]).not.toBe(1);
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client2.emit(TTTAction.TTT_ADD_MOVE, input);
+            });
+
+            it('Failed not a player ', async (done) => {
+                  const input: AddMoveDto = {
+                        roomId: ttt.id,
+                        x: 1,
+                        y: 1,
+                  };
+
+                  client3.on('exception', async (data: SocketServerResponse<null>) => {
+                        const getGameRedis = await ticTacToeCommonService.getBoard(ttt.id);
+
+                        expect(getGameRedis.board[input.x][input.y]).not.toBe(1);
+                        expect(data.statusCode).toBe(401);
+                        done();
+                  });
+
+                  client3.emit(TTTAction.TTT_ADD_MOVE, input);
             });
       });
 

@@ -12,6 +12,12 @@ export class AuthAPI {
         return res;
     }
 
+    async getSocketToken() {
+        const url = `${this.prefix + '/socket-token'}`;
+        const res = await this.apiCall.get<ApiResponse<null>>(url);
+        return res;
+    }
+
     async logoutUser() {
         const url = `${this.prefix + '/logout'}`;
         const res = await this.apiCall.post<ApiResponse<null>>(url);

@@ -56,7 +56,14 @@ export class TicTacToeBotGateway {
       private async getGameFromCache(roomId: string, userId: string) {
             const game = await this.ticTacToeCommonService.getBoard(roomId);
             if (!game) {
-                  this.socketServer().socketEmitToRoomError('NotFoundException', userId, { details: { roomId: { type: 'user.not-found' } } }, 'user');
+                  this.socketServer().socketEmitToRoomError(
+                        'NotFoundException',
+                        userId,
+                        {
+                              details: { roomId: { type: 'user.not-found' } },
+                        },
+                        'user',
+                  );
                   return null;
             }
 
@@ -179,7 +186,6 @@ export class TicTacToeBotGateway {
                   );
 
             const getUpdateCacheGame = await this.getGameFromCache(body.roomId, client.user.id);
-            if (!getUpdateCacheGame) return;
 
             const userMove = await this.ticTacToeBotService.findBestMove(getUpdateCacheGame.board, 0);
             const botMove = await this.ticTacToeBotService.findBestMove(getUpdateCacheGame.board, 1);
