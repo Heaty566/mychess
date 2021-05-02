@@ -42,31 +42,38 @@ const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
     }, [query]);
 
     React.useEffect(() => {
-        const url = new URL(window.location.href);
-        url.searchParams.set('name', name);
-        url.searchParams.set('currentPage', '0');
-        url.searchParams.set('pageSize', '12');
-        router.push(url.pathname + url.search);
-    }, [debounceValue]);
+        if (name) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('name', name);
+            url.searchParams.set('currentPage', '0');
+            url.searchParams.set('pageSize', '12');
+            router.push(url.pathname + url.search);
+        }
+    }, [debounceValue, name]);
 
     const handleOnChange = ({ currentTarget }: React.ChangeEvent<HTMLInputElement>) => {
         setName(currentTarget.value);
     };
 
-    if (!isLoadUsers) return <WaveLoading />;
+    if (!isLoadUsers)
+        return (
+            <div className="p-4">
+                <WaveLoading />
+            </div>
+        );
 
     return (
         <>
             <SeoHead {...routers.community.header} />
             <div className="flex-1 p-4 space-y-4 chess-bg">
                 <div className="max-w-4xl mx-auto space-y-2 fade-in">
-                    <div className="flex rounded-sm bg-tuna py-2 px-1.5 space-x-2">
-                        <div className="grid place-items-center">
+                    <div className="relative flex rounded-sm bg-tuna ">
+                        <div className="grid items-center px-2">
                             <FindIcon />
                         </div>
                         <input
                             name="name"
-                            className="block w-full bg-transparent focus:outline-none text-mercury"
+                            className="block w-full py-2 bg-transparent focus:outline-none text-mercury"
                             placeholder="Name..."
                             onChange={handleOnChange}
                         />

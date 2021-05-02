@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { v4 as uuidv4 } from 'uuid';
 import { Server, SocketExtend } from 'socket.io';
@@ -23,6 +23,7 @@ import { TicTacToe } from './entity/ticTacToe.entity';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { TTTBotAction } from './ticTacToeBot.action';
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe-bot' })
 export class TicTacToeBotGateway {
@@ -63,6 +64,8 @@ export class TicTacToeBotGateway {
             ttt.id = uuidv4();
             const bot = this.ticTacToeBotService.getBotInfo();
             const board = new TicTacToeBoard(ttt);
+            board.currentTurn = true;
+            board.info.status = TicTacToeStatus['NOT-YET'];
             board.info.users = [client.user, bot];
             board.users[1].ready = true;
             board.users[1].id = uuidv4();
@@ -103,9 +106,9 @@ export class TicTacToeBotGateway {
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTBotAction.TTT_BOT_MOVE)
       async handleBotMoveMatch(
+            @MessageBody(new SocketJoiValidatorPipe(vAddMoveDto)) body: AddMoveDto,
             @ConnectedSocket()
             client: SocketExtend,
-            @MessageBody(new SocketJoiValidatorPipe(vAddMoveDto)) body: AddMoveDto,
       ) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isOwner(getCacheGame, client.user.id);
@@ -117,15 +120,17 @@ export class TicTacToeBotGateway {
             if (!isAddMove) throw ioResponse.sendError({ details: { message: { type: 'game.wrong-turn' } } }, 'BadRequestException');
 
             const getUpdateCacheGame = await this.getGameFromCache(body.roomId);
-
             const userMove = await this.ticTacToeBotService.findBestMove(getUpdateCacheGame.board, 0);
             const botMove = await this.ticTacToeBotService.findBestMove(getUpdateCacheGame.board, 1);
 
-            if (userMove.point >= botMove.point) await this.ticTacToeBotService.addMoveToBoardBot(body.roomId, userMove.x, userMove.y);
-            else await this.ticTacToeBotService.addMoveToBoardBot(body.roomId, botMove.x, botMove.y);
-
             const isWin = await this.ticTacToeService.isWin(body.roomId);
             if (isWin) this.socketServer().socketEmitToRoom(TTTBotAction.TTT_BOT_WIN, getCacheGame.info.id, {}, 'tic-tac-toe-bot');
+            else {
+                  if (userMove.point >= botMove.point) await this.ticTacToeBotService.addMoveToBoardBot(body.roomId, userMove.x, userMove.y);
+                  else await this.ticTacToeBotService.addMoveToBoardBot(body.roomId, botMove.x, botMove.y);
+            }
+            const checkWin = await this.ticTacToeService.isWin(body.roomId);
+            if (checkWin) this.socketServer().socketEmitToRoom(TTTBotAction.TTT_BOT_WIN, getCacheGame.info.id, {}, 'tic-tac-toe-bot');
 
             return this.socketServer().socketEmitToRoom(TTTBotAction.TTT_BOT_MOVE, getCacheGame.info.id, {}, 'tic-tac-toe-bot');
       }
@@ -140,15 +145,15 @@ export class TicTacToeBotGateway {
       ) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isOwner(getCacheGame, client.user.id);
-
             await this.ticTacToeCommonService.deleteBoard(body.roomId);
-
+            client.leave(`tic-tac-toe-bot-${getCacheGame.info.id}`);
             return this.socketServer().socketEmitToRoom(TTTBotAction.TTT_BOT_LEAVE, getCacheGame.info.id, { data: {} }, 'tic-tac-toe-bot');
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTBotAction.TTT_BOT_GET)
       async handleGetGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
+            console.log('send');
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isOwner(getCacheGame, client.user.id);
 

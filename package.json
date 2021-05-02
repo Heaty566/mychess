@@ -6,7 +6,7 @@
                 "test": "yarn run server:dev && cd server && yarn install && yarn run test",
                 "deploy": "yarn run docker-build && yarn run docker-push",
                 "docker-build": "yarn run docker-build:server && yarn run docker-build:client && yarn run docker-build:admin",
-                "docker-build:server": "cd server && docker build . -t heaty566/my-chess-server:latest",
+                "docker-build:server": "cd server && docker build . -t heaty566/my-chess-server:tai-be-ju",
                 "docker-build:client": "cd client && docker build . -t heaty566/my-chess-client:latest",
                 "docker-build:admin": "cd admin && docker build . -t heaty566/my-chess-admin:latest",
                 "docker-build:test": "cp ./data-dev/config/client.env ./client/config/.env.production && docker-compose -f docker-compose-build-test.yml up --build",

@@ -20,6 +20,15 @@
     background-size: cover;
 }
 
+.grid-cols-14 {
+    grid-template-columns: repeat(14, 1fr);
+}
+
+.ttt-board {
+    max-width: 560px;
+    max-height: 560px;
+}
+
 .chess-bg-2 {
     background: url('/asset/images/chess-board-2.jpg');
     background-repeat: no-repeat;

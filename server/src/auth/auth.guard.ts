@@ -16,13 +16,13 @@ export class UserGuard implements CanActivate {
       constructor(private authService: AuthService, private readonly reflector: Reflector) {}
 
       private async deleteAllAuthToken(res: Response) {
-            res.cookie('auth-token', '', { maxAge: 0 });
-            res.cookie('re-token', '', { maxAge: 0 });
+            res.cookie('auth-token', '', { maxAge: -999 });
+            res.cookie('re-token', '', { maxAge: -999 });
+            res.cookie('io-token', '', { maxAge: -999 });
       }
 
       private async getAuthToken(res: Response, reToken: string) {
             const authTokenId = await this.authService.getAuthTokenByReToken(reToken);
-
             if (!authTokenId) {
                   this.deleteAllAuthToken(res);
                   throw apiResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
@@ -52,7 +52,6 @@ export class UserGuard implements CanActivate {
                   if (!user) req.user = await this.getAuthToken(res, refreshToken);
                   else req.user = user;
             } else req.user = await this.getAuthToken(res, refreshToken);
-
             //checking isDisabled user
             if (req.user.isDisabled) {
                   this.deleteAllAuthToken(res);
