@@ -9,7 +9,7 @@ import * as I18n from 'i18n';
 
 import { NotFoundApiHandler } from './app/exception/notfound.exception';
 import { RuntimeApiHandler } from './app/exception/runtime.exception';
-import * as doc from './public/swagger.json';
+import * as doc from './app/public/swagger.json';
 
 I18n.configure({
       locales: ['en', 'vi'],

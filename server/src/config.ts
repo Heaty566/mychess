@@ -74,38 +74,38 @@ interface AuthControllerConfig {
        *@description time of cookie when user login
        *@example  1h = 60 * 60 * 1000
        */
-      loginCookieTime: number;
+      readonly loginCookieTime: number;
 
       /**
        *@description time of cookie when users register
        *@example  1h = 60 * 60 * 1000
        */
-      registerCookieTime: number;
+      readonly registerCookieTime: number;
 
       /**
        *@description time of cookie when users request a socket cookie
        *@example  1h = 60 * 60 * 1000
        */
-      socketCookieTime: number;
+      readonly socketCookieTime: number;
 
       //--------------------------------------------------------------
       /**
        *@description amount of time which users can request send otp by email until they has been blocked
        *@example  5 means users request otp 5 times
        */
-      OTPMailLimitTime: number;
+      readonly OTPMailLimitTime: number;
 
       /**
        *@description how long can user wait if users request a lot of otp with the same email
        *@example  30 means users can not request send new otp in 30 minutes
        */
-      OTPMailBlockTime: number;
+      readonly OTPMailBlockTime: number;
 
       /**
        *@description how long the email otp is invalid before removing from cache
        *@example  30 means users can not request send new otp in 30 minutes
        */
-      OTPMailValidTime: number;
+      readonly OTPMailValidTime: number;
       //--------------------------------------------------------------
 
       //--------------------------------------------------------------
@@ -113,38 +113,38 @@ interface AuthControllerConfig {
        *@description amount of time which user can request send otp by phone number until they has been blocked
        *@example  5 means users request otp 5 times
        */
-      OTPPhoneLimitTime: number;
+      readonly OTPPhoneLimitTime: number;
 
       /**
        *@description how long can user wait if users request a lot of otp with the same phone number
        *@description  30 means users can not request send new otp in 30 minutes
        */
-      OTPPhoneBlockTime: number;
+      readonly OTPPhoneBlockTime: number;
 
       /**
        *@description how long the phone otp is invalid before removing from cache
        *@example  30 means users can not request send new otp in 30 minutes
        */
-      OTPPhoneValidTime: number;
+      readonly OTPPhoneValidTime: number;
       //--------------------------------------------------------------
 
       /**
        *@description time of cookie when users login with google
        *@description  milliseconds 1h = 60 * 60 * 1000
        */
-      googleUserCookieTime: number;
+      readonly googleUserCookieTime: number;
 
       /**
        *@description time of cookie when users login with facebook
        *@description  milliseconds 1h = 60 * 60 * 1000
        */
-      facebookUserCookieTime: number;
+      readonly facebookUserCookieTime: number;
 
       /**
        *@description time of cookie when users login with github
        *@description  milliseconds 1h = 60 * 60 * 1000
        */
-      githubUserCookieTime: number;
+      readonly githubUserCookieTime: number;
 }
 
 interface UserControllerConfig {
@@ -153,13 +153,13 @@ interface UserControllerConfig {
        *@description limit size of avatar which user can upload
        *@example  1 means 1mb
        */
-      avatarLimitSize: number;
+      readonly avatarLimitSize: number;
 
       /**
        *@description extension of allow avatar which users can upload
        *@example  ['.jpeg', '.jpg', '.png', '.bmp']
        */
-      avatarAllowExtension: Array<string>;
+      readonly avatarAllowExtension: Array<string>;
       //--------------------------------------------------------------
 
       //--------------------------------------------------------------
@@ -167,19 +167,19 @@ interface UserControllerConfig {
        *@description amount of time which users can request send otp by email until they has been blocked
        *@example  5 means users request otp 5 times
        */
-      OTPMailLimitTime: number;
+      readonly OTPMailLimitTime: number;
 
       /**
        *@description how long can user wait if users request a lot of otp with the same email
        *@example  30 means users can not request send new otp in 30 minutes
        */
-      OTPMailBlockTime: number;
+      readonly OTPMailBlockTime: number;
 
       /**
        *@description how long the email otp is invalid before removing from cache
        *@example  30 means users can not request send new otp in 30 minutes
        */
-      OTPMailValidTime: number;
+      readonly OTPMailValidTime: number;
       //--------------------------------------------------------------
 
       //--------------------------------------------------------------
@@ -187,19 +187,19 @@ interface UserControllerConfig {
        *@description amount of time which user can request send otp by phone number until they has been blocked
        *@example  5 means users request otp 5 times
        */
-      OTPPhoneLimitTime: number;
+      readonly OTPPhoneLimitTime: number;
 
       /**
        *@description how long can user wait if users request a lot of otp with the same phone number
        *@description  30 means users can not request send new otp in 30 minutes
        */
-      OTPPhoneBlockTime: number;
+      readonly OTPPhoneBlockTime: number;
 
       /**
        *@description how long the phone otp is invalid before removing from cache
        *@example  30 means users can not request send new otp in 30 minutes
        */
-      OTPPhoneValidTime: number;
+      readonly OTPPhoneValidTime: number;
       //--------------------------------------------------------------
 }
 interface UserServiceConfig {
@@ -208,7 +208,7 @@ interface UserServiceConfig {
        *@description amount of time which user can request send otp by phone number until they has been blocked
        *@example  5 means users request otp 5 times
        */
-      avatarDefaultImages: Array<string>;
+      readonly avatarDefaultImages: Array<string>;
 
       //--------------------------------------------------------------
 }

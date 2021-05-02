@@ -5,7 +5,7 @@ import { ObjectSchema } from 'joi';
 import { LocalesService } from '../locales/locales.service';
 
 //---- Common
-import { apiResponse } from '../../app/interface/ApiResponse';
+import { apiResponse } from '../../app/interface/apiResponse';
 
 @Injectable()
 export class JoiValidatorPipe implements PipeTransform {
@@ -13,7 +13,7 @@ export class JoiValidatorPipe implements PipeTransform {
 
       transform(input: any) {
             const { error, value } = this.schema.validate(input, { abortEarly: false });
-            if (error) throw apiResponse.sendError({ body: { details: LocalesService.mapJoiError(error), message: { type: 'user.invalid-input' } } });
+            if (error) throw apiResponse.sendError({ details: LocalesService.mapJoiError(error) }, 'BadRequestException');
 
             return value;
       }

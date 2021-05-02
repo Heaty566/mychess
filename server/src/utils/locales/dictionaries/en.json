@@ -1,5 +1,6 @@
 {
       "user.auth-failed": "or password is not correct",
+      "user.not-found": "is not found",
       "user.field-taken": "is already exist",
       "user.request-many-time": "is requested too many times, please try again after {{time}} minutes",
       "user.not-allow-action": "is not allowed",
@@ -41,5 +42,14 @@
       "phone.internationalPhoneFormat": "should be the same format as {{country}}'s international phone number format",
       "": "",
       "phone.defaultPhoneFormat": "should be the same format as {#country}'s phone number",
-      "phone.bothPhoneFormat": "should be the {#country}'s phone number format or international phone number format"
+      "phone.bothPhoneFormat": "should be the {#country}'s phone number format or international phone number format",
+      "game.already-join": "you joined this game",
+      "game.full-player": "is full players",
+      "game.already-playing": "is playing",
+      "game.is-not-playing": "is already exist",
+      "game.wait-more-player": "please wait for another player",
+      "game.wait-ready-player": "please wait for another is ready",
+      "game.already-join-other": "you are playing another game",
+      "game.already-chose": "this cell is already picked",
+      "game.wrong-turn": "this is not your turn"
 }

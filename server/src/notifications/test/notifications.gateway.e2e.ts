@@ -1,7 +1,8 @@
 import { INestApplication } from '@nestjs/common';
+import { NotificationAction } from '../notifications.action';
 
 //---- Helper
-import { getIoClient } from '../../test/test.helper';
+import { getIoClient, fakeData } from '../../test/test.helper';
 import { initTestModule } from '../../test/initTest';
 
 //---- Entity
@@ -10,8 +11,11 @@ import { User } from '../../users/entities/user.entity';
 
 //---- Repository
 import { UserRepository } from '../../users/entities/user.repository';
+import { NotificationType } from '../entities/notification.type.enum';
+import { SendNotificationDto } from '../dto/sendNotificationDto';
+import { SocketServerResponse } from '../../app/interface/socketResponse';
 
-describe('ChatsGateway', () => {
+describe('NotificationsGateWay', () => {
       let app: INestApplication;
       const port = 5208;
       let client1: SocketIOClient.Socket;
@@ -49,50 +53,77 @@ describe('ChatsGateway', () => {
             await client2.disconnect();
       });
 
-      describe('connection-notification', () => {
+      describe(NotificationAction.NOTIFICATIONS_CONNECTION, () => {
             beforeEach(async () => {
                   await client1.connect();
             });
 
             it('Pass', async (done) => {
-                  client1.on('connection-notification-success', (data) => {
-                        expect(data).toBeNull();
+                  client1.on(NotificationAction.NOTIFICATIONS_CONNECTION, (data) => {
+                        expect(data).toBeDefined();
+                        expect(data.statusCode).toBe(200);
                         done();
                   });
-                  client1.emit('connection-notification', {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
             });
       });
 
-      describe('send-notification', () => {
+      describe(NotificationAction.NOTIFICATIONS_SEND, () => {
             beforeEach(async () => {
                   await client1.connect();
                   await client2.connect();
             });
+
             it('Pass', async (done) => {
-                  client1.on('new-notification', () => {
-                        expect(1 + 1).toBeUndefined();
-                  });
-                  client1.on('send-notification', async () => {
-                        const getUser = await userRepository
+                  const input: SendNotificationDto = {
+                        notificationType: NotificationType.CONNECT,
+                        receiver: user2.id,
+                        link: '/',
+                  };
+
+                  client2.on(NotificationAction.NOTIFICATIONS_NEW, async (data) => {
+                        const result = await userRepository
                               .createQueryBuilder('user')
                               .leftJoinAndSelect('user.notifications', 'notification')
-                              .where('user.id = :id', { id: user2.id })
+                              .where(`user.id = :id`, { id: user2.id })
                               .getOne();
-                        expect(getUser.notifications.length).toBeGreaterThanOrEqual(1);
+
+                        expect(result.notifications[0].sender).toEqual(user1.id);
+                        expect(data.statusCode).toBe(200);
                         done();
                   });
-                  client2.on('new-notification', (data) => {
-                        expect(data).toBeDefined();
+
+                  client1.on(NotificationAction.NOTIFICATIONS_SEND, (data) => {
+                        expect(data.statusCode).toBe(200);
                   });
-                  client2.emit('connection-notification', {});
-                  client1.emit('send-notification', { userId: user2.id });
+
+                  client2.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, input);
+            });
+
+            it('Failed (user-not-found)', async (done) => {
+                  const input: SendNotificationDto = {
+                        notificationType: NotificationType.CONNECT,
+                        receiver: fakeData(10, 'lettersAndNumbers'),
+                        link: '/',
+                  };
+
+                  client1.on('exception', (data: SocketServerResponse<null>) => {
+                        expect(data).toBeDefined();
+                        expect(data.details).toBeDefined();
+                        expect(data.statusCode).toBe(404);
+                        done();
+                  });
+
+                  client2.emit(NotificationAction.NOTIFICATIONS_CONNECTION, {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_SEND, input);
             });
       });
 
-      describe('update-notifications', () => {
+      describe(NotificationAction.NOTIFICATIONS_GET, () => {
             beforeAll(async () => {
-                  const notification1 = new Notification();
-                  const notification2 = new Notification();
+                  const notification1 = new Notification(NotificationType.CONNECT, user2.id);
+                  const notification2 = new Notification(NotificationType.CONNECT, user2.id);
 
                   user1.notifications = [notification1, notification2];
                   await userRepository.save(user1);
@@ -103,11 +134,11 @@ describe('ChatsGateway', () => {
             });
 
             it('Pass', async (done) => {
-                  client1.on('update-notifications-success', (data) => {
+                  client1.on(NotificationAction.NOTIFICATIONS_GET, (data) => {
                         expect(data).toHaveLength(2);
                         done();
                   });
-                  client1.emit('update-notifications', {});
+                  client1.emit(NotificationAction.NOTIFICATIONS_GET, {});
             });
       });
 
