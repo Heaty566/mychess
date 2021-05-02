@@ -8,6 +8,7 @@ import { TicTacToeFlag } from './ticTacToe.interface';
 export class TicTacToeMove {
       @PrimaryGeneratedColumn('uuid')
       id: string;
+
       @Column()
       x: number;
 
