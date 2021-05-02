@@ -5,6 +5,11 @@ import User from '../../users/entities/user.entity';
 
 @Entity()
 export class Notification {
+      constructor(notificationType: string, sender: string) {
+            this.notificationType = notificationType;
+            this.sender = sender;
+      }
+
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
@@ -19,6 +24,9 @@ export class Notification {
 
       @Column({ default: null })
       notificationType: string;
+
+      @Column({ default: null })
+      sender: string;
 
       @ManyToOne(() => User, (user) => user.notifications)
       receiver: User;
