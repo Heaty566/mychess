@@ -61,33 +61,6 @@ describe('TicTacToeGateway ', () => {
             jest.spyOn(ticTacToeGateWay.server, 'to').mockImplementation().mockReturnThis();
       });
 
-      describe(`${TTTAction.TTT_CONNECT}`, () => {
-            let client: SocketIOClient.Socket;
-
-            let user2: User;
-
-            beforeEach(async () => {
-                  user2 = await createFakeUser();
-
-                  const socketToken = await authService.getSocketToken(user2);
-                  client = await getIoClient(port, 'tic-tac-toe', socketToken);
-                  await client.connect();
-            });
-
-            afterEach(async () => {
-                  client.disconnect();
-            });
-
-            it('Pass ', async (done) => {
-                  client.on(TTTAction.TTT_CONNECT, (data: SocketServerResponse<null>) => {
-                        expect(data.statusCode).toBe(200);
-                        done();
-                  });
-
-                  client.emit(TTTAction.TTT_CONNECT, {});
-            });
-      });
-
       describe(`${TTTAction.TTT_CREATE}`, () => {
             let client3: SocketIOClient.Socket;
             let user: User;

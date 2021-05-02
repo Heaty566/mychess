@@ -1,10 +1,12 @@
-import { Injectable, PipeTransform } from '@nestjs/common';
+import { Injectable, PipeTransform, UseFilters } from '@nestjs/common';
+import { ConnectedSocket } from '@nestjs/websockets';
 import { ObjectSchema } from 'joi';
 import { ioResponse } from '../../app/interface/socketResponse';
 
 //---- Common
 
 @Injectable()
+// @UseFilters(new AllExceptionsFilter())
 export class SocketJoiValidatorPipe implements PipeTransform {
       constructor(private readonly schema: ObjectSchema) {}
 

@@ -13,12 +13,10 @@ import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 //---- Service
 import { TicTacToeService } from '../ticTacToe.service';
 import { AuthService } from '../../auth/auth.service';
-import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 
 //---- Repository
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
-import { UserRepository } from '../../users/entities/user.repository';
 
 //---- Dto
 import { RoomIdDTO } from '../dto/roomIdDto';
@@ -36,13 +34,12 @@ describe('TicTacToeBotGateway ', () => {
       const port = 3212;
       let authService: AuthService;
       let ticTacToeRepository: TicTacToeRepository;
-      let userRepository: UserRepository;
       let resetDB: any;
       let ticTacToeBotGateWay: TicTacToeBotGateway;
       let createFakeUser: () => Promise<User>;
       let ticTacToeService: TicTacToeService;
       let ticTacToeCommonService: TicTacToeCommonService;
-      let redisService: RedisService;
+
       beforeAll(async () => {
             const { configModule, resetDatabase, getFakeUser } = await initTestModule();
             app = configModule;
@@ -50,8 +47,7 @@ describe('TicTacToeBotGateway ', () => {
             resetDB = resetDatabase;
             await app.listen(port);
             ticTacToeRepository = app.get<TicTacToeRepository>(TicTacToeRepository);
-            userRepository = app.get<UserRepository>(UserRepository);
-            redisService = app.get<RedisService>(RedisService);
+
             authService = app.get<AuthService>(AuthService);
             ticTacToeBotGateWay = app.get<TicTacToeBotGateway>(TicTacToeBotGateway);
             ticTacToeService = app.get<TicTacToeService>(TicTacToeService);
@@ -60,37 +56,6 @@ describe('TicTacToeBotGateway ', () => {
             jest.spyOn(ticTacToeBotGateWay.server, 'to').mockImplementation().mockReturnThis();
       });
 
-      describe(`${TTTBotAction.TTT_BOT_CONNECT}`, () => {
-            let client: SocketIOClient.Socket;
-
-            let user2: User;
-
-            beforeEach(async () => {
-                  user2 = await createFakeUser();
-
-                  const socketToken = await authService.getSocketToken(user2);
-                  client = await getIoClient(port, 'tic-tac-toe-bot', socketToken);
-                  await client.connect();
-            });
-
-            afterEach(async () => {
-                  client.disconnect();
-            });
-
-            it('Pass ', async (done) => {
-                  client.on('test-join', () => {
-                        done();
-                  });
-
-                  client.on(TTTBotAction.TTT_BOT_CONNECT, (data: SocketServerResponse<null>) => {
-                        ticTacToeBotGateWay.server.to(`user-${user2.id}`).emit('test-join');
-                        expect(data.statusCode).toBe(200);
-                        done();
-                  });
-
-                  client.emit(TTTBotAction.TTT_BOT_CONNECT, {});
-            });
-      });
       describe(`${TTTBotAction.TTT_BOT_GET}`, () => {
             let client: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;

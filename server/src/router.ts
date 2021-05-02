@@ -10,6 +10,7 @@ import * as I18n from 'i18n';
 import { NotFoundApiHandler } from './app/exception/notfound.exception';
 import { RuntimeApiHandler } from './app/exception/runtime.exception';
 import * as doc from './app/public/swagger.json';
+import { SocketExceptionsFilter } from './app/exception/socket.exception';
 
 I18n.configure({
       locales: ['en', 'vi'],
@@ -29,6 +30,11 @@ export function router(app: INestApplication) {
       app.setGlobalPrefix('/api');
       app.use(cookieParser());
       app.enableCors({ origin: [process.env.CLIENT_URL, process.env.ADMIN_URL], credentials: true });
+
+      //global filter
+      if (process.env.NODE_ENV !== 'test') {
+            app.useGlobalFilters(new SocketExceptionsFilter());
+      }
 
       //for production
       if (process.env.NODE_ENV === 'production') {

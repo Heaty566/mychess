@@ -5,5 +5,4 @@ export enum TTTBotAction {
       TTT_BOT_LEAVE = 'ttt-bot-leave',
       TTT_BOT_GET = 'ttt-bot-get',
       TTT_BOT_WIN = 'ttt-bot-win',
-      TTT_BOT_CONNECT = 'connect-user',
 }

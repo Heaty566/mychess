@@ -38,11 +38,11 @@ const TicTacToeBot: React.FunctionComponent<TicTacToeBotProps> = () => {
 
     const handleoo = () => {
         console.log('hello');
-        clientTTTBot.emit('ttt-bot-get', { roomId: '21321' });
+        clientTTTBot.emit('ttt-bot-get', { roomId: '123' });
     };
 
     return (
-        <AutoSocketUser namespace="tic-tac-toe-bot">
+        <AutoSocketUser ioConnect={clientTTTBot}>
             <div>
                 <button onClick={() => handleoo()}>hello</button>
                 <div className="grid ttt-cells-14">
