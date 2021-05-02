@@ -13,6 +13,7 @@ import { store, RootState } from './store';
 import { getUserInfo } from './store/auth/action';
 
 import { Redirect, Route, Switch } from 'react-router-dom';
+import Admin from './containers/admin';
 import RouterHOC from './HOC/routerHOC';
 import AuthRouter from './HOC/authRouter';
 
@@ -29,6 +30,7 @@ function App() {
                     <AuthRouter path={'/login'} Component={Login} />
                     <AuthRouter path={'/register'} Component={Register} />
                     <RouterHOC path="/information" Component={Information} redirectTo="./login" />
+                    <RouterHOC path="/admin" Component={Admin} redirectTo="./login" role="ADMIN" />
                 </Switch>
             </Layout>
         </div>

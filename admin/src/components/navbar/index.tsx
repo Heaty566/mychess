@@ -41,6 +41,9 @@ const Navbar: React.FunctionComponent<NavbarProps> = () => {
                         <Menu.Item key="4">
                             <div onClick={() => logout()}>Logout</div>
                         </Menu.Item>
+                        <Menu.Item key="5">
+                            <Link to="/admin">Admin</Link>
+                        </Menu.Item>
                     </React.Fragment>
                 )}
             </Menu>

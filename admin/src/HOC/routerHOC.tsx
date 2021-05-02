@@ -12,9 +12,10 @@ export interface UserRouterProps {
     Component: React.FunctionComponent;
     path: string;
     redirectTo: string;
+    role?: 'USER' | 'ADMIN';
 }
 
-const UserRouter: React.FunctionComponent<UserRouterProps> = ({ Component, path, redirectTo }) => {
+const UserRouter: React.FunctionComponent<UserRouterProps> = ({ Component, path, redirectTo, role = 'USER' }) => {
     const authState = useSelector<RootState, IAuthState>((state) => state.auth);
     const apiState = useSelector<RootState, IApiState>((state) => state.api);
     const [isGetUser, setIsGetUser] = React.useState(false);
@@ -26,10 +27,8 @@ const UserRouter: React.FunctionComponent<UserRouterProps> = ({ Component, path,
 
     const test = React.useMemo(() => {
         if (!isGetUser) {
-            console.log('1');
             return <Redirect push to={redirectTo} />;
         }
-        console.log('2');
         return <Component />;
     }, [isGetUser]);
 
