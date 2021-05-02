@@ -9,7 +9,11 @@ export class NotificationsService {
       constructor(private readonly notificationRepository: NotificationRepository) {}
 
       async getNotificationByUserId(userId: string) {
-            return await this.notificationRepository.createQueryBuilder().select('*').where('userId = :userId', { userId }).execute();
+            return await this.notificationRepository
+                  .createQueryBuilder('noti')
+                  .leftJoinAndSelect('noti.receiver', 'user')
+                  .where('user.id = :userId', { userId })
+                  .execute();
       }
 
       async saveNotification(input: NotificationConnectType): Promise<NotificationConnectType> {
