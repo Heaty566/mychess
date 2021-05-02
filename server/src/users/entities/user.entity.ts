@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 //---- Entity
 import { Notification } from '../../notifications/entities/notification.entity';
 import { UserRole } from './user.userRole.enum';
+import { Chess } from '../../chess/entity/chess.entity';
 
 @Entity()
 export class User {
@@ -50,6 +51,12 @@ export class User {
 
       @OneToMany(() => Notification, (notification) => notification.receiver, { cascade: true })
       notifications: Notification[];
+
+      @OneToMany(() => Chess, (chess) => chess.whiteUser, { cascade: true })
+      whiteChesses: Chess[];
+
+      @OneToMany(() => Chess, (chess) => chess.blackUser, { cascade: true })
+      blackChesses: Chess[];
 }
 
 export default User;
