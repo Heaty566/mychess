@@ -11,7 +11,18 @@ export class TicTacToeRepository extends RepositoryService<TicTacToe> {
       async getManyTTTByField(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('tic')
                   .leftJoinAndSelect('tic.users', 'user')
-                  .select(['tic.id', 'tic.status', 'tic.winner', 'tic.startDate', 'tic.endDate', 'user.id', 'user.name', 'user.username', 'user.elo'])
+                  .select([
+                        'tic.id',
+                        'tic.status',
+                        'tic.winner',
+                        'tic.startDate',
+                        'tic.endDate',
+                        'user.id',
+                        'user.name',
+                        'user.username',
+                        'user.elo',
+                        'user.avatarUrl',
+                  ])
                   .leftJoinAndSelect('tic.moves', 'tic-tac-toe-move')
                   .where(where, parameters)
                   .getMany();
@@ -22,7 +33,18 @@ export class TicTacToeRepository extends RepositoryService<TicTacToe> {
       async getOneTTTByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('tic')
                   .leftJoinAndSelect('tic.users', 'user')
-                  .select(['tic.id', 'tic.status', 'tic.winner', 'tic.startDate', 'tic.endDate', 'user.id', 'user.name', 'user.username', 'user.elo'])
+                  .select([
+                        'tic.id',
+                        'tic.status',
+                        'tic.winner',
+                        'tic.startDate',
+                        'tic.endDate',
+                        'user.id',
+                        'user.name',
+                        'user.username',
+                        'user.elo',
+                        'user.avatarUrl',
+                  ])
                   .leftJoinAndSelect('tic.moves', 'tic-tac-toe-move')
                   .where(where, parameters)
                   .getOne();

@@ -153,7 +153,6 @@ export class TicTacToeBotGateway {
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTBotAction.TTT_BOT_GET)
       async handleGetGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
-            console.log('send');
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isOwner(getCacheGame, client.user.id);
 

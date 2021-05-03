@@ -52,13 +52,17 @@ export class TicTacToeService {
 
       async joinGame(boardId: string, user: User) {
             const board = await this.ticTacToeCommonService.getBoard(boardId);
-
             if (!board) return false;
+
             const userIds = board.users.map((item) => item.id);
             if (!userIds.includes(user.id) && (!board.users[0].id || !board.users[1].id)) {
                   if (!board.users[0].id) {
                         board.users[0].id = user.id;
-                  } else board.users[1].id = user.id;
+                        board.info.users[0] = user;
+                  } else {
+                        board.users[1].id = user.id;
+                        board.info.users[1] = user;
+                  }
             } else return false;
 
             await this.ticTacToeCommonService.setBoard(boardId, board);
@@ -72,8 +76,13 @@ export class TicTacToeService {
 
             if (userIds.includes(user.id)) {
                   if (board.users[0].id === user.id) {
-                        board.users[0].id = null;
-                  } else board.users[1].id = null;
+                        board.users[0].id = board.users[1].id;
+                        board.users[1].id = null;
+                        board.info.users.shift();
+                  } else {
+                        board.users[1].id = null;
+                        board.info.users.pop();
+                  }
             } else return false;
 
             board.users[0].ready = false;
@@ -82,7 +91,10 @@ export class TicTacToeService {
             if (!board.users[0].id && !board.users[1].id) {
                   await this.ticTacToeCommonService.deleteBoard(boardId);
                   await this.ticTacToeRepository.createQueryBuilder().delete().where('id = :id', { id: board.info.id }).execute();
-            } else await this.ticTacToeCommonService.setBoard(boardId, board);
+            } else {
+                  await this.ticTacToeCommonService.saveTicTacToe(board.info);
+                  await this.ticTacToeCommonService.setBoard(boardId, board);
+            }
             return true;
       }
 

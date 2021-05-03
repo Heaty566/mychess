@@ -10,6 +10,19 @@ export enum TTTBotAction {
     TTT_BOT_GET = 'ttt-bot-get',
     TTT_BOT_WIN = 'ttt-bot-win',
 }
+
+export enum TTTAction {
+    TTT_JOIN = 'ttt-join',
+    TTT_CREATE = 'ttt-create',
+    TTT_GET = 'ttt-get',
+    TTT_READY = 'ttt-ready',
+    TTT_START = 'ttt-start',
+    TTT_LEAVE = 'ttt-leave',
+    TTT_SURRENDER = 'ttt-surrender',
+    TTT_ADD_MOVE = 'ttt-add-move',
+    TTT_WIN = 'ttt-win',
+}
+
 export enum TicTacToeStatus {
     'NOT-YET' = '-1',
     'END' = '0',
@@ -36,8 +49,4 @@ export interface TicTacToeBoard {
     currentTurn: boolean;
     users: [TicTacToePlayer, TicTacToePlayer];
     info: TicTacToe;
-}
-
-export interface RoomIdDto {
-    roomId: string;
 }

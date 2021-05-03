@@ -48,19 +48,21 @@ export class TicTacToeGateway {
             if (!isOwner) throw ioResponse.sendError({ details: { roomId: { type: 'user.auth-failed' } } }, 'UnauthorizedException');
       }
 
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage(TTTAction.TTT_CREATE)
-      async handleCreateMatch(@ConnectedSocket() client: SocketExtend) {
-            await this.isPlaying(client.user.id);
+      // @UseGuards(UserSocketGuard)
+      // @SubscribeMessage(TTTAction.TTT_CREATE)
+      // async handleCreateMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
+      //       const getCacheGame = await this.getGameFromCache(body.roomId);
+      //       await this.isPlaying(client.user.id);
+      //       this.isOwner(getCacheGame, client.user.id);
 
-            const newGameId = await this.ticTacToeCommonService.createNewGame(client.user);
-            await this.ticTacToeService.loadGameToCache(newGameId);
-            await client.join(`tic-tac-toe-${newGameId}`);
+      //       const newGameId = await this.ticTacToeCommonService.createNewGame(client.user);
+      //       await this.ticTacToeService.loadGameToCache(newGameId);
+      //       await client.join(`tic-tac-toe-${newGameId}`);
 
-            await this.ticTacToeService.joinGame(newGameId, client.user);
+      //       await this.ticTacToeService.joinGame(newGameId, client.user);
 
-            return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_CREATE, newGameId, { data: { roomId: newGameId } }, 'tic-tac-toe');
-      }
+      //       return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_CREATE, newGameId, { data: { roomId: newGameId } }, 'tic-tac-toe');
+      // }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_JOIN)
@@ -73,24 +75,18 @@ export class TicTacToeGateway {
 
             if (getCacheGame.info.status !== TicTacToeStatus['NOT-YET'])
                   throw ioResponse.sendError({ details: { message: { type: 'game.already-playing' } } }, 'BadRequestException');
-
             const getRoom = await this.ticTacToeCommonService.getOneMatchByFiled('tic.id = :roomId', { roomId: body.roomId });
             if (!getRoom) throw ioResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
 
-            getRoom.users.push(client.user);
+            const isExistUser = getRoom.users.find((item) => item.id === client.user.id);
+            if (!isExistUser) getRoom.users.push(client.user);
+
             const updateTTT = await this.ticTacToeCommonService.saveTicTacToe(getRoom);
 
             const isJoin = await this.ticTacToeService.joinGame(updateTTT.id, client.user);
-            if (!isJoin)
-                  return this.socketServer().socketEmitToRoomError(
-                        'BadRequestException',
-                        client.user.id,
-                        {
-                              details: { message: { type: 'game.already-join' } },
-                        },
-                        'user',
-                  );
+            if (!isJoin) throw ioResponse.sendError({ details: { message: { type: 'game.already-join' } } }, 'BadRequestException');
 
+            await client.join(`tic-tac-toe-${getCacheGame.info.id}`);
             return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_JOIN, getCacheGame.info.id, {}, 'tic-tac-toe');
       }
 
@@ -106,9 +102,7 @@ export class TicTacToeGateway {
       @SubscribeMessage(TTTAction.TTT_READY)
       async handleReadyGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
-
             this.isOwner(getCacheGame, client.user.id);
-
             const isReady = await this.ticTacToeService.toggleReadyStatePlayer(body.roomId, client.user);
             if (!isReady) throw ioResponse.sendError({ details: { message: { type: 'game.wait-more-player' } } }, 'BadRequestException');
 

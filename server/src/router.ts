@@ -32,9 +32,7 @@ export function router(app: INestApplication) {
       app.enableCors({ origin: [process.env.CLIENT_URL, process.env.ADMIN_URL], credentials: true });
 
       //global filter
-      if (process.env.NODE_ENV !== 'test') {
-            app.useGlobalFilters(new SocketExceptionsFilter());
-      }
+      app.useGlobalFilters(new SocketExceptionsFilter());
 
       //for production
       if (process.env.NODE_ENV === 'production') {

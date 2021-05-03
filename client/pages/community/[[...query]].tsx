@@ -55,57 +55,56 @@ const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
         setName(currentTarget.value);
     };
 
-    if (!isLoadUsers)
-        return (
-            <div className="p-4">
-                <WaveLoading />
-            </div>
-        );
+    // if (!isLoadUsers) return <div className="p-4"></div>;
 
     return (
         <>
             <SeoHead {...routers.community.header} />
             <div className="flex-1 p-4 space-y-4 chess-bg">
-                <div className="max-w-4xl mx-auto space-y-2 fade-in">
-                    <div className="relative flex rounded-sm bg-tuna ">
-                        <div className="grid items-center px-2">
-                            <FindIcon />
+                {isLoadUsers ? (
+                    <div className="max-w-4xl mx-auto space-y-2 fade-in">
+                        <div className="relative flex rounded-sm bg-tuna ">
+                            <div className="grid items-center px-2">
+                                <FindIcon />
+                            </div>
+                            <input
+                                name="name"
+                                className="block w-full py-2 bg-transparent focus:outline-none text-mercury"
+                                placeholder="Name..."
+                                onChange={handleOnChange}
+                            />
                         </div>
-                        <input
-                            name="name"
-                            className="block w-full py-2 bg-transparent focus:outline-none text-mercury"
-                            placeholder="Name..."
-                            onChange={handleOnChange}
-                        />
-                    </div>
-                    {Boolean(users.length) ? (
-                        users.map((item) => {
-                            return (
-                                <Link href={routers.userProfile.link + '/' + item.id} key={item.id}>
-                                    <a
-                                        href={routers.userProfile.link + '/' + item.id}
-                                        className="flex justify-between px-4 py-2 duration-300 transform shadow-md cursor-pointer background-profile hover:scale-105"
-                                    >
-                                        <div className="flex space-x-4 ">
-                                            <img src={item.avatarUrl} alt={item.name} className="object-cover w-12 h-12" />
+                        {Boolean(users.length) ? (
+                            users.map((item) => {
+                                return (
+                                    <Link href={routers.userProfile.link + '/' + item.id} key={item.id}>
+                                        <a
+                                            href={routers.userProfile.link + '/' + item.id}
+                                            className="flex justify-between px-4 py-2 duration-300 transform shadow-md cursor-pointer background-profile hover:scale-105"
+                                        >
+                                            <div className="flex space-x-4 ">
+                                                <img src={item.avatarUrl} alt={item.name} className="object-cover w-12 h-12" />
 
-                                            <div>
-                                                <h1 className="text-base text-white capitalize md:text-4xl">{item.name}</h1>
-                                                <h3 className="text-sm capitalize md:text-lg text-cloud-700">{item.username}</h3>
+                                                <div>
+                                                    <h1 className="text-base text-white capitalize md:text-4xl">{item.name}</h1>
+                                                    <h3 className="text-sm capitalize md:text-lg text-cloud-700">{item.username}</h3>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <h3 className="text-lg text-cloud">ELO: {item.elo}</h3>
-                                    </a>
-                                </Link>
-                            );
-                        })
-                    ) : (
-                        <div>
-                            <div className="my-20 text-4xl text-center text-mercury">User Was Not Found</div>
-                        </div>
-                    )}
-                    <Pagination amount={5} currentPage={query.currentPage} />
-                </div>
+                                            <h3 className="text-lg text-cloud">ELO: {item.elo}</h3>
+                                        </a>
+                                    </Link>
+                                );
+                            })
+                        ) : (
+                            <div>
+                                <div className="my-20 text-4xl text-center text-mercury">User Was Not Found</div>
+                            </div>
+                        )}
+                        <Pagination amount={5} currentPage={query.currentPage} />
+                    </div>
+                ) : (
+                    <WaveLoading />
+                )}
             </div>
         </>
     );

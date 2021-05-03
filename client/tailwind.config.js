@@ -95,7 +95,11 @@ module.exports = {
             ...theme.backgroundImage,
             'btn-1': '  linear-gradient( to right, #47bfff 5%, #1a44c2 60%);',
         },
-
+        gridTemplateColumns: {
+            ...theme.gridTemplateColumns,
+            14: 'repeat(14, minmax(0, 1fr))',
+            '14-ttt': 'repeat(14, minmax(40px, 1fr))',
+        },
         boxShadow: {
             ...theme.boxShadow,
             menu: '0 0 12px #000000',

@@ -20,10 +20,6 @@
     background-size: cover;
 }
 
-.grid-cols-14 {
-    grid-template-columns: repeat(14, 1fr);
-}
-
 .ttt-board {
     max-width: 560px;
     max-height: 560px;
