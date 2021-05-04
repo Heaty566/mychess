@@ -1,18 +1,26 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 
 //---- Entity
 import User from '../../users/entities/user.entity';
+import { ChessStatus } from './chess.interface';
 
 @Entity()
 export class Chess {
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
-      @ManyToOne(() => User, (user) => user.whiteChesses)
-      whiteUser: User;
+      @Column({ default: ChessStatus['NOT-YET'] })
+      status: ChessStatus;
 
-      @ManyToOne(() => User, (user) => user.blackChesses)
-      blackUser: User;
+      @ManyToMany(() => User)
+      @JoinTable()
+      users: User[];
+
+      @Column({ default: null })
+      whiteUser: string;
+
+      @Column({ default: null })
+      blackUser: string;
 
       @Column()
       winner: string;
