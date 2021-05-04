@@ -21,6 +21,8 @@ import { SendNotificationDto, vSendNotificationDto } from './dto/sendNotificatio
 import { NotificationAction } from './notifications.action';
 import { NotificationType } from './entities/notification.type.enum';
 import { NotificationContent } from './entities/notification.content.enum';
+// import { NotificationAddFriendType } from './entities/notificationAddFriendType.entity';
+import { ioResponse } from '../app/interface/socketResponse';
 
 @WebSocketGateway({ namespace: 'notifications' })
 export class NotificationsGateway {
@@ -28,53 +30,45 @@ export class NotificationsGateway {
       @WebSocketServer()
       server: Server;
 
+      private emitOtherUser(userId: string, action: string, data: any) {
+            this.server.to('notifications-' + userId).emit(action, data);
+      }
+
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(NotificationAction.NOTIFICATIONS_CONNECTION)
-      handleInitNotification(@ConnectedSocket() client: SocketExtend): WsResponse<null> {
-            if (client.user) {
-                  client.join(client.user.id);
-            }
-
-            return { event: NotificationAction.NOTIFICATIONS_CONNECTION, data: null };
+      handleInitNotification(@ConnectedSocket() client: SocketExtend) {
+            client.join('notifications-' + client.user.id);
+            return ioResponse.send(NotificationAction.NOTIFICATIONS_CONNECTION, {});
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(NotificationAction.NOTIFICATIONS_SEND)
-      async sendRequest(
-            @ConnectedSocket() client: SocketExtend,
-            @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto,
-      ): Promise<WsResponse<any>> {
+      async sendRequest(@ConnectedSocket() client: SocketExtend, @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto) {
             const receiverUser = await this.userService.findOneUserByField('id', data.receiver);
+            if (!receiverUser) throw ioResponse.sendError({ message: { type: 'user.not-found' } }, 'NotFoundException');
 
-            if (receiverUser) {
-                  const newNotification = new Notification();
-                  let notificationObjectType;
+            const newNotification = new Notification(data.notificationType, client.user.id);
+            let notificationObjectType;
 
-                  switch (data.notificationType) {
-                        case NotificationType.ADD_FRIEND:
-                              newNotification.notificationType = NotificationType.ADD_FRIEND;
-
-                              notificationObjectType = new NotificationConnectType();
-                              notificationObjectType.link = data.link;
-                              notificationObjectType.content = NotificationContent.ADD_FRIEND_CONTENT;
-
-                              newNotification.objectTypeId = notificationObjectType.id;
-                  }
-
-                  receiverUser.notifications = [newNotification];
-                  await this.userService.saveUser(receiverUser);
-                  await this.notificationsService.saveNotification(notificationObjectType);
-
-                  this.server.to(receiverUser.id).emit(NotificationAction.NOTIFICATIONS_NEW, {});
-                  return { event: NotificationAction.NOTIFICATIONS_SEND, data: { message: 'ok' } };
+            switch (data.notificationType) {
+                  case NotificationType.CONNECT:
+                        notificationObjectType = new NotificationConnectType(data.link, NotificationContent.CONNECT_CONTENT);
             }
+
+            newNotification.objectTypeId = notificationObjectType.id;
+            receiverUser.notifications = [newNotification];
+            await this.userService.saveUser(receiverUser);
+            await this.notificationsService.saveNotification(notificationObjectType);
+
+            this.emitOtherUser(receiverUser.id, NotificationAction.NOTIFICATIONS_NEW, ioResponse.mapData({}));
+            return ioResponse.send(NotificationAction.NOTIFICATIONS_SEND, {});
       }
 
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(NotificationAction.NOTIFICATIONS_REFRESH)
+      @SubscribeMessage(NotificationAction.NOTIFICATIONS_GET)
       async getNotifications(@ConnectedSocket() client: SocketExtend): Promise<WsResponse<any>> {
             const notifications = await this.notificationsService.getNotificationByUserId(client.user.id);
 
-            return { event: NotificationAction.NOTIFICATIONS_REFRESH, data: notifications };
+            return { event: NotificationAction.NOTIFICATIONS_GET, data: notifications };
       }
 }
