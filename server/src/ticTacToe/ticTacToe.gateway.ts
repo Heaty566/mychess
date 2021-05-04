@@ -21,15 +21,25 @@ import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { TTTAction } from './ticTacToe.action';
+import { TicTacToeBotService } from './ticTacToeBot.service';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {
-      constructor(private readonly ticTacToeCommonService: TicTacToeCommonService, private readonly ticTacToeService: TicTacToeService) {}
+      constructor(
+            private readonly ticTacToeCommonService: TicTacToeCommonService,
+            private readonly ticTacToeService: TicTacToeService,
+            private readonly ticTacToeBotService: TicTacToeBotService,
+      ) {}
 
       @WebSocketServer()
       server: Server;
 
       socketServer = () => ioResponse.getSocketServer(this.server);
+
+      async sendToRoom(getCacheGame: TicTacToeBoard) {
+            const board = await this.ticTacToeCommonService.getBoard(getCacheGame.id);
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_GET, getCacheGame.id, { data: board }, 'ttt');
+      }
 
       private async isPlaying(userId: string) {
             const isPlaying = await this.ticTacToeCommonService.isPlaying(userId);
@@ -43,82 +53,65 @@ export class TicTacToeGateway {
             return game;
       }
 
-      private isOwner(game: TicTacToeBoard, userId: string) {
-            const isOwner = game.users.find((item) => item.id === userId);
-            if (!isOwner) throw ioResponse.sendError({ details: { roomId: { type: 'user.auth-failed' } } }, 'UnauthorizedException');
+      private isExistUser(board: TicTacToeBoard, userId: string) {
+            const getUser = this.ticTacToeCommonService.isExistUser(board, userId);
+            if (!getUser) throw ioResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
       }
-
-      // @UseGuards(UserSocketGuard)
-      // @SubscribeMessage(TTTAction.TTT_CREATE)
-      // async handleCreateMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
-      //       const getCacheGame = await this.getGameFromCache(body.roomId);
-      //       await this.isPlaying(client.user.id);
-      //       this.isOwner(getCacheGame, client.user.id);
-
-      //       const newGameId = await this.ticTacToeCommonService.createNewGame(client.user);
-      //       await this.ticTacToeService.loadGameToCache(newGameId);
-      //       await client.join(`tic-tac-toe-${newGameId}`);
-
-      //       await this.ticTacToeService.joinGame(newGameId, client.user);
-
-      //       return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_CREATE, newGameId, { data: { roomId: newGameId } }, 'tic-tac-toe');
-      // }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_JOIN)
       async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
-            await this.isPlaying(client.user.id);
-            const getCacheGame = await this.getGameFromCache(body.roomId);
+            const board = await this.getGameFromCache(body.roomId);
+            if (!board) throw ioResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
 
-            if (getCacheGame.info.users.length >= 2)
-                  throw ioResponse.sendError({ details: { message: { type: 'game.full-player' } } }, 'BadRequestException');
-
-            if (getCacheGame.info.status !== TicTacToeStatus['NOT-YET'])
-                  throw ioResponse.sendError({ details: { message: { type: 'game.already-playing' } } }, 'BadRequestException');
-            const getRoom = await this.ticTacToeCommonService.getOneMatchByFiled('tic.id = :roomId', { roomId: body.roomId });
-            if (!getRoom) throw ioResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
-
-            const isExistUser = getRoom.users.find((item) => item.id === client.user.id);
-            if (!isExistUser) getRoom.users.push(client.user);
-
-            const updateTTT = await this.ticTacToeCommonService.saveTicTacToe(getRoom);
-
-            const isJoin = await this.ticTacToeService.joinGame(updateTTT.id, client.user);
-            if (!isJoin) throw ioResponse.sendError({ details: { message: { type: 'game.already-join' } } }, 'BadRequestException');
-
-            await client.join(`tic-tac-toe-${getCacheGame.info.id}`);
-            return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_JOIN, getCacheGame.info.id, {}, 'tic-tac-toe');
-      }
-
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage(TTTAction.TTT_GET)
-      async handleGetGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
-            const getCacheGame = await this.getGameFromCache(body.roomId);
-
-            return this.socketServer().socketEmitToRoom(TTTAction.TTT_GET, getCacheGame.info.id, { data: getCacheGame }, 'tic-tac-toe');
+            const isExistUser = this.ticTacToeCommonService.isExistUser(board, client.user.id);
+            if (!isExistUser) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+            await client.join(`ttt-${board.id}`);
+            return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_JOIN, board.id, {}, 'ttt');
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_READY)
       async handleReadyGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
-            this.isOwner(getCacheGame, client.user.id);
-            const isReady = await this.ticTacToeService.toggleReadyStatePlayer(body.roomId, client.user);
+            this.isExistUser(getCacheGame, client.user.id);
+
+            const isReady = await this.ticTacToeService.toggleReadyStatePlayer(getCacheGame, client.user);
             if (!isReady) throw ioResponse.sendError({ details: { message: { type: 'game.wait-more-player' } } }, 'BadRequestException');
 
-            return this.socketServer().socketEmitToRoom(TTTAction.TTT_READY, getCacheGame.info.id, {}, 'tic-tac-toe');
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_READY, getCacheGame.id, {}, 'ttt');
+      }
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(TTTAction.TTT_CREATE)
+      async createGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            this.isExistUser(getCacheGame, client.user.id);
+
+            await this.isPlaying(client.user.id);
+            const board = await this.ticTacToeCommonService.createNewGame(client.user, false);
+
+            return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTAction.TTT_CREATE, body.roomId, { data: { roomId: board.id } }, 'ttt');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(TTTAction.TTT_GET)
+      async handleGetGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            this.isExistUser(getCacheGame, client.user.id);
+
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_GET, getCacheGame.id, { data: getCacheGame }, 'ttt');
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_START)
       async handleStartGame(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
-            this.isOwner(getCacheGame, client.user.id);
+            this.isExistUser(getCacheGame, client.user.id);
 
-            const isStart = await this.ticTacToeService.startGame(body.roomId, client.user);
+            const isStart = await this.ticTacToeService.startGame(getCacheGame);
             if (!isStart) throw ioResponse.sendError({ details: { message: { type: 'game.wait-ready-player' } } }, 'BadRequestException');
 
-            return this.socketServer().socketEmitToRoom(TTTAction.TTT_START, getCacheGame.info.id, {}, 'tic-tac-toe');
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_START, getCacheGame.id, {}, 'ttt');
       }
 
       @UseGuards(UserSocketGuard)
@@ -130,40 +123,75 @@ export class TicTacToeGateway {
             body: RoomIdDTO,
       ) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
-            this.isOwner(getCacheGame, client.user.id);
+            this.isExistUser(getCacheGame, client.user.id);
+            await this.ticTacToeService.leaveGame(getCacheGame, client.user);
 
-            await this.ticTacToeService.leaveGame(body.roomId, client.user);
-            return this.socketServer().socketEmitToRoom(TTTAction.TTT_LEAVE, getCacheGame.info.id, {}, 'tic-tac-toe');
-      }
-
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage(TTTAction.TTT_ADD_MOVE)
-      async handleOnAddMove(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vAddMoveDto)) body: AddMoveDto) {
-            const getCacheGame = await this.getGameFromCache(body.roomId);
-            this.isOwner(getCacheGame, client.user.id);
-
-            if (getCacheGame.board[body.x][body.y] !== -1)
-                  throw ioResponse.sendError({ details: { message: { type: 'game.already-chose' } } }, 'BadRequestException');
-
-            const isAddMove = await this.ticTacToeService.addMoveToBoard(body.roomId, client.user, body.x, body.y);
-            if (!isAddMove) throw ioResponse.sendError({ details: { message: { type: 'game.wrong-turn' } } }, 'BadRequestException');
-
-            const isWin = await this.ticTacToeService.isWin(body.roomId);
-
-            if (isWin) {
-                  this.socketServer().socketEmitToRoom(TTTAction.TTT_WIN, getCacheGame.info.id, {}, 'tic-tac-toe');
-                  await this.ticTacToeService.updateToDatabase(body.roomId);
-            }
-            return this.socketServer().socketEmitToRoom(TTTAction.TTT_ADD_MOVE, getCacheGame.info.id, {}, 'tic-tac-toe');
+            client.leave(`ttt-${getCacheGame.id}`);
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_LEAVE, getCacheGame.id, {}, 'ttt');
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTAction.TTT_SURRENDER)
       async handleOnSurrender(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
-            this.isOwner(getCacheGame, client.user.id);
+            this.isExistUser(getCacheGame, client.user.id);
 
-            await this.ticTacToeService.surrender(body.roomId, client.user);
-            return this.socketServer().socketEmitToRoom(TTTAction.TTT_SURRENDER, getCacheGame.info.id, {}, 'tic-tac-toe');
+            await this.ticTacToeService.surrender(getCacheGame, client.user);
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_SURRENDER, getCacheGame.id, {}, 'ttt');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(TTTAction.TTT_ADD_MOVE)
+      async handleOnAddMove(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vAddMoveDto)) body: AddMoveDto) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            this.isExistUser(getCacheGame, client.user.id);
+
+            if (getCacheGame.board[body.x][body.y] !== -1)
+                  throw ioResponse.sendError({ details: { message: { type: 'game.already-chose' } } }, 'BadRequestException');
+
+            const isAddMove = await this.ticTacToeService.addMoveToBoard(getCacheGame, client.user, body.x, body.y);
+            if (!isAddMove) throw ioResponse.sendError({ details: { message: { type: 'game.wrong-turn' } } }, 'BadRequestException');
+
+            const isWin = await this.ticTacToeService.isWin(getCacheGame);
+
+            if (isWin) {
+                  this.socketServer().socketEmitToRoom(TTTAction.TTT_WIN, getCacheGame.id, {}, 'ttt');
+                  await this.ticTacToeService.updateToDatabase(getCacheGame);
+            }
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_ADD_MOVE, getCacheGame.id, {}, 'ttt');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(TTTAction.TTT_BOT_BEST_MOVE)
+      async handleBotMoveMatch(
+            @MessageBody(new SocketJoiValidatorPipe(vAddMoveDto)) body: AddMoveDto,
+            @ConnectedSocket()
+            client: SocketExtend,
+      ) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            this.isExistUser(getCacheGame, client.user.id);
+
+            if (getCacheGame.board[body.x][body.y] !== -1)
+                  throw ioResponse.sendError({ details: { message: { type: 'game.already-chose' } } }, 'BadRequestException');
+
+            const isAddMove = await this.ticTacToeService.addMoveToBoard(getCacheGame, client.user, body.x, body.y);
+            if (!isAddMove) throw ioResponse.sendError({ details: { message: { type: 'game.wrong-turn' } } }, 'BadRequestException');
+
+            const getUpdateCacheGame = await this.getGameFromCache(body.roomId);
+            const userMove = await this.ticTacToeBotService.findBestMove(getUpdateCacheGame.board, 1);
+            const botMove = await this.ticTacToeBotService.findBestMove(getUpdateCacheGame.board, 0);
+
+            const isWin = await this.ticTacToeService.isWin(getCacheGame);
+            if (isWin) this.socketServer().socketEmitToRoom(TTTAction.TTT_WIN, getCacheGame.id, {}, 'ttt');
+            else {
+                  if (userMove.point >= botMove.point) await this.ticTacToeBotService.addMoveToBoardBot(body.roomId, userMove.x, userMove.y);
+                  else await this.ticTacToeBotService.addMoveToBoardBot(body.roomId, botMove.x, botMove.y);
+            }
+
+            const getUpdateCacheGame1 = await this.getGameFromCache(body.roomId);
+            const checkWin = await this.ticTacToeService.isWin(getUpdateCacheGame1);
+            if (checkWin) this.socketServer().socketEmitToRoom(TTTAction.TTT_WIN, getCacheGame.id, {}, 'ttt');
+
+            return this.socketServer().socketEmitToRoom(TTTAction.TTT_BOT_BEST_MOVE, getCacheGame.id, {}, 'ttt');
       }
 }

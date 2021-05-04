@@ -6,14 +6,19 @@ import { ServerResponse } from '../../store/api/interface';
 export class TicTacToeAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
 
-    async checkExistRoom(input: RoomIdDto) {
-        const url = `${this.prefix + '/check-room'}`;
-        const res = await this.apiCall.post<ServerResponse<null>>(url, input);
-        return res;
-    }
     async createNewRoom() {
         const url = `${this.prefix + '/'}`;
         const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
+        return res;
+    }
+    async createBot() {
+        const url = `${this.prefix + '/create-bot'}`;
+        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
+        return res;
+    }
+    async joinRoom(input: RoomIdDto) {
+        const url = `${this.prefix + '/join-room'}`;
+        const res = await this.apiCall.post<ServerResponse<null>>(url, input);
         return res;
     }
 }

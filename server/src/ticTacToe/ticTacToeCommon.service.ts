@@ -17,24 +17,30 @@ import { TicTacToeRepository } from './entity/ticTacToe.repository';
 export class TicTacToeCommonService {
       constructor(private readonly ticTacToeRepository: TicTacToeRepository, private readonly redisService: RedisService) {}
 
-      async getManyMatchByQuery(where: string, parameters: ObjectLiteral) {
+      async getManyTTTByQuery(where: string, parameters: ObjectLiteral) {
             const res = await this.ticTacToeRepository.getManyTTTByField(where, parameters);
 
             return res;
       }
 
-      async getOneMatchByFiled(where: string, parameters: ObjectLiteral) {
+      async getOneTTTByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.ticTacToeRepository.getOneTTTByFiled(where, parameters);
 
             return res;
       }
 
-      async createNewGame(user: User) {
+      async isExistUser(board: TicTacToeBoard, userId: string) {
+            const user = board.info.users.find((item) => item.id === userId);
+            return user;
+      }
+
+      async createNewGame(user: User, isBotMode: boolean) {
             const tic = new TicTacToe();
             tic.users = [user];
-            const insertNewTTT = await this.saveTicTacToe(tic);
+            const tttBoard = new TicTacToeBoard(tic, isBotMode);
+            await this.setBoard(tttBoard.id, tttBoard);
 
-            return insertNewTTT.id;
+            return tttBoard;
       }
 
       async isPlaying(userId: string) {
@@ -47,7 +53,8 @@ export class TicTacToeCommonService {
       }
 
       async saveTicTacToe(ticTacToe: TicTacToe) {
-            return await this.ticTacToeRepository.save(ticTacToe);
+            const res = await this.ticTacToeRepository.save(ticTacToe);
+            return res;
       }
 
       async getBoard(boardId: string) {
@@ -57,7 +64,7 @@ export class TicTacToeCommonService {
       }
 
       async setBoard(boardId: string, board: TicTacToeBoard) {
-            await this.redisService.setObjectByKey(`ttt-${boardId}`, board);
+            await this.redisService.setObjectByKey(`ttt-${boardId}`, board, 1440);
       }
       async deleteBoard(boardId: string) {
             await this.redisService.deleteByKey(`ttt-${boardId}`);

@@ -13,6 +13,7 @@ import { RedisService } from '../providers/redis/redis.service';
 import { User } from '../users/entities/user.entity';
 
 //---- Pipe
+import { v4 as uuidv4 } from 'uuid';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
@@ -23,6 +24,8 @@ import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 import { TicTacToeService } from './ticTacToe.service';
 import { UserGuard } from '../auth/auth.guard';
+import { TicTacToeGateway } from './ticTacToe.gateway';
+import { TicTacToeBotService } from './ticTacToeBot.service';
 
 @Controller('tic-tac-toe')
 export class TicTacToeController {
@@ -30,28 +33,59 @@ export class TicTacToeController {
             private readonly redisService: RedisService,
             private readonly ticTacToeCommonService: TicTacToeCommonService,
             private readonly ticTacToeService: TicTacToeService,
+            private readonly ticTacToeGateway: TicTacToeGateway,
+            private readonly ticTacToeBotService: TicTacToeBotService,
       ) {}
 
-      @Post('/check-room')
-      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
-      async checkExistRoom(@Body() body: RoomIdDTO) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
-            if (board.info.users.length === 2)
-                  throw apiResponse.sendError({ details: { roomId: { type: 'game.full-player' } } }, 'BadRequestException');
-
-            return apiResponse.send<void>({});
+      private async isPlaying(userId: string) {
+            const isPlaying = await this.ticTacToeCommonService.isPlaying(userId);
+            if (isPlaying) throw apiResponse.sendError({ details: { message: { type: 'game.already-join-other' } } }, 'BadRequestException');
       }
 
       @Post('/')
       @UseGuards(UserGuard)
-      async createNewRoom(@Req() req: Request) {
-            const isPlaying = await this.ticTacToeCommonService.isPlaying(req.user.id);
-            if (isPlaying) throw apiResponse.sendError({ details: { message: { type: 'game.already-join-other' } } }, 'BadRequestException');
+      async handleOnCreateGame(@Req() req: Request) {
+            await this.isPlaying(req.user.id);
+            const board = await this.ticTacToeCommonService.createNewGame(req.user, false);
 
-            const newGameId = await this.ticTacToeCommonService.createNewGame(req.user);
-            await this.ticTacToeService.loadGameToCache(newGameId);
+            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+      }
 
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
+      @Post('/create-bot')
+      @UseGuards(UserGuard)
+      async handleOnCreateGameWithBot(@Req() req: Request) {
+            await this.isPlaying(req.user.id);
+
+            const board = await this.ticTacToeCommonService.createNewGame(req.user, true);
+            const bot = this.ticTacToeBotService.getBotInfo();
+            board.currentTurn = false;
+            board.info.users = [bot, req.user];
+            board.users[0].ready = true;
+            board.users[1].ready = true;
+            board.users[0].id = uuidv4();
+            await this.ticTacToeCommonService.setBoard(board.id, board);
+
+            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Post('/join-room')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
+      async handleJoinRoom(@Req() req: Request, @Body() body: RoomIdDTO) {
+            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
+            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+
+            const isExistUser = await this.ticTacToeCommonService.isExistUser(board, req.user.id);
+            if (!isExistUser) {
+                  const isFull = board.info.users.length >= 2;
+                  if (isFull) throw apiResponse.sendError({ details: { roomId: { type: 'game.full-player' } } }, 'BadRequestException');
+
+                  board.info.users.push(req.user);
+                  await this.ticTacToeCommonService.setBoard(board.id, board);
+
+                  if (board.info.users.length === 2 && !board.isBotMode) this.ticTacToeService.loadUser(board);
+            }
+            await this.ticTacToeGateway.sendToRoom(board);
+            return apiResponse.send<void>({});
       }
 }

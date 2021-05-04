@@ -2,15 +2,6 @@ import { User } from '../../../store/auth/interface';
 
 export type TicTacToeFlag = 1 | 0 | -1;
 
-export enum TTTBotAction {
-    TTT_BOT_MOVE = 'ttt-bot-move',
-    TTT_BOT_CREATE = 'ttt-bot-create',
-    TTT_BOT_START = 'ttt-bot-start',
-    TTT_BOT_LEAVE = 'ttt-bot-leave',
-    TTT_BOT_GET = 'ttt-bot-get',
-    TTT_BOT_WIN = 'ttt-bot-win',
-}
-
 export enum TTTAction {
     TTT_JOIN = 'ttt-join',
     TTT_CREATE = 'ttt-create',
@@ -21,6 +12,7 @@ export enum TTTAction {
     TTT_SURRENDER = 'ttt-surrender',
     TTT_ADD_MOVE = 'ttt-add-move',
     TTT_WIN = 'ttt-win',
+    TTT_BOT_BEST_MOVE = 'ttt-bot-best-move',
 }
 
 export enum TicTacToeStatus {
@@ -45,8 +37,10 @@ export interface TicTacToe {
 }
 
 export interface TicTacToeBoard {
+    id: string;
     board: Array<Array<TicTacToeFlag>>;
     currentTurn: boolean;
     users: [TicTacToePlayer, TicTacToePlayer];
     info: TicTacToe;
+    isBotMode: boolean;
 }

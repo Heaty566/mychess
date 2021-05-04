@@ -12,6 +12,7 @@ export class JoiValidatorPipe implements PipeTransform {
       constructor(private readonly schema: ObjectSchema) {}
 
       transform(input: any) {
+            if (!input) throw apiResponse.sendError({ details: { message: { type: 'user.invalid-input' } } }, 'BadRequestException');
             const { error, value } = this.schema.validate(input, { abortEarly: false });
             if (error) throw apiResponse.sendError({ details: LocalesService.mapJoiError(error) }, 'BadRequestException');
 

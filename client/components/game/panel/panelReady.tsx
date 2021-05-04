@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-export interface PanelStartPlayerProps {
+export interface PanelReadyProps {
     handleOnClick: () => void;
     isReady: boolean;
 }
 
-const PanelStartPlayer: React.FunctionComponent<PanelStartPlayerProps> = ({ handleOnClick, isReady }) => {
+const PanelReady: React.FunctionComponent<PanelReadyProps> = ({ handleOnClick, isReady }) => {
     return (
         <div className="p-4 m-2 space-y-4 text-center rounded-sm bg-warmGray-50">
             <h1 className="text-xl font-bold">{isReady ? 'Please Wait For Other Ready' : 'Please Ready To Start'}</h1>
@@ -18,4 +18,4 @@ const PanelStartPlayer: React.FunctionComponent<PanelStartPlayerProps> = ({ hand
     );
 };
 
-export default PanelStartPlayer;
+export default PanelReady;

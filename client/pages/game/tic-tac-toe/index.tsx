@@ -21,7 +21,7 @@ import PanelRestart from '../../../components/game/panel/panelRestart';
 import PanelStart from '../../../components/game/panel/panelStart';
 import CheckIcon from '../../../public/asset/icons/check';
 import SeoHead from '../../../components/common/seoHead';
-import PanelStartPlayer from '../../../components/game/panel/panelStartPlayer';
+import PanelReady from '../../../components/game/panel/panelReady';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useRouter } from 'next/router';
 import BtnLink from '../../../components/link/btnLink';
@@ -41,7 +41,7 @@ const TicTacToe: React.FunctionComponent = () => {
     const router = useRouter();
 
     const handleOnSubmit = async (data: RoomIdDto) => {
-        ticTacToeApi.checkExistRoom(data).then(() => {
+        ticTacToeApi.joinRoom(data).then(() => {
             router.push(`${routers.ticTacToePvP.link}/${data.roomId}`);
         });
     };

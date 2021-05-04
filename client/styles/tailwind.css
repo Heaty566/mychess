@@ -60,3 +60,9 @@
     background-color: rgba(34, 35, 48, 0.93);
     max-width: 976px;
 }
+
+.tooltip:hover .content {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}

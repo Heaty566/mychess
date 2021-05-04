@@ -17,6 +17,6 @@ export class TicTacToeMove {
       @Column()
       flag: TicTacToeFlag;
 
-      @ManyToOne(() => TicTacToe, (ticTacToe) => ticTacToe.moves, { onDelete: 'CASCADE' })
+      @ManyToOne(() => TicTacToe, (ticTacToe) => ticTacToe.moves, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
       ticTacToe: TicTacToe;
 }
