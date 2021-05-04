@@ -1,16 +1,17 @@
-import { Body, Controller, Get, Post, Query, Req, Res, UseGuards, UsePipes } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Response, Request } from 'express';
+import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Request } from 'express';
 
 //---- Service
-import { SmailService } from '../providers/smail/smail.service';
-import { SmsService } from '../providers/sms/sms.service';
-import { UserService } from '../users/user.service';
-
+import { TicTacToeBotService } from './ticTacToeBot.service';
 import { RedisService } from '../providers/redis/redis.service';
+import { TicTacToeCommonService } from './ticTacToeCommon.service';
+import { TicTacToeService } from './ticTacToe.service';
+import { UserGuard } from '../auth/auth.guard';
+
+//---- Gateway
+import { TicTacToeGateway } from './ticTacToe.gateway';
 
 //---- Entity
-import { User } from '../users/entities/user.entity';
 
 //---- Pipe
 import { v4 as uuidv4 } from 'uuid';
@@ -18,14 +19,7 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { config } from '../config';
 import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
-import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
-import { TicTacToeCommonService } from './ticTacToeCommon.service';
-import { TicTacToeService } from './ticTacToe.service';
-import { UserGuard } from '../auth/auth.guard';
-import { TicTacToeGateway } from './ticTacToe.gateway';
-import { TicTacToeBotService } from './ticTacToeBot.service';
 
 @Controller('tic-tac-toe')
 export class TicTacToeController {

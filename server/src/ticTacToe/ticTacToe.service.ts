@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 
 //---- Entity
@@ -19,7 +18,6 @@ import { TicTacToeRepository } from './entity/ticTacToe.repository';
 export class TicTacToeService {
       constructor(
             private readonly ticTacToeRepository: TicTacToeRepository,
-            private readonly redisService: RedisService,
             private readonly ticTacToeMoveRepository: TicTacToeMoveRepository,
             private readonly ticTacToeCommonService: TicTacToeCommonService,
       ) {}

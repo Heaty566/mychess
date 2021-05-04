@@ -1,4 +1,4 @@
-export enum TTTAction {
+export enum TTTGatewayAction {
       TTT_JOIN = 'ttt-join',
       TTT_CREATE = 'ttt-create',
       TTT_GET = 'ttt-get',
