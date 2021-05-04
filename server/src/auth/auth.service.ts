@@ -15,7 +15,7 @@ import { UserRepository } from '../users/entities/user.repository';
 import { ReTokenRepository } from './entities/re-token.repository';
 
 //---- Helper
-import { spawnOtpCode } from '../app/Helpers/otp.helper';
+import { generatorString } from '../app/helpers/stringGenerator';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +29,7 @@ export class AuthService {
       //-------------------------------OTP Service --------------------------------------
 
       createOTP(user: User, expired: number, type: 'sms' | 'email') {
-            const otpKey = spawnOtpCode(type === 'email' ? 50 : 6, type);
+            const otpKey = generatorString(type === 'email' ? 50 : 6, type === 'email' ? 'lettersLowerCase' : 'number');
 
             this.redisService.setObjectByKey(otpKey, user, expired);
             return otpKey;

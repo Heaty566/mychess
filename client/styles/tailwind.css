@@ -20,6 +20,11 @@
     background-size: cover;
 }
 
+.ttt-board {
+    max-width: 560px;
+    max-height: 560px;
+}
+
 .chess-bg-2 {
     background: url('/asset/images/chess-board-2.jpg');
     background-repeat: no-repeat;
@@ -54,4 +59,10 @@
         radial-gradient(farthest-corner at bottom left, rgba(50, 255, 193, 0.103), transparent 600px);
     background-color: rgba(34, 35, 48, 0.93);
     max-width: 976px;
+}
+
+.tooltip:hover .content {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
 }

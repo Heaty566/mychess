@@ -7,4 +7,13 @@ module.exports = {
         DOMAIN: process.env.DOMAIN,
         FB_APP_ID: process.env.FB_APP_ID,
     },
+    webpack(config, options) {
+        config.module.rules.push({
+            test: /\.mp3$/,
+            use: {
+                loader: 'file-loader',
+            },
+        });
+        return config;
+    },
 };
