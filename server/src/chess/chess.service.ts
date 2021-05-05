@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AvaibleMove, ChessMove } from './entity/chess.interface';
+import { AvaibleMove, ChessMove, ChessRole } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- Repository
 
 @Injectable()
 export class ChessService {
-      kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
+      kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
             const result: Array<AvaibleMove> = [];
             let kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
             let kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
@@ -28,7 +28,7 @@ export class ChessService {
             return result;
       }
 
-      knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
+      knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
             const result: Array<AvaibleMove> = [];
             let knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
             let knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
@@ -49,7 +49,7 @@ export class ChessService {
             return result;
       }
 
-      rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
+      rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
             const result: Array<AvaibleMove> = [];
             // Right
             let x = currentPosition.x + 1;
@@ -110,7 +110,7 @@ export class ChessService {
             return result;
       }
 
-      bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
+      bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
             const result: Array<AvaibleMove> = [];
             // Top - Left
             let x = currentPosition.x - 1;
@@ -179,7 +179,7 @@ export class ChessService {
             return result;
       }
 
-      queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
+      queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
             const result: Array<AvaibleMove> = [];
             const moveLikeBishop = this.bishopAvailableMove(currentPosition, chessBoard);
             const moveLikeRook = this.rookAvailableMove(currentPosition, chessBoard);
@@ -187,5 +187,199 @@ export class ChessService {
             result.push(...moveLikeRook);
 
             return result;
+      }
+
+      kingIsChecked(currentPosition: ChessMove, chessBoard: ChessBoard): boolean {
+            // Check rook, queen
+            // Right
+            let x = currentPosition.x + 1;
+            let y = currentPosition.y;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.ROOK || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  x++;
+            }
+            // Left
+            x = currentPosition.x - 1;
+            y = currentPosition.y;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.ROOK || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  x--;
+            }
+            // Top
+            x = currentPosition.x;
+            y = currentPosition.y + 1;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.ROOK || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  y++;
+            }
+            // Bottom
+            x = currentPosition.x;
+            y = currentPosition.y - 1;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.ROOK || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  y--;
+            }
+
+            // Check bishop, queen
+            // Top - left
+            x = currentPosition.x - 1;
+            y = currentPosition.y + 1;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.BISHOP || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  x--;
+                  y++;
+            }
+            // Top - right
+            x = currentPosition.x + 1;
+            y = currentPosition.y + 1;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.BISHOP || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  x++;
+                  y++;
+            }
+            // Bottom - right
+            x = currentPosition.x + 1;
+            y = currentPosition.y - 1;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.BISHOP || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  x++;
+                  y--;
+            }
+            // Bottom - left
+            x = currentPosition.x - 1;
+            y = currentPosition.y - 1;
+            while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                  if (chessBoard.board[x][y].flag === currentPosition.flag) break;
+                  else if (
+                        chessBoard.board[x][y].flag !== currentPosition.flag &&
+                        chessBoard.board[x][y].flag >= 0 &&
+                        (chessBoard.board[x][y].chessRole === ChessRole.BISHOP || chessBoard.board[x][y].chessRole === ChessRole.QUEEN)
+                  ) {
+                        return true;
+                  }
+                  x--;
+                  y--;
+            }
+
+            // Check knight
+            let knightX = [2, 2, -2, -2, 1, 1, -1, -1];
+            let knightY = [1, -1, 1, -1, 2, -2, 2, -2];
+            for (let i = 0; i <= 7; i++) {
+                  x = currentPosition.x + knightX[i];
+                  y = currentPosition.y + knightY[i];
+                  if (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                        if (
+                              chessBoard.board[x][y].flag >= 0 &&
+                              chessBoard.board[x][y].flag != currentPosition.flag &&
+                              chessBoard.board[x][y].chessRole === ChessRole.KNIGHT
+                        ) {
+                              return true;
+                        }
+                  }
+            }
+
+            // Check pawn
+            if (currentPosition.flag === 0) {
+                  // white king
+                  let pawnX = [1, -1];
+                  let pawnY = [1, 1];
+                  for (let i = 0; i <= 1; i++) {
+                        x = currentPosition.x + pawnX[i];
+                        y = currentPosition.y + pawnY[i];
+                        if (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                              if (
+                                    chessBoard.board[x][y].flag >= 0 &&
+                                    chessBoard.board[x][y].flag != currentPosition.flag &&
+                                    chessBoard.board[x][y].chessRole === ChessRole.PAWN
+                              ) {
+                                    return true;
+                              }
+                        }
+                  }
+            } else {
+                  // black king
+                  let pawnX = [1, -1];
+                  let pawnY = [-1, -1];
+                  for (let i = 0; i <= 1; i++) {
+                        x = currentPosition.x + pawnX[i];
+                        y = currentPosition.y + pawnY[i];
+                        if (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                              if (
+                                    chessBoard.board[x][y].flag >= 0 &&
+                                    chessBoard.board[x][y].flag != currentPosition.flag &&
+                                    chessBoard.board[x][y].chessRole === ChessRole.PAWN
+                              ) {
+                                    return true;
+                              }
+                        }
+                  }
+            }
+
+            // Check king
+            let kingX = [1, 1, 1, 0, 0, -1, -1, -1];
+            let kingY = [1, 0, -1, 1, -1, 1, 0, -1];
+            for (let i = 0; i <= 7; i++) {
+                  x = currentPosition.x + kingX[i];
+                  y = currentPosition.y + kingY[i];
+                  if (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
+                        if (
+                              chessBoard.board[x][y].flag >= 0 &&
+                              chessBoard.board[x][y].flag != currentPosition.flag &&
+                              chessBoard.board[x][y].chessRole === ChessRole.KING
+                        ) {
+                              return true;
+                        }
+                  }
+            }
+            return false;
       }
 }

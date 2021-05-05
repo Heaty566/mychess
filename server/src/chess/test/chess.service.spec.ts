@@ -231,7 +231,7 @@ describe('ticTacToeService', () => {
                   expect(result.length).toBe(13);
             });
       });
-*/
+
 
       describe('queenAvailable', () => {
             let chessBoard: ChessBoard;
@@ -285,6 +285,260 @@ describe('ticTacToeService', () => {
                   };
                   const result = chessService.queenAvailableMove({ flag: 0, x: 1, y: 1, chessRole: ChessRole.QUEEN }, chessBoard);
                   expect(result.length).toBe(11);
+            });
+      });
+*/
+      describe('kingIsChecked', () => {
+            let chessBoard: ChessBoard;
+            beforeEach(() => {
+                  chessBoard = new ChessBoard();
+            });
+
+            it('check by rook, queen', () => {
+                  chessBoard.board[0][6] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  const result = chessService.kingIsChecked({ flag: 0, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by rook, queen', () => {
+                  chessBoard.board[0][6] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 1,
+                  };
+                  chessBoard.board[0][3] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  const result = chessService.kingIsChecked({ flag: 0, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeFalsy();
+            });
+
+            it('check by rook, queen', () => {
+                  chessBoard.board[0][0] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  chessBoard.board[0][6] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  chessBoard.board[0][3] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  const result = chessService.kingIsChecked({ flag: 0, x: 0, y: 2, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by rook, queen', () => {
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  chessBoard.board[0][4] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 1,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 0, x: 0, y: 2, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by rook, queen', () => {
+                  chessBoard.board[0][7] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  chessBoard.board[0][2] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 0, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by bishop, queen', () => {
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by bishop, queen', () => {
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.BISHOP,
+                        flag: 1,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeFalsy();
+            });
+
+            it('check by bishop, queen', () => {
+                  chessBoard.board[7][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+
+                  chessBoard.board[3][5] = {
+                        chessRole: ChessRole.BISHOP,
+                        flag: 1,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 4, y: 4, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by bishop, queen', () => {
+                  chessBoard.board[7][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+
+                  chessBoard.board[3][5] = {
+                        chessRole: ChessRole.BISHOP,
+                        flag: 1,
+                  };
+
+                  chessBoard.board[6][2] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 4, y: 4, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by knight', () => {
+                  chessBoard.board[6][2] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeFalsy();
+            });
+
+            it('check by knight', () => {
+                  chessBoard.board[2][1] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by knight', () => {
+                  chessBoard.board[1][2] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by knight', () => {
+                  chessBoard.board[1][2] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by pawn', () => {
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 1,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 0, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by pawn', () => {
+                  chessBoard.board[2][4] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 1,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 0, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by pawn', () => {
+                  chessBoard.board[2][2] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by pawn', () => {
+                  chessBoard.board[4][2] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by king', () => {
+                  chessBoard.board[4][3] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by king', () => {
+                  chessBoard.board[3][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by king', () => {
+                  chessBoard.board[3][2] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('check by king', () => {
+                  chessBoard.board[2][2] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+
+                  const result = chessService.kingIsChecked({ flag: 1, x: 3, y: 3, chessRole: ChessRole.KING }, chessBoard);
+                  expect(result).toBeTruthy();
             });
       });
       afterAll(async () => {
