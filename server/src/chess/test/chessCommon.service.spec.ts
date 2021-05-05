@@ -5,7 +5,6 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Service
 import { ChessCommonService } from '../chessCommon.service';
-import { ChessService } from '../chess.service';
 
 //---- Entity
 import { User } from '../../users/entities/user.entity';
@@ -13,10 +12,10 @@ import { Chess } from '../entity/chess.entity';
 
 //---- Repository
 import { ChessRepository } from '../entity/chess.repository';
+import { ChessBoard } from '../entity/chessBoard.entity';
 
-describe('ticTacToeCommonService', () => {
+describe('chessCommonService', () => {
       let app: INestApplication;
-      let chessService: ChessService;
       let resetDB: any;
       let chessRepository: ChessRepository;
       let generateFakeUser: () => Promise<User>;
@@ -27,6 +26,7 @@ describe('ticTacToeCommonService', () => {
 
       let user1: User;
       let user2: User;
+      let chessBoard: ChessBoard;
       beforeAll(async () => {
             const { getApp, module, resetDatabase, getFakeUser } = await initTestModule();
             app = getApp;
@@ -35,7 +35,6 @@ describe('ticTacToeCommonService', () => {
             generateFakeUser = getFakeUser;
 
             chessRepository = module.get<ChessRepository>(ChessRepository);
-            chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
 
@@ -46,7 +45,32 @@ describe('ticTacToeCommonService', () => {
             const chess = new Chess();
             chess.users = [user1, user2];
 
-            chessGame = await chessRepository.save(chess);
+            chessBoard = new ChessBoard(chess, true);
+            await chessCommonService.setBoard(chessBoard.id, chessBoard);
+      });
+
+      describe('getMatchByUserId', () => {
+            it('Pass', async () => {
+                  const newChess = new Chess();
+                  newChess.users = [user1];
+                  await chessRepository.save(newChess);
+
+                  const getChess = await chessCommonService.getManyChessByQuery('user.id = :id', { id: user1.id });
+                  expect(getChess.length).toBeGreaterThanOrEqual(1);
+                  expect(getChess[0].users[0].id).toBe(user1.id);
+            });
+      });
+
+      describe('getOneTTTByField', () => {
+            it('Pass', async () => {
+                  const newChess = new Chess();
+                  newChess.users = [user1];
+                  await chessRepository.save(newChess);
+
+                  const getChess = await chessCommonService.getOneChessByField('user.id = :id', { id: user1.id });
+                  expect(getChess).toBeDefined();
+                  expect(getChess.users[0].id).toBe(user1.id);
+            });
       });
 
       afterAll(async () => {

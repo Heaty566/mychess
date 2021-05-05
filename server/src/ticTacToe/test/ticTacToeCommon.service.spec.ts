@@ -5,7 +5,6 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Service
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
-import { TicTacToeService } from '../ticTacToe.service';
 
 //---- Entity
 import { User } from '../../users/entities/user.entity';
@@ -33,7 +32,6 @@ describe('ticTacToeCommonService', () => {
             generateFakeUser = getFakeUser;
 
             ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
-            ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
             ticTacToeCommonService = module.get<TicTacToeCommonService>(TicTacToeCommonService);
       });
 
@@ -60,13 +58,13 @@ describe('ticTacToeCommonService', () => {
             });
       });
 
-      describe('getOneTTTByFiled', () => {
+      describe('getOneTTTByField', () => {
             it('Pass', async () => {
                   const newTicTacToe = new TicTacToe();
                   newTicTacToe.users = [user1];
                   await ticTacToeRepository.save(newTicTacToe);
 
-                  const getTicTacToe = await ticTacToeCommonService.getOneTTTByFiled('user.id = :id', { id: user1.id });
+                  const getTicTacToe = await ticTacToeCommonService.getOneTTTByField('user.id = :id', { id: user1.id });
                   expect(getTicTacToe).toBeDefined();
                   expect(getTicTacToe.users[0].id).toBe(user1.id);
             });

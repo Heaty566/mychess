@@ -5,10 +5,21 @@ import { Chess } from './entity/chess.entity';
 import { User } from '../users/entities/user.entity';
 import { ChessBoard } from './entity/chessBoard.entity';
 import { RedisService } from '../providers/redis/redis.service';
+import { ObjectLiteral } from 'typeorm';
 
 @Injectable()
 export class ChessCommonService {
       constructor(private readonly chessRepository: ChessRepository, private readonly redisService: RedisService) {}
+
+      async getManyChessByQuery(where: string, parameters: ObjectLiteral) {
+            const res = await this.chessRepository.getManyChessByField(where, parameters);
+            return res;
+      }
+
+      async getOneChessByField(where: string, parameters: ObjectLiteral) {
+            const res = await this.chessRepository.getOneChessByFiled(where, parameters);
+            return res;
+      }
 
       async isPlaying(userId: string) {
             const currentPlay = await this.chessRepository.getManyChessByField('chess.status = :status', {
