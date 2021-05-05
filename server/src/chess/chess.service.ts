@@ -8,11 +8,11 @@ import { ChessBoard } from './entity/chessBoard.entity';
 export class ChessService {
       kingVailableMove(currentPosition: ChessMove, board: ChessBoard) {
             const result: Array<AvaibleMove> = [];
-            let kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
-            let kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
+            const kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
+            const kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
             for (let i = 0; i <= 7; i++) {
-                  let x = currentPosition.x + kingMoveX[i];
-                  let y = currentPosition.y + kingMoveY[i];
+                  const x = currentPosition.x + kingMoveX[i];
+                  const y = currentPosition.y + kingMoveY[i];
                   if (x >= 0 && x < board.board.length && y >= 0 && y < board.board.length && board.board[x][y].flag !== currentPosition.flag) {
                         result.push({ x, y });
                   }

@@ -42,25 +42,4 @@ export class ChessController {
 
             return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
       }
-
-      @Post('/join-room')
-      @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
-      async handleJoinRoom(@Req() req: Request, @Body() body: RoomIdDTO) {
-            const board = await this.chessCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
-
-            const isExistUser = await this.chessCommonService.isExistUser(board, req.user.id);
-            if (!isExistUser) {
-                  const isFull = board.info.users.length >= 2;
-                  if (isFull) throw apiResponse.sendError({ details: { roomId: { type: 'game.full-player' } } }, 'BadRequestException');
-
-                  board.info.users.push(req.user);
-                  await this.chessCommonService.setBoard(board.id, board);
-
-                  if (board.info.users.length === 2 && !board.isBotMode) this.ticTacToeService.loadUser(board);
-            }
-            await this.ticTacToeGateway.sendToRoom(board);
-            return apiResponse.send<void>({});
-      }
 }

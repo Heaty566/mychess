@@ -33,15 +33,10 @@ export class ChessCommonService {
       async createNewGame(user: User, isBotMode: boolean) {
             const chess = new Chess();
             chess.users = [user];
-            const chessBoard = new ChessBoard(chess, isBotMode);
+            const chessBoard = new ChessBoard();
             await this.setBoard(chessBoard.id, chessBoard);
 
             return chessBoard;
-      }
-
-      async isExistUser(board: ChessBoard, userId: string) {
-            const user = board.info.users.find((item) => item.id === userId);
-            return user;
       }
 
       async saveChess(chess: Chess) {

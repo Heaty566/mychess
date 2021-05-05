@@ -45,7 +45,7 @@ describe('chessCommonService', () => {
             const chess = new Chess();
             chess.users = [user1, user2];
 
-            chessBoard = new ChessBoard(chess, true);
+            chessBoard = new ChessBoard();
             await chessCommonService.setBoard(chessBoard.id, chessBoard);
       });
 
