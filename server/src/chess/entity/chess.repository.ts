@@ -8,7 +8,7 @@ import { RepositoryService } from '../../utils/repository/repository.service';
 
 @EntityRepository(Chess)
 export class ChessRepository extends RepositoryService<Chess> {
-      async getManyTTTByField(where: string, parameters: ObjectLiteral) {
+      async getManyChessByField(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('chess')
                   .leftJoinAndSelect('chess.users', 'user')
                   .select([
@@ -21,6 +21,7 @@ export class ChessRepository extends RepositoryService<Chess> {
                         'user.name',
                         'user.username',
                         'user.elo',
+                        'user.avatarUrl',
                   ])
                   .where(where, parameters)
                   .getMany();
@@ -28,7 +29,7 @@ export class ChessRepository extends RepositoryService<Chess> {
             return res;
       }
 
-      async getOneTTTByFiled(where: string, parameters: ObjectLiteral) {
+      async getOneChessByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('chess')
                   .leftJoinAndSelect('chess.users', 'user')
                   .select([

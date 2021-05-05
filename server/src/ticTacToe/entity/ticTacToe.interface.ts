@@ -13,7 +13,7 @@ export interface TicTacToeMovePoint {
 export type TicTacToeFlag = -1 | 0 | 1;
 
 export enum TicTacToeStatus {
-      'NOT-YET' = '-1',
+      'NOT_YET' = '-1',
       'END' = '0',
       'PLAYING' = '1',
 }
