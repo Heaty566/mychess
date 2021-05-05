@@ -74,6 +74,7 @@ const DBConfig = TypeOrmModule.forRoot({
             RedisModule,
             RepositoryModule,
             ChatsModule,
+            ChessModule,
       ],
       controllers: [],
 })
