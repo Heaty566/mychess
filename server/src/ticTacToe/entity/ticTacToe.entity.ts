@@ -11,7 +11,7 @@ export class TicTacToe {
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
-      @ManyToMany(() => User)
+      @ManyToMany(() => User, { onUpdate: 'CASCADE' })
       @JoinTable()
       users: User[];
 
@@ -29,4 +29,9 @@ export class TicTacToe {
 
       @OneToMany(() => TicTacToeMove, (move) => move.ticTacToe)
       moves: TicTacToeMove[];
+
+      constructor() {
+            this.status = TicTacToeStatus['NOT-YET'];
+            this.startDate = new Date();
+      }
 }

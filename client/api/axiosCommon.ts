@@ -2,11 +2,11 @@ import { store } from '../store';
 import axios, { AxiosError } from 'axios';
 import Cookies from 'universal-cookie';
 
-import { ApiResponse } from '../store/api/interface';
+import { ServerResponse } from '../store/api/interface';
 import { apiActions } from '../store/api';
 
 const axiosClient = axios.create({
-    baseURL: process.env.SERVER_URL,
+    baseURL: process.env.SERVER_URL + '/api',
     withCredentials: true,
 });
 
@@ -22,12 +22,13 @@ axiosClient.interceptors.response.use(
 
         return response;
     },
-    function (error: AxiosError<ApiResponse<null>>) {
+    function (error: AxiosError<ServerResponse<null>>) {
         store.dispatch(apiActions.resetState());
         if (error.response?.status === 401) {
             const cookies = new Cookies();
             cookies.set('re-token', '', { maxAge: -999 });
             cookies.set('auth-token', '', { maxAge: -999 });
+            cookies.set('io-token', '', { maxAge: -999 });
         }
 
         if (error.response?.status) store.dispatch(apiActions.updateErrorDetails(error.response.data.details));

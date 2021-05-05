@@ -14,15 +14,15 @@ import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
 //---- Repository
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
+import { TicTacToeStatus } from '../entity/ticTacToe.interface';
 
 describe('ticTacToeCommonService', () => {
       let app: INestApplication;
-      let ticTacToeService: TicTacToeService;
       let resetDB: any;
       let ticTacToeRepository: TicTacToeRepository;
       let generateFakeUser: () => Promise<User>;
-
-      let tTTGame: TicTacToe;
+      let user1: User;
+      let tttBoard: TicTacToeBoard;
 
       let ticTacToeCommonService: TicTacToeCommonService;
       beforeAll(async () => {
@@ -33,63 +33,111 @@ describe('ticTacToeCommonService', () => {
             generateFakeUser = getFakeUser;
 
             ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
-            ticTacToeService = module.get<TicTacToeService>(TicTacToeService);
             ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
             ticTacToeCommonService = module.get<TicTacToeCommonService>(TicTacToeCommonService);
       });
 
       beforeEach(async () => {
-            const user1 = await generateFakeUser();
+            user1 = await generateFakeUser();
             const user2 = await generateFakeUser();
 
             const ticTicToe = new TicTacToe();
             ticTicToe.users = [user1, user2];
 
-            tTTGame = await ticTacToeRepository.save(ticTicToe);
+            tttBoard = new TicTacToeBoard(ticTicToe, true);
+            await ticTacToeCommonService.setBoard(tttBoard.id, tttBoard);
       });
 
       describe('getMatchByUserId', () => {
-            it('getAll', async () => {
-                  const user = await generateFakeUser();
+            it('Pass', async () => {
                   const newTicTacToe = new TicTacToe();
-                  newTicTacToe.users = [user];
-                  const saveTicTacToe = await ticTacToeRepository.save(newTicTacToe);
+                  newTicTacToe.users = [user1];
+                  await ticTacToeRepository.save(newTicTacToe);
 
-                  const getTicTacToe = await ticTacToeCommonService.getManyMatchByQuery('user.id = :id', { id: user.id });
+                  const getTicTacToe = await ticTacToeCommonService.getManyTTTByQuery('user.id = :id', { id: user1.id });
                   expect(getTicTacToe.length).toBeGreaterThanOrEqual(1);
-                  expect(getTicTacToe[0].id).toBe(saveTicTacToe.id);
+                  expect(getTicTacToe[0].users[0].id).toBe(user1.id);
+            });
+      });
+
+      describe('getOneTTTByFiled', () => {
+            it('Pass', async () => {
+                  const newTicTacToe = new TicTacToe();
+                  newTicTacToe.users = [user1];
+                  await ticTacToeRepository.save(newTicTacToe);
+
+                  const getTicTacToe = await ticTacToeCommonService.getOneTTTByFiled('user.id = :id', { id: user1.id });
+                  expect(getTicTacToe).toBeDefined();
+                  expect(getTicTacToe.users[0].id).toBe(user1.id);
             });
       });
 
       describe('getBoard', () => {
             it('Pass', async () => {
-                  const res = await ticTacToeService.loadGameToCache(tTTGame.id);
-                  const board = await ticTacToeCommonService.getBoard(tTTGame.id);
+                  const board = await ticTacToeCommonService.getBoard(tttBoard.id);
                   expect(board).toBeDefined();
-                  expect(res).toBeTruthy();
-                  expect(board.info.id).toBe(tTTGame.id);
+                  expect(board.id).toBe(tttBoard.id);
             });
             it('Failed no found', async () => {
                   const board = await ticTacToeCommonService.getBoard(`ttt-hello-world`);
                   expect(board).toBeNull();
             });
       });
+
       describe('setBoard', () => {
             it('Pass', async () => {
-                  const tttBoard = new TicTacToeBoard(tTTGame);
-                  await ticTacToeCommonService.setBoard(tTTGame.id, tttBoard);
-                  const board = await ticTacToeCommonService.getBoard(tTTGame.id);
+                  tttBoard.id = '123';
+                  await ticTacToeCommonService.setBoard(tttBoard.id, tttBoard);
+                  const board = await ticTacToeCommonService.getBoard(tttBoard.id);
 
                   expect(board).toBeDefined();
+                  expect(board.id).toBe('123');
             });
       });
+
+      describe('isExistUser', () => {
+            it('Pass', async () => {
+                  const user = await ticTacToeCommonService.isExistUser(tttBoard, user1.id);
+
+                  expect(user).toBeDefined();
+            });
+            it('Failed not found', async () => {
+                  const fakeUser = await generateFakeUser();
+                  const user = await ticTacToeCommonService.isExistUser(tttBoard, fakeUser.id);
+
+                  expect(user).toBeUndefined();
+            });
+      });
+
+      describe('createNewGame', () => {
+            it('Pass', async () => {
+                  const newBoard = await ticTacToeCommonService.createNewGame(user1, true);
+                  const getBoard = await ticTacToeCommonService.getBoard(newBoard.id);
+                  expect(getBoard).toBeDefined();
+                  expect(newBoard).toBeDefined();
+            });
+      });
+      describe('createNewGame', () => {
+            it('Pass', async () => {
+                  tttBoard.info.status = TicTacToeStatus.PLAYING;
+                  await ticTacToeRepository.save(tttBoard.info);
+
+                  const isPlaying = await ticTacToeCommonService.isPlaying(user1.id);
+                  expect(isPlaying).toBeTruthy();
+            });
+            it('Failed ', async () => {
+                  ticTacToeRepository.save(tttBoard.info);
+
+                  const isPlaying = await ticTacToeCommonService.isPlaying(user1.id);
+                  expect(isPlaying).toBeFalsy();
+            });
+      });
+
       describe('deleteBoard', () => {
             it('Pass', async () => {
-                  const tttBoard = new TicTacToeBoard(tTTGame);
-                  await ticTacToeCommonService.setBoard(tTTGame.id, tttBoard);
-                  const boardBefore = await ticTacToeCommonService.getBoard(tTTGame.id);
-                  await ticTacToeCommonService.deleteBoard(tTTGame.id);
-                  const boardAfter = await ticTacToeCommonService.getBoard(tTTGame.id);
+                  const boardBefore = await ticTacToeCommonService.getBoard(tttBoard.id);
+                  await ticTacToeCommonService.deleteBoard(tttBoard.id);
+                  const boardAfter = await ticTacToeCommonService.getBoard(tttBoard.id);
 
                   expect(boardBefore).toBeDefined();
                   expect(boardAfter).toBeNull();

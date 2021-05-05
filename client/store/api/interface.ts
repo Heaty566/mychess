@@ -1,7 +1,7 @@
 export interface JoiError {
     [key: string]: string;
 }
-export interface ApiResponse<T> {
+export interface ServerResponse<T> {
     data: T;
     message: string;
     details: JoiError;

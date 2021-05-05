@@ -9,19 +9,19 @@ import { TicTacToe } from '../entity/ticTacToe.entity';
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
 
 //---- Service
-import { TicTacToeService } from '../ticTacToe.service';
 import { RedisService } from '../../providers/redis/redis.service';
 import { TicTacToeBotService } from '../ticTacToeBot.service';
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 //---- Repository
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';
+import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
 describe('ticTacToeBotService', () => {
       let app: INestApplication;
       let user1: User;
       let user2: User;
-      let ticTacToeService: TicTacToeService;
+
       let resetDB: any;
       let ticTacToeRepository: TicTacToeRepository;
       let generateFakeUser: () => Promise<User>;
@@ -37,7 +37,6 @@ describe('ticTacToeBotService', () => {
             resetDB = resetDatabase;
             generateFakeUser = getFakeUser;
 
-            ticTacToeService = module.get<TicTacToeService>(TicTacToeService);
             ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
             ticTacToeMoveRepository = module.get<TicTacToeMoveRepository>(TicTacToeMoveRepository);
             redisService = module.get<RedisService>(RedisService);
@@ -61,16 +60,13 @@ describe('ticTacToeBotService', () => {
       });
 
       describe('findBestMove', () => {
-            let boardGame: TicTacToe;
+            let boardGame: TicTacToeBoard;
             beforeEach(async () => {
-                  const ticTicToe = new TicTacToe();
-                  boardGame = await ticTacToeRepository.save(ticTicToe);
-                  await ticTacToeService.loadGameToCache(boardGame.id);
-                  await ticTacToeService.joinGame(`ttt-${boardGame.id}`, user1);
-                  await ticTacToeService.joinGame(`ttt-${boardGame.id}`, user2);
-                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${boardGame.id}`, user1);
-                  await ticTacToeService.toggleReadyStatePlayer(`ttt-${boardGame.id}`, user2);
-                  await ticTacToeService.startGame(`ttt-${boardGame.id}`, user2);
+                  const tttBoard = await ticTacToeCommonService.createNewGame(user1, true);
+                  tttBoard.info.users.push(user2);
+                  await ticTacToeCommonService.setBoard(tttBoard.id, tttBoard);
+
+                  boardGame = await ticTacToeCommonService.getBoard(tttBoard.id);
             });
 
             it('Pass', async () => {
@@ -178,11 +174,13 @@ describe('ticTacToeBotService', () => {
       });
 
       describe('addMoveToBoardBot', () => {
-            let boardGame: TicTacToe;
+            let boardGame: TicTacToeBoard;
             beforeEach(async () => {
-                  const ticTicToe = new TicTacToe();
-                  boardGame = await ticTacToeRepository.save(ticTicToe);
-                  await ticTacToeService.loadGameToCache(boardGame.id);
+                  const tttBoard = await ticTacToeCommonService.createNewGame(user1, true);
+                  tttBoard.info.users.push(user2);
+                  await ticTacToeCommonService.setBoard(tttBoard.id, tttBoard);
+
+                  boardGame = await ticTacToeCommonService.getBoard(tttBoard.id);
             });
 
             it('Pass', async () => {
@@ -192,7 +190,7 @@ describe('ticTacToeBotService', () => {
 
                   expect(getBoardGameAfter).toBeDefined();
                   expect(getBoardGameAfter.currentTurn).not.toBe(getBoardGameBefore.currentTurn);
-                  expect(getBoardGameAfter.board[1][1]).toBe(1);
+                  expect(getBoardGameAfter.board[1][1]).toBe(0);
             });
       });
 
