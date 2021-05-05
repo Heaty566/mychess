@@ -16,12 +16,6 @@ export class Chess {
       @JoinTable()
       users: User[];
 
-      @Column({ default: null })
-      whiteUser: string;
-
-      @Column({ default: null })
-      blackUser: string;
-
       @Column({ default: -1 })
       winner: ChessFlag;
 
