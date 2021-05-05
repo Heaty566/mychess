@@ -1,4 +1,4 @@
-export enum TTTAction {
+export enum TTTGatewayAction {
       TTT_JOIN = 'ttt-join',
       TTT_CREATE = 'ttt-create',
       TTT_GET = 'ttt-get',
@@ -8,4 +8,5 @@ export enum TTTAction {
       TTT_SURRENDER = 'ttt-surrender',
       TTT_ADD_MOVE = 'ttt-add-move',
       TTT_WIN = 'ttt-win',
+      TTT_BOT_BEST_MOVE = 'ttt-bot-best-move',
 }

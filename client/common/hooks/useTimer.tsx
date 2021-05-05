@@ -19,7 +19,7 @@ export function useTimer(resetTime: number, initIsRunning: boolean, circle = fal
                 }
 
                 setTime(((Date.now() - startTime) / 1000) % resetTime);
-            }, 300);
+            }, 500);
         }
         return () => {
             clearInterval(intervalId);

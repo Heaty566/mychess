@@ -9,9 +9,9 @@ export interface ILoginSocial {
 }
 
 const config: Array<ILoginSocial> = [
-    { Icon: GoogleLoginIcon, label: 'Continue with Google', url: '/auth/google' },
-    { Icon: FacebookLoginIcon, label: 'Continue with Facebook', url: '/auth/facebook' },
-    { Icon: GithubLoginIcon, label: 'Continue with Github', url: '/auth/github' },
+    { Icon: GoogleLoginIcon, label: 'Continue with Google', url: '/api/auth/google' },
+    { Icon: FacebookLoginIcon, label: 'Continue with Facebook', url: '/api/auth/facebook' },
+    { Icon: GithubLoginIcon, label: 'Continue with Github', url: '/api/auth/github' },
 ];
 
 export default config;

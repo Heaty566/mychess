@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { JoiError, ApiState, ApiResponse } from './interface';
+import { JoiError, ApiState, ServerResponse } from './interface';
 import { authThunk } from '../auth/thunk';
 
 const initialState: ApiState = {
@@ -23,7 +23,7 @@ const reducer = createSlice({
             newState.isError = true;
             return newState;
         },
-        updateSuccessMessage: (state, { payload }: PayloadAction<ApiResponse<any>>) => ({ ...state, message: payload.message || '' }),
+        updateSuccessMessage: (state, { payload }: PayloadAction<ServerResponse<any>>) => ({ ...state, message: payload.message || '' }),
     },
     extraReducers: (builder) => {},
 });

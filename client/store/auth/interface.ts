@@ -11,4 +11,5 @@ export interface User {
 
 export interface AuthState extends User {
     isLogin: boolean;
+    isSocketLogin: boolean;
 }

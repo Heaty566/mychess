@@ -261,6 +261,7 @@ describe('UserController E2E', () => {
                   it('Failed currentPassword is not correct', async () => {
                         body.currentPassword = fakeData(10, 'lettersAndNumbers');
                         const res = await reqApi(body, newToken);
+
                         expect(res.status).toBe(400);
                   });
             });

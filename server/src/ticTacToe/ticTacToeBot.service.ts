@@ -142,10 +142,10 @@ export class TicTacToeBotService {
       async addMoveToBoardBot(boardId: string, x: number, y: number) {
             const tTTBoard = await this.ticTacToeCommonService.getBoard(boardId);
 
-            tTTBoard.board[x][y] = 1;
+            tTTBoard.board[x][y] = 0;
             tTTBoard.currentTurn = !tTTBoard.currentTurn;
 
-            await this.ticTacToeCommonService.setBoard(tTTBoard.info.id, tTTBoard);
+            await this.ticTacToeCommonService.setBoard(tTTBoard.id, tTTBoard);
             return true;
       }
 
