@@ -34,7 +34,7 @@ export const RouteProtectedWrapper: React.FunctionComponent<RouteProtectedProps>
     return (
         <>
             {apiState.isLoading && !isGetUser ? (
-                <div className="flex items-center justify-center flex-1 w-full">
+                <div className="flex items-center justify-center flex-1 w-full ">
                     <WaveLoading />
                 </div>
             ) : (

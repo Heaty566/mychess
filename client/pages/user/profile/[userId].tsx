@@ -7,7 +7,7 @@ import axios from 'axios';
 import { RootState } from '../../../store';
 import SeoHead from '../../../components/common/seoHead';
 import { capitalize } from '../../../common/helpers/string.helper';
-import { ApiResponse } from '../../../store/api/interface';
+import { ServerResponse } from '../../../store/api/interface';
 import { AuthState, User } from '../../../store/auth/interface';
 
 import EditIcons from '../../../public/asset/icons/edit';
@@ -46,12 +46,18 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                 <img className="object-cover w-40 h-40" src={user.avatarUrl} alt={user.name} />
                             </div>
                             <div>
-                                <div className="flex items-center space-x-1 ">
+                                <div className="flex flex-col items-center space-x-1 space-y-2 md:flex-row md:space-y-0">
                                     <h1 className="text-4xl text-white capitalize">{user.name}</h1>
                                     {authState.id === user.id && (
                                         <Link href={routers.userEdit.link}>
-                                            <a href={routers.userEdit.link}>
-                                                <EditIcons />
+                                            <a
+                                                href={routers.userEdit.link}
+                                                className="flex items-center p-2 space-x-2 duration-300 rounded-sm text-mercury bg-woodsmoke hover:bg-woodsmoke-400"
+                                            >
+                                                <div>
+                                                    <EditIcons />
+                                                </div>
+                                                <span>Edit Profile</span>
                                             </a>
                                         </Link>
                                     )}
@@ -72,7 +78,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext<{ us
     if (!userId) return { redirect: { destination: '/404', permanent: false } };
     else {
         try {
-            const user = await axios.get<ApiResponse<User>>(`${process.env.SERVER_INTER_URL}/user/${userId}`).then(({ data }) => data.data);
+            const user = await axios.get<ServerResponse<User>>(`${process.env.SERVER_INTER_URL}/api/user/${userId}`).then(({ data }) => data.data);
 
             return { props: { user } };
         } catch (err) {

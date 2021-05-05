@@ -3,7 +3,6 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 //---- Entity
 import { Notification } from '../../notifications/entities/notification.entity';
 import { UserRole } from './user.userRole.enum';
-import { Chess } from '../../chess/entity/chess.entity';
 
 @Entity()
 export class User {
