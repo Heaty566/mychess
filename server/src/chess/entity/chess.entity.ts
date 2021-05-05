@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 't
 
 //---- Entity
 import User from '../../users/entities/user.entity';
-import { ChessStatus, ChessFlag } from './chess.interface';
+import { ChessStatus, PlayerFlag } from './chess.interface';
 
 @Entity()
 export class Chess {
@@ -23,7 +23,7 @@ export class Chess {
       blackUser: string;
 
       @Column({ default: -1 })
-      winner: ChessFlag;
+      winner: PlayerFlag;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       startDate: Date;
