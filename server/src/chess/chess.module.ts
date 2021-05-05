@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ChessService } from './chess.service';
 
 @Module({
       imports: [],
-      providers: [],
+      providers: [ChessService],
 })
 export class ChessModule {}

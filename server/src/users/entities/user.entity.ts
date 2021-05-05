@@ -51,12 +51,6 @@ export class User {
 
       @OneToMany(() => Notification, (notification) => notification.receiver, { cascade: true })
       notifications: Notification[];
-
-      @OneToMany(() => Chess, (chess) => chess.whiteUser, { cascade: true })
-      whiteChesses: Chess[];
-
-      @OneToMany(() => Chess, (chess) => chess.blackUser, { cascade: true })
-      blackChesses: Chess[];
 }
 
 export default User;

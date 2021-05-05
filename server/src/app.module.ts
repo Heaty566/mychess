@@ -8,6 +8,7 @@ import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
 import { TicTacToeModule } from './ticTacToe/ticTacToe.module';
+import { ChessModule } from './chess/chess.module';
 
 //---------Provider
 import { SmailModule } from './providers/smail/smail.module';
@@ -71,6 +72,7 @@ const DBConfig = TypeOrmModule.forRoot({
             RedisModule,
             RepositoryModule,
             ChatsModule,
+            ChessModule,
       ],
       controllers: [],
 })
