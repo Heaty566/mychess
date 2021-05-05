@@ -33,5 +33,6 @@ export class TicTacToe {
       constructor() {
             this.status = TicTacToeStatus['NOT-YET'];
             this.startDate = new Date();
+            this.winner = -1;
       }
 }

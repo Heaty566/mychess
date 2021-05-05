@@ -76,9 +76,8 @@ export class TicTacToeController {
 
                   board.info.users.push(req.user);
                   await this.ticTacToeCommonService.setBoard(board.id, board);
-
-                  if (board.info.users.length === 2 && !board.isBotMode) this.ticTacToeService.loadUser(board);
             }
+            if (board.info.users.length === 2 && !board.isBotMode) this.ticTacToeService.loadUser(board);
             await this.ticTacToeGateway.sendToRoom(board);
             return apiResponse.send<void>({});
       }

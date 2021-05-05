@@ -21,6 +21,7 @@ import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { TTTGatewayAction } from './ticTacToe.action';
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {
@@ -43,6 +44,11 @@ export class TicTacToeGateway {
       private async isPlaying(userId: string) {
             const isPlaying = await this.ticTacToeCommonService.isPlaying(userId);
             if (isPlaying) throw ioResponse.sendError({ details: { message: { type: 'game.already-join-other' } } }, 'BadRequestException');
+      }
+
+      private async isRoomPlaying(getCacheGame: TicTacToeBoard) {
+            if (getCacheGame.info.status !== TicTacToeStatus.PLAYING)
+                  throw ioResponse.sendError({ details: { message: { type: 'game.is-not-playing' } } }, 'BadRequestException');
       }
 
       private async getGameFromCache(roomId: string) {
@@ -134,6 +140,7 @@ export class TicTacToeGateway {
       async handleOnSurrender(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isExistUser(getCacheGame, client.user.id);
+            this.isRoomPlaying(getCacheGame);
 
             await this.ticTacToeService.surrender(getCacheGame, client.user);
             return this.socketServer().socketEmitToRoom(TTTGatewayAction.TTT_SURRENDER, getCacheGame.id, {}, 'ttt');
@@ -144,6 +151,7 @@ export class TicTacToeGateway {
       async handleOnAddMove(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vAddMoveDto)) body: AddMoveDto) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isExistUser(getCacheGame, client.user.id);
+            this.isRoomPlaying(getCacheGame);
 
             if (getCacheGame.board[body.x][body.y] !== -1)
                   throw ioResponse.sendError({ details: { message: { type: 'game.already-chose' } } }, 'BadRequestException');
@@ -169,6 +177,7 @@ export class TicTacToeGateway {
       ) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             this.isExistUser(getCacheGame, client.user.id);
+            this.isRoomPlaying(getCacheGame);
 
             if (getCacheGame.board[body.x][body.y] !== -1)
                   throw ioResponse.sendError({ details: { message: { type: 'game.already-chose' } } }, 'BadRequestException');

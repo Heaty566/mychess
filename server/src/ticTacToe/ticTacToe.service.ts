@@ -26,10 +26,7 @@ export class TicTacToeService {
             const getUser = board.users.find((item) => item.id === user.id);
             if (!getUser) return false;
 
-            if (board.info.users[0] && board.info.users[1]) {
-                  board.users[getUser.flag].ready = !board.users[getUser.flag].ready;
-            } else return false;
-
+            board.users[getUser.flag].ready = !board.users[getUser.flag].ready;
             await this.ticTacToeCommonService.setBoard(board.id, board);
             return true;
       }
@@ -79,7 +76,7 @@ export class TicTacToeService {
 
             const currentTurn = board.currentTurn ? 0 : 1;
 
-            if (currentTurn === player.flag) {
+            if (currentTurn === player.flag && board.board[x][y] === -1) {
                   board.board[x][y] = player.flag;
                   board.currentTurn = !board.currentTurn;
                   const currentTime = new Date();
