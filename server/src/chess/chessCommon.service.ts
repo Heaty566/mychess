@@ -39,6 +39,11 @@ export class ChessCommonService {
             return chessBoard;
       }
 
+      async isExistUser(board: ChessBoard, userId: string) {
+            const user = board.info.users.find((item) => item.id === userId);
+            return user;
+      }
+
       async saveChess(chess: Chess) {
             return await this.chessRepository.save(chess);
       }
@@ -50,5 +55,9 @@ export class ChessCommonService {
       async getBoard(boardId: string) {
             const board = await this.redisService.getObjectByKey<ChessBoard>(`chess-${boardId}`);
             return board;
+      }
+
+      async deleteBoard(boardId: string) {
+            await this.redisService.deleteByKey(`chess-${boardId}`);
       }
 }

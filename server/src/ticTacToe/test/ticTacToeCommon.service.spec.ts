@@ -99,6 +99,7 @@ describe('ticTacToeCommonService', () => {
 
                   expect(user).toBeDefined();
             });
+
             it('Failed not found', async () => {
                   const fakeUser = await generateFakeUser();
                   const user = await ticTacToeCommonService.isExistUser(tttBoard, fakeUser.id);
@@ -115,21 +116,6 @@ describe('ticTacToeCommonService', () => {
                   expect(newBoard).toBeDefined();
             });
       });
-      describe('createNewGame', () => {
-            it('Pass', async () => {
-                  tttBoard.info.status = TicTacToeStatus.PLAYING;
-                  await ticTacToeRepository.save(tttBoard.info);
-
-                  const isPlaying = await ticTacToeCommonService.isPlaying(user1.id);
-                  expect(isPlaying).toBeTruthy();
-            });
-            it('Failed ', async () => {
-                  ticTacToeRepository.save(tttBoard.info);
-
-                  const isPlaying = await ticTacToeCommonService.isPlaying(user1.id);
-                  expect(isPlaying).toBeFalsy();
-            });
-      });
 
       describe('deleteBoard', () => {
             it('Pass', async () => {
@@ -141,6 +127,7 @@ describe('ticTacToeCommonService', () => {
                   expect(boardAfter).toBeNull();
             });
       });
+
       afterAll(async () => {
             await resetDB();
             await app.close();

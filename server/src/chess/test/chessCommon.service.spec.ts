@@ -73,12 +73,22 @@ describe('chessCommonService', () => {
             });
       });
 
+      describe('createNewGame', () => {
+            it('Pass', async () => {
+                  const newBoard = await chessCommonService.createNewGame(user1, true);
+                  const getBoard = await chessCommonService.getBoard(newBoard.id);
+                  expect(getBoard).toBeDefined();
+                  expect(newBoard).toBeDefined();
+            });
+      });
+
       describe('getBoard', () => {
             it('Pass', async () => {
                   const board = await chessCommonService.getBoard(chessBoard.id);
                   expect(board).toBeDefined();
                   expect(board.id).toBe(chessBoard.id);
             });
+
             it('Failed no found', async () => {
                   const board = await chessCommonService.getBoard(`chess-hello-world`);
                   expect(board).toBeNull();
@@ -93,6 +103,17 @@ describe('chessCommonService', () => {
 
                   expect(board).toBeDefined();
                   expect(board.id).toBe('123');
+            });
+      });
+
+      describe('deleteBoard', () => {
+            it('Pass', async () => {
+                  const boardBefore = await chessCommonService.getBoard(chessBoard.id);
+                  await chessCommonService.deleteBoard(chessBoard.id);
+                  const boardAfter = await chessCommonService.getBoard(chessBoard.id);
+
+                  expect(boardBefore).toBeDefined();
+                  expect(boardAfter).toBeNull();
             });
       });
 
