@@ -1,13 +1,25 @@
-//---- Entity
-import { Chess } from './chess.entity';
+import { ChessFlag } from './chess.interface';
 
 export class ChessBoard {
-      id: string;
-      board: string;
-      isBotMode: boolean;
-      lastStep: Date;
+      board: Array<Array<ChessFlag>>;
+      turn: boolean;
 
-      constructor(readonly info: Chess, isBotMode: boolean) {
-            this.isBotMode = isBotMode;
+      constructor() {
+            const initCell: ChessFlag = {
+                  flag: -1,
+                  chess: 0,
+            };
+            const initRow: Array<ChessFlag> = [
+                  { ...initCell },
+                  { ...initCell },
+                  { ...initCell },
+                  { ...initCell },
+                  { ...initCell },
+                  { ...initCell },
+                  { ...initCell },
+                  { ...initCell },
+            ];
+
+            this.board = [[...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow]];
       }
 }
