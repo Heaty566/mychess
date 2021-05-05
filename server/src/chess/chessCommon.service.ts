@@ -46,4 +46,9 @@ export class ChessCommonService {
       async setBoard(boardId: string, board: ChessBoard) {
             await this.redisService.setObjectByKey(`chess-${boardId}`, board, 1440);
       }
+
+      async getBoard(boardId: string) {
+            const board = await this.redisService.getObjectByKey<ChessBoard>(`chess-${boardId}`);
+            return board;
+      }
 }
