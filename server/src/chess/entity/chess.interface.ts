@@ -10,7 +10,7 @@ export enum ChessRole {
 export type PlayerFlag = -1 | 0 | 1;
 
 export interface ChessFlag {
-      chess: ChessRole | -1;
+      chessRole: ChessRole | -1;
       flag: PlayerFlag;
 }
 
@@ -24,4 +24,10 @@ export interface ChessMove {
 export interface AvaibleMove {
       x: number;
       y: number;
+}
+
+export enum ChessStatus {
+      'NOT_YET' = '-1',
+      'END' = '0',
+      'PLAYING' = '1',
 }

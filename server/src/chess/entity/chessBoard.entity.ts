@@ -7,7 +7,7 @@ export class ChessBoard {
       constructor() {
             const initCell: ChessFlag = {
                   flag: -1,
-                  chess: 0,
+                  chessRole: -1,
             };
             const initRow: Array<ChessFlag> = [
                   { ...initCell },
