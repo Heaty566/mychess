@@ -49,13 +49,6 @@ describe('ticTacToeCommonService', () => {
             chessGame = await chessRepository.save(chess);
       });
 
-      describe('isPlaying', () => {
-            it('Pass', async () => {
-                  const res = chessCommonService.isPlaying(user1.id);
-                  console.log(res);
-            });
-      });
-
       afterAll(async () => {
             await resetDB();
             await app.close();

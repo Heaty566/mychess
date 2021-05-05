@@ -20,7 +20,7 @@ import { ioResponse } from '../app/interface/socketResponse';
 import { ChessAction } from './chess.action';
 
 @WebSocketGateway({ namespace: 'chess' })
-export class TicTacToeGateway {
+export class ChessGateway {
       constructor(private readonly chessService: ChessService, private readonly chessCommonService: ChessCommonService) {}
 
       @WebSocketServer()
@@ -34,19 +34,5 @@ export class TicTacToeGateway {
                   return this.socketServer().socketEmitToRoomError('BadRequestException', userId, {
                         details: { message: { type: 'game.already-join-other' } },
                   });
-      }
-
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage(ChessAction.CHESS_CREATE)
-      async handleCreateMatch(@ConnectedSocket() client: SocketExtend) {
-            await this.isPlaying(client.user.id);
-
-            const newGameId = await this.chessCommonService.createNewGame(client.user);
-            await client.join(`chess-${newGameId}`);
-
-            await this.chessService.loadGameToCache(newGameId);
-            await this.chessService.joinGame(newGameId, client.user);
-
-            return this.socketServer().socketEmitToRoom<RoomIdDTO>(ChessAction.CHESS_CREATE, newGameId, { data: { roomId: newGameId } }, 'chess');
       }
 }
