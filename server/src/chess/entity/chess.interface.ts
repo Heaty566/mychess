@@ -22,6 +22,12 @@ export interface ChessMove {
       flag: PlayerFlag;
 }
 
+export enum PlayerFlagEnum {
+      WHITE = 0,
+      BLACK = 1,
+      EMPTY = -1,
+}
+
 export enum ChessStatus {
       'NOT_YET' = '-1',
       'END' = '0',
