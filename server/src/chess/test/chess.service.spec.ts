@@ -32,7 +32,7 @@ describe('ticTacToeService', () => {
             chessService = module.get<ChessService>(ChessService);
             redisService = module.get<RedisService>(RedisService);
       });
-      /*
+
       describe('kingAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
@@ -232,7 +232,6 @@ describe('ticTacToeService', () => {
             });
       });
 
-
       describe('queenAvailable', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
@@ -287,7 +286,7 @@ describe('ticTacToeService', () => {
                   expect(result.length).toBe(11);
             });
       });
-*/
+
       describe('kingIsChecked', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
@@ -541,6 +540,48 @@ describe('ticTacToeService', () => {
                   expect(result).toBeTruthy();
             });
       });
+
+      describe('playAMove', () => {
+            let chessBoard: ChessBoard;
+            beforeEach(() => {
+                  chessBoard = new ChessBoard();
+            });
+
+            it('play a move', () => {
+                  chessBoard.board[0][0] = {
+                        flag: 0,
+                        chessRole: ChessRole.ROOK,
+                  };
+                  chessService.playAMove(
+                        { flag: 0, x: 0, y: 0, chessRole: ChessRole.ROOK },
+                        { flag: -1, x: 0, y: 7, chessRole: ChessRole.EMPTY },
+                        chessBoard,
+                  );
+                  expect(chessBoard.board[0][7].flag).toBe(0);
+                  expect(chessBoard.board[0][7].chessRole).toBe(ChessRole.ROOK);
+            });
+
+            it('play a move', () => {
+                  chessBoard.board[0][0] = {
+                        flag: 0,
+                        chessRole: ChessRole.ROOK,
+                  };
+                  chessService.playAMove(
+                        { flag: 0, x: 0, y: 0, chessRole: ChessRole.ROOK },
+                        { flag: -1, x: 0, y: 7, chessRole: ChessRole.EMPTY },
+                        chessBoard,
+                  );
+
+                  chessService.playAMove(
+                        { flag: 0, x: 0, y: 7, chessRole: ChessRole.ROOK },
+                        { flag: -1, x: 0, y: 0, chessRole: ChessRole.EMPTY },
+                        chessBoard,
+                  );
+                  expect(chessBoard.board[0][0].flag).toBe(0);
+                  expect(chessBoard.board[0][0].chessRole).toBe(ChessRole.ROOK);
+            });
+      });
+
       afterAll(async () => {
             await resetDB();
             await app.close();

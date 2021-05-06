@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AvaibleMove, ChessMove, ChessRole } from './entity/chess.interface';
+import { ChessMove, ChessRole } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- Repository
 
 @Injectable()
 export class ChessService {
-      kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
-            const result: Array<AvaibleMove> = [];
+      kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const result: Array<ChessMove> = [];
             let kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
             let kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
 
@@ -22,14 +22,14 @@ export class ChessService {
                         y < chessBoard.board.length &&
                         chessBoard.board[x][y].flag !== currentPosition.flag
                   ) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                   }
             }
             return result;
       }
 
-      knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
-            const result: Array<AvaibleMove> = [];
+      knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const result: Array<ChessMove> = [];
             let knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
             let knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
             for (let i = 0; i <= 7; i++) {
@@ -43,14 +43,14 @@ export class ChessService {
                         y < chessBoard.board.length &&
                         chessBoard.board[x][y].flag !== currentPosition.flag
                   ) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                   }
             }
             return result;
       }
 
-      rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
-            const result: Array<AvaibleMove> = [];
+      rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const result: Array<ChessMove> = [];
             // Right
             let x = currentPosition.x + 1;
             let y = currentPosition.y;
@@ -58,7 +58,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -72,7 +72,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -86,7 +86,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -100,7 +100,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -110,8 +110,8 @@ export class ChessService {
             return result;
       }
 
-      bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
-            const result: Array<AvaibleMove> = [];
+      bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const result: Array<ChessMove> = [];
             // Top - Left
             let x = currentPosition.x - 1;
             let y = currentPosition.y + 1;
@@ -120,7 +120,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -136,7 +136,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -152,7 +152,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -168,7 +168,7 @@ export class ChessService {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
 
                   if (chessBoard.board[x][y].flag !== currentPosition.flag) {
-                        result.push({ x, y });
+                        result.push({ x: x, y: y, flag: chessBoard.board[x][y].flag, chessRole: chessBoard.board[x][y].chessRole });
                         if (chessBoard.board[x][y].flag >= 0) break;
                   }
 
@@ -179,8 +179,8 @@ export class ChessService {
             return result;
       }
 
-      queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<AvaibleMove> {
-            const result: Array<AvaibleMove> = [];
+      queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const result: Array<ChessMove> = [];
             const moveLikeBishop = this.bishopAvailableMove(currentPosition, chessBoard);
             const moveLikeRook = this.rookAvailableMove(currentPosition, chessBoard);
             result.push(...moveLikeBishop);
@@ -381,5 +381,17 @@ export class ChessService {
                   }
             }
             return false;
+      }
+
+      playAMove(currentPosition: ChessMove, destinationPosition: ChessMove, chessBoard: ChessBoard) {
+            chessBoard.board[destinationPosition.x][destinationPosition.y] = {
+                  flag: currentPosition.flag,
+                  chessRole: currentPosition.chessRole,
+            };
+
+            chessBoard.board[currentPosition.x][currentPosition.y] = {
+                  flag: -1,
+                  chessRole: ChessRole.EMPTY,
+            };
       }
 }

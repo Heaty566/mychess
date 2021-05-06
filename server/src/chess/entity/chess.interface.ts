@@ -5,12 +5,13 @@ export enum ChessRole {
       KNIGHT = 4,
       BISHOP = 5,
       PAWN = 6,
+      EMPTY = -1,
 }
 
 export type PlayerFlag = -1 | 0 | 1;
 
 export interface ChessFlag {
-      chessRole: ChessRole | -1;
+      chessRole: ChessRole;
       flag: PlayerFlag;
 }
 
@@ -19,11 +20,6 @@ export interface ChessMove {
       y: number;
       chessRole: ChessRole;
       flag: PlayerFlag;
-}
-
-export interface AvaibleMove {
-      x: number;
-      y: number;
 }
 
 export enum ChessStatus {
