@@ -562,4 +562,42 @@ export class ChessService {
                         return [];
             }
       }
+
+      checkmate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
+            const kingPosition: ChessMove = this.getKing(flag, chessBoard);
+            if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
+
+            for (let i = 0; i <= 7; i++) {
+                  for (let j = 0; j <= 7; j++) {
+                        if (chessBoard.board[i][j].flag === flag) {
+                              let legalMove: Array<ChessMove> = this.legalMove(
+                                    { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
+                                    chessBoard,
+                              );
+                              if (legalMove.length > 0) return false;
+                        }
+                  }
+            }
+
+            return true;
+      }
+
+      stalemate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
+            const kingPosition: ChessMove = this.getKing(flag, chessBoard);
+            if (this.kingIsChecked(kingPosition, chessBoard)) return false;
+
+            for (let i = 0; i <= 7; i++) {
+                  for (let j = 0; j <= 7; j++) {
+                        if (chessBoard.board[i][j].flag === flag) {
+                              let legalMove: Array<ChessMove> = this.legalMove(
+                                    { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
+                                    chessBoard,
+                              );
+                              if (legalMove.length > 0) return false;
+                        }
+                  }
+            }
+
+            return true;
+      }
 }

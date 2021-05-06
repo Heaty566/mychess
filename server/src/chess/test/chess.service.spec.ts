@@ -32,7 +32,7 @@ describe('ChessService', () => {
             chessService = module.get<ChessService>(ChessService);
             redisService = module.get<RedisService>(RedisService);
       });
-
+      /*
       describe('kingAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
@@ -1077,6 +1077,244 @@ describe('ChessService', () => {
                   };
                   const legalMove = chessService['pawnLegalMove']({ x: 2, y: 3, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
                   expect(legalMove.length).toBe(0);
+            });
+      });
+      */
+      describe('pawnLegalMove', () => {
+            let chessBoard: ChessBoard;
+            beforeEach(() => {
+                  chessBoard = new ChessBoard();
+            });
+
+            it('Case 1', () => {
+                  chessBoard.board[1][0] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[0][1] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+                  chessBoard.board[2][1] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+                  chessBoard.board[7][0] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  const result = chessService.checkmate(0, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('Case 2', () => {
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+                  chessBoard.board[2][1] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+
+                  chessBoard.board[0][0] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+
+                  const result = chessService.checkmate(1, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('Case 3', () => {
+                  chessBoard.board[2][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+                  chessBoard.board[5][7] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+
+                  const result = chessService.checkmate(1, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('Case 4', () => {
+                  chessBoard.board[2][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+                  chessBoard.board[5][7] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+
+                  const result = chessService.checkmate(1, chessBoard);
+                  expect(result).toBeFalsy();
+            });
+
+            it('Case 5', () => {
+                  chessBoard.board[2][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+                  chessBoard.board[5][7] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[2][1] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 1,
+                  };
+
+                  const result = chessService.checkmate(1, chessBoard);
+                  expect(result).toBeFalsy();
+            });
+
+            it('Case 6', () => {
+                  chessBoard.board[2][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][1] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+                  chessBoard.board[5][7] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 0,
+                  };
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[2][2] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.BISHOP,
+                        flag: 0,
+                  };
+
+                  const result = chessService.checkmate(1, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('Case 7', () => {
+                  chessBoard.board[6][5] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[6][7] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[6][6] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.checkmate(1, chessBoard);
+                  expect(result).toBeFalsy();
+            });
+      });
+
+      describe('stalemate', () => {
+            let chessBoard: ChessBoard;
+            beforeEach(() => {
+                  chessBoard = new ChessBoard();
+            });
+
+            it('Case 1', () => {
+                  chessBoard.board[6][5] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[6][7] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[6][6] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.stalemate(1, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('Case 2', () => {
+                  chessBoard.board[5][5] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[5][6] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.stalemate(1, chessBoard);
+                  expect(result).toBeTruthy();
+            });
+
+            it('Case 3', () => {
+                  chessBoard.board[0][0] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.KING,
+                        flag: 1,
+                  };
+                  chessBoard.board[0][6] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+                  chessBoard.board[6][0] = {
+                        chessRole: ChessRole.QUEEN,
+                        flag: 0,
+                  };
+
+                  const result = chessService.stalemate(1, chessBoard);
+                  expect(result).toBeTruthy();
             });
       });
       afterAll(async () => {
