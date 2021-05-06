@@ -8,13 +8,22 @@ export type ErrorType =
       | 'NotFoundException'
       | 'ForbiddenException';
 
-export interface ResponseBody<T> {
+export interface ResponseBodyDetails {
       message?: JoiErrorItem;
+      messageError?: JoiErrorItem;
+      [key: string]: JoiErrorItem;
+}
+export interface ServerBodyDetails {
+      message?: string;
+      messageError?: string;
+      [key: string]: string;
+}
+
+export interface ResponseBody<T> {
       data?: T;
-      details?: Record<string, JoiErrorItem>;
+      details?: ResponseBodyDetails;
 }
 export interface ServerResponse<T> {
-      message?: string;
       data?: T;
-      details?: Record<string, string>;
+      details?: ServerBodyDetails;
 }

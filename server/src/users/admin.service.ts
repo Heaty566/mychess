@@ -38,6 +38,8 @@ export class AdminService {
       }
 
       async getAllUsers() {
-            return await this.userRepository.find();
+            const result = await this.userRepository.createQueryBuilder().getMany();
+
+            return result;
       }
 }

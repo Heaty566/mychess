@@ -15,6 +15,7 @@ import { UserRepository } from '../users/entities/user.repository';
 import { ReTokenRepository } from '../auth/entities/re-token.repository';
 import { NotificationRepository } from '../notifications/entities/notification.repository';
 import { TicTacToeRepository } from '../ticTacToe/entity/ticTacToe.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
       return Array.from(Array(5)).map(async (_) => {

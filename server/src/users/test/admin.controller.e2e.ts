@@ -37,6 +37,7 @@ describe('AdminController E2E', () => {
             it('Pass get all user', async () => {
                   const res = await reqApi(cookieData);
 
+                  expect(res.status).toBe(200);
                   expect(res.body.data.length).toBeGreaterThanOrEqual(1);
             });
       });
