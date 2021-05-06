@@ -132,7 +132,6 @@ describe('TicTacToeGateway ', () => {
 
             it('Pass', async (done) => {
                   client1.on(TTTGatewayAction.TTT_JOIN, async (data: SocketServerResponse<null>) => {
-                        expect(data.data).toBeDefined();
                         expect(data.statusCode).toBe(200);
                         done();
                   });
@@ -141,7 +140,6 @@ describe('TicTacToeGateway ', () => {
             });
             it('Failed wrong user', async (done) => {
                   client2.on('exception', async (data: SocketServerResponse<null>) => {
-                        expect(data.data).toBeDefined();
                         expect(data.statusCode).toBe(401);
                         done();
                   });

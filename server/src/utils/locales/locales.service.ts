@@ -22,13 +22,10 @@ export class LocalesService {
        */
       public translateResponse<T>(res: ResponseBody<T>) {
             const formatApi: ServerResponse<T> = {
-                  message: '',
                   details: {},
-                  data: null,
+                  data: res.data,
             };
 
-            if (res.message) formatApi.message = this.translate(res.message.type, { ...res.message.context });
-            if (res.data) formatApi.data = res.data;
             if (res.details)
                   for (const item in res.details) {
                         formatApi.details[item] = this.translate(res.details[item].type, { ...res.details[item].context });

@@ -79,7 +79,7 @@ export class AuthController {
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
             //checking user is exist
             const user = await this.userService.findOneUserByField('id', req.user.id);
-            if (!user) throw apiResponse.sendError({ message: { type: 'user.invalid-input' } }, 'UnauthorizedException');
+            if (!user) throw apiResponse.sendError({ details: { message: { type: 'user.invalid-input' } } }, 'UnauthorizedException');
 
             //create socket io token
             const socketId = await this.authService.getSocketToken(user);
@@ -134,7 +134,7 @@ export class AuthController {
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
             if (!isSent) throw apiResponse.sendError({ details: { email: { type: 'server.some-wrong' } } }, 'BadGatewayException');
 
-            return apiResponse.send({ message: { type: 'server.send-email-otp' } });
+            return apiResponse.send({ details: { message: { type: 'server.send-email-otp' } } });
       }
 
       @Post('/otp-sms')
@@ -174,7 +174,7 @@ export class AuthController {
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
             if (!isSent) throw apiResponse.sendError({ details: { phoneNumber: { type: 'server.some-wrong' } } }, 'InternalServerErrorException');
 
-            return apiResponse.send({ message: { type: 'server.send-phone-otp' } });
+            return apiResponse.send({ details: { message: { type: 'server.send-phone-otp' } } });
       }
 
       @Post('/check-otp')
@@ -186,7 +186,7 @@ export class AuthController {
             const isExist = await this.redisService.getObjectByKey<User>(key);
             if (!isExist) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
 
-            return apiResponse.send<void>({ message: { type: '' } });
+            return apiResponse.send<void>({ details: { message: { type: '' } } });
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------

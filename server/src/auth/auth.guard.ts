@@ -25,7 +25,7 @@ export class UserGuard implements CanActivate {
             const authTokenId = await this.authService.getAuthTokenByReToken(reToken);
             if (!authTokenId) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
+                  throw apiResponse.sendError({ details: { message: { type: 'user.invalid-token' } } }, 'UnauthorizedException');
             }
             res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
             return await this.authService.getUserByAuthToken(authTokenId);
@@ -43,7 +43,7 @@ export class UserGuard implements CanActivate {
             //checking re-token
             if (!refreshToken) {
                   res.cookie('re-token', '', { maxAge: 0 });
-                  throw apiResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
+                  throw apiResponse.sendError({ details: { message: { type: 'user.invalid-token' } } }, 'UnauthorizedException');
             }
 
             //checking auth-token
@@ -55,13 +55,13 @@ export class UserGuard implements CanActivate {
             //checking isDisabled user
             if (req.user.isDisabled) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ message: { type: 'user.ban' } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { message: { type: 'user.ban' } } }, 'ForbiddenException');
             }
 
             //checking role
             if (role === UserRole.ADMIN && req.user.role !== UserRole.ADMIN) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ message: { type: 'user.not-allow-action' } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
             }
 
             return true;
