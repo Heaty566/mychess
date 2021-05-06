@@ -1,13 +1,11 @@
-let mockPromise = Promise.resolve();
+const mockPromise = jest.fn();
 class TwilioMock {
       constructor() {
             //
       }
 
       public messages = {
-            create() {
-                  return mockPromise;
-            },
+            create: mockPromise,
       };
 }
 
@@ -37,13 +35,16 @@ describe('TokenService', () => {
 
       describe('sendSms', () => {
             it('Pass', async () => {
+                  mockPromise.mockImplementation().mockResolvedValue({});
                   const res = await smsService['sendSms']('+00000000', fakeData(10));
                   expect(res).toBeTruthy();
+                  mockPromise.mockClear();
             });
             it('Pass', async () => {
-                  mockPromise = Promise.reject();
+                  mockPromise.mockImplementation().mockRejectedValue({});
                   const res = await smsService['sendSms'](fakeData(11), fakeData(10));
                   expect(res).toBeFalsy();
+                  mockPromise.mockClear();
             });
             it('Debug mode', async () => {
                   process.env.DOC = 'active';

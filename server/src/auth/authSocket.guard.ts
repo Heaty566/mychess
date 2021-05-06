@@ -21,15 +21,15 @@ export class UserSocketGuard implements CanActivate {
 
       async canActivate(context: ExecutionContext) {
             const client = await this.cookieParserSocket(context);
-            if (!client.cookies) throw ioResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
+            if (!client.cookies) throw ioResponse.sendError({ details: { message: { type: 'user.invalid-token' } } }, 'UnauthorizedException');
 
             //get io-token
             const ioToken = client.cookies['io-token'] || '';
-            if (!ioToken) throw ioResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
+            if (!ioToken) throw ioResponse.sendError({ details: { message: { type: 'user.invalid-token' } } }, 'UnauthorizedException');
 
             //checking io-token
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
-            if (!getUser) throw ioResponse.sendError({ message: { type: 'user.invalid-token' } }, 'UnauthorizedException');
+            if (!getUser) throw ioResponse.sendError({ details: { message: { type: 'user.invalid-token' } } }, 'UnauthorizedException');
             client.user = getUser;
 
             return true;

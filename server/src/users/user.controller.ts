@@ -66,7 +66,7 @@ export class UserController {
       async cGetUserById(@Param('id') id: string) {
             //get user
             const user = await this.userService.findOneUserWithoutSomeSensitiveFields('id', id);
-            if (!user) throw apiResponse.sendError({ message: { type: 'user.invalid-input' } }, 'BadRequestException');
+            if (!user) throw apiResponse.sendError({ details: { message: { type: 'user.invalid-input' } } }, 'BadRequestException');
 
             return apiResponse.send<UserCustomDTO>({ data: user });
       }
@@ -82,7 +82,7 @@ export class UserController {
             user.name = body.name;
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
+            return apiResponse.send<void>({ details: { message: { type: 'user.update-success' } } });
       }
 
       @Put('/avatar')
@@ -109,14 +109,14 @@ export class UserController {
 
             //upload file to aws
             const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');
-            if (!fileLocation) throw apiResponse.sendError({ message: { type: 'server.some-wrong' } }, 'InternalServerErrorException');
+            if (!fileLocation) throw apiResponse.sendError({ details: { message: { type: 'server.some-wrong' } } }, 'InternalServerErrorException');
 
             //update user information
             const user = await this.userService.findOneUserByField('id', req.user.id);
             user.avatarUrl = fileLocation;
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
+            return apiResponse.send<void>({ details: { message: { type: 'user.update-success' } } });
       }
 
       @Put('/password')
@@ -131,7 +131,7 @@ export class UserController {
             user.password = await this.authService.encryptString(body.newPassword);
             await this.userService.saveUser(user);
 
-            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
+            return apiResponse.send<void>({ details: { message: { type: 'user.update-success' } } });
       }
 
       @Put('/reset-password')
@@ -149,7 +149,7 @@ export class UserController {
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(key);
 
-            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
+            return apiResponse.send<void>({ details: { message: { type: 'user.update-success' } } });
       }
 
       @Put('/update-with-otp')
@@ -172,7 +172,7 @@ export class UserController {
             await this.userService.saveUser(user);
             this.redisService.deleteByKey(key);
 
-            return apiResponse.send<void>({ message: { type: 'user.update-success' } });
+            return apiResponse.send<void>({ details: { message: { type: 'user.update-success' } } });
       }
 
       //-----------------------------------Create-OTP--WITH GUARD-------------------------------
@@ -214,9 +214,9 @@ export class UserController {
             //generate otp
             const otpKey = this.authService.createOTP(updateUser, config.userController.OTPPhoneValidTime, 'sms');
             const res = await this.smsService.sendOTP(updateUser.phoneNumber, otpKey);
-            if (!res) throw apiResponse.sendError({ message: { type: 'server.some-wrong' } }, 'InternalServerErrorException');
+            if (!res) throw apiResponse.sendError({ details: { message: { type: 'server.some-wrong' } } }, 'InternalServerErrorException');
 
-            return apiResponse.send({ message: { type: 'server.send-phone-otp' } });
+            return apiResponse.send({ details: { message: { type: 'server.send-phone-otp' } } });
       }
 
       @Post('/otp-email')
@@ -260,6 +260,6 @@ export class UserController {
             const isSent = await this.smailService.sendOTPForUpdateEmail(updateUser.email, redisKey);
             if (!isSent) throw apiResponse.sendError({ details: { email: { type: 'server.some-wrong' } } }, 'InternalServerErrorException');
 
-            return apiResponse.send({ message: { type: 'server.send-email-otp' } });
+            return apiResponse.send({ details: { message: { type: 'server.send-email-otp' } } });
       }
 }
