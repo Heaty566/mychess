@@ -11,7 +11,7 @@ import User from '../users/entities/user.entity';
 
 //---- Repository
 import { TicTacToeBotService } from './ticTacToeBot.service';
-import { UserService } from 'src/users/user.service';
+import { UserService } from '../users/user.service';
 import { TicTacToeMove } from './entity/ticTacToeMove.entity';
 import { TicTacToe } from './entity/ticTacToe.entity';
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
