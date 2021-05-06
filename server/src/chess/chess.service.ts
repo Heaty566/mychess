@@ -600,4 +600,13 @@ export class ChessService {
 
             return true;
       }
+
+      playAMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard) {
+            chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
+
+            chessBoard.board[curPos.x][curPos.y] = {
+                  flag: -1,
+                  chessRole: ChessRole.EMPTY,
+            };
+      }
 }
