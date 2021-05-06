@@ -1,15 +1,76 @@
 import { Injectable } from '@nestjs/common';
-import { ChessMove, ChessRole } from './entity/chess.interface';
+import { Chess } from './entity/chess.entity';
+import { ChessMove, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- Repository
 
 @Injectable()
 export class ChessService {
-      kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+      private pawnAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
             const result: Array<ChessMove> = [];
-            let kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
-            let kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
+            // pawn can not appear on row 0 or 7
+            if (currentPosition.y === 0 || currentPosition.y === 7) return result;
+            if (currentPosition.flag === PlayerFlagEnum.WHITE) {
+                  let x = currentPosition.x;
+                  let y = currentPosition.y;
+                  // in the first move, pawn can move forward 2 square
+                  if (y === 1 && chessBoard.board[x][y + 1].flag === PlayerFlagEnum.EMPTY && chessBoard.board[x][y + 2].flag === PlayerFlagEnum.EMPTY)
+                        result.push({ x: x, y: y + 2, flag: PlayerFlagEnum.EMPTY, chessRole: ChessRole.EMPTY });
+
+                  // move forward 1 square
+                  if (y + 1 <= 7 && chessBoard.board[x][y + 1].flag === PlayerFlagEnum.EMPTY)
+                        result.push({ x: x, y: y + 1, flag: PlayerFlagEnum.EMPTY, chessRole: ChessRole.EMPTY });
+
+                  // eat opposite color piece
+                  if (
+                        x - 1 >= 0 &&
+                        y + 1 <= 7 &&
+                        chessBoard.board[x - 1][y + 1].flag >= 0 &&
+                        chessBoard.board[x - 1][y + 1].flag !== currentPosition.flag
+                  )
+                        result.push({ x: x - 1, y: y + 1, flag: PlayerFlagEnum.BLACK, chessRole: chessBoard.board[x - 1][y + 1].chessRole });
+
+                  if (
+                        x + 1 <= 7 &&
+                        y + 1 <= 7 &&
+                        chessBoard.board[x + 1][y + 1].flag >= 0 &&
+                        chessBoard.board[x + 1][y + 1].flag !== currentPosition.flag
+                  )
+                        result.push({ x: x + 1, y: y + 1, flag: PlayerFlagEnum.BLACK, chessRole: chessBoard.board[x + 1][y + 1].chessRole });
+            } else if (currentPosition.flag === PlayerFlagEnum.BLACK) {
+                  let x = currentPosition.x;
+                  let y = currentPosition.y;
+
+                  if (y === 6 && chessBoard.board[x][y - 1].flag === PlayerFlagEnum.EMPTY && chessBoard.board[x][y - 2].flag === PlayerFlagEnum.EMPTY)
+                        result.push({ x: x, y: y - 2, flag: PlayerFlagEnum.EMPTY, chessRole: ChessRole.EMPTY });
+
+                  if (y - 1 >= 0 && chessBoard.board[x][y - 1].flag === PlayerFlagEnum.EMPTY)
+                        result.push({ x: x, y: y - 1, flag: PlayerFlagEnum.EMPTY, chessRole: ChessRole.EMPTY });
+
+                  if (
+                        x - 1 >= 0 &&
+                        y - 1 >= 0 &&
+                        chessBoard.board[x - 1][y - 1].flag >= 0 &&
+                        chessBoard.board[x - 1][y - 1].flag !== currentPosition.flag
+                  )
+                        result.push({ x: x - 1, y: y - 1, flag: PlayerFlagEnum.BLACK, chessRole: chessBoard.board[x - 1][y - 1].chessRole });
+
+                  if (
+                        x + 1 <= 7 &&
+                        y - 1 >= 0 &&
+                        chessBoard.board[x + 1][y - 1].flag >= 0 &&
+                        chessBoard.board[x + 1][y - 1].flag !== currentPosition.flag
+                  )
+                        result.push({ x: x + 1, y: y - 1, flag: PlayerFlagEnum.BLACK, chessRole: chessBoard.board[x + 1][y - 1].chessRole });
+            }
+            return result;
+      }
+
+      private kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const result: Array<ChessMove> = [];
+            const kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
+            const kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
 
             for (let i = 0; i <= 7; i++) {
                   let x = currentPosition.x + kingMoveX[i];
@@ -28,10 +89,10 @@ export class ChessService {
             return result;
       }
 
-      knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+      private knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
             const result: Array<ChessMove> = [];
-            let knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
-            let knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
+            const knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
+            const knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
             for (let i = 0; i <= 7; i++) {
                   let x = currentPosition.x + knightMoveX[i];
                   let y = currentPosition.y + knightMoveY[i];
@@ -49,7 +110,7 @@ export class ChessService {
             return result;
       }
 
-      rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+      private rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
             const result: Array<ChessMove> = [];
             // Right
             let x = currentPosition.x + 1;
@@ -110,7 +171,7 @@ export class ChessService {
             return result;
       }
 
-      bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+      private bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
             const result: Array<ChessMove> = [];
             // Top - Left
             let x = currentPosition.x - 1;
@@ -179,7 +240,7 @@ export class ChessService {
             return result;
       }
 
-      queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+      private queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
             const result: Array<ChessMove> = [];
             const moveLikeBishop = this.bishopAvailableMove(currentPosition, chessBoard);
             const moveLikeRook = this.rookAvailableMove(currentPosition, chessBoard);
@@ -187,6 +248,23 @@ export class ChessService {
             result.push(...moveLikeRook);
 
             return result;
+      }
+
+      getKing(flag, chessBoard: ChessBoard): ChessMove {
+            for (let i = 0; i <= 7; i++) {
+                  for (let j = 0; j <= 7; j++) {
+                        if (chessBoard.board[i][j].flag === flag && chessBoard.board[i][j].chessRole === ChessRole.KING) {
+                              return {
+                                    x: i,
+                                    y: j,
+                                    flag: flag,
+                                    chessRole: ChessRole.KING,
+                              };
+                        }
+                  }
+            }
+
+            return null;
       }
 
       kingIsChecked(currentPosition: ChessMove, chessBoard: ChessBoard): boolean {
@@ -383,15 +461,105 @@ export class ChessService {
             return false;
       }
 
-      playAMove(currentPosition: ChessMove, destinationPosition: ChessMove, chessBoard: ChessBoard) {
-            chessBoard.board[destinationPosition.x][destinationPosition.y] = {
-                  flag: currentPosition.flag,
-                  chessRole: currentPosition.chessRole,
-            };
+      canMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard): boolean {
+            const tmpDestinationPosition = desPos;
+            let canMove: boolean = true;
+            chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
-            chessBoard.board[currentPosition.x][currentPosition.y] = {
+            chessBoard.board[curPos.x][curPos.y] = {
                   flag: -1,
                   chessRole: ChessRole.EMPTY,
             };
+
+            const kingPosition: ChessMove = this.getKing(curPos.flag, chessBoard);
+            if (this.kingIsChecked(kingPosition, chessBoard)) canMove = false;
+
+            chessBoard.board[curPos.x][curPos.y] = chessBoard.board[desPos.x][desPos.y];
+
+            chessBoard.board[desPos.x][desPos.y] = {
+                  flag: tmpDestinationPosition.flag,
+                  chessRole: tmpDestinationPosition.chessRole,
+            };
+
+            return canMove;
+      }
+
+      private rookLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const availableMove = this.rookAvailableMove(currentPosition, chessBoard);
+            const legalMove: Array<ChessMove> = [];
+            availableMove.forEach((move) => {
+                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
+            });
+
+            return legalMove;
+      }
+
+      private bishopLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const availableMove = this.bishopAvailableMove(currentPosition, chessBoard);
+            const legalMove: Array<ChessMove> = [];
+            availableMove.forEach((move) => {
+                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
+            });
+
+            return legalMove;
+      }
+
+      private queenLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const availableMove = this.queenAvailableMove(currentPosition, chessBoard);
+            const legalMove: Array<ChessMove> = [];
+            availableMove.forEach((move) => {
+                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
+            });
+
+            return legalMove;
+      }
+
+      private knightLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const availableMove = this.knightAvailableMove(currentPosition, chessBoard);
+            const legalMove: Array<ChessMove> = [];
+            availableMove.forEach((move) => {
+                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
+            });
+
+            return legalMove;
+      }
+
+      private kingLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const availableMove = this.kingAvailableMove(currentPosition, chessBoard);
+            const legalMove: Array<ChessMove> = [];
+            availableMove.forEach((move) => {
+                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
+            });
+
+            return legalMove;
+      }
+
+      private pawnLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            const availableMove = this.pawnAvailableMove(currentPosition, chessBoard);
+            const legalMove: Array<ChessMove> = [];
+            availableMove.forEach((move) => {
+                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
+            });
+
+            return legalMove;
+      }
+
+      legalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            switch (currentPosition.chessRole) {
+                  case ChessRole.BISHOP:
+                        return this.bishopLegalMove(currentPosition, chessBoard);
+                  case ChessRole.ROOK:
+                        return this.rookLegalMove(currentPosition, chessBoard);
+                  case ChessRole.QUEEN:
+                        return this.queenLegalMove(currentPosition, chessBoard);
+                  case ChessRole.KNIGHT:
+                        return this.knightLegalMove(currentPosition, chessBoard);
+                  case ChessRole.PAWN:
+                        return this.pawnLegalMove(currentPosition, chessBoard);
+                  case ChessRole.KING:
+                        return this.kingLegalMove(currentPosition, chessBoard);
+                  case ChessRole.EMPTY:
+                        return [];
+            }
       }
 }
