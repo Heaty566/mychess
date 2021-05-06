@@ -32,7 +32,7 @@ describe('ChessService', () => {
             chessService = module.get<ChessService>(ChessService);
             redisService = module.get<RedisService>(RedisService);
       });
-      /*
+
       describe('kingAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
@@ -1079,7 +1079,7 @@ describe('ChessService', () => {
                   expect(legalMove.length).toBe(0);
             });
       });
-      */
+
       describe('pawnLegalMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
