@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
 //---- Service
-import { UserService } from '../users/user.service';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 
 //---- Entity
-import User from '../users/entities/user.entity';
 import { TicTacToeBotMovePoint, TicTacToePlayer } from './entity/ticTacToe.interface';
 import { TicTacToeFlag } from './entity/ticTacToe.interface';
 
 @Injectable()
 export class TicTacToeBotService {
-      constructor(private readonly ticTacToeCommonService: TicTacToeCommonService, private readonly userService: UserService) {}
+      constructor(private readonly ticTacToeCommonService: TicTacToeCommonService) {}
       async findBestMove(boardId: string, player: TicTacToePlayer) {
             const getBoard = await this.ticTacToeCommonService.getBoard(boardId);
             if (getBoard) {
@@ -140,16 +138,5 @@ export class TicTacToeBotService {
             }
 
             return total;
-      }
-
-      getBotInfo() {
-            const user = new User();
-            user.id = 'BOT';
-            user.elo = 200;
-            user.name = 'BOT';
-            user.username = 'BOT';
-            user.avatarUrl = this.userService.randomAvatar();
-
-            return user;
       }
 }
