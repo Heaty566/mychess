@@ -8,6 +8,7 @@ import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/user.module';
 import { TicTacToeModule } from './ticTacToe/ticTacToe.module';
+import { ChessModule } from './chess/chess.module';
 
 //---------Provider
 import { SmailModule } from './providers/smail/smail.module';
@@ -29,6 +30,7 @@ import { Chat } from './chats/entities/chat.entity';
 import { Message } from './chats/entities/message.entity';
 import { TicTacToe } from './ticTacToe/entity/ticTacToe.entity';
 import { TicTacToeMove } from './ticTacToe/entity/ticTacToeMove.entity';
+import { Chess } from './chess/entity/chess.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -44,7 +46,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken, Notification, Chat, Message, TicTacToe, TicTacToeMove],
+      entities: [User, ReToken, Notification, Chat, Message, TicTacToe, TicTacToeMove, Chess],
 });
 
 @Module({
@@ -60,6 +62,7 @@ const DBConfig = TypeOrmModule.forRoot({
             CommonModule,
             NotificationsModule,
             TicTacToeModule,
+            ChessModule,
 
             // --- Provider
             SmailModule,
@@ -71,6 +74,7 @@ const DBConfig = TypeOrmModule.forRoot({
             RedisModule,
             RepositoryModule,
             ChatsModule,
+            ChessModule,
       ],
       controllers: [],
 })

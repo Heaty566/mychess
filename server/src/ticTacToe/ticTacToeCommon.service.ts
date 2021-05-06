@@ -23,7 +23,7 @@ export class TicTacToeCommonService {
             return res;
       }
 
-      async getOneTTTByFiled(where: string, parameters: ObjectLiteral) {
+      async getOneTTTByField(where: string, parameters: ObjectLiteral) {
             const res = await this.ticTacToeRepository.getOneTTTByFiled(where, parameters);
 
             return res;
