@@ -21,6 +21,8 @@ import { apiResponse } from '../app/interface/apiResponse';
 import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
 import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
 import { TicTacToeStatus } from './entity/ticTacToe.interface';
+import User from '../users/entities/user.entity';
+import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 
 @Controller('ttt')
 export class TicTacToeController {
@@ -32,10 +34,27 @@ export class TicTacToeController {
             private readonly ticTacToeBotService: TicTacToeBotService,
       ) {}
 
+      private async getPlayer(tttId: string, userId: string) {
+            const player = await this.ticTacToeCommonService.isExistUser(tttId, userId);
+            if (!player) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+            return player;
+      }
+
+      private async getGame(roomId: string) {
+            const board = await this.ticTacToeCommonService.getBoard(roomId);
+            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            return board;
+      }
+
+      private async isPlaying(board: TicTacToeBoard) {
+            if (board.status === TicTacToeStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+      }
+
       @Post('/pvp')
       @UseGuards(UserGuard)
       async handleOnCreatePvP(@Req() req: Request) {
-            const newGameId = await this.ticTacToeService.createNewGame(req.user, false);
+            const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, false);
 
             return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
       }
@@ -44,12 +63,11 @@ export class TicTacToeController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vRoomIdDto))
       async handleOnRestartPvP(@Req() req: Request, @Body() body: RoomIdDTO) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
+            await this.getPlayer(board.id, req.user.id);
 
-            const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
-            if (!isExist) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
-            const newGameId = await this.ticTacToeService.createNewGame(req.user, false);
+            const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, false);
 
             await this.ticTacToeGateway.restartGame(board.id, newGameId);
             return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
@@ -58,11 +76,11 @@ export class TicTacToeController {
       @Post('/bot')
       @UseGuards(UserGuard)
       async handleOnCreateBot(@Req() req: Request) {
-            const newGameId = await this.ticTacToeService.createNewGame(req.user, true);
-            const playerOne = await this.ticTacToeService.findUser(newGameId, req.user.id);
-            const bot = await this.ticTacToeService.findUser(newGameId, 'BOT');
-            await this.ticTacToeService.toggleReadyStatePlayer(newGameId, playerOne);
-            await this.ticTacToeService.toggleReadyStatePlayer(newGameId, bot);
+            const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, true);
+            const playerOne = await this.ticTacToeCommonService.findUser(newGameId, req.user.id);
+            const bot = await this.ticTacToeCommonService.findUser(newGameId, 'BOT');
+            await this.ticTacToeCommonService.toggleReadyStatePlayer(newGameId, playerOne);
+            await this.ticTacToeCommonService.toggleReadyStatePlayer(newGameId, bot);
 
             return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
       }
@@ -70,13 +88,12 @@ export class TicTacToeController {
       @Post('/join-room')
       @UseGuards(UserGuard)
       async handleOnJoinRoom(@Req() req: Request, @Body() body: RoomIdDTO) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(body.roomId);
             if (board.status !== TicTacToeStatus['NOT-YET'])
                   throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
 
             const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
-            if (!isExist && board.users.length < 2) await this.ticTacToeService.joinGame(board.id, req.user);
+            if (!isExist && board.users.length < 2) await this.ticTacToeCommonService.joinGame(board.id, req.user);
 
             return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
       }
@@ -85,12 +102,11 @@ export class TicTacToeController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vRoomIdDto))
       async handleOnStartGame(@Req() req: Request, @Body() body: RoomIdDTO) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
-
-            const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
-            if (!isExist) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
-            await this.ticTacToeService.startGame(board.id);
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
+            await this.getPlayer(board.id, req.user.id);
+            const isStart = await this.ticTacToeCommonService.startGame(board.id);
+            if (!isStart) throw apiResponse.sendError({ details: { roomId: { type: 'game.wait-ready-player' } } }, 'BadRequestException');
 
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
@@ -100,12 +116,11 @@ export class TicTacToeController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vRoomIdDto))
       async handleOnReadyGame(@Req() req: Request, @Body() body: RoomIdDTO) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
 
-            const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
-            if (!isExist) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
-            await this.ticTacToeService.toggleReadyStatePlayer(board.id, isExist);
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.ticTacToeCommonService.toggleReadyStatePlayer(board.id, player);
 
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
@@ -115,12 +130,10 @@ export class TicTacToeController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vRoomIdDto))
       async handleOnLeaveGame(@Req() req: Request, @Body() body: RoomIdDTO) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(body.roomId);
 
-            const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
-            if (!isExist) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
-            await this.ticTacToeService.leaveGame(board.id, isExist);
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.ticTacToeCommonService.leaveGame(board.id, player);
 
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
@@ -130,11 +143,13 @@ export class TicTacToeController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: AddMoveDto) {
-            const board = await this.ticTacToeCommonService.getBoard(body.roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(body.roomId);
+            if (board.status !== TicTacToeStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
 
-            const player = await this.ticTacToeService.findUser(board.id, req.user.id);
-            if (!player) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
+            if (board.board[body.x][body.y] !== -1) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
             const isAdd = await this.ticTacToeService.addMoveToBoard(board.id, player, body.x, body.y);
             if (!isAdd) throw apiResponse.sendError({ details: { roomId: { type: 'game.wrong-turn' } } }, 'BadRequestException');
             const isWin = await this.ticTacToeService.isWin(board.id);
