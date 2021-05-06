@@ -6,7 +6,7 @@ export class ChessBoard {
       turn: boolean;
       id: string;
 
-      constructor(chess: Chess, isBotMode: boolean) {
+      constructor() {
             const initCell: ChessFlag = {
                   flag: -1,
                   chessRole: -1,

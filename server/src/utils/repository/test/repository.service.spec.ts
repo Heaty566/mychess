@@ -18,11 +18,12 @@ describe('RepositoryService', () => {
       let app: INestApplication;
       let userRepository: RepositoryService<User>;
       let resetDb: () => Promise<void>;
+      let generateUser: () => Promise<User>;
       beforeAll(async () => {
-            const { getApp, module, resetDatabase } = await initTestModule();
+            const { getApp, module, resetDatabase, getFakeUser } = await initTestModule();
             app = getApp;
             resetDb = resetDatabase;
-
+            generateUser = getFakeUser;
             userRepository = module.get<RepositoryService<User>>(UserRepository);
       });
 
@@ -30,8 +31,7 @@ describe('RepositoryService', () => {
             let user: User;
 
             beforeEach(async () => {
-                  user = fakeUser();
-                  await userRepository.save(user);
+                  user = await generateUser();
             });
 
             it('Pass (field is not _id)', async () => {
@@ -55,8 +55,7 @@ describe('RepositoryService', () => {
             let user: User;
 
             beforeEach(async () => {
-                  user = fakeUser();
-                  await userRepository.save(user);
+                  user = await generateUser();
             });
 
             it('Pass (field is not _id)', async () => {
@@ -67,6 +66,7 @@ describe('RepositoryService', () => {
             it('Pass (field is _id)', async () => {
                   const userData = await userRepository.findOneByField('name', user.name);
                   const res = await userRepository.findManyByField('id', userData.id);
+
                   expect(res[0]).toBeDefined();
             });
 
@@ -94,16 +94,14 @@ describe('RepositoryService', () => {
             let value = [];
 
             beforeEach(async () => {
-                  user1 = fakeUser();
-                  user2 = fakeUser();
-                  await userRepository.save(user1);
-                  await userRepository.save(user2);
+                  user1 = await generateUser();
+                  user2 = await generateUser();
             });
 
-            it('Pass (field is not _id)', async () => {
+            it('Pass (field is not id)', async () => {
                   value = [user1.name, user2.name];
 
-                  const res = await userRepository.findManyByArrayValue('name', value, null);
+                  const res = await userRepository.findManyByArrayValue('name', value);
                   expect(res[value.length - 1]).toBeDefined();
             });
 
@@ -119,13 +117,13 @@ describe('RepositoryService', () => {
 
                   value = [userData1.id, fakeData(9, 'lettersAndNumbers'), userData2.id];
 
-                  const res = await userRepository.findManyByArrayValue('id', value, null);
+                  const res = await userRepository.findManyByArrayValue('id', value);
                   expect(res[value.length - 2]).toBeDefined();
             });
 
             it('Failed (value is [])', async () => {
                   value = [];
-                  const res = await userRepository.findManyByArrayValue('name', value, null);
+                  const res = await userRepository.findManyByArrayValue('name', value);
                   expect(res[0]).toBeUndefined();
             });
       });

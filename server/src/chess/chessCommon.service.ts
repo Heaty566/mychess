@@ -33,7 +33,7 @@ export class ChessCommonService {
       async createNewGame(user: User, isBotMode: boolean) {
             const chess = new Chess();
             chess.users = [user];
-            const chessBoard = new ChessBoard(chess, isBotMode);
+            const chessBoard = new ChessBoard();
             await this.setBoard(chessBoard.id, chessBoard);
 
             return chessBoard;
