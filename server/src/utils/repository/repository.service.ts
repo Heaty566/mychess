@@ -22,6 +22,6 @@ export class RepositoryService<T> extends Repository<T> {
             if (!values.length) return [];
             if (isUnique) values = values.filter(this.onlyUnique);
 
-            return await this.createQueryBuilder().select('*').where(`${field} IN (:...values)`, { values }).execute();
+            return await this.createQueryBuilder().select('*').where(`${field} IN (:...values)`, { values }).getMany();
       }
 }

@@ -1,10 +1,12 @@
+import { Chess } from './chess.entity';
 import { ChessFlag, ChessRole } from './chess.interface';
 
 export class ChessBoard {
       board: Array<Array<ChessFlag>>;
       turn: boolean;
+      id: string;
 
-      constructor() {
+      constructor(chess: Chess, isBotMode: boolean) {
             const initCell: ChessFlag = {
                   flag: -1,
                   chessRole: -1,

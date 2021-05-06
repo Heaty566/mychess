@@ -40,68 +40,36 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
 
     const onTTTGet = (res: ServerResponse<TicTacToeBoard>) => {
+        console.log(res.data);
         setTTTBoard(res.data);
     };
 
-    const onTTTCreate = (res: ServerResponse<RoomIdDto>) => {
-        console.log('handle create');
-        console.log(res);
-        router.push(`${routers.ticTacToePvP.link}/${res.data.roomId}`);
-    };
-
-    const onTTTStart = () => {
-        if (chessBoardRef.current) {
-            const clientWidth = chessBoardRef.current.clientWidth / 2;
-            const scrollCenter = chessBoardRef.current.scrollWidth / 2 - clientWidth;
-            chessBoardRef.current.scrollLeft = scrollCenter;
+    const handleOnRestart = () => {
+        if (tttBoard) {
+            if (tttBoard.isBotMode)
+                ticTacToeApi.createNewBotRoom().then((res) => {
+                    const roomId = res.data.data.roomId;
+                    router.push(`${routers.ticTacToePvP.link}/${roomId}`);
+                });
+            else ticTacToeApi.restartGame({ roomId });
         }
-
-        if (roomId) clientIoTTTBot.emit(TTTAction.TTT_GET, { roomId });
     };
 
-    const onTTTWin = () => {
-        const sound = new Audio('/asset/sounds/end-game.mp3');
-        sound.volume = 0.5;
-        sound.play();
-    };
+    React.useEffect(() => {
+        if (tttBoard) {
+            if (tttBoard.status === TicTacToeStatus.END) {
+                const sound = new Audio('/asset/sounds/end-game.mp3');
+                sound.volume = 0.5;
+                sound.play();
+            }
+        }
+    }, [tttBoard?.status]);
+
     const emitTTTGet = () => {
         if (roomId) clientIoTTTBot.emit(TTTAction.TTT_GET, { roomId });
     };
 
-    const handleEmitStart = () => {
-        if (roomId) clientIoTTTBot.emit(TTTAction.TTT_START, { roomId });
-    };
-    const handleEmitReady = () => clientIoTTTBot.emit(TTTAction.TTT_READY, { roomId });
-
-    const handleEmitAddMove = (x: number, y: number) => {
-        const input = { roomId, x, y };
-        const sound = new Audio('/asset/sounds/ttt_click.mp3');
-        sound.volume = 0.3;
-        sound.play();
-        if (tttBoard?.isBotMode) clientIoTTTBot.emit(TTTAction.TTT_BOT_BEST_MOVE, input);
-        else clientIoTTTBot.emit(TTTAction.TTT_ADD_MOVE, input);
-    };
-
-    const handleNewGame = () => {
-        if (tttBoard?.isBotMode)
-            ticTacToeApi.createBot().then((res) => {
-                const roomId = res.data.data.roomId;
-                router.push(`${routers.ticTacToePvP.link}/${roomId}`);
-            });
-        else {
-            clientIoTTTBot.emit(TTTAction.TTT_CREATE, { roomId });
-        }
-    };
-
     React.useEffect(() => {
-        return () => {
-            clientIoTTTBot.emit(TTTAction.TTT_SURRENDER, { roomId });
-            clientIoTTTBot.emit(TTTAction.TTT_LEAVE, { roomId });
-        };
-    }, []);
-
-    React.useEffect(() => {
-        console.log(roomId);
         if (roomId)
             ticTacToeApi
                 .joinRoom({ roomId })
@@ -114,26 +82,39 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                 });
     }, [authState.isSocketLogin, roomId]);
 
+    const handleOnStart = () => {
+        ticTacToeApi
+            .startGame({ roomId })
+            .then(() => {
+                if (chessBoardRef.current) {
+                    const clientWidth = chessBoardRef.current.clientWidth / 2;
+                    const scrollCenter = chessBoardRef.current.scrollWidth / 2 - clientWidth;
+                    chessBoardRef.current.scrollLeft = scrollCenter;
+                }
+            })
+            .catch(() => {
+                router.push('/404');
+            });
+    };
+
+    const handleOnAddMove = (x: number, y: number) => ticTacToeApi.addMovePvP({ roomId, x, y });
+    const handleOnReady = () => ticTacToeApi.readyGame({ roomId });
+    const onRestartGame = (res: ServerResponse<TicTacToeBoard>) => router.push(`${routers.ticTacToePvP.link}/${res.data.id}`);
+
     React.useEffect(() => {
-        clientIoTTTBot.on(TTTAction.TTT_START, onTTTStart);
-        clientIoTTTBot.on(TTTAction.TTT_WIN, onTTTWin);
+        return () => {
+            ticTacToeApi.leaveGame({ roomId });
+        };
+    }, [roomId]);
+
+    React.useEffect(() => {
         clientIoTTTBot.on(TTTAction.TTT_GET, onTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_LEAVE, emitTTTGet);
         clientIoTTTBot.on(TTTAction.TTT_JOIN, emitTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_READY, emitTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_ADD_MOVE, emitTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_BOT_BEST_MOVE, emitTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_CREATE, onTTTCreate);
+        clientIoTTTBot.on(TTTAction.TTT_RESTART, onRestartGame);
 
         return () => {
-            clientIoTTTBot.off(TTTAction.TTT_CREATE, onTTTCreate);
-            clientIoTTTBot.off(TTTAction.TTT_START, onTTTStart);
-            clientIoTTTBot.off(TTTAction.TTT_READY, emitTTTGet);
-            clientIoTTTBot.off(TTTAction.TTT_WIN, onTTTWin);
-            clientIoTTTBot.off(TTTAction.TTT_ADD_MOVE, emitTTTGet);
+            clientIoTTTBot.off(TTTAction.TTT_RESTART, onRestartGame);
             clientIoTTTBot.off(TTTAction.TTT_GET, onTTTGet);
-            clientIoTTTBot.off(TTTAction.TTT_LEAVE, emitTTTGet);
-            clientIoTTTBot.off(TTTAction.TTT_BOT_BEST_MOVE, emitTTTGet);
             clientIoTTTBot.off(TTTAction.TTT_JOIN, emitTTTGet);
         };
     }, [roomId]);
@@ -157,49 +138,45 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         </ToolTip>
                                     </div>
                                 </div>
-                                <PlayerInfo player={tttBoard.info.users[0]} isReverse={false} time={tttBoard.users[0].time} />
+                                <PlayerInfo player={tttBoard.users[0]} isReverse={false} time={tttBoard.users[0]?.time} />
 
                                 <div className="flex items-center px-2 space-x-4 ">
                                     <div className="flex items-center justify-center w-8 h-8 border-2 ">
-                                        {tttBoard.users[0].ready && <OPlayerIcon />}
+                                        {tttBoard.users[0]?.ready && <OPlayerIcon />}
                                     </div>
                                     <GameTurn currentTurn={tttBoard.currentTurn} SymbolOne={OPlayerIcon} SymbolTwo={XPlayerIcon} />
                                     <div className="flex items-center justify-center w-8 h-8 border-2 ">
-                                        {tttBoard.users[1].ready && <XPlayerIcon />}
+                                        {tttBoard.users[1]?.ready && <XPlayerIcon />}
                                     </div>
                                 </div>
 
-                                <PlayerInfo player={tttBoard.info.users[1]} time={tttBoard.users[1].time} isReverse={true} />
+                                <PlayerInfo player={tttBoard.users[1]} time={tttBoard.users[1]?.time} isReverse={true} />
                             </div>
                             <div className="relative m-auto ttt-board">
-                                <GamePanel isAppear={tttBoard.info.status !== TicTacToeStatus['PLAYING']}>
+                                <GamePanel isAppear={tttBoard.status !== TicTacToeStatus['PLAYING']}>
                                     <div className="absolute flex items-center justify-center w-full h-full bg-black bg-opacity-20">
                                         <div className="p-5 m-2 space-y-2 text-center rounded-sm bg-warmGray-50">
-                                            {tttBoard.info.status === TicTacToeStatus['NOT-YET'] &&
-                                                tttBoard.users[0].ready &&
-                                                tttBoard.users[1].ready && <PanelStart handleOnClick={() => handleEmitStart()} />}
-                                            {tttBoard.info.status === TicTacToeStatus['NOT-YET'] &&
-                                                (!tttBoard.users[0].ready || !tttBoard.users[1].ready) && (
-                                                    <PanelReady isReady={true} handleOnClick={() => handleEmitReady()} />
+                                            {tttBoard.status === TicTacToeStatus['NOT-YET'] &&
+                                                tttBoard.users[0]?.ready &&
+                                                tttBoard.users[1]?.ready && <PanelStart handleOnClick={handleOnStart} />}
+                                            {tttBoard.status === TicTacToeStatus['NOT-YET'] &&
+                                                (!tttBoard.users[0]?.ready || !tttBoard.users[1]?.ready) && (
+                                                    <PanelReady isReady={true} handleOnClick={handleOnReady} />
                                                 )}
 
-                                            {tttBoard.info.status === TicTacToeStatus['END'] && (
+                                            {tttBoard.status === TicTacToeStatus['END'] && (
                                                 <PanelRestart
-                                                    handleOnClick={() => handleNewGame()}
-                                                    winner={tttBoard.info.winner === 0}
-                                                    userOneName={
-                                                        tttBoard.info.users[0] && tttBoard.info.users[0].name ? tttBoard.info.users[0].name : ''
-                                                    }
-                                                    userTwoName={
-                                                        tttBoard.info.users[1] && tttBoard.info.users[1].name ? tttBoard.info.users[1].name : ''
-                                                    }
+                                                    handleOnClick={handleOnRestart}
+                                                    winner={tttBoard.winner === 0}
+                                                    userOneName={tttBoard.users[0] && tttBoard.users[0].name ? tttBoard.users[0].name : ''}
+                                                    userTwoName={tttBoard.users[1] && tttBoard.users[1].name ? tttBoard.users[1].name : ''}
                                                 />
                                             )}
                                         </div>
                                     </div>
                                 </GamePanel>
 
-                                <TTTBoard board={tttBoard.board} handleOnClick={handleEmitAddMove} register={chessBoardRef} />
+                                <TTTBoard board={tttBoard.board} handleOnClick={handleOnAddMove} register={chessBoardRef} />
                             </div>
                         </>
                     ) : (

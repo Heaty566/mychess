@@ -2,7 +2,8 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColum
 
 //---- Entity
 import User from '../../users/entities/user.entity';
-import { TicTacToeStatus, TicTacToeFlag } from './ticTacToe.interface';
+import { TicTacToeStatus } from './ticTacToe.interface';
+import { TicTacToeFlag } from './ticTacToe.interface';
 import { TicTacToeMove } from './ticTacToeMove.entity';
 
 @Entity()
@@ -13,9 +14,6 @@ export class TicTacToe {
       @ManyToMany(() => User, { onUpdate: 'CASCADE' })
       @JoinTable()
       users: User[];
-
-      @Column({ default: TicTacToeStatus.NOT_YET })
-      status: TicTacToeStatus;
 
       @Column({ default: -1 })
       winner: TicTacToeFlag;
@@ -30,7 +28,6 @@ export class TicTacToe {
       moves: TicTacToeMove[];
 
       constructor() {
-            this.status = TicTacToeStatus.NOT_YET;
             this.startDate = new Date();
             this.winner = -1;
       }

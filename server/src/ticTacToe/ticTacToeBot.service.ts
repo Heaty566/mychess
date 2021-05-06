@@ -6,46 +6,49 @@ import { TicTacToeCommonService } from './ticTacToeCommon.service';
 
 //---- Entity
 import User from '../users/entities/user.entity';
-import { TicTacToeMovePoint } from './entity/ticTacToe.interface';
+import { TicTacToeBotMovePoint, TicTacToePlayer } from './entity/ticTacToe.interface';
 import { TicTacToeFlag } from './entity/ticTacToe.interface';
 
 @Injectable()
 export class TicTacToeBotService {
       constructor(private readonly ticTacToeCommonService: TicTacToeCommonService, private readonly userService: UserService) {}
+      async findBestMove(boardId: string, player: TicTacToePlayer) {
+            const getBoard = await this.ticTacToeCommonService.getBoard(boardId);
+            if (getBoard) {
+                  const board = getBoard.board;
+                  const length = board.length;
+                  const testCase: Array<TicTacToeBotMovePoint> = [];
 
-      async findBestMove(board: Array<Array<TicTacToeFlag>>, flag: TicTacToeFlag) {
-            const length = board.length;
-            const testCase: Array<TicTacToeMovePoint> = [];
+                  for (let i = 0; i < length; i++)
+                        for (let j = 0; j < length; j++)
+                              if (board[i][j] === -1) {
+                                    const copyBoard = board.map((arr) => {
+                                          return [...arr];
+                                    });
+                                    copyBoard[i][j] = player.flag;
+                                    const totalTop = this.calTop(copyBoard, this.shirtTop(copyBoard, i, j));
+                                    const totalBottomLeft = this.calBottomLeft(copyBoard, this.shirtBottomLeft(copyBoard, i, j));
+                                    const totalTopLeft = this.CalTopLeft(copyBoard, this.shirtTopLeft(copyBoard, i, j));
+                                    const totalRight = this.calRight(copyBoard, this.shirtRight(copyBoard, i, j));
 
-            for (let i = 0; i < length; i++)
-                  for (let j = 0; j < length; j++)
-                        if (board[i][j] === -1) {
-                              const copyBoard = board.map((arr) => {
-                                    return [...arr];
-                              });
-                              copyBoard[i][j] = flag;
-                              const totalTop = this.calTop(copyBoard, this.shirtTop(copyBoard, i, j));
-                              const totalBottomLeft = this.calBottomLeft(copyBoard, this.shirtBottomLeft(copyBoard, i, j));
-                              const totalTopLeft = this.CalTopLeft(copyBoard, this.shirtTopLeft(copyBoard, i, j));
-                              const totalRight = this.calRight(copyBoard, this.shirtRight(copyBoard, i, j));
-
-                              const total = Math.max(totalRight, totalTopLeft, totalBottomLeft, totalTop);
-                              if (total) testCase.push({ x: i, y: j, point: total });
-                        }
-            const max: TicTacToeMovePoint = { point: -Infinity, x: null, y: null };
-            for (const item of testCase) {
-                  if (item.point > max.point) {
-                        max.point = item.point;
-                        max.x = item.x;
-                        max.y = item.y;
-                  } else if (item.point === max.point) {
-                        if (Math.random() >= 0.5 || max.x === null || max.y === null) {
+                                    const total = Math.max(totalRight, totalTopLeft, totalBottomLeft, totalTop);
+                                    if (total) testCase.push({ x: i, y: j, point: total });
+                              }
+                  const max: TicTacToeBotMovePoint = { point: -Infinity, x: null, y: null };
+                  for (const item of testCase) {
+                        if (item.point > max.point) {
+                              max.point = item.point;
                               max.x = item.x;
                               max.y = item.y;
+                        } else if (item.point === max.point) {
+                              if (Math.random() >= 0.5 || max.x === null || max.y === null) {
+                                    max.x = item.x;
+                                    max.y = item.y;
+                              }
                         }
                   }
+                  return max;
             }
-            return max;
       }
 
       calTop(board: Array<Array<TicTacToeFlag>>, { x, y }: { x: number; y: number }) {
@@ -139,18 +142,9 @@ export class TicTacToeBotService {
             return total;
       }
 
-      async addMoveToBoardBot(boardId: string, x: number, y: number) {
-            const tTTBoard = await this.ticTacToeCommonService.getBoard(boardId);
-
-            tTTBoard.board[x][y] = 0;
-            tTTBoard.currentTurn = !tTTBoard.currentTurn;
-
-            await this.ticTacToeCommonService.setBoard(tTTBoard.id, tTTBoard);
-            return true;
-      }
-
       getBotInfo() {
             const user = new User();
+            user.id = 'BOT';
             user.elo = 200;
             user.name = 'BOT';
             user.username = 'BOT';

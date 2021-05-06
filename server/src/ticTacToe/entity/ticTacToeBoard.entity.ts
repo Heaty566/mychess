@@ -1,18 +1,19 @@
 //---- Entity
-import { TicTacToe } from './ticTacToe.entity';
-import { TicTacToeFlag } from './ticTacToe.interface';
+import { TicTacToeFlag, TicTacToeStatus } from './ticTacToe.interface';
 import { TicTacToePlayer } from './ticTacToe.interface';
 import { generatorString } from '../../app/helpers/stringGenerator';
 
 export class TicTacToeBoard {
       id: string;
+      startDate: Date;
+      lastStep: Date;
+      status: TicTacToeStatus;
       board: Array<Array<TicTacToeFlag>>;
       currentTurn: boolean;
-      users: [TicTacToePlayer, TicTacToePlayer];
-      isBotMode: boolean;
-      lastStep: Date;
+      users: TicTacToePlayer[];
+      winner: TicTacToeFlag;
 
-      constructor(readonly info: TicTacToe, isBotMode: boolean) {
+      constructor(readonly isBotMode: boolean) {
             const initRow: Array<TicTacToeFlag> = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
             this.board = [
                   [...initRow],
@@ -31,13 +32,10 @@ export class TicTacToeBoard {
                   [...initRow],
             ];
 
-            const playingTime = 15 * 1000 * 60;
+            this.users = [];
+            this.winner = TicTacToeFlag.EMPTY;
             this.id = generatorString(8, 'number');
-            this.users = [
-                  { id: null, ready: false, flag: 0, time: playingTime },
-                  { id: null, ready: false, flag: 1, time: playingTime },
-            ];
-            this.isBotMode = isBotMode;
-            this.currentTurn = Boolean(Math.random() < 0.5);
+            this.status = TicTacToeStatus['NOT-YET'];
+            this.currentTurn = isBotMode ? true : Boolean(Math.random() < 0.5);
       }
 }

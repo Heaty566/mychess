@@ -47,7 +47,7 @@ const TicTacToe: React.FunctionComponent = () => {
     };
 
     const handleOnCreateNewRoom = async () => {
-        await ticTacToeApi.createNewRoom().then((res) => {
+        await ticTacToeApi.createNewPvPRoom().then((res) => {
             router.push(`${routers.ticTacToePvP.link}/${res.data.data.roomId}`);
         });
     };
