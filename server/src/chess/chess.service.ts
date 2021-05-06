@@ -12,8 +12,8 @@ export class ChessService {
             // pawn can not appear on row 0 or 7
             if (currentPosition.y === 0 || currentPosition.y === 7) return result;
             if (currentPosition.flag === PlayerFlagEnum.WHITE) {
-                  let x = currentPosition.x;
-                  let y = currentPosition.y;
+                  const x = currentPosition.x;
+                  const y = currentPosition.y;
                   // in the first move, pawn can move forward 2 square
                   if (y === 1 && chessBoard.board[x][y + 1].flag === PlayerFlagEnum.EMPTY && chessBoard.board[x][y + 2].flag === PlayerFlagEnum.EMPTY)
                         result.push({ x: x, y: y + 2, flag: PlayerFlagEnum.EMPTY, chessRole: ChessRole.EMPTY });
@@ -39,8 +39,8 @@ export class ChessService {
                   )
                         result.push({ x: x + 1, y: y + 1, flag: PlayerFlagEnum.BLACK, chessRole: chessBoard.board[x + 1][y + 1].chessRole });
             } else if (currentPosition.flag === PlayerFlagEnum.BLACK) {
-                  let x = currentPosition.x;
-                  let y = currentPosition.y;
+                  const x = currentPosition.x;
+                  const y = currentPosition.y;
 
                   if (y === 6 && chessBoard.board[x][y - 1].flag === PlayerFlagEnum.EMPTY && chessBoard.board[x][y - 2].flag === PlayerFlagEnum.EMPTY)
                         result.push({ x: x, y: y - 2, flag: PlayerFlagEnum.EMPTY, chessRole: ChessRole.EMPTY });
@@ -73,8 +73,8 @@ export class ChessService {
             const kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
 
             for (let i = 0; i <= 7; i++) {
-                  let x = currentPosition.x + kingMoveX[i];
-                  let y = currentPosition.y + kingMoveY[i];
+                  const x = currentPosition.x + kingMoveX[i];
+                  const y = currentPosition.y + kingMoveY[i];
 
                   if (
                         x >= 0 &&
@@ -94,8 +94,8 @@ export class ChessService {
             const knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
             const knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
             for (let i = 0; i <= 7; i++) {
-                  let x = currentPosition.x + knightMoveX[i];
-                  let y = currentPosition.y + knightMoveY[i];
+                  const x = currentPosition.x + knightMoveX[i];
+                  const y = currentPosition.y + knightMoveY[i];
 
                   if (
                         x >= 0 &&
@@ -389,8 +389,8 @@ export class ChessService {
             }
 
             // Check knight
-            let knightX = [2, 2, -2, -2, 1, 1, -1, -1];
-            let knightY = [1, -1, 1, -1, 2, -2, 2, -2];
+            const knightX = [2, 2, -2, -2, 1, 1, -1, -1];
+            const knightY = [1, -1, 1, -1, 2, -2, 2, -2];
             for (let i = 0; i <= 7; i++) {
                   x = currentPosition.x + knightX[i];
                   y = currentPosition.y + knightY[i];
@@ -408,8 +408,8 @@ export class ChessService {
             // Check pawn
             if (currentPosition.flag === 0) {
                   // white king
-                  let pawnX = [1, -1];
-                  let pawnY = [1, 1];
+                  const pawnX = [1, -1];
+                  const pawnY = [1, 1];
                   for (let i = 0; i <= 1; i++) {
                         x = currentPosition.x + pawnX[i];
                         y = currentPosition.y + pawnY[i];
@@ -425,8 +425,8 @@ export class ChessService {
                   }
             } else {
                   // black king
-                  let pawnX = [1, -1];
-                  let pawnY = [-1, -1];
+                  const pawnX = [1, -1];
+                  const pawnY = [-1, -1];
                   for (let i = 0; i <= 1; i++) {
                         x = currentPosition.x + pawnX[i];
                         y = currentPosition.y + pawnY[i];
@@ -443,8 +443,8 @@ export class ChessService {
             }
 
             // Check king
-            let kingX = [1, 1, 1, 0, 0, -1, -1, -1];
-            let kingY = [1, 0, -1, 1, -1, 1, 0, -1];
+            const kingX = [1, 1, 1, 0, 0, -1, -1, -1];
+            const kingY = [1, 0, -1, 1, -1, 1, 0, -1];
             for (let i = 0; i <= 7; i++) {
                   x = currentPosition.x + kingX[i];
                   y = currentPosition.y + kingY[i];
@@ -463,7 +463,7 @@ export class ChessService {
 
       canMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard): boolean {
             const tmpDestinationPosition = desPos;
-            let canMove: boolean = true;
+            let canMove = true;
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
             chessBoard.board[curPos.x][curPos.y] = {

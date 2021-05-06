@@ -3,9 +3,10 @@ import { User } from '../../../store/auth/interface';
 import { truncateContent } from '../../../common/helpers/string.helper';
 import { useCountDown } from '../../../common/hooks/useCountDown';
 import Tooltip from '../../tooltip';
+import { TicTacToePlayer } from '../tttBoard/config';
 
 export interface PlayerInfoProps {
-    player: User;
+    player: TicTacToePlayer;
     isReverse: boolean;
     time: number;
 }

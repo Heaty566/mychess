@@ -17,9 +17,16 @@ export class RedisService {
             const flatValue: Record<string, any> = flat(value);
             const convertToString = JSON.stringify(flatValue);
 
-            this.redisRepository.set(key, convertToString);
-            if (expired) this.redisRepository.expire(key, expired * 60);
-            return Promise.resolve();
+            return new Promise<boolean>((res, rej) => {
+                  this.redisRepository.set(key, convertToString, (error) => {
+                        if (error) {
+                              this.logger.print(error, 'redis.service.ts', 'error');
+                              return rej(false);
+                        }
+                        if (expired) this.redisRepository.expire(key, expired * 60);
+                        return res(true);
+                  });
+            });
       }
 
       deleteByKey(key: string) {
@@ -45,8 +52,16 @@ export class RedisService {
        * @param expired amount time for redis value to be expired( 1 = 60s )
        */
       setByValue(key: string, value: number | string, expired?: number) {
-            if (expired) this.redisRepository.setex(key, expired * 60, String(value));
-            else this.redisRepository.set(key, String(value));
+            return new Promise<boolean>((res, rej) => {
+                  this.redisRepository.set(key, String(value), (error) => {
+                        if (error) {
+                              this.logger.print(error, 'redis.service.ts', 'error');
+                              return rej(false);
+                        }
+                        if (expired) this.redisRepository.expire(key, expired * 60);
+                        return res(true);
+                  });
+            });
       }
 
       getByKey(key: string): Promise<string> {

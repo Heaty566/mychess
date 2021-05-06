@@ -17,7 +17,7 @@ const Home: React.FunctionComponent<HomeProps> = () => {
     const router = useRouter();
 
     const handleCreateBot = () => {
-        ticTacToeApi.createBot().then((res) => {
+        ticTacToeApi.createNewBotRoom().then((res) => {
             const roomId = res.data.data.roomId;
             router.push(`${routers.ticTacToePvP.link}/${roomId}`);
         });
