@@ -40,13 +40,13 @@ describe('RedisService', () => {
             });
 
             it('Pass', async () => {
-                  redisService.setObjectByKey('user', user);
+                  await redisService.setObjectByKey('user', user);
                   const res = await redisService.getObjectByKey<User>('user');
                   expect(res).toBeDefined();
             });
 
             it('Pass with time', async () => {
-                  redisService.setObjectByKey('user', user, 10);
+                  await redisService.setObjectByKey('user', user, 10);
                   const res = await redisService.getObjectByKey<User>('user');
                   expect(res).toBeDefined();
             });
@@ -62,13 +62,13 @@ describe('RedisService', () => {
             });
 
             it('Pass', async () => {
-                  redisService.setArrayByKey('user', users);
+                  await redisService.setArrayByKey('user', users);
                   const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
 
             it('Pass with time', async () => {
-                  redisService.setArrayByKey('user', users, 10);
+                  await redisService.setArrayByKey('user', users, 10);
                   const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
@@ -77,13 +77,13 @@ describe('RedisService', () => {
       describe('deleteByKey', () => {
             let user: User;
 
-            beforeEach(() => {
+            beforeEach(async () => {
                   user = fakeUser();
-                  redisService.setObjectByKey('user', user);
+                  await redisService.setObjectByKey('user', user);
             });
 
             it('Pass', async () => {
-                  redisService.deleteByKey('user');
+                  await redisService.deleteByKey('user');
                   const res = await redisService.getObjectByKey<User>('user');
                   expect(res).toBeNull();
             });
@@ -92,9 +92,9 @@ describe('RedisService', () => {
       describe('getObjectByKey', () => {
             let user: User;
 
-            beforeEach(() => {
+            beforeEach(async () => {
                   user = fakeUser();
-                  redisService.setObjectByKey('user', user);
+                  await redisService.setObjectByKey('user', user);
             });
 
             it('Pass', async () => {
@@ -106,10 +106,10 @@ describe('RedisService', () => {
       describe('getArrayByKey', () => {
             const users: User[] = [];
             let user: User;
-            beforeEach(() => {
+            beforeEach(async () => {
                   user = fakeUser();
                   users.push(user);
-                  redisService.setArrayByKey('user', users);
+                  await redisService.setArrayByKey('user', users);
             });
 
             it('Pass', async () => {
@@ -128,14 +128,14 @@ describe('RedisService', () => {
             });
 
             it('Pass (do not have expired)', async () => {
-                  redisService.setByValue(key, value);
+                  await redisService.setByValue(key, value);
                   const res = await redisService.getByKey(key);
                   expect(res).toBeDefined();
             });
 
             it('Pass (expired = 0.01 minutes)', async () => {
-                  redisService.setByValue(key, value, 60);
-                  const output = redisService.getByKey(key);
+                  await redisService.setByValue(key, value, 60);
+                  const output = await redisService.getByKey(key);
                   expect(output).toBeDefined();
             });
       });
@@ -144,10 +144,10 @@ describe('RedisService', () => {
             let value: number;
             let key: string;
 
-            beforeEach(() => {
+            beforeEach(async () => {
                   value = parseInt(fakeData(5, 'number'));
                   key = fakeData(8, 'lettersAndNumbers');
-                  redisService.setByValue(key, value);
+                  await redisService.setByValue(key, value);
             });
 
             it('Pass', async () => {

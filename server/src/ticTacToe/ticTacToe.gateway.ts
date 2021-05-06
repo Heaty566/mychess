@@ -25,11 +25,7 @@ import { TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {
-      constructor(
-            private readonly ticTacToeCommonService: TicTacToeCommonService,
-            private readonly ticTacToeService: TicTacToeService,
-            private readonly ticTacToeBotService: TicTacToeBotService,
-      ) {}
+      constructor(private readonly ticTacToeCommonService: TicTacToeCommonService) {}
 
       @WebSocketServer()
       server: Server;
