@@ -29,6 +29,10 @@
             {
                   "name": "common",
                   "description": "service for basic request"
+            },
+            {
+                  "name": "tic-tac-toe",
+                  "description": "Service tic-tac-toe game"
             }
       ],
       "servers": [
@@ -222,7 +226,6 @@
                         }
                   }
             },
-
             "/api/auth/socket-token": {
                   "get": {
                         "tags": ["auth"],
@@ -585,6 +588,272 @@
                               }
                         }
                   }
+            },
+            "/api/ttt/pvp": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Create a tic-tac-toe game for player vs player return roomId to connect socket.io",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "Create a game with player successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/bot": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Create a tic-tac-toe game for player vs bot return roomId to connect socket.io",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "responses": {
+                              "200": {
+                                    "description": "Create new game with bot successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/restart": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Create a tic-tac-toe game for player vs player and alert connecting user to push router to other room ",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "provide current roomId to server alert their players to change room when server create new room",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "Restart game successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/join-room": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "provide room id for server to connect with that room",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User status update successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/start": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "send request to start tic-tac-toe game when two users are ready",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "provide room id for server to start game",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "Game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/ready": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "send request to toggle ready state to play, two user have to ready before sending a start request (send one more time to change to not ready)",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "provide room id for server to know which room you are ready",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "user state change to ready",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/leave": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "send this request when user leave the game, user is leave safely if the game is not start, and count as lose when the game is playing. user can not play any game until they complete leave other game",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "provide room id for server to know which room you want to leave",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "leave room successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/add-move": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "you the x y in the board which you want to choose",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "provide X Y and RoomId to server which cell you want to pick",
+                              "$ref": "#/components/requestBodies/AddMoveTTTDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "leave room successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
             }
       },
       "components": {
@@ -887,6 +1156,48 @@
                                                 "password": {
                                                       "type": "string",
                                                       "example": "password"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "RoomIdDto": {
+                        "description": "provide roomId",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "roomId": {
+                                                      "type": "string",
+                                                      "example": "123124215421"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "AddMoveTTTDto": {
+                        "description": "provide roomId and x y for please tic-tac-toe",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "roomId": {
+                                                      "type": "string",
+                                                      "example": "123124215421"
+                                                },
+                                                "x": {
+                                                      "type": "number",
+                                                      "example": 1
+                                                },
+                                                "y": {
+                                                      "type": "number",
+                                                      "example": 1
                                                 }
                                           }
                                     }

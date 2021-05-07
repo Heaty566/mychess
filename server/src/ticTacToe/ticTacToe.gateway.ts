@@ -7,21 +7,16 @@ import { SocketJoiValidatorPipe } from '../utils/validator/socketValidator.pipe'
 
 //---- Service
 import { UserSocketGuard } from '../auth/authSocket.guard';
-import { TicTacToeService } from './ticTacToe.service';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
-import { TicTacToeBotService } from './ticTacToeBot.service';
 
 //---- Entity
-import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 
 //---- Dto
 import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
-import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
 
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { TTTGatewayAction } from './ticTacToeGateway.action';
-import { TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {

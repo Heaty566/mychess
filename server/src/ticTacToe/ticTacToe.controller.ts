@@ -12,17 +12,18 @@ import { UserGuard } from '../auth/auth.guard';
 import { TicTacToeGateway } from './ticTacToe.gateway';
 
 //---- Entity
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
+import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
-//---- Common
-import { apiResponse } from '../app/interface/apiResponse';
+//---- Dto
 import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
 import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
-import { TicTacToeStatus } from './entity/ticTacToe.interface';
-import User from '../users/entities/user.entity';
-import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+
+//---- Common
+import { apiResponse } from '../app/interface/apiResponse';
 
 @Controller('ttt')
 export class TicTacToeController {

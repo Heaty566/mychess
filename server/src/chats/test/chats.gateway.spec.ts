@@ -50,7 +50,7 @@ describe('ChatsGateway', () => {
 
             // create a fake message
             message = new Message();
-            message.text = 'Hai dep trai';
+            message.content = 'Hai dep trai';
             message.chat = chat;
             message.userId = (await users[0]).user.id;
             messageRepository.save(message);

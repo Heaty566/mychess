@@ -7,20 +7,18 @@ import { initTestModule } from '../../test/initTest';
 //---- Entity
 
 import { User } from '../../users/entities/user.entity';
-//---- Repository
+import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
+//---- Service
+import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 import { AuthService } from '../../auth/auth.service';
-import { TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
+
+//---- Gateway
 import { TicTacToeGateway } from '../ticTacToe.gateway';
+
 //---- Common
 import { TTTGatewayAction } from '../ticTacToeGateway.action';
 import { SocketServerResponse } from '../../app/interface/socketResponse';
-import { RoomIdDTO } from '../dto/roomIdDto';
-import { TicTacToeService } from '../ticTacToe.service';
-import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-import { TicTacToeCommonService } from '../ticTacToeCommon.service';
-import { AddMoveDto } from '../dto/addMoveDto';
-import { TicTacToeBotService } from '../ticTacToeBot.service';
 
 describe('TicTacToeGateway ', () => {
       let app: INestApplication;
@@ -30,11 +28,7 @@ describe('TicTacToeGateway ', () => {
       let resetDB: any;
       let ticTacToeGateWay: TicTacToeGateway;
       let generateFakeUser: () => Promise<User>;
-      let ticTacToeService: TicTacToeService;
       let ticTacToeCommonService: TicTacToeCommonService;
-
-      let tttBoard: TicTacToeBoard;
-      let ticTacToeBotService: TicTacToeBotService;
 
       beforeAll(async () => {
             const { configModule, resetDatabase, getFakeUser } = await initTestModule();
@@ -46,8 +40,6 @@ describe('TicTacToeGateway ', () => {
             authService = app.get<AuthService>(AuthService);
             ticTacToeGateWay = app.get<TicTacToeGateway>(TicTacToeGateway);
             ticTacToeCommonService = app.get<TicTacToeCommonService>(TicTacToeCommonService);
-            ticTacToeService = app.get<TicTacToeService>(TicTacToeService);
-            ticTacToeBotService = app.get<TicTacToeBotService>(TicTacToeBotService);
             jest.spyOn(ticTacToeGateWay.server, 'to').mockImplementation().mockReturnThis();
       });
 

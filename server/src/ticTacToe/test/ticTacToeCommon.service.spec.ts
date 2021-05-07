@@ -9,8 +9,6 @@ import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 //---- Entity
 import { User } from '../../users/entities/user.entity';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-
-//---- Repository
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
 
 describe('ticTacToeCommonService', () => {

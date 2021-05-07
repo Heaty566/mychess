@@ -15,7 +15,7 @@
       "error.wait-ready-player": "please wait for another player is ready",
       "error.already-play-other": "you are playing another game",
       "error.wrong-turn": "this is not your turn",
-      "error.cell-picked": "please chose other boxes",
+      "error.cell-picked": "please choose other boxes",
 
       "message.update-success": "your account has been successfully updated",
       "message.thank-you-feedback": "Thank for your feedback, We will send you an email later",

@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 
 //---- Service
 import { RedisService } from '../providers/redis/redis.service';
+import { UserService } from '../users/user.service';
 
 //---- Entity
 import { TicTacToe } from './entity/ticTacToe.entity';
 import User from '../users/entities/user.entity';
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+import { TicTacToeMove } from './entity/ticTacToeMove.entity';
 
 //---- Repository
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
-import { UserService } from '../users/user.service';
-import { TicTacToeMove } from './entity/ticTacToeMove.entity';
 
 @Injectable()
 export class TicTacToeCommonService {

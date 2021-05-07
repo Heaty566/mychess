@@ -19,7 +19,7 @@ import { SendMessageDTO } from './dto/sendMessageDTO';
 import { Message } from './entities/message.entity';
 
 //---- Enum
-import { CHATAction } from './chats.action';
+import { ChatGatewayAction } from './chats.action';
 
 @WebSocketGateway({ namespace: 'chats' })
 export class ChatsGateway {
@@ -34,17 +34,17 @@ export class ChatsGateway {
        * @param data chatId
        */
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(CHATAction.CHAT_CONNECTION_CHAT)
+      @SubscribeMessage(ChatGatewayAction.CHAT_CONNECTION_CHAT)
       async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vJoinChatDTO)) data: JoinChatDTO) {
             const isBelongTo = await this.chatsService.checkUserBelongToChat(client.user.id, data.chatId);
             if (!isBelongTo) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'BadRequestException');
 
             await client.join(data.chatId);
             const messages = await this.chatsService.loadMessage(data.chatId);
-            this.server.to(data.chatId).emit(CHATAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
+            this.server.to(data.chatId).emit(ChatGatewayAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
             // init a cache to save new message
             await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, []);
-            return ioResponse.send(CHATAction.CHAT_CONNECTION_CHAT, {});
+            return ioResponse.send(ChatGatewayAction.CHAT_CONNECTION_CHAT, {});
       }
 
       /**
@@ -54,16 +54,16 @@ export class ChatsGateway {
        * @returns
        */
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(CHATAction.CHAT_SEND_MESSAGE)
+      @SubscribeMessage(ChatGatewayAction.CHAT_SEND_MESSAGE)
       async sendMessage(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendMessageDTO) {
             // get messages array from cache
             const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
             messages.push(data.message);
 
             await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, messages);
-            this.server.to(data.chatId).emit(CHATAction.CHAT_SEND_MESSAGE, data.message);
+            this.server.to(data.chatId).emit(ChatGatewayAction.CHAT_SEND_MESSAGE, data.message);
 
-            return ioResponse.send(CHATAction.CHAT_SEND_MESSAGE, {});
+            return ioResponse.send(ChatGatewayAction.CHAT_SEND_MESSAGE, {});
       }
 
       /**
@@ -73,7 +73,7 @@ export class ChatsGateway {
        * @returns
        */
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(CHATAction.CHAT_DISCONNECTION_CHAT)
+      @SubscribeMessage(ChatGatewayAction.CHAT_DISCONNECTION_CHAT)
       async handleEndChat(@ConnectedSocket() client: SocketExtend) {
             // get messages array from cache
             const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
@@ -81,6 +81,6 @@ export class ChatsGateway {
             messages.forEach(async (message) => await this.chatsService.saveMessage(message));
 
             await this.redisService.deleteByKey(`messages-array-${client.user.id}`);
-            return ioResponse.send(CHATAction.CHAT_DISCONNECTION_CHAT, {});
+            return ioResponse.send(ChatGatewayAction.CHAT_DISCONNECTION_CHAT, {});
       }
 }

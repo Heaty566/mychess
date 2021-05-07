@@ -9,7 +9,7 @@ export class Message {
       id: string;
 
       @Column()
-      text: string;
+      content: string;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
@@ -19,4 +19,8 @@ export class Message {
 
       @Column()
       userId: string;
+
+      constructor() {
+            this.createDate = new Date();
+      }
 }

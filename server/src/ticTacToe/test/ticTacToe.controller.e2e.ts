@@ -2,25 +2,22 @@ import * as supertest from 'supertest';
 import 'jest-ts-auto-mock';
 import { INestApplication } from '@nestjs/common';
 
-//---- Helper
-import { initTestModule } from '../../test/initTest';
-
-//---- Repository
-
 //---- Entity
 import { User } from '../../users/entities/user.entity';
+import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
 
 //---- Service
-
-import { TicTacToeCommonService } from '../ticTacToeCommon.service';
-import { generateCookie } from '../../test/test.helper';
-import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
-import { AuthService } from '../../auth/auth.service';
-import { RoomIdDTO } from '../dto/roomIdDto';
-import { AddMoveDto } from '../dto/addMoveDto';
 import { TicTacToeService } from '../ticTacToe.service';
+import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+import { AuthService } from '../../auth/auth.service';
 
 //---- DTO
+import { RoomIdDTO } from '../dto/roomIdDto';
+import { AddMoveDto } from '../dto/addMoveDto';
+
+//---- Common
+import { initTestModule } from '../../test/initTest';
+import { generateCookie } from '../../test/test.helper';
 
 describe('TicTacToeController', () => {
       let app: INestApplication;
