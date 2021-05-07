@@ -570,7 +570,7 @@ export class ChessService {
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag) {
-                              let legalMove: Array<ChessMove> = this.legalMove(
+                              const legalMove: Array<ChessMove> = this.legalMove(
                                     { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
                                     chessBoard,
                               );
@@ -589,7 +589,7 @@ export class ChessService {
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag) {
-                              let legalMove: Array<ChessMove> = this.legalMove(
+                              const legalMove: Array<ChessMove> = this.legalMove(
                                     { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
                                     chessBoard,
                               );

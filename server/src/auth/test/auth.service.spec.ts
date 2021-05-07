@@ -37,27 +37,6 @@ describe('UserGuard', () => {
       });
 
       describe('OTP Service', () => {
-            // describe('generateOtpKey', () => {
-            //       let length: number;
-
-            //       it('Pass by Sms', () => {
-            //             length = 6;
-            //             const otp = authService[`generateOtpKey`](length, 'sms');
-
-            //             expect(otp).toBeDefined();
-            //             expect(otp.length).toBe(length);
-            //             expect(otp).not.toContain('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
-            //       });
-
-            //       it('Pass by email', () => {
-            //             length = 10;
-            //             const otp = authService[`generateOtpKey`](length, 'email');
-
-            //             expect(otp).toBeDefined();
-            //             expect(otp.length).toBe(length);
-            //       });
-            // });
-
             describe('createOTP', () => {
                   it('Pass by sms', async () => {
                         const otp = authService.createOTP(userDb, 5, 'sms');

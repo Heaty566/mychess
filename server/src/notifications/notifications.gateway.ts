@@ -45,7 +45,7 @@ export class NotificationsGateway {
       @SubscribeMessage(NotificationAction.NOTIFICATIONS_SEND)
       async sendRequest(@ConnectedSocket() client: SocketExtend, @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto) {
             const receiverUser = await this.userService.findOneUserByField('id', data.receiver);
-            if (!receiverUser) throw ioResponse.sendError({ details: { message: { type: 'user.not-found' } } }, 'NotFoundException');
+            if (!receiverUser) throw ioResponse.sendError({ details: { messageError: { type: 'error.invalid-input' } } }, 'NotFoundException');
 
             const newNotification = new Notification(data.notificationType, client.user.id);
             let notificationObjectType;

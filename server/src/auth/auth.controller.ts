@@ -43,11 +43,13 @@ export class AuthController {
       async cLoginUser(@Body() body: LoginUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (!isUserExist) throw apiResponse.sendError({ details: { username: { type: 'user.auth-failed' } } }, 'BadRequestException');
+            if (!isUserExist)
+                  throw apiResponse.sendError({ details: { messageError: { type: 'error.invalid-password-username' } } }, 'BadRequestException');
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
-            if (!isCorrect) throw apiResponse.sendError({ details: { username: { type: 'user.auth-failed' } } }, 'BadRequestException');
+            if (!isCorrect)
+                  throw apiResponse.sendError({ details: { messageError: { type: 'error.invalid-password-username' } } }, 'BadRequestException');
 
             //return token
             const reToken = await this.authService.createReToken(isUserExist);
@@ -59,7 +61,7 @@ export class AuthController {
       async cRegisterUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (isUserExist) throw apiResponse.sendError({ details: { username: { type: 'user.field-taken' } } }, 'BadRequestException');
+            if (isUserExist) throw apiResponse.sendError({ details: { username: { type: 'field.field-taken' } } }, 'BadRequestException');
 
             //create and insert new user
             const newUser = new User();
@@ -79,7 +81,7 @@ export class AuthController {
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
             //checking user is exist
             const user = await this.userService.findOneUserByField('id', req.user.id);
-            if (!user) throw apiResponse.sendError({ details: { message: { type: 'user.invalid-input' } } }, 'UnauthorizedException');
+            if (!user) throw apiResponse.sendError({ details: { messageError: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
 
             //create socket io token
             const socketId = await this.authService.getSocketToken(user);
@@ -109,13 +111,13 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError(
-                        { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
+                        { details: { messageError: { type: 'error.request-many-time', context: { time: '30' } } } },
                         'BadRequestException',
                   );
 
             //checking email is exist
             const user = await this.userService.findOneUserByField('email', body.email);
-            if (!user) throw apiResponse.sendError({ details: { email: { type: 'user.field.not-found' } } }, 'BadRequestException');
+            if (!user) throw apiResponse.sendError({ details: { email: { type: 'field.not-found' } } }, 'BadRequestException');
 
             //checking amount of time which user request before by email
             canSendMore = await this.authService.isRateLimitKey(
@@ -125,16 +127,16 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError(
-                        { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
+                        { details: { messageError: { type: 'error.request-many-time', context: { time: '30' } } } },
                         'BadRequestException',
                   );
 
             //generate otp key
             const redisKey = await this.authService.createOTP(user, config.authController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
-            if (!isSent) throw apiResponse.sendError({ details: { email: { type: 'server.some-wrong' } } }, 'BadGatewayException');
+            if (!isSent) throw apiResponse.sendError({ details: { messageError: { type: 'error.some-wrong' } } }, 'BadGatewayException');
 
-            return apiResponse.send({ details: { message: { type: 'server.send-email-otp' } } });
+            return apiResponse.send({ details: { message: { type: 'message.send-email' } } });
       }
 
       @Post('/otp-sms')
@@ -149,13 +151,13 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError(
-                        { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
+                        { details: { messageError: { type: 'error.request-many-time', context: { time: '60' } } } },
                         'BadRequestException',
                   );
 
             //checking phone is exist
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (!user) throw apiResponse.sendError({ details: { phoneNumber: { type: 'user.field.not-found' } } }, 'BadRequestException');
+            if (!user) throw apiResponse.sendError({ details: { phoneNumber: { type: 'field.not-found' } } }, 'BadRequestException');
 
             //checking amount of time which user request before by phone
             canSendMore = await this.authService.isRateLimitKey(
@@ -165,28 +167,28 @@ export class AuthController {
             );
             if (!canSendMore)
                   throw apiResponse.sendError(
-                        { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
+                        { details: { messageError: { type: 'error.request-many-time', context: { time: '60' } } } },
                         'BadRequestException',
                   );
 
             //generate otp
             const otpKey = this.authService.createOTP(user, config.authController.OTPPhoneValidTime, 'sms');
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
-            if (!isSent) throw apiResponse.sendError({ details: { phoneNumber: { type: 'server.some-wrong' } } }, 'InternalServerErrorException');
+            if (!isSent) throw apiResponse.sendError({ details: { messageError: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
 
-            return apiResponse.send({ details: { message: { type: 'server.send-phone-otp' } } });
+            return apiResponse.send({ details: { message: { type: 'message.send-phone-otp' } } });
       }
 
       @Post('/check-otp')
       async cCheckOTP(@Query('key') key: string) {
             //checking is valid otp
-            if (!key) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+            if (!key) throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             //checking otp is exist
             const isExist = await this.redisService.getObjectByKey<User>(key);
-            if (!isExist) throw apiResponse.sendError({ details: { otp: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+            if (!isExist) throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
-            return apiResponse.send<void>({ details: { message: { type: '' } } });
+            return apiResponse.send<void>({});
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------
