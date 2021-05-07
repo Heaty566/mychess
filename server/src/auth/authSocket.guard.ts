@@ -4,10 +4,10 @@ import { ioResponse } from '../app/interface/socketResponse';
 import * as Cookie from 'cookie';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
-import User from '../users/entities/user.entity';
+import User from '../user/entities/user.entity';
 
 @Injectable()
 export class UserSocketGuard implements CanActivate {

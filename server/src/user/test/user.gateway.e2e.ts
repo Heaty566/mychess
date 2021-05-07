@@ -6,7 +6,7 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Entity
 
-import { User } from '../../users/entities/user.entity';
+import { User } from '../entities/user.entity';
 
 //---- Repository
 

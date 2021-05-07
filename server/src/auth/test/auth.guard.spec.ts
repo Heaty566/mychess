@@ -5,14 +5,14 @@ import { createMock } from 'ts-auto-mock';
 
 //---- Service
 import { AuthService } from '../auth.service';
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- Repository
 import { ReTokenRepository } from '../entities/re-token.repository';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
-import { UserRole } from '../../users/entities/user.userRole.enum';
+import { User } from '../../user/entities/user.entity';
+import { UserRole } from '../../user/entities/user.userRole.enum';
 
 //---- Helper
 import { initTestModule } from '../../test/initTest';

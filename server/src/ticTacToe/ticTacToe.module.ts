@@ -14,13 +14,13 @@ import { TicTacToeRepository } from './entity/ticTacToe.repository';
 import { TicTacToeMoveRepository } from './entity/ticTacToeMove.repository';
 
 //---- Module
-import { RedisModule } from '../providers/redis/redis.module';
+import { RedisModule } from '../utils/redis/redis.module';
 import { AuthModule } from '../auth/auth.module';
-import { UserModule } from '../users/user.module';
+import { UserModule } from '../user/user.module';
 import { TicTacToeController } from './ticTacToe.controller';
-import { ChatsModule } from '../chats/chats.module';
+import { ChatModule } from '../chat/chat.module';
 @Module({
-      imports: [TypeOrmModule.forFeature([TicTacToeRepository, TicTacToeMoveRepository]), AuthModule, RedisModule, UserModule, ChatsModule],
+      imports: [TypeOrmModule.forFeature([TicTacToeRepository, TicTacToeMoveRepository]), AuthModule, RedisModule, UserModule, ChatModule],
       providers: [TicTacToeGateway, TicTacToeService, TicTacToeCommonService, TicTacToeBotService],
       controllers: [TicTacToeController],
 })

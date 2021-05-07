@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import * as flat from 'flat';
 
 //----- Service
-import { LoggerService } from '../../utils/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class RedisService {

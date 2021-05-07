@@ -3,7 +3,7 @@ import 'jest-ts-auto-mock';
 import { INestApplication } from '@nestjs/common';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
 
 //---- Service

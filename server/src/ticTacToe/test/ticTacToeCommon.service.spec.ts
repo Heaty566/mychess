@@ -7,7 +7,7 @@ import { initTestModule } from '../../test/initTest';
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
 

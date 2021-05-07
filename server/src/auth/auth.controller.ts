@@ -5,19 +5,19 @@ import { Response, Request } from 'express';
 //---- Service
 import { SmailService } from '../providers/smail/smail.service';
 import { SmsService } from '../providers/sms/sms.service';
-import { UserService } from '../users/user.service';
+import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { UserGuard } from './auth.guard';
 
 //---- DTO
-import { UpdateEmailDTO, vUpdateEmailDTO } from '../users/dto/updateEmail.dto';
+import { UpdateEmailDTO, vUpdateEmailDTO } from '../user/dto/updateEmail.dto';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/registerUser.dto';
 import { LoginUserDTO, vLoginUserDto } from './dto/loginUser.dto';
 import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';

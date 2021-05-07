@@ -11,7 +11,7 @@ import { CommonController } from './common.controller';
 import { SmailModule } from '../providers/smail/smail.module';
 
 //---- Repository
-import { UserRepository } from '../users/entities/user.repository';
+import { UserRepository } from '../user/entities/user.repository';
 
 @Module({
       imports: [TypeOrmModule.forFeature([UserRepository]), SmailModule],

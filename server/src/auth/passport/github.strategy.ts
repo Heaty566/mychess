@@ -3,10 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github';
 
 //---- Service
-import { UserService } from '../../users/user.service';
+import { UserService } from '../../user/user.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {

@@ -6,13 +6,13 @@ import { fakeUser } from '../../../test/fakeEntity';
 import { fakeData } from '../../../test/test.helper';
 
 //---- Repository
-import { UserRepository } from '../../../users/entities/user.repository';
+import { UserRepository } from '../../../user/entities/user.repository';
 
 //---- Service
 import { RepositoryService } from '../repository.service';
 
 //---- Entity
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../user/entities/user.entity';
 
 describe('RepositoryService', () => {
       let app: INestApplication;

@@ -4,14 +4,14 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
 
 //---- Repository
-import { UserRepository } from '../users/entities/user.repository';
+import { UserRepository } from '../user/entities/user.repository';
 import { ReTokenRepository } from './entities/re-token.repository';
 
 //---- Helper
