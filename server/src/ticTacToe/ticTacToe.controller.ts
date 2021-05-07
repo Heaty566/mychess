@@ -36,19 +36,19 @@ export class TicTacToeController {
 
       private async getPlayer(tttId: string, userId: string) {
             const player = await this.ticTacToeCommonService.isExistUser(tttId, userId);
-            if (!player) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+            if (!player) throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             return player;
       }
 
       private async getGame(roomId: string) {
             const board = await this.ticTacToeCommonService.getBoard(roomId);
-            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
             return board;
       }
 
       private async isPlaying(board: TicTacToeBoard) {
             if (board.status === TicTacToeStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
       }
 
       @Post('/pvp')
@@ -90,7 +90,7 @@ export class TicTacToeController {
       async handleOnJoinRoom(@Req() req: Request, @Body() body: RoomIdDTO) {
             const board = await this.getGame(body.roomId);
             if (board.status !== TicTacToeStatus['NOT-YET'])
-                  throw apiResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+                  throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
 
             const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
             if (!isExist && board.users.length < 2) await this.ticTacToeCommonService.joinGame(board.id, req.user);
@@ -106,7 +106,7 @@ export class TicTacToeController {
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
             const isStart = await this.ticTacToeCommonService.startGame(board.id);
-            if (!isStart) throw apiResponse.sendError({ details: { roomId: { type: 'game.wait-ready-player' } } }, 'BadRequestException');
+            if (!isStart) throw apiResponse.sendError({ details: { messageError: { type: 'error.wait-ready-player' } } }, 'BadRequestException');
 
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
@@ -145,13 +145,13 @@ export class TicTacToeController {
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: AddMoveDto) {
             const board = await this.getGame(body.roomId);
             if (board.status !== TicTacToeStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             if (board.board[body.x][body.y] !== -1) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
             const isAdd = await this.ticTacToeService.addMoveToBoard(board.id, player, body.x, body.y);
-            if (!isAdd) throw apiResponse.sendError({ details: { roomId: { type: 'game.wrong-turn' } } }, 'BadRequestException');
+            if (!isAdd) throw apiResponse.sendError({ details: { messageError: { type: 'error.wrong-turn' } } }, 'BadRequestException');
             const isWin = await this.ticTacToeService.isWin(board.id);
             if (board.isBotMode && !isWin) {
                   const userMove = await this.ticTacToeBotService.findBestMove(board.id, board.users[0]);

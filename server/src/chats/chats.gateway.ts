@@ -37,7 +37,7 @@ export class ChatsGateway {
       @SubscribeMessage(CHATAction.CHAT_CONNECTION_CHAT)
       async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vJoinChatDTO)) data: JoinChatDTO) {
             const isBelongTo = await this.chatsService.checkUserBelongToChat(client.user.id, data.chatId);
-            if (!isBelongTo) throw ioResponse.sendError({ details: { message: { type: 'user.not-allow-action' } } }, 'BadRequestException');
+            if (!isBelongTo) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'BadRequestException');
 
             await client.join(data.chatId);
             const messages = await this.chatsService.loadMessage(data.chatId);

@@ -30,7 +30,7 @@ export class ChessController {
 
       private async isPlaying(userId: string) {
             const isPlaying = await this.chessCommonService.isPlaying(userId);
-            if (isPlaying) throw apiResponse.sendError({ details: { message: { type: 'game.already-join-other' } } }, 'BadRequestException');
+            if (isPlaying) throw apiResponse.sendError({ details: { messageError: { type: 'error.already-join' } } }, 'BadRequestException');
       }
 
       @Post('/')

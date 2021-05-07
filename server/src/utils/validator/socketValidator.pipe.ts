@@ -12,7 +12,7 @@ export class SocketJoiValidatorPipe implements PipeTransform {
       constructor(private readonly schema: ObjectSchema) {}
 
       transform(input: any) {
-            if (!input) throw ioResponse.sendError({ details: { message: { type: 'user.invalid-input' } } }, 'BadRequestException');
+            if (!input) throw ioResponse.sendError({ details: { messageError: { type: 'error.invalid-input' } } }, 'BadRequestException');
             const { error, value } = this.schema.validate(input, { abortEarly: false });
             if (error) throw ioResponse.sendError({ details: LocalesService.mapJoiError(error) }, 'BadRequestException');
 
