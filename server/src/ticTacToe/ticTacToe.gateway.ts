@@ -34,7 +34,7 @@ export class TicTacToeGateway {
 
       private async isExistUser(boardId: string, userId: string) {
             const getUser = await this.ticTacToeCommonService.isExistUser(boardId, userId);
-            if (!getUser) throw ioResponse.sendError({ details: { roomId: { type: 'user.not-allow-action' } } }, 'UnauthorizedException');
+            if (!getUser) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
       }
 
       async sendToRoom(boardId: string) {
@@ -50,7 +50,7 @@ export class TicTacToeGateway {
 
       private async getGameFromCache(roomId: string) {
             const game = await this.ticTacToeCommonService.getBoard(roomId);
-            if (!game) throw ioResponse.sendError({ details: { roomId: { type: 'user.not-found' } } }, 'NotFoundException');
+            if (!game) throw ioResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
 
             return game;
       }
