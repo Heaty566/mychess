@@ -18,8 +18,9 @@ import { RedisModule } from '../providers/redis/redis.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../users/user.module';
 import { TicTacToeController } from './ticTacToe.controller';
+import { ChatsModule } from '../chats/chats.module';
 @Module({
-      imports: [TypeOrmModule.forFeature([TicTacToeRepository, TicTacToeMoveRepository]), AuthModule, RedisModule, UserModule],
+      imports: [TypeOrmModule.forFeature([TicTacToeRepository, TicTacToeMoveRepository]), AuthModule, RedisModule, UserModule, ChatsModule],
       providers: [TicTacToeGateway, TicTacToeService, TicTacToeCommonService, TicTacToeBotService],
       controllers: [TicTacToeController],
 })

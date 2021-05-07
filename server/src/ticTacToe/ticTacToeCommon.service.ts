@@ -7,6 +7,7 @@ import { UserService } from '../users/user.service';
 //---- Entity
 import { TicTacToe } from './entity/ticTacToe.entity';
 import User from '../users/entities/user.entity';
+import { ChatsService } from '../chats/chats.service';
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 import { TicTacToeMove } from './entity/ticTacToeMove.entity';
@@ -20,6 +21,7 @@ export class TicTacToeCommonService {
             private readonly ticTacToeRepository: TicTacToeRepository,
             private readonly redisService: RedisService,
             private readonly userService: UserService,
+            private readonly chatService: ChatsService,
       ) {}
 
       async getBoard(boardId: string) {
@@ -64,6 +66,8 @@ export class TicTacToeCommonService {
 
       async createNewGame(user: User, isBotMode: boolean) {
             const newBoard = new TicTacToeBoard(isBotMode);
+            const newChat = await this.chatService.createChat(user);
+            newBoard.chatId = newChat.id;
             await this.setBoard(newBoard);
 
             await this.joinGame(newBoard.id, user);
@@ -158,13 +162,21 @@ export class TicTacToeCommonService {
                               }
                         }
 
+                  const chat = await this.chatService.loadToDatabase(board.chatId);
+
                   const newTicTacToe = new TicTacToe();
                   newTicTacToe.endDate = new Date();
                   newTicTacToe.moves = moves;
                   newTicTacToe.winner = board.winner;
                   newTicTacToe.users = users;
                   newTicTacToe.startDate = board.startDate;
-                  return await this.ticTacToeRepository.save(newTicTacToe);
+                  if (chat) {
+                        newTicTacToe.chatId = chat.id;
+                  }
+
+                  const ttt = await this.ticTacToeRepository.save(newTicTacToe);
+
+                  return ttt;
             }
       }
 }

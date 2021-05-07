@@ -12,14 +12,15 @@ import { RedisService } from '../providers/redis/redis.service';
 import { ChatsService } from './chats.service';
 
 //---- DTO
-import { JoinChatDTO, vJoinChatDTO } from './dto/joinChatDTO.dto';
-import { SendMessageDTO } from './dto/sendMessageDTO';
+import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
+import { SendMessageDTO } from './dto/sendMessageDto';
 
 //---- Entity
 import { Message } from './entities/message.entity';
 
 //---- Enum
 import { ChatGatewayAction } from './chats.action';
+import { Chat } from './entities/chat.entity';
 
 @WebSocketGateway({ namespace: 'chats' })
 export class ChatsGateway {
@@ -27,60 +28,43 @@ export class ChatsGateway {
       @WebSocketServer()
       server: Server;
 
-      /**
-       * This function listens on "chat-connection-chat" event from client.
-       * After that, checking the user is belong to a chat or not.
-       * If yes, then load all the history and send them to client
-       * @param data chatId
-       */
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage(ChatGatewayAction.CHAT_CONNECTION_CHAT)
-      async handleInitChat(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vJoinChatDTO)) data: JoinChatDTO) {
-            const isBelongTo = await this.chatsService.checkUserBelongToChat(client.user.id, data.chatId);
-            if (!isBelongTo) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'BadRequestException');
+      socketServer = () => ioResponse.getSocketServer(this.server);
 
-            await client.join(data.chatId);
-            const messages = await this.chatsService.loadMessage(data.chatId);
-            this.server.to(data.chatId).emit(ChatGatewayAction.CHAT_LOAD_MESSAGE_HISTORY, messages);
-            // init a cache to save new message
-            await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, []);
-            return ioResponse.send(ChatGatewayAction.CHAT_CONNECTION_CHAT, {});
+      async sendToRoom(chatId: string) {
+            const chat = await this.chatsService.getChat(chatId);
+            return this.socketServer().socketEmitToRoom(ChatGatewayAction.CHAT_GET, chatId, { data: chat }, 'chat');
       }
 
-      /**
-       * This function listens on "chat-send-message" from client.
-       * And save this message into database, then send it back to client to display
-       * @param data A message from client
-       * @returns
-       */
-      @UseGuards(UserSocketGuard)
-      @SubscribeMessage(ChatGatewayAction.CHAT_SEND_MESSAGE)
-      async sendMessage(@ConnectedSocket() client: SocketExtend, @MessageBody() data: SendMessageDTO) {
-            // get messages array from cache
-            const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
-            messages.push(data.message);
-
-            await this.redisService.setArrayByKey(`messages-array-${client.user.id}`, messages);
-            this.server.to(data.chatId).emit(ChatGatewayAction.CHAT_SEND_MESSAGE, data.message);
-
-            return ioResponse.send(ChatGatewayAction.CHAT_SEND_MESSAGE, {});
+      private isBelongToChat(chat: Chat, userId: string) {
+            const user = chat.users.find((item) => item.id === userId);
+            if (!user) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            return user;
       }
 
-      /**
-       * This function listens on "chat-disconnection-chat" from client
-       * Load messages in cache and update into database
-       * @param data chatId
-       * @returns
-       */
+      private async getChatFromCache(chatId: string) {
+            const game = await this.chatsService.getChat(chatId);
+            if (!game) throw ioResponse.sendError({ details: { chatId: { type: 'field.not-found' } } }, 'NotFoundException');
+
+            return game;
+      }
+
       @UseGuards(UserSocketGuard)
-      @SubscribeMessage(ChatGatewayAction.CHAT_DISCONNECTION_CHAT)
-      async handleEndChat(@ConnectedSocket() client: SocketExtend) {
-            // get messages array from cache
-            const messages = await this.redisService.getArrayByKey<Array<Message>>(`messages-array-${client.user.id}`);
+      @SubscribeMessage(ChatGatewayAction.CHAT_JOIN)
+      async handleJoinChat(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdChatDTO)) data: RoomIdChatDTO) {
+            const chat = await this.getChatFromCache(data.chatId);
+            await this.isBelongToChat(chat, client.user.id);
 
-            messages.forEach(async (message) => await this.chatsService.saveMessage(message));
+            await client.join('chat-' + chat.id);
 
-            await this.redisService.deleteByKey(`messages-array-${client.user.id}`);
-            return ioResponse.send(ChatGatewayAction.CHAT_DISCONNECTION_CHAT, {});
+            return this.socketServer().socketEmitToRoom(ChatGatewayAction.CHAT_JOIN, chat.id, {}, 'chat');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(ChatGatewayAction.CHAT_GET)
+      async handleGetChat(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdChatDTO)) data: RoomIdChatDTO) {
+            const chat = await this.getChatFromCache(data.chatId);
+            await this.isBelongToChat(chat, client.user.id);
+
+            return this.socketServer().socketEmitToRoom(ChatGatewayAction.CHAT_GET, chat.id, { data: chat }, 'chat');
       }
 }

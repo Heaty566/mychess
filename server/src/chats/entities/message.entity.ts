@@ -14,13 +14,15 @@ export class Message {
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       createDate: Date;
 
-      @ManyToOne(() => Chat, (chat) => chat.messages, { onDelete: 'CASCADE' })
+      @ManyToOne(() => Chat, (chat) => chat.messages)
       chat: Chat;
 
       @Column()
       userId: string;
 
-      constructor() {
+      constructor(userId: string, content: string) {
             this.createDate = new Date();
+            this.userId = userId;
+            this.content = content;
       }
 }

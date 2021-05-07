@@ -17,5 +17,6 @@ import { RedisModule } from '../providers/redis/redis.module';
 @Module({
       imports: [TypeOrmModule.forFeature([MessageRepository, ChatRepository]), RedisModule],
       providers: [ChatsGateway, ChatsService],
+      exports: [ChatsService],
 })
 export class ChatsModule {}

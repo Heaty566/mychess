@@ -3,6 +3,7 @@ import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColum
 //---- Entity
 import User from '../../users/entities/user.entity';
 import { Message } from './message.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Chat {
@@ -18,4 +19,9 @@ export class Chat {
       @ManyToMany(() => User)
       @JoinTable()
       users: User[];
+
+      constructor() {
+            this.createDate = new Date();
+            // this.id = uuidv4();
+      }
 }

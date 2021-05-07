@@ -14,6 +14,7 @@ export class TicTacToeBoard {
       currentTurn: boolean;
       users: TicTacToePlayer[];
       winner: TicTacToeFlag;
+      chatId: string;
 
       constructor(readonly isBotMode: boolean) {
             const initRow: Array<TicTacToeFlag> = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
