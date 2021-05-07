@@ -2,6 +2,7 @@ import http from '../axiosCommon';
 import { AxiosInstance } from 'axios';
 import { AddMoveDto, RoomIdDto } from './dto';
 import { ServerResponse } from '../../store/api/interface';
+import { TicTacToeBoard } from '../../components/game/tttBoard/config';
 
 export class TicTacToeAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
@@ -47,7 +48,7 @@ export class TicTacToeAPI {
 
     async joinRoom(input: RoomIdDto) {
         const url = `${this.prefix + '/join-room'}`;
-        const res = await this.apiCall.post<ServerResponse<null>>(url, input);
+        const res = await this.apiCall.post<ServerResponse<TicTacToeBoard>>(url, input);
         return res;
     }
 }

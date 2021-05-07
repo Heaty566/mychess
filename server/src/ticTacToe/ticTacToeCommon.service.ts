@@ -14,11 +14,13 @@ import { TicTacToeMove } from './entity/ticTacToeMove.entity';
 
 //---- Repository
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
+import { TicTacToeMoveRepository } from './entity/ticTacToeMove.repository';
 
 @Injectable()
 export class TicTacToeCommonService {
       constructor(
             private readonly ticTacToeRepository: TicTacToeRepository,
+            private readonly ticTacToeMoveRepository: TicTacToeMoveRepository,
             private readonly redisService: RedisService,
             private readonly userService: UserService,
             private readonly chatService: ChatsService,
@@ -81,16 +83,16 @@ export class TicTacToeCommonService {
       async joinGame(boardId: string, user: User | TicTacToePlayer) {
             const board = await this.getBoard(boardId);
 
-            if (board?.users && board.users.length !== 2) {
+            if (board?.users && user && board.users.length !== 2) {
                   const userFlag = board.users.length === 0 ? TicTacToeFlag.BLUE : TicTacToeFlag.RED;
 
                   board.users.push({
-                        username: user.username,
-                        name: user.name,
-                        avatarUrl: user.avatarUrl,
-                        elo: user.elo,
+                        username: user?.username,
+                        name: user?.name,
+                        avatarUrl: user?.avatarUrl,
+                        elo: user?.elo,
                         time: 90000,
-                        id: user.id,
+                        id: user?.id,
                         ready: false,
                         flag: userFlag,
                   });
@@ -166,7 +168,7 @@ export class TicTacToeCommonService {
 
                   const newTicTacToe = new TicTacToe();
                   newTicTacToe.endDate = new Date();
-                  newTicTacToe.moves = moves;
+                  newTicTacToe.moves = await this.ticTacToeMoveRepository.save(moves);
                   newTicTacToe.winner = board.winner;
                   newTicTacToe.users = users;
                   newTicTacToe.startDate = board.startDate;

@@ -6,10 +6,15 @@ export enum TicTacToeFlag {
     BLUE = 1,
 }
 
-export enum TTTAction {
+export enum TTTGatewayAction {
     TTT_JOIN = 'ttt-join',
     TTT_GET = 'ttt-get',
     TTT_RESTART = 'ttt-restart',
+}
+
+export enum ChatGatewayAction {
+    CHAT_GET = 'chat-get',
+    CHAT_JOIN = 'chat-join',
 }
 
 export enum TicTacToeStatus {
@@ -47,4 +52,19 @@ export interface TicTacToeBoard {
     users: TicTacToePlayer[];
     isBotMode: boolean;
     winner: TicTacToeFlag;
+    chatId: string;
+}
+export interface Message {
+    id: string;
+    content: string;
+    createDate: Date;
+    chat: Chat;
+    userId: string;
+}
+
+export interface Chat {
+    id: string;
+    createDate: Date;
+    messages: Message[];
+    users: User[];
 }

@@ -19,7 +19,7 @@ import { SendMessageDTO } from './dto/sendMessageDto';
 import { Message } from './entities/message.entity';
 
 //---- Enum
-import { ChatGatewayAction } from './chats.action';
+import { ChatGatewayAction } from './chatsGateway.action';
 import { Chat } from './entities/chat.entity';
 
 @WebSocketGateway({ namespace: 'chats' })
@@ -37,15 +37,15 @@ export class ChatsGateway {
 
       private isBelongToChat(chat: Chat, userId: string) {
             const user = chat.users.find((item) => item.id === userId);
-            if (!user) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            if (!user) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             return user;
       }
 
       private async getChatFromCache(chatId: string) {
-            const game = await this.chatsService.getChat(chatId);
-            if (!game) throw ioResponse.sendError({ details: { chatId: { type: 'field.not-found' } } }, 'NotFoundException');
+            const chat = await this.chatsService.getChat(chatId);
+            if (!chat) throw ioResponse.sendError({ details: { chatId: { type: 'field.not-found' } } }, 'NotFoundException');
 
-            return game;
+            return chat;
       }
 
       @UseGuards(UserSocketGuard)
@@ -54,7 +54,7 @@ export class ChatsGateway {
             const chat = await this.getChatFromCache(data.chatId);
             await this.isBelongToChat(chat, client.user.id);
 
-            await client.join('chat-' + chat.id);
+            await client.join(`chat-${chat.id}`);
 
             return this.socketServer().socketEmitToRoom(ChatGatewayAction.CHAT_JOIN, chat.id, {}, 'chat');
       }

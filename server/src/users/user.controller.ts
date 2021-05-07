@@ -66,7 +66,7 @@ export class UserController {
       async cGetUserById(@Param('id') id: string) {
             //get user
             const user = await this.userService.findOneUserWithoutSomeSensitiveFields('id', id);
-            if (!user) throw apiResponse.sendError({ details: { messageError: { type: 'error.invalid-input' } } }, 'BadRequestException');
+            if (!user) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-input' } } }, 'BadRequestException');
 
             return apiResponse.send<UserCustomDTO>({ data: user });
       }
@@ -110,7 +110,7 @@ export class UserController {
             //upload file to aws
             const fileLocation = await this.awsService.uploadFile(file, String(req.user.id), 'user');
             if (!fileLocation)
-                  throw apiResponse.sendError({ details: { messageError: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
 
             //update user information
             const user = await this.userService.findOneUserByField('id', req.user.id);
@@ -216,7 +216,7 @@ export class UserController {
             //generate otp
             const otpKey = this.authService.createOTP(updateUser, config.userController.OTPPhoneValidTime, 'sms');
             const res = await this.smsService.sendOTP(updateUser.phoneNumber, otpKey);
-            if (!res) throw apiResponse.sendError({ details: { messageError: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
+            if (!res) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
 
             return apiResponse.send({ details: { message: { type: 'message.send-phone-otp' } } });
       }
@@ -260,7 +260,7 @@ export class UserController {
             //generate otp key
             const redisKey = await this.authService.createOTP(updateUser, config.userController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTPForUpdateEmail(updateUser.email, redisKey);
-            if (!isSent) throw apiResponse.sendError({ details: { messageError: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
+            if (!isSent) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
 
             return apiResponse.send({ details: { message: { type: 'message.send-email' } } });
       }

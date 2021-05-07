@@ -64,7 +64,7 @@ const UpdateWithOTP: React.FunctionComponent<ResetPasswordProps> = () => {
                     <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                         <h1 className="text-4xl text-center text-white mb-7">Update Phone Number</h1>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-                            <MsgSuccess message={apiState.message} />
+                            <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
 
                             <p className="py-2 text-mercury-800">Please enter your OTP, and do not share it with anybody.</p>
                             <div className="space-y-2">

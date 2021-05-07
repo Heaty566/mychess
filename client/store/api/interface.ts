@@ -3,7 +3,6 @@ export interface JoiError {
 }
 export interface ServerResponse<T> {
     data: T;
-    message: string;
     details: JoiError;
 }
 export interface ApiState {
@@ -11,4 +10,5 @@ export interface ApiState {
     errorDetails: JoiError;
     isError: boolean;
     message: string;
+    messageError: string;
 }
