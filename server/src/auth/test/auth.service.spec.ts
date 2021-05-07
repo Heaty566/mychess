@@ -6,10 +6,10 @@ import { fakeData } from '../../test/test.helper';
 
 //---- Service
 import { AuthService } from '../auth.service';
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 //---- Repository
 import { ReTokenRepository } from '../entities/re-token.repository';

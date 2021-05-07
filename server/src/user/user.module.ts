@@ -9,7 +9,7 @@ import { AdminController } from './admin.controller';
 import { AuthModule } from '../auth/auth.module';
 
 //----- Utils
-import { RedisModule } from '../providers/redis/redis.module';
+import { RedisModule } from '../utils/redis/redis.module';
 import { LoggerModule } from '../utils/logger/logger.module';
 
 //----- Provider

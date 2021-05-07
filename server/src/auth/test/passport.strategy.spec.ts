@@ -13,10 +13,10 @@ import { GoogleStrategy } from '../passport/google.strategy';
 import { FacebookStrategy } from '../passport/facebook.strategy';
 
 //---- Repository
-import { UserRepository } from '../../users/entities/user.repository';
+import { UserRepository } from '../../user/entities/user.repository';
 
 //---- Service
-import { UserService } from '../../users/user.service';
+import { UserService } from '../../user/user.service';
 
 describe('FacebookStrategy', () => {
       let app: INestApplication;

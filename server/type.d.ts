@@ -1,4 +1,4 @@
-import UserExtend from './src/users/entities/user.entity';
+import UserExtend from './src/user/entities/user.entity';
 import { Socket } from 'socket.io';
 
 declare global {

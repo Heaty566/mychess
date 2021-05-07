@@ -8,8 +8,8 @@ import { UserSocketGuard } from '../auth/authSocket.guard';
 import { SocketJoiValidatorPipe } from '../utils/validator/socketValidator.pipe';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
-import { ChatsService } from './chats.service';
+import { RedisService } from '../utils/redis/redis.service';
+import { ChatService } from './chat.service';
 
 //---- DTO
 import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
@@ -19,19 +19,19 @@ import { SendMessageDTO } from './dto/sendMessageDto';
 import { Message } from './entities/message.entity';
 
 //---- Enum
-import { ChatGatewayAction } from './chatsGateway.action';
+import { ChatGatewayAction } from './chatGateway.action';
 import { Chat } from './entities/chat.entity';
 
 @WebSocketGateway({ namespace: 'chats' })
-export class ChatsGateway {
-      constructor(private readonly chatsService: ChatsService, private readonly redisService: RedisService) {}
+export class ChatGateway {
+      constructor(private readonly chatService: ChatService, private readonly redisService: RedisService) {}
       @WebSocketServer()
       server: Server;
 
       socketServer = () => ioResponse.getSocketServer(this.server);
 
       async sendToRoom(chatId: string) {
-            const chat = await this.chatsService.getChat(chatId);
+            const chat = await this.chatService.getChat(chatId);
             return this.socketServer().socketEmitToRoom(ChatGatewayAction.CHAT_GET, chatId, { data: chat }, 'chat');
       }
 
@@ -42,7 +42,7 @@ export class ChatsGateway {
       }
 
       private async getChatFromCache(chatId: string) {
-            const chat = await this.chatsService.getChat(chatId);
+            const chat = await this.chatService.getChat(chatId);
             if (!chat) throw ioResponse.sendError({ details: { chatId: { type: 'field.not-found' } } }, 'NotFoundException');
 
             return chat;
@@ -55,7 +55,6 @@ export class ChatsGateway {
             await this.isBelongToChat(chat, client.user.id);
 
             await client.join(`chat-${chat.id}`);
-
             return this.socketServer().socketEmitToRoom(ChatGatewayAction.CHAT_JOIN, chat.id, {}, 'chat');
       }
 

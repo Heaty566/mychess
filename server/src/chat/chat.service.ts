@@ -5,13 +5,13 @@ import { ChatRepository } from './entities/chat.repository';
 
 //---- Entity
 import { Message } from './entities/message.entity';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 import { Chat } from './entities/chat.entity';
-import User from '../users/entities/user.entity';
+import User from '../user/entities/user.entity';
 import { generatorString } from '../app/helpers/stringGenerator';
 
 @Injectable()
-export class ChatsService {
+export class ChatService {
       constructor(private readonly chatRepository: ChatRepository, private readonly redisService: RedisService) {}
 
       async loadFromDatabase(chatId: string) {

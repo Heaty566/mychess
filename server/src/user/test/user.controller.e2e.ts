@@ -24,7 +24,7 @@ import { UserRepository } from '../entities/user.repository';
 
 //---- Service
 import { AuthService } from '../../auth/auth.service';
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 import { UserService } from '../user.service';
 import { SmailService } from '../../providers/smail/smail.service';
 import { AwsService } from '../../providers/aws/aws.service';

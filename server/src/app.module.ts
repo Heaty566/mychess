@@ -6,7 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 //---------Module
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './users/user.module';
+import { UserModule } from './user/user.module';
 import { TicTacToeModule } from './ticTacToe/ticTacToe.module';
 import { ChessModule } from './chess/chess.module';
 
@@ -18,19 +18,19 @@ import { NotificationsModule } from './notifications/notifications.module';
 
 //---------Utils
 import { LoggerModule } from './utils/logger/logger.module';
-import { RedisModule } from './providers/redis/redis.module';
+import { RedisModule } from './utils/redis/redis.module';
 import { RepositoryModule } from './utils/repository/repository.module';
 
 //---------Entity
-import { User } from './users/entities/user.entity';
+import { User } from './user/entities/user.entity';
 import { ReToken } from './auth/entities/re-token.entity';
 import { Notification } from './notifications/entities/notification.entity';
-import { ChatsModule } from './chats/chats.module';
-import { Chat } from './chats/entities/chat.entity';
-import { Message } from './chats/entities/message.entity';
+import { Chat } from './chat/entities/chat.entity';
+import { Message } from './chat/entities/message.entity';
 import { TicTacToe } from './ticTacToe/entity/ticTacToe.entity';
 import { TicTacToeMove } from './ticTacToe/entity/ticTacToeMove.entity';
 import { Chess } from './chess/entity/chess.entity';
+import { ChatModule } from './chat/chat.module';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -74,8 +74,8 @@ const DBConfig = TypeOrmModule.forRoot({
             LoggerModule,
             RedisModule,
             RepositoryModule,
-            ChatsModule,
             ChessModule,
+            ChatModule,
       ],
       controllers: [],
 })

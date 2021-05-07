@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ChessRepository } from './entity/chess.repository';
 import { ChessStatus } from './entity/chess.interface';
 import { Chess } from './entity/chess.entity';
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { ChessBoard } from './entity/chessBoard.entity';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 import { ObjectLiteral } from 'typeorm';
 
 @Injectable()
