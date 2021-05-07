@@ -1,12 +1,22 @@
 import { Module } from '@nestjs/common';
-import { ChatService } from './chat.service';
-import { ChatController } from './chat.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MessageRepository } from './entities/message.repository';
-import { ChatRepository } from './entities/chat.repository';
+
+//---- Service
+import { ChatService } from './chat.service';
+
+//---- Controller
+import { ChatController } from './chat.controller';
+
+//---- Gateway
+import { ChatGateway } from './chat.gateway';
+
+//---- Module
 import { RedisModule } from '../utils/redis/redis.module';
 import { AuthModule } from '../auth/auth.module';
-import { ChatGateway } from './chat.gateway';
+
+//---- Repository
+import { ChatRepository } from './entities/chat.repository';
+import { MessageRepository } from './entities/message.repository';
 
 @Module({
       imports: [TypeOrmModule.forFeature([MessageRepository, ChatRepository]), RedisModule, AuthModule],

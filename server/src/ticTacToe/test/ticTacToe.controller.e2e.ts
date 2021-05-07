@@ -12,8 +12,8 @@ import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 import { AuthService } from '../../auth/auth.service';
 
 //---- DTO
-import { RoomIdDTO } from '../dto/roomIdDto';
-import { AddMoveDto } from '../dto/addMoveDto';
+import { TTTRoomIdDTO } from '../dto/tttRoomIdDto';
+import { TTTAddMoveDto } from '../dto/tttAddMoveDto';
 
 //---- Common
 import { initTestModule } from '../../test/initTest';
@@ -100,7 +100,7 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: RoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/restart').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/restart').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   await ticTacToeCommonService.surrender(tttId, player1);
@@ -142,7 +142,7 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: AddMoveDto) => supertest(app.getHttpServer()).post('/api/ttt/add-move').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTAddMoveDto) => supertest(app.getHttpServer()).post('/api/ttt/add-move').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId, x: 0, y: 0 });
@@ -225,7 +225,7 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: RoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/join-room').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/join-room').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId });
@@ -274,7 +274,8 @@ describe('TicTacToeController', () => {
                   player1 = getBoard.users[0];
             });
 
-            const reqApi = (input: RoomIdDTO, cookie: string[]) => supertest(app.getHttpServer()).post('/api/ttt/start').set({ cookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO, cookie: string[]) =>
+                  supertest(app.getHttpServer()).post('/api/ttt/start').set({ cookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId }, newCookie);
@@ -317,7 +318,7 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: RoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/ready').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/ready').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId });
@@ -341,7 +342,7 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: RoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/leave').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/leave').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId });
