@@ -29,7 +29,7 @@ export class TicTacToeGateway {
 
       private async isExistUser(boardId: string, userId: string) {
             const getUser = await this.ticTacToeCommonService.isExistUser(boardId, userId);
-            if (!getUser) throw ioResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
+            if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
       }
 
       async sendToRoom(boardId: string) {

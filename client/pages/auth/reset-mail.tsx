@@ -53,7 +53,7 @@ const ResetEmail: React.FunctionComponent = () => {
                 <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
-                        <MsgSuccess message={apiState.message} />
+                        <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
 
                         <p className="py-2 text-mercury-800">
                             Please enter your email address. you will receive a link to create a new password via email.

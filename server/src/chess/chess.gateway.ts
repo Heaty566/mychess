@@ -32,7 +32,7 @@ export class ChessGateway {
             const isPlaying = await this.chessCommonService.isPlaying(userId);
             if (isPlaying)
                   return this.socketServer().socketEmitToRoomError('BadRequestException', userId, {
-                        details: { messageError: { type: 'error.already-join' } },
+                        details: { errorMessage: { type: 'error.already-join' } },
                   });
       }
 }

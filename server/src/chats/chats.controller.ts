@@ -5,11 +5,12 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChatsService } from './chats.service';
 import { Chat } from './entities/chat.entity';
 import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
-import { JoiValidatorPipe } from 'src/utils/validator/validator.pipe';
+import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { SendMessageDTO, vSendMessageDTO } from './dto/sendMessageDTO';
+import { ChatsGateway } from './chats.gateway';
 @Controller('chats')
-export class ChessController {
-      constructor(private readonly chatService: ChatsService) {}
+export class ChatsController {
+      constructor(private readonly chatService: ChatsService, private readonly chatGateway: ChatsGateway) {}
 
       private isBelongToRoom(chat: Chat, userId: string) {
             return chat.users.find((item) => item.id === userId);
@@ -46,9 +47,9 @@ export class ChessController {
             const chat = await this.getChatFromCache(body.chatId);
 
             const isBelongToChat = this.isBelongToRoom(chat, req.user.id);
-            if (!isBelongToChat) throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            if (!isBelongToChat) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             await this.chatService.addMessage(chat.id, req.user, body.content);
-
+            await this.chatGateway.sendToRoom(chat.id);
             return apiResponse.send<RoomIdChatDTO>({});
       }
       @Post('/leave')
@@ -58,7 +59,7 @@ export class ChessController {
             const chat = await this.getChatFromCache(body.chatId);
 
             const isBelongToChat = this.isBelongToRoom(chat, req.user.id);
-            if (!isBelongToChat) throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            if (!isBelongToChat) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             await this.chatService.loadToDatabase(chat.id);
 
             return apiResponse.send<RoomIdChatDTO>({});

@@ -8,6 +8,7 @@ const initialState: ApiState = {
     errorDetails: {},
     isError: false,
     message: '',
+    messageError: '',
 };
 
 const reducer = createSlice({
@@ -19,11 +20,13 @@ const reducer = createSlice({
         resetState: (_) => ({ ...initialState }),
         updateErrorDetails: (state, { payload }: PayloadAction<JoiError>) => {
             const newState = { ...state };
+            if (payload?.messageError) newState.messageError = payload.messageError;
+
             newState.errorDetails = payload;
             newState.isError = true;
             return newState;
         },
-        updateSuccessMessage: (state, { payload }: PayloadAction<ServerResponse<any>>) => ({ ...state, message: payload.message || '' }),
+        updateSuccessMessage: (state, { payload }: PayloadAction<ServerResponse<any>>) => ({ ...state, message: payload.details.message || '' }),
     },
     extraReducers: (builder) => {},
 });

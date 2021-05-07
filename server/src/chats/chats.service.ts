@@ -8,6 +8,7 @@ import { Message } from './entities/message.entity';
 import { RedisService } from '../providers/redis/redis.service';
 import { Chat } from './entities/chat.entity';
 import User from '../users/entities/user.entity';
+import { generatorString } from '../app/helpers/stringGenerator';
 
 @Injectable()
 export class ChatsService {
@@ -37,7 +38,9 @@ export class ChatsService {
       async createChat(user: User) {
             const chat = new Chat();
             chat.users = [];
+            chat.id = generatorString(10);
             chat.users.push(user);
+            chat.messages = [];
             await this.setChat(chat);
 
             return chat;
@@ -61,6 +64,7 @@ export class ChatsService {
             const chat = await this.getChat(chatId);
             if (chat) {
                   await this.setChat(chat);
+
                   return await this.chatRepository.save(chat);
             }
       }
@@ -68,7 +72,6 @@ export class ChatsService {
       async addMessage(chatId: string, user: User, content: string) {
             const chat = await this.getChat(chatId);
             if (chat) {
-                  chat.messages = [];
                   const newMessage = new Message(user.id, content);
                   chat.messages.push(newMessage);
                   await this.setChat(chat);

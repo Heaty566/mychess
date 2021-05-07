@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
-import { TTTAction, TicTacToeStatus, TicTacToeBoard, TicTacToePlayer } from '../../../components/game/tttBoard/config';
+import { TTTGatewayAction, TicTacToeStatus, TicTacToeBoard, TicTacToePlayer } from '../../../components/game/tttBoard/config';
 import { RoomIdDto } from '../../../common/interface/dto/roomIdDto';
 import { useSocketIo } from '../../../common/hooks/useSocketIo';
 import { AuthState, User } from '../../../store/auth/interface';
