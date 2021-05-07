@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Request } from 'express';
 
 //---- Service
@@ -86,7 +86,7 @@ export class TicTacToeController {
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: newGameId } });
       }
 
-      @Post('/join-room')
+      @Put('/join-room')
       @UseGuards(UserGuard)
       async handleOnJoinRoom(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
@@ -99,7 +99,7 @@ export class TicTacToeController {
             return apiResponse.send({ data: board });
       }
 
-      @Post('/start')
+      @Put('/start')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
       async handleOnStartGame(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
@@ -113,7 +113,7 @@ export class TicTacToeController {
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Post('/ready')
+      @Put('/ready')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
       async handleOnReadyGame(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
@@ -127,7 +127,7 @@ export class TicTacToeController {
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Post('/leave')
+      @Put('/leave')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
       async handleOnLeaveGame(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
@@ -140,7 +140,7 @@ export class TicTacToeController {
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Post('/add-move')
+      @Put('/add-move')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vTTTAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: TTTAddMoveDto) {
