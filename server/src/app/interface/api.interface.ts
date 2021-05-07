@@ -10,12 +10,12 @@ export type ErrorType =
 
 export interface ResponseBodyDetails {
       message?: JoiErrorItem;
-      messageError?: JoiErrorItem;
+      errorMessage?: JoiErrorItem;
       [key: string]: JoiErrorItem;
 }
 export interface ServerBodyDetails {
       message?: string;
-      messageError?: string;
+      errorMessage?: string;
       [key: string]: string;
 }
 

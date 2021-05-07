@@ -41,7 +41,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
                     <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <h1 className="text-4xl text-center text-white mb-7">Login Account</h1>
-                            <MsgSuccess message={apiState.message} />
+                            <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
                             <div className="space-y-2">
                                 <TextField name="username" label="Username" error={errors.username} register={register} type="text" />
                                 <TextField name="password" label="Password" error={errors.password} register={register} type="password" />

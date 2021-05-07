@@ -5,12 +5,12 @@ import MsgSuccess, { MsgSuccessProps } from '.';
 
 describe('MsgSuccess', () => {
     it('Render Correct Default Type', async () => {
-        const data: MsgSuccessProps = { message: 'hello world' };
+        const data: MsgSuccessProps = { successMessage: 'hello world' };
 
         const wrapper = render(<MsgSuccess {...data} />);
 
         const successMsg = await wrapper.findByTestId('msgsuccess');
-        expect(successMsg.innerHTML).toBe(data.message);
+        expect(successMsg.innerHTML).toBe(data.successMessage);
         expect(wrapper).toMatchInlineSnapshot(`
             Object {
               "asFragment": [Function],
