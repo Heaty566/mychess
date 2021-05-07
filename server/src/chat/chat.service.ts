@@ -1,35 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+
+//---- Service
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Repository
 import { ChatRepository } from './entities/chat.repository';
+import { MessageRepository } from './entities/message.repository';
 
 //---- Entity
 import { Message } from './entities/message.entity';
-import { RedisService } from '../utils/redis/redis.service';
-import { Chat } from './entities/chat.entity';
 import User from '../user/entities/user.entity';
-import { generatorString } from '../app/helpers/stringGenerator';
-
+import { Chat } from './entities/chat.entity';
 @Injectable()
 export class ChatService {
-      constructor(private readonly chatRepository: ChatRepository, private readonly redisService: RedisService) {}
-
-      async loadFromDatabase(chatId: string) {
-            const chat = await this.chatRepository
-                  .createQueryBuilder('chat')
-                  .leftJoinAndSelect('chat.messages', 'message')
-                  .where('chat.id = :chatId', { chatId })
-                  .getOne();
-            if (chat) await this.setChat(chat);
-
-            return chat;
-      }
+      constructor(
+            private readonly chatRepository: ChatRepository,
+            private readonly redisService: RedisService,
+            private readonly messageRepository: MessageRepository,
+      ) {}
 
       async getChat(chatId: string) {
             const newChatId = `chat-${chatId}`;
             const chat = await this.redisService.getObjectByKey<Chat>(newChatId);
+
             if (!chat) {
-                  const dbChat = await this.loadFromDatabase(chatId);
+                  const dbChat = await this.chatRepository.getOneChatById(chatId);
+                  if (!dbChat) return null;
+                  await this.setChat(dbChat);
+
                   return dbChat;
             }
             return chat;
@@ -38,10 +37,10 @@ export class ChatService {
       async createChat(user: User) {
             const chat = new Chat();
             chat.users = [];
-            chat.id = generatorString(10);
-            chat.users.push(user);
+            chat.id = uuidv4();
             chat.messages = [];
             await this.setChat(chat);
+            await this.joinChat(chat.id, user);
 
             return chat;
       }
@@ -52,20 +51,35 @@ export class ChatService {
             return await this.redisService.setObjectByKey(newChatId, chat, 1440);
       }
 
-      async joinGame(chatId: string, user: User) {
+      async joinChat(chatId: string, user: User) {
             const chat = await this.getChat(chatId);
             if (chat) {
-                  chat.users.push(user);
+                  chat.users.push({
+                        ...user,
+                        password: null,
+                        phoneNumber: null,
+                        email: null,
+                        facebookId: null,
+                        googleId: null,
+                        githubId: null,
+                  });
                   await this.setChat(chat);
             }
       }
 
-      async loadToDatabase(chatId: string) {
+      async saveMessage(chat: Chat) {
+            const messages = await this.messageRepository.save(chat.messages);
+            return messages;
+      }
+
+      async saveChat(chatId: string) {
             const chat = await this.getChat(chatId);
             if (chat) {
-                  await this.setChat(chat);
-
-                  return await this.chatRepository.save(chat);
+                  const messages = await this.saveMessage(chat);
+                  chat.messages = messages;
+                  const saveChat = await this.chatRepository.save(chat);
+                  await this.setChat(saveChat);
+                  return saveChat;
             }
       }
 

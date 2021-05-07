@@ -308,7 +308,7 @@ describe('ticTacToeCommonService', () => {
                   await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
                   await ticTacToeCommonService.startGame(tttId);
                   await ticTacToeCommonService.surrender(tttId, getBoard.users[1]);
-                  const tttDB = await ticTacToeCommonService.loadToDatabase(tttId);
+                  const tttDB = await ticTacToeCommonService.saveTTTFromCacheToDb(tttId);
 
                   expect(tttDB.winner).toBe(TicTacToeFlag.BLUE);
                   expect(tttDB.moves).toHaveLength(2);
@@ -324,7 +324,7 @@ describe('ticTacToeCommonService', () => {
                   await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
                   await ticTacToeCommonService.startGame(tttId);
                   await ticTacToeCommonService.surrender(tttId, getBoard.users[1]);
-                  const tttDB = await ticTacToeCommonService.loadToDatabase(tttId);
+                  const tttDB = await ticTacToeCommonService.saveTTTFromCacheToDb(tttId);
 
                   expect(tttDB).toBeUndefined();
             });
@@ -337,7 +337,7 @@ describe('ticTacToeCommonService', () => {
                   await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
                   await ticTacToeCommonService.startGame(tttId);
 
-                  const tttDB = await ticTacToeCommonService.loadToDatabase(tttId);
+                  const tttDB = await ticTacToeCommonService.saveTTTFromCacheToDb(tttId);
 
                   expect(tttDB).toBeUndefined();
             });

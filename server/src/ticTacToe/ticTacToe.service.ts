@@ -31,7 +31,7 @@ export class TicTacToeService {
                                           board.winner = center;
                                           board.status = TicTacToeStatus.END;
                                           await this.ticTacToeCommonService.setBoard(board);
-                                          await this.ticTacToeCommonService.loadToDatabase(boardId);
+                                          await this.ticTacToeCommonService.saveTTTFromCacheToDb(boardId);
                                           return true;
                                     }
                               }
@@ -51,7 +51,7 @@ export class TicTacToeService {
                                           board.winner = center;
                                           board.status = TicTacToeStatus.END;
                                           await this.ticTacToeCommonService.setBoard(board);
-                                          await this.ticTacToeCommonService.loadToDatabase(boardId);
+                                          await this.ticTacToeCommonService.saveTTTFromCacheToDb(boardId);
                                           return true;
                                     }
                               }
@@ -77,7 +77,7 @@ export class TicTacToeService {
                                           board.winner = center;
                                           board.status = TicTacToeStatus.END;
                                           await this.ticTacToeCommonService.setBoard(board);
-                                          await this.ticTacToeCommonService.loadToDatabase(boardId);
+                                          await this.ticTacToeCommonService.saveTTTFromCacheToDb(boardId);
                                           return true;
                                     }
                               }

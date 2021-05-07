@@ -1,30 +1,27 @@
 import { UseGuards } from '@nestjs/common';
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket, WsResponse } from '@nestjs/websockets';
+import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
 import { SocketExtend, Server } from 'socket.io';
-import { ioResponse } from '../app/interface/socketResponse';
 
 //---- Pipe
 import { UserSocketGuard } from '../auth/authSocket.guard';
 import { SocketJoiValidatorPipe } from '../utils/validator/socketValidator.pipe';
 
 //---- Service
-import { RedisService } from '../utils/redis/redis.service';
 import { ChatService } from './chat.service';
 
 //---- DTO
 import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
-import { SendMessageDTO } from './dto/sendMessageDto';
 
 //---- Entity
-import { Message } from './entities/message.entity';
-
-//---- Enum
-import { ChatGatewayAction } from './chatGateway.action';
 import { Chat } from './entities/chat.entity';
 
-@WebSocketGateway({ namespace: 'chats' })
+//---- Common
+import { ioResponse } from '../app/interface/socketResponse';
+import { ChatGatewayAction } from './chatGateway.action';
+
+@WebSocketGateway({ namespace: 'chat' })
 export class ChatGateway {
-      constructor(private readonly chatService: ChatService, private readonly redisService: RedisService) {}
+      constructor(private readonly chatService: ChatService) {}
       @WebSocketServer()
       server: Server;
 

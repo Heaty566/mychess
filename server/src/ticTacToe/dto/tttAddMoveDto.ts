@@ -8,10 +8,13 @@ import { roomJoiSchema } from '../../utils/validator/schema/room.validator';
 
 const { getJoiSchema } = ValidatorService.joiSchemaGenerator<TicTacToe>(roomJoiSchema);
 
-export class RoomIdDTO {
+export class TTTAddMoveDto {
       roomId: string;
+      x: number;
+      y: number;
 }
-
-export const vRoomIdDto = Joi.object({
+export const vTTTAddMoveDto = Joi.object({
       roomId: getJoiSchema('id'),
+      x: Joi.number().min(0).max(14).required(),
+      y: Joi.number().min(0).max(14).required(),
 });
