@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 //---- Service
 import { ChessService } from './chess.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 import { ChessCommonService } from './chessCommon.service';
 import { UserGuard } from '../auth/auth.guard';
 

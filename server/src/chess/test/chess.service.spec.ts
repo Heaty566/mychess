@@ -4,10 +4,10 @@ import { INestApplication } from '@nestjs/common';
 import { initTestModule } from '../../test/initTest';
 
 //---- Service
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { ChessBoard } from '../entity/chessBoard.entity';
 import { ChessService } from '../chess.service';
 import { ChessRole } from '../entity/chess.interface';

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
-import { UserService } from '../users/user.service';
+import { RedisService } from '../utils/redis/redis.service';
+import { UserService } from '../user/user.service';
 
 //---- Entity
 import { TicTacToe } from './entity/ticTacToe.entity';
-import User from '../users/entities/user.entity';
-import { ChatsService } from '../chats/chats.service';
+import User from '../user/entities/user.entity';
+import { ChatService } from '../chat/chat.service';
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 import { TicTacToeMove } from './entity/ticTacToeMove.entity';
@@ -23,7 +23,7 @@ export class TicTacToeCommonService {
             private readonly ticTacToeMoveRepository: TicTacToeMoveRepository,
             private readonly redisService: RedisService,
             private readonly userService: UserService,
-            private readonly chatService: ChatsService,
+            private readonly chatService: ChatService,
       ) {}
 
       async getBoard(boardId: string) {

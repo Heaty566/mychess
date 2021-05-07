@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 //---- Module
-import { UserModule } from '../users/user.module';
+import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 
 //---- Utils
-import { RedisModule } from '../providers/redis/redis.module';
+import { RedisModule } from '../utils/redis/redis.module';
 
 //---- Service
 import { NotificationsService } from './notifications.service';

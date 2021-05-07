@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import { initTestModule } from '../../test/initTest';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
 import { TicTacToePlayer } from '../entity/ticTacToe.interface';

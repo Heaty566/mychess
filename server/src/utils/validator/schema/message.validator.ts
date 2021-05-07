@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-import { Message } from '../../../chats/entities/message.entity';
+import { Message } from '../../../chat/entities/message.entity';
 
 export function joinMessageJoiSchema(field: keyof Message) {
       switch (field) {

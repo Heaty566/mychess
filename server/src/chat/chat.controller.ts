@@ -2,15 +2,16 @@ import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common
 import { Request } from 'express';
 import { apiResponse } from '../app/interface/apiResponse';
 import { UserGuard } from '../auth/auth.guard';
-import { ChatsService } from './chats.service';
+import { ChatService } from './chat.service';
 import { Chat } from './entities/chat.entity';
 import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { SendMessageDTO, vSendMessageDTO } from './dto/sendMessageDTO';
-import { ChatsGateway } from './chats.gateway';
-@Controller('chats')
-export class ChatsController {
-      constructor(private readonly chatService: ChatsService, private readonly chatGateway: ChatsGateway) {}
+import { ChatGateway } from './chat.gateway';
+
+@Controller('chat')
+export class ChatController {
+      constructor(private readonly chatService: ChatService, private readonly chatGateway: ChatGateway) {}
 
       private isBelongToRoom(chat: Chat, userId: string) {
             return chat.users.find((item) => item.id === userId);

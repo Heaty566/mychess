@@ -7,12 +7,12 @@ import { fakeUser } from '../../../test/fakeEntity';
 import { fakeData } from '../../../test/test.helper';
 
 //---- Entity
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../user/entities/user.entity';
 
 //---- Service
 import { RedisService } from '../redis.service';
 
-import { LoggerService } from '../../../utils/logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 
 describe('RedisService', () => {
       let app: INestApplication;

@@ -1,6 +1,6 @@
 import * as Joi from 'joi';
 
-import { Chat } from '../../../chats/entities/chat.entity';
+import { Chat } from '../../../chat/entities/chat.entity';
 
 export function joinChatJoiSchema(field: keyof Chat) {
       switch (field) {

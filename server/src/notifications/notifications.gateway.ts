@@ -3,7 +3,7 @@ import { SocketExtend, Server } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 
 //---- Service
-import { UserService } from '../users/user.service';
+import { UserService } from '../user/user.service';
 import { NotificationsService } from './notifications.service';
 
 //---- Entity

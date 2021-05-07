@@ -8,7 +8,7 @@ import { UserService } from './user.service';
 import { SmailService } from '../providers/smail/smail.service';
 import { SmsService } from '../providers/sms/sms.service';
 import { AwsService } from '../providers/aws/aws.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
 import { User } from './entities/user.entity';

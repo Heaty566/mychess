@@ -3,10 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 
 //----- Module
-import { UserModule } from '../users/user.module';
+import { UserModule } from '../user/user.module';
 
 //----- Utils
-import { RedisModule } from '../providers/redis/redis.module';
+import { RedisModule } from '../utils/redis/redis.module';
 
 //----- Provider
 import { SmailModule } from '../providers/smail/smail.module';

@@ -9,7 +9,7 @@ import { initTestModule } from '../../test/initTest';
 import { AuthController } from '../auth.controller';
 
 //---- Entity
-import User from '../../users/entities/user.entity';
+import User from '../../user/entities/user.entity';
 
 describe('AuthController', () => {
       let app: INestApplication;

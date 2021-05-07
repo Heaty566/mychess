@@ -7,10 +7,10 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Entity
 import { Notification } from '../entities/notification.entity';
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 //---- Repository
-import { UserRepository } from '../../users/entities/user.repository';
+import { UserRepository } from '../../user/entities/user.repository';
 import { NotificationType } from '../entities/notification.type.enum';
 import { SendNotificationDto } from '../dto/sendNotificationDto';
 import { SocketServerResponse } from '../../app/interface/socketResponse';

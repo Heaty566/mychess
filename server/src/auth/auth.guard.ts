@@ -6,7 +6,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthService } from './auth.service';
 
 //---- Entity
-import { UserRole } from '../users/entities/user.userRole.enum';
+import { UserRole } from '../user/entities/user.userRole.enum';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';

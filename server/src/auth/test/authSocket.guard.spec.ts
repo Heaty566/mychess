@@ -3,7 +3,7 @@ import * as Cookie from 'cookie';
 import { createMock } from 'ts-auto-mock';
 
 //---- Service
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- Pipe
 import { UserSocketGuard } from '../authSocket.guard';
