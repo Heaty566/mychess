@@ -1,13 +1,23 @@
 import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Request } from 'express';
-import { apiResponse } from '../app/interface/apiResponse';
-import { UserGuard } from '../auth/auth.guard';
+
+//---- Service
 import { ChatService } from './chat.service';
-import { Chat } from './entities/chat.entity';
-import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
+import { UserGuard } from '../auth/auth.guard';
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
-import { SendMessageDTO, vSendMessageDTO } from './dto/sendMessageDTO';
+
+//---- Entity
+import { Chat } from './entities/chat.entity';
+
+//---- Gateway
 import { ChatGateway } from './chat.gateway';
+
+//---- Dto
+import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
+import { SendMessageDTO, vSendMessageDTO } from './dto/sendMessageDTO';
+
+//---- Common
+import { apiResponse } from '../app/interface/apiResponse';
 
 @Controller('chat')
 export class ChatController {
@@ -36,7 +46,7 @@ export class ChatController {
       async handleOnJoinChat(@Req() req: Request, @Body() body: RoomIdChatDTO) {
             const chat = await this.getChatFromCache(body.chatId);
             const isJoinBefore = this.isBelongToRoom(chat, req.user.id);
-            if (!isJoinBefore) await this.chatService.joinGame(chat.id, req.user);
+            if (!isJoinBefore) await this.chatService.joinChat(chat.id, req.user);
 
             return apiResponse.send<RoomIdChatDTO>({ data: { chatId: chat.id } });
       }
@@ -61,7 +71,7 @@ export class ChatController {
 
             const isBelongToChat = this.isBelongToRoom(chat, req.user.id);
             if (!isBelongToChat) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
-            await this.chatService.loadToDatabase(chat.id);
+            await this.chatService.saveChat(chat.id);
 
             return apiResponse.send<RoomIdChatDTO>({});
       }

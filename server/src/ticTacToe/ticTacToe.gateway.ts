@@ -12,7 +12,7 @@ import { TicTacToeCommonService } from './ticTacToeCommon.service';
 //---- Entity
 
 //---- Dto
-import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
+import { TTTRoomIdDTO, vTTTRoomIdDto } from './dto/tttRoomIdDto';
 
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
@@ -52,17 +52,17 @@ export class TicTacToeGateway {
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTGatewayAction.TTT_JOIN)
-      async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
+      async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vTTTRoomIdDto)) body: TTTRoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             await this.isExistUser(body.roomId, client.user.id);
             await client.join(`ttt-${getCacheGame.id}`);
 
-            return this.socketServer().socketEmitToRoom<RoomIdDTO>(TTTGatewayAction.TTT_JOIN, getCacheGame.id, {}, 'ttt');
+            return this.socketServer().socketEmitToRoom<TTTRoomIdDTO>(TTTGatewayAction.TTT_JOIN, getCacheGame.id, {}, 'ttt');
       }
 
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(TTTGatewayAction.TTT_GET)
-      async handleGetGame(@MessageBody(new SocketJoiValidatorPipe(vRoomIdDto)) body: RoomIdDTO) {
+      async handleGetGame(@MessageBody(new SocketJoiValidatorPipe(vTTTRoomIdDto)) body: TTTRoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
 
             return this.socketServer().socketEmitToRoom(TTTGatewayAction.TTT_GET, getCacheGame.id, { data: getCacheGame }, 'ttt');

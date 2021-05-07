@@ -30,7 +30,15 @@ export class RedisService {
       }
 
       deleteByKey(key: string) {
-            this.redisRepository.del(key);
+            return new Promise<boolean>((res, rej) => {
+                  this.redisRepository.del(key, (error) => {
+                        if (error) {
+                              this.logger.print(error, 'redis.service.ts', 'error');
+                              return rej(false);
+                        }
+                        return res(true);
+                  });
+            });
       }
 
       getObjectByKey<T>(key: string) {

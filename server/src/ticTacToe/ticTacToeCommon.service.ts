@@ -143,42 +143,49 @@ export class TicTacToeCommonService {
                   board.status = TicTacToeStatus.END;
 
                   await this.setBoard(board);
-                  await this.loadToDatabase(boardId);
+                  await this.saveTTTFromCacheToDb(boardId);
             }
       }
 
-      async loadToDatabase(boardId: string) {
+      async saveTTTFromCacheToDb(boardId: string) {
             const board = await this.getBoard(boardId);
             if (board && !board.isBotMode && board.status === TicTacToeStatus.END) {
-                  const moves: Array<TicTacToeMove> = [];
-                  const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
-
-                  for (let i = 0; i < board.board.length; i++)
-                        for (let j = 0; j < board.board[i].length; j++) {
-                              if (board.board[i][j] !== -1) {
-                                    const updateMove = new TicTacToeMove();
-                                    updateMove.x = i;
-                                    updateMove.y = j;
-                                    updateMove.flag = board.board[i][j];
-                                    moves.push(updateMove);
-                              }
-                        }
-
-                  const chat = await this.chatService.loadToDatabase(board.chatId);
-
-                  const newTicTacToe = new TicTacToe();
-                  newTicTacToe.endDate = new Date();
-                  newTicTacToe.moves = await this.ticTacToeMoveRepository.save(moves);
-                  newTicTacToe.winner = board.winner;
-                  newTicTacToe.users = users;
-                  newTicTacToe.startDate = board.startDate;
-                  if (chat) {
-                        newTicTacToe.chatId = chat.id;
-                  }
-
-                  const ttt = await this.ticTacToeRepository.save(newTicTacToe);
-
+                  const ttt = await this.saveTTT(board);
                   return ttt;
             }
+      }
+
+      async saveTTTMove(board: TicTacToeBoard) {
+            const moves: Array<TicTacToeMove> = [];
+            for (let i = 0; i < board.board.length; i++)
+                  for (let j = 0; j < board.board[i].length; j++) {
+                        if (board.board[i][j] !== -1) {
+                              const updateMove = new TicTacToeMove();
+                              updateMove.x = i;
+                              updateMove.y = j;
+                              updateMove.flag = board.board[i][j];
+                              moves.push(updateMove);
+                        }
+                  }
+
+            return await this.ticTacToeMoveRepository.save(moves);
+      }
+
+      async saveTTT(board: TicTacToeBoard) {
+            const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
+            const chat = await this.chatService.saveChat(board.chatId);
+            const moves = await this.saveTTTMove(board);
+
+            const newTicTacToe = new TicTacToe();
+            newTicTacToe.endDate = new Date();
+            newTicTacToe.moves = moves;
+            newTicTacToe.winner = board.winner;
+            newTicTacToe.users = users;
+            newTicTacToe.startDate = board.startDate;
+            newTicTacToe.chatId = chat.id;
+
+            const ttt = await this.ticTacToeRepository.save(newTicTacToe);
+
+            return ttt;
       }
 }
