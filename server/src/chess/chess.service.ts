@@ -484,58 +484,40 @@ export class ChessService {
             return canMove;
       }
 
-      private rookLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const availableMove = this.rookAvailableMove(currentPosition, chessBoard);
-            const legalMove: Array<ChessMove> = [];
-            availableMove.forEach((move) => {
-                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
-            });
+      private chessRoleLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+            let availableMove: Array<ChessMove>;
 
-            return legalMove;
-      }
+            switch (currentPosition.chessRole) {
+                  case ChessRole.BISHOP: {
+                        availableMove = this.bishopAvailableMove(currentPosition, chessBoard);
+                        break;
+                  }
+                  case ChessRole.ROOK: {
+                        availableMove = this.rookAvailableMove(currentPosition, chessBoard);
+                        break;
+                  }
+                  case ChessRole.QUEEN: {
+                        availableMove = this.queenAvailableMove(currentPosition, chessBoard);
+                        break;
+                  }
+                  case ChessRole.KNIGHT: {
+                        availableMove = this.knightAvailableMove(currentPosition, chessBoard);
+                        break;
+                  }
+                  case ChessRole.PAWN: {
+                        availableMove = this.pawnAvailableMove(currentPosition, chessBoard);
+                        break;
+                  }
+                  case ChessRole.KING: {
+                        availableMove = this.kingAvailableMove(currentPosition, chessBoard);
+                        break;
+                  }
+                  case ChessRole.EMPTY: {
+                        availableMove = [];
+                        break;
+                  }
+            }
 
-      private bishopLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const availableMove = this.bishopAvailableMove(currentPosition, chessBoard);
-            const legalMove: Array<ChessMove> = [];
-            availableMove.forEach((move) => {
-                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
-            });
-
-            return legalMove;
-      }
-
-      private queenLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const availableMove = this.queenAvailableMove(currentPosition, chessBoard);
-            const legalMove: Array<ChessMove> = [];
-            availableMove.forEach((move) => {
-                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
-            });
-
-            return legalMove;
-      }
-
-      private knightLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const availableMove = this.knightAvailableMove(currentPosition, chessBoard);
-            const legalMove: Array<ChessMove> = [];
-            availableMove.forEach((move) => {
-                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
-            });
-
-            return legalMove;
-      }
-
-      private kingLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const availableMove = this.kingAvailableMove(currentPosition, chessBoard);
-            const legalMove: Array<ChessMove> = [];
-            availableMove.forEach((move) => {
-                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
-            });
-
-            return legalMove;
-      }
-
-      private pawnLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const availableMove = this.pawnAvailableMove(currentPosition, chessBoard);
             const legalMove: Array<ChessMove> = [];
             availableMove.forEach((move) => {
                   if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
@@ -545,22 +527,7 @@ export class ChessService {
       }
 
       legalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            switch (currentPosition.chessRole) {
-                  case ChessRole.BISHOP:
-                        return this.bishopLegalMove(currentPosition, chessBoard);
-                  case ChessRole.ROOK:
-                        return this.rookLegalMove(currentPosition, chessBoard);
-                  case ChessRole.QUEEN:
-                        return this.queenLegalMove(currentPosition, chessBoard);
-                  case ChessRole.KNIGHT:
-                        return this.knightLegalMove(currentPosition, chessBoard);
-                  case ChessRole.PAWN:
-                        return this.pawnLegalMove(currentPosition, chessBoard);
-                  case ChessRole.KING:
-                        return this.kingLegalMove(currentPosition, chessBoard);
-                  case ChessRole.EMPTY:
-                        return [];
-            }
+            return this.chessRoleLegalMove(currentPosition, chessBoard);
       }
 
       checkmate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
