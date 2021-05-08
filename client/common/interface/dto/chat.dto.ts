@@ -6,3 +6,6 @@ export interface SendMessageDTO {
     content: string;
     chatId: string;
 }
+export interface MessageDTO {
+    content: string;
+}

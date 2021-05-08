@@ -8,9 +8,7 @@ export function usePopUpNewWindow(handleOnClose: () => void): [(url: string) => 
         let intervalId: any;
         if (isListen) intervalId = setInterval(handleOnClose, 200);
 
-        return () => {
-            clearInterval(intervalId);
-        };
+        return () => clearInterval(intervalId);
     }, [isListen]);
 
     const openInNewTab = (url: string) => {
