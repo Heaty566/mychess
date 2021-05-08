@@ -12,9 +12,7 @@ export function useClickOutSide<T extends HTMLElement>(callBack: () => void) {
     React.useEffect(() => {
         document.addEventListener('click', handleOnClick);
 
-        return () => {
-            document.removeEventListener('click', handleOnClick);
-        };
+        return () => document.removeEventListener('click', handleOnClick);
     }, []);
 
     return ref;
