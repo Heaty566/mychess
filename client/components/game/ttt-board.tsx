@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TicTacToeFlag } from '../../../common/interface/tic-tac-toe.interface';
+import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
 import TTTCell from './tttCell';
 
 export interface TTTBoardProps {

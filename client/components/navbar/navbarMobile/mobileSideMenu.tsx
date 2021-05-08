@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 import routers from '../../../common/constants/router';
 import navbarMenuConfig from '../navbarMenu/config';
-import ArrowDropDownMenu from '../../arrowDropDownMenu';
+import ArrowDropDownMenu from '../../menu/menu-arrow-dropdown';
 import config from './config';
-import NavbarLang from '../navbarLang';
+import NavbarLang from '../../menu/menu-language';
 import { AuthState } from '../../../common/interface/user.interface';
 
 export interface MobileNavSideMenuProps {

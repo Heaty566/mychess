@@ -3,10 +3,10 @@ import Link from 'next/link';
 
 import router from '../../../common/constants/router';
 import { AuthState } from '../../../common/interface/user.interface';
-import ArrowDropDownMenu from '../../arrowDropDownMenu';
+import ArrowDropDownMenu from '../../menu/menu-arrow-dropdown';
 import { useClickOutSide } from '../../../common/hooks/useClickOutside';
 
-import NavbarLang from '../navbarLang';
+import NavbarLang from '../../menu/menu-language';
 import UserDropDown from '../userDropdown';
 
 export interface NavbarUserProps {
@@ -22,7 +22,7 @@ const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeLang
 
     return (
         <div className="items-center self-start hidden space-x-4 text-cloud md:flex ">
-            {authState.isLogin ? (
+            {authState.isLogin && (
                 <ArrowDropDownMenu
                     Component={<UserDropDown handleLogoutUser={handleLogoutUser} authState={authState} />}
                     isOpen={isOpenUser}
@@ -35,7 +35,9 @@ const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeLang
                         <h1>{authState.name}</h1>
                     </div>
                 </ArrowDropDownMenu>
-            ) : (
+            )}
+
+            {!authState.isLogin && (
                 <div>
                     <Link href={router.login.link}>
                         <a href={router.login.link} className="duration-300 hover:text-cloud-50">

@@ -7,15 +7,15 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { copy } from '../../../common/helpers/copy';
 
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import ToolTip from '../../../components/tooltip';
-import TTTBoard from '../../../components/game/tttBoard';
-import PlayerInfo from '../../../components/game/playerInfo';
-import GameTurn from '../../../components/game/gameTurn';
-import GamePanel from '../../../components/game/panel';
-import PanelRestart from '../../../components/game/panel/panelRestart';
-import WaveLoading from '../../../components/loading/waveLoading';
-import PanelStart from '../../../components/game/panel/panelStart';
-import PanelReady from '../../../components/game/panel/panelReady';
+import ToolTip from '../../../components/tooltip/tooltip-dropbox';
+import TTTBoard from '../../../components/game/ttt-board';
+import PlayerInfo from '../../../components/game/player-info';
+import GameTurn from '../../../components/game/game-turn';
+import GamePanel from '../../../components/game/panel-wrapper';
+import PanelRestart from '../../../components/game/panel-restart';
+import WaveLoading from '../../../components/loading/wave-loading';
+import PanelStart from '../../../components/game/panel-start';
+import PanelReady from '../../../components/game/panel-ready';
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
 import ShareIcon from '../../../public/asset/icons/share';
@@ -36,7 +36,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
             <SeoHead {...routers.ticTacToePvP.header} />
             <RouteProtectedWrapper isNeedLogin>
                 <div className="flex-1 space-y-4 md:p-8 fade-in chess-bg">
-                    {board ? (
+                    {board && (
                         <>
                             <div className="flex flex-wrap justify-between max-w-2xl p-2 mx-auto bg-gray-50">
                                 <div className="flex justify-between w-full mb-2 ">
@@ -90,11 +90,9 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                 <TTTBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} />
                             </div>
                         </>
-                    ) : (
-                        <div>
-                            <WaveLoading />
-                        </div>
                     )}
+
+                    {!board && <WaveLoading />}
                 </div>
             </RouteProtectedWrapper>
         </>

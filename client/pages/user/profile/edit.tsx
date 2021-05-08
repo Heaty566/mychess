@@ -12,12 +12,12 @@ import userAPI from '../../../api/userApi';
 import routers from '../../../common/constants/router';
 import { useRouter } from 'next/router';
 
-import FileUpload from '../../../components/form/fileUpload';
-import TextField from '../../../components/form/textField';
+import FileUpload from '../../../components/form/filed-upload-file';
+import TextField from '../../../components/form/filed-textfield';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import BtnForm from '../../../components/btn/btnForm';
-import Msg from '../../../components/form/msg';
-import WaveLoading from '../../../components/loading/waveLoading';
+import BtnForm from '../../../components/btn/btn-form';
+import LabelMessage from '../../../components/form/label-message';
+import WaveLoading from '../../../components/loading/wave-loading';
 import SeoHead from '../../../components/common/seoHead';
 
 interface EditUserForm extends UpdateUserInfoDto, UpdateUserEmailDto, UpdateUserPhoneDto {
@@ -89,7 +89,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                             </div>
                             <div className="w-full space-y-2 md:w-64">
                                 <h1 className="text-3xl text-white ">Update User</h1>
-                                <Msg successMessage={apiState.message} errorMessage={apiState.errorMessage} />
+                                <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                                 <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
                                 <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
                                 <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />

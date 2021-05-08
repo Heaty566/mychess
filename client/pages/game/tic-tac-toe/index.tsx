@@ -9,10 +9,10 @@ import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import SeoHead from '../../../components/common/seoHead';
 import { useRouter } from 'next/router';
 import { ticTacToeApi } from '../../../api/tttApi';
-import TextField from '../../../components/form/textField';
+import TextField from '../../../components/form/filed-textfield';
 import { useForm } from 'react-hook-form';
 import useFormError from '../../../common/hooks/useFormError';
-import BtnForm from '../../../components/btn/btnForm';
+import BtnForm from '../../../components/btn/btn-form';
 
 export interface TicTacToeForm {
     roomId: string;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import ImageIcon from '../../../public/asset/icons/image';
-import MsgError from '../msgError';
+import ImageIcon from '../../public/asset/icons/image';
+import LabelMessage from './label-message';
 
 export interface FileUploadProps {
     name: string;
@@ -37,7 +37,7 @@ const FileUpload: React.FunctionComponent<FileUploadProps> = ({ handleOnChange, 
                     }}
                 />
             </label>
-            <MsgError label={label} message={error} />
+            <LabelMessage label={label} errorMessage={error} successMessage="" />
         </div>
     );
 };

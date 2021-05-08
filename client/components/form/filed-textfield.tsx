@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 
-import MsgError from '../msgError';
+import LabelMessage from './label-message';
 
 export interface TextFieldProps {
     name: string;
@@ -25,7 +25,7 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
             autoComplete={type === 'password' ? 'off' : 'on'}
             disabled={isDisable}
         />
-        <MsgError label={label} message={error} />
+        <LabelMessage label={label} errorMessage={error} successMessage="" />
     </div>
 );
 

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { User } from '../../../common/interface/user.interface';
-import { truncateContent } from '../../../common/helpers/string.helper';
-import { useCountDown } from '../../../common/hooks/useCountDown';
-import Tooltip from '../../tooltip';
-import { TicTacToePlayer } from '../../../common/interface/tic-tac-toe.interface';
+import { User } from '../../common/interface/user.interface';
+import { truncateContent } from '../../common/helpers/string.helper';
+import { useCountDown } from '../../common/hooks/useCountDown';
+import Tooltip from '../tooltip/tooltip-dropbox';
+import { TicTacToePlayer } from '../../common/interface/tic-tac-toe.interface';
 
 export interface PlayerInfoProps {
     player: TicTacToePlayer;
