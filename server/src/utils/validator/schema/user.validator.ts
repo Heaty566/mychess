@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 import { JoiPasswordComplexity } from 'joi-password';
 import { JoiPhoneFormat } from 'joi-phone-validation';
 
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../user/entities/user.entity';
 
 export function userJoiSchema(field: keyof User) {
       switch (field) {

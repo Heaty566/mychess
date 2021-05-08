@@ -3,7 +3,7 @@ import { SocketExtend, Server } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 
 //---- Service
-import { UserService } from '../users/user.service';
+import { UserService } from '../user/user.service';
 import { NotificationsService } from './notifications.service';
 
 //---- Entity
@@ -45,7 +45,7 @@ export class NotificationsGateway {
       @SubscribeMessage(NotificationAction.NOTIFICATIONS_SEND)
       async sendRequest(@ConnectedSocket() client: SocketExtend, @MessageBody(new JoiValidatorPipe(vSendNotificationDto)) data: SendNotificationDto) {
             const receiverUser = await this.userService.findOneUserByField('id', data.receiver);
-            if (!receiverUser) throw ioResponse.sendError({ details: { messageError: { type: 'error.invalid-input' } } }, 'NotFoundException');
+            if (!receiverUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.invalid-input' } } }, 'NotFoundException');
 
             const newNotification = new Notification(data.notificationType, client.user.id);
             let notificationObjectType;

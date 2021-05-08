@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import { TTTAction, TicTacToeStatus, TicTacToeBoard } from '../../../components/game/tttBoard/config';
+import { TTTGatewayAction, TicTacToeStatus, TicTacToeBoard, ChatGatewayAction, Chat } from '../../../components/game/tttBoard/config';
 import { RoomIdDto } from '../../../common/interface/dto/roomIdDto';
 import { useSocketIo } from '../../../common/hooks/useSocketIo';
 import { AuthState } from '../../../store/auth/interface';
@@ -27,21 +27,26 @@ import PanelReady from '../../../components/game/panel/panelReady';
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
 import ShareIcon from '../../../public/asset/icons/share';
+import chatApi from '../../../api/chat';
 
 export interface TicTacToePvPProps {
     roomId: string;
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const clientIoTTTBot = useSocketIo({ namespace: 'tic-tac-toe' });
+    const clientIoTTT = useSocketIo({ namespace: 'tic-tac-toe' });
+    const clientIoChat = useSocketIo({ namespace: 'chats' });
     const router = useRouter();
     const chessBoardRef = React.useRef<HTMLDivElement>(null);
     const [tttBoard, setTTTBoard] = React.useState<TicTacToeBoard>();
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
+    const [chatId, setChatId] = React.useState<string>();
+    const [chat, setChat] = React.useState<Chat>();
 
-    const onTTTGet = (res: ServerResponse<TicTacToeBoard>) => {
+    const onTTTGet = (res: ServerResponse<TicTacToeBoard>) => setTTTBoard(res.data);
+    const onChatGet = (res: ServerResponse<Chat>) => {
         console.log(res.data);
-        setTTTBoard(res.data);
+        setChat(res.data);
     };
 
     const handleOnRestart = () => {
@@ -56,31 +61,32 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
     };
 
     React.useEffect(() => {
-        if (tttBoard) {
-            if (tttBoard.status === TicTacToeStatus.END) {
-                const sound = new Audio('/asset/sounds/end-game.mp3');
-                sound.volume = 0.5;
-                sound.play();
-            }
+        if (tttBoard && tttBoard.status === TicTacToeStatus.END) {
+            const sound = new Audio('/asset/sounds/end-game.mp3');
+            sound.volume = 0.5;
+            sound.play();
         }
     }, [tttBoard?.status]);
 
-    const emitTTTGet = () => {
-        if (roomId) clientIoTTTBot.emit(TTTAction.TTT_GET, { roomId });
-    };
+    const emitTTTGet = () => clientIoTTT.emit(TTTGatewayAction.TTT_GET, { roomId });
+    const emitChatGet = () => clientIoChat.emit(ChatGatewayAction.CHAT_GET, { chatId });
 
     React.useEffect(() => {
-        if (roomId)
+        if (roomId && authState.isSocketLogin)
             ticTacToeApi
                 .joinRoom({ roomId })
-                .then((res) => {
-                    console.log(res);
-                    if (authState.isSocketLogin) clientIoTTTBot.emit(TTTAction.TTT_JOIN, { roomId });
-                })
-                .catch(() => {
-                    router.push('/404');
-                });
-    }, [authState.isSocketLogin, roomId]);
+                .then((res) => clientIoTTT.emit(TTTGatewayAction.TTT_JOIN, { roomId }))
+                .catch(() => router.push('/404'));
+    }, [authState.isSocketLogin, roomId, chatId]);
+
+    React.useEffect(() => {
+        if (tttBoard?.chatId)
+            chatApi.joinChat({ chatId: tttBoard?.chatId }).then((res) => {
+                setChatId(res.data.data.chatId);
+                const input = { chatId: res.data.data.chatId };
+                clientIoChat.emit(ChatGatewayAction.CHAT_JOIN, input);
+            });
+    }, [tttBoard?.chatId]);
 
     const handleOnStart = () => {
         ticTacToeApi
@@ -92,9 +98,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                     chessBoardRef.current.scrollLeft = scrollCenter;
                 }
             })
-            .catch(() => {
-                router.push('/404');
-            });
+            .catch(() => router.push('/404'));
     };
 
     const handleOnAddMove = (x: number, y: number) => ticTacToeApi.addMovePvP({ roomId, x, y });
@@ -108,16 +112,27 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
     }, [roomId]);
 
     React.useEffect(() => {
-        clientIoTTTBot.on(TTTAction.TTT_GET, onTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_JOIN, emitTTTGet);
-        clientIoTTTBot.on(TTTAction.TTT_RESTART, onRestartGame);
+        clientIoChat.on(ChatGatewayAction.CHAT_JOIN, emitChatGet);
+        clientIoChat.on(ChatGatewayAction.CHAT_GET, onChatGet);
+        clientIoTTT.on(TTTGatewayAction.TTT_GET, onTTTGet);
+        clientIoTTT.on(TTTGatewayAction.TTT_JOIN, emitTTTGet);
+        clientIoTTT.on(TTTGatewayAction.TTT_RESTART, onRestartGame);
 
         return () => {
-            clientIoTTTBot.off(TTTAction.TTT_RESTART, onRestartGame);
-            clientIoTTTBot.off(TTTAction.TTT_GET, onTTTGet);
-            clientIoTTTBot.off(TTTAction.TTT_JOIN, emitTTTGet);
+            clientIoChat.off(ChatGatewayAction.CHAT_JOIN, emitChatGet);
+            clientIoChat.off(ChatGatewayAction.CHAT_GET, onChatGet);
+            clientIoTTT.off(TTTGatewayAction.TTT_RESTART, onRestartGame);
+            clientIoTTT.off(TTTGatewayAction.TTT_GET, onTTTGet);
+            clientIoTTT.off(TTTGatewayAction.TTT_JOIN, emitTTTGet);
         };
-    }, [roomId]);
+    }, [roomId, chatId]);
+
+    const handleOnSendMessage = (event: Event) => {
+        event.preventDefault();
+        if (chatId) chatApi.sendMessageChat({ chatId, content: 'hello world' });
+
+        console.log('hello');
+    };
 
     return (
         <>
@@ -126,6 +141,17 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                 <div className="flex-1 space-y-4 md:p-8 fade-in chess-bg">
                     {tttBoard ? (
                         <>
+                            <div className="min-h-full p-2 bg-gray-600">
+                                <div>
+                                    {chat?.messages.map((item) => {
+                                        return <p className="bg-red-500">{item.content}</p>;
+                                    })}
+                                </div>
+                                <form onSubmit={handleOnSendMessage}>
+                                    <input />
+                                    <button className="p-2 bg-blue-200">send</button>
+                                </form>
+                            </div>
                             <div className="flex flex-wrap justify-between max-w-2xl p-2 mx-auto bg-gray-50">
                                 <div className="flex justify-between w-full mb-2 ">
                                     <p className="text-lg font-bold">Room ID: {tttBoard.id}</p>

@@ -4,10 +4,10 @@ import { ioResponse } from '../app/interface/socketResponse';
 import * as Cookie from 'cookie';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
-import User from '../users/entities/user.entity';
+import User from '../user/entities/user.entity';
 
 @Injectable()
 export class UserSocketGuard implements CanActivate {
@@ -21,15 +21,15 @@ export class UserSocketGuard implements CanActivate {
 
       async canActivate(context: ExecutionContext) {
             const client = await this.cookieParserSocket(context);
-            if (!client.cookies) throw ioResponse.sendError({ details: { messageError: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
+            if (!client.cookies) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
 
             //get io-token
             const ioToken = client.cookies['io-token'] || '';
-            if (!ioToken) throw ioResponse.sendError({ details: { messageError: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
+            if (!ioToken) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
 
             //checking io-token
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
-            if (!getUser) throw ioResponse.sendError({ details: { messageError: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
+            if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
             client.user = getUser;
 
             return true;

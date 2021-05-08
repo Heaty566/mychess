@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 //---- Service
 import { ChessService } from './chess.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 import { ChessCommonService } from './chessCommon.service';
 import { UserGuard } from '../auth/auth.guard';
 
@@ -30,7 +30,7 @@ export class ChessController {
 
       private async isPlaying(userId: string) {
             const isPlaying = await this.chessCommonService.isPlaying(userId);
-            if (isPlaying) throw apiResponse.sendError({ details: { messageError: { type: 'error.already-join' } } }, 'BadRequestException');
+            if (isPlaying) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.already-join' } } }, 'BadRequestException');
       }
 
       @Post('/')

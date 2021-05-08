@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { createClient } from 'redis';
 
 //---- Utils
-import { LoggerModule } from '../../utils/logger/logger.module';
+import { LoggerModule } from '../logger/logger.module';
 
 //---- Service
 import { RedisService } from './redis.service';

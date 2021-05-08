@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 
 //---- Entity
-import User from '../../users/entities/user.entity';
+import User from '../../user/entities/user.entity';
 import { ChessStatus, PlayerFlagEnum } from './chess.interface';
 import { ChessMove } from './chessMove.entity';
 

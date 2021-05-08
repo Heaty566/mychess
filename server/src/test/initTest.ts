@@ -5,20 +5,19 @@ import { router } from '../router';
 import { AppModule } from '../app.module';
 import { fakeUser } from './fakeEntity';
 import { AuthService } from '../auth/auth.service';
-import { UserRole } from '../users/entities/user.userRole.enum';
+import { UserRole } from '../user/entities/user.userRole.enum';
 
 //---- Entity
-import { ChatRepository } from '../chats/entities/chat.repository';
+import { ChatRepository } from '../chat/entities/chat.repository';
 
 //---- Repository
-import { UserRepository } from '../users/entities/user.repository';
+import { UserRepository } from '../user/entities/user.repository';
 import { ReTokenRepository } from '../auth/entities/re-token.repository';
 import { NotificationRepository } from '../notifications/entities/notification.repository';
 import { TicTacToeRepository } from '../ticTacToe/entity/ticTacToe.repository';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
-      return Array.from(Array(5)).map(async (_) => {
+      return Array.from(Array(5)).map(async () => {
             const dummyUser = fakeUser();
 
             const user = await repository.save(dummyUser);

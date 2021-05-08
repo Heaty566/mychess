@@ -1,25 +1,29 @@
 import { Injectable } from '@nestjs/common';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
+import { UserService } from '../user/user.service';
 
 //---- Entity
 import { TicTacToe } from './entity/ticTacToe.entity';
-import User from '../users/entities/user.entity';
+import User from '../user/entities/user.entity';
+import { ChatService } from '../chat/chat.service';
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
+import { TicTacToeMove } from './entity/ticTacToeMove.entity';
 
 //---- Repository
 import { TicTacToeRepository } from './entity/ticTacToe.repository';
-import { UserService } from '../users/user.service';
-import { TicTacToeMove } from './entity/ticTacToeMove.entity';
+import { TicTacToeMoveRepository } from './entity/ticTacToeMove.repository';
 
 @Injectable()
 export class TicTacToeCommonService {
       constructor(
             private readonly ticTacToeRepository: TicTacToeRepository,
+            private readonly ticTacToeMoveRepository: TicTacToeMoveRepository,
             private readonly redisService: RedisService,
             private readonly userService: UserService,
+            private readonly chatService: ChatService,
       ) {}
 
       async getBoard(boardId: string) {
@@ -64,6 +68,8 @@ export class TicTacToeCommonService {
 
       async createNewGame(user: User, isBotMode: boolean) {
             const newBoard = new TicTacToeBoard(isBotMode);
+            const newChat = await this.chatService.createChat(user);
+            newBoard.chatId = newChat.id;
             await this.setBoard(newBoard);
 
             await this.joinGame(newBoard.id, user);
@@ -77,16 +83,16 @@ export class TicTacToeCommonService {
       async joinGame(boardId: string, user: User | TicTacToePlayer) {
             const board = await this.getBoard(boardId);
 
-            if (board?.users && board.users.length !== 2) {
+            if (board?.users && user && board.users.length !== 2) {
                   const userFlag = board.users.length === 0 ? TicTacToeFlag.BLUE : TicTacToeFlag.RED;
 
                   board.users.push({
-                        username: user.username,
-                        name: user.name,
-                        avatarUrl: user.avatarUrl,
-                        elo: user.elo,
+                        username: user?.username,
+                        name: user?.name,
+                        avatarUrl: user?.avatarUrl,
+                        elo: user?.elo,
                         time: 90000,
-                        id: user.id,
+                        id: user?.id,
                         ready: false,
                         flag: userFlag,
                   });
@@ -137,34 +143,49 @@ export class TicTacToeCommonService {
                   board.status = TicTacToeStatus.END;
 
                   await this.setBoard(board);
-                  await this.loadToDatabase(boardId);
+                  await this.saveTTTFromCacheToDb(boardId);
             }
       }
 
-      async loadToDatabase(boardId: string) {
+      async saveTTTFromCacheToDb(boardId: string) {
             const board = await this.getBoard(boardId);
             if (board && !board.isBotMode && board.status === TicTacToeStatus.END) {
-                  const moves: Array<TicTacToeMove> = [];
-                  const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
-
-                  for (let i = 0; i < board.board.length; i++)
-                        for (let j = 0; j < board.board[i].length; j++) {
-                              if (board.board[i][j] !== -1) {
-                                    const updateMove = new TicTacToeMove();
-                                    updateMove.x = i;
-                                    updateMove.y = j;
-                                    updateMove.flag = board.board[i][j];
-                                    moves.push(updateMove);
-                              }
-                        }
-
-                  const newTicTacToe = new TicTacToe();
-                  newTicTacToe.endDate = new Date();
-                  newTicTacToe.moves = moves;
-                  newTicTacToe.winner = board.winner;
-                  newTicTacToe.users = users;
-                  newTicTacToe.startDate = board.startDate;
-                  return await this.ticTacToeRepository.save(newTicTacToe);
+                  const ttt = await this.saveTTT(board);
+                  return ttt;
             }
+      }
+
+      async saveTTTMove(board: TicTacToeBoard) {
+            const moves: Array<TicTacToeMove> = [];
+            for (let i = 0; i < board.board.length; i++)
+                  for (let j = 0; j < board.board[i].length; j++) {
+                        if (board.board[i][j] !== -1) {
+                              const updateMove = new TicTacToeMove();
+                              updateMove.x = i;
+                              updateMove.y = j;
+                              updateMove.flag = board.board[i][j];
+                              moves.push(updateMove);
+                        }
+                  }
+
+            return await this.ticTacToeMoveRepository.save(moves);
+      }
+
+      async saveTTT(board: TicTacToeBoard) {
+            const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
+            const chat = await this.chatService.saveChat(board.chatId);
+            const moves = await this.saveTTTMove(board);
+
+            const newTicTacToe = new TicTacToe();
+            newTicTacToe.endDate = new Date();
+            newTicTacToe.moves = moves;
+            newTicTacToe.winner = board.winner;
+            newTicTacToe.users = users;
+            newTicTacToe.startDate = board.startDate;
+            newTicTacToe.chatId = chat.id;
+
+            const ttt = await this.ticTacToeRepository.save(newTicTacToe);
+
+            return ttt;
       }
 }

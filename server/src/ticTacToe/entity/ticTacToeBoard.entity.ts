@@ -1,6 +1,8 @@
 //---- Entity
 import { TicTacToeFlag, TicTacToeStatus } from './ticTacToe.interface';
 import { TicTacToePlayer } from './ticTacToe.interface';
+
+//---- Common
 import { generatorString } from '../../app/helpers/stringGenerator';
 
 export class TicTacToeBoard {
@@ -12,6 +14,7 @@ export class TicTacToeBoard {
       currentTurn: boolean;
       users: TicTacToePlayer[];
       winner: TicTacToeFlag;
+      chatId: string;
 
       constructor(readonly isBotMode: boolean) {
             const initRow: Array<TicTacToeFlag> = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1];

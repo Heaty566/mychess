@@ -7,10 +7,8 @@ import { initTestModule } from '../../test/initTest';
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
-
-//---- Repository
 import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
 
 describe('ticTacToeCommonService', () => {
@@ -310,7 +308,7 @@ describe('ticTacToeCommonService', () => {
                   await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
                   await ticTacToeCommonService.startGame(tttId);
                   await ticTacToeCommonService.surrender(tttId, getBoard.users[1]);
-                  const tttDB = await ticTacToeCommonService.loadToDatabase(tttId);
+                  const tttDB = await ticTacToeCommonService.saveTTTFromCacheToDb(tttId);
 
                   expect(tttDB.winner).toBe(TicTacToeFlag.BLUE);
                   expect(tttDB.moves).toHaveLength(2);
@@ -326,7 +324,7 @@ describe('ticTacToeCommonService', () => {
                   await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
                   await ticTacToeCommonService.startGame(tttId);
                   await ticTacToeCommonService.surrender(tttId, getBoard.users[1]);
-                  const tttDB = await ticTacToeCommonService.loadToDatabase(tttId);
+                  const tttDB = await ticTacToeCommonService.saveTTTFromCacheToDb(tttId);
 
                   expect(tttDB).toBeUndefined();
             });
@@ -339,7 +337,7 @@ describe('ticTacToeCommonService', () => {
                   await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
                   await ticTacToeCommonService.startGame(tttId);
 
-                  const tttDB = await ticTacToeCommonService.loadToDatabase(tttId);
+                  const tttDB = await ticTacToeCommonService.saveTTTFromCacheToDb(tttId);
 
                   expect(tttDB).toBeUndefined();
             });

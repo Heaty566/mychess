@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 //---- Service
 import { TicTacToeBotService } from './ticTacToeBot.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 import { TicTacToeService } from './ticTacToe.service';
 import { UserGuard } from '../auth/auth.guard';
@@ -12,17 +12,18 @@ import { UserGuard } from '../auth/auth.guard';
 import { TicTacToeGateway } from './ticTacToe.gateway';
 
 //---- Entity
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
+import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
+//---- Dto
+import { TTTRoomIdDTO, vTTTRoomIdDto } from './dto/tttRoomIdDto';
+import { TTTAddMoveDto, vTTTAddMoveDto } from './dto/tttAddMoveDto';
+
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
-import { AddMoveDto, vAddMoveDto } from './dto/addMoveDto';
-import { TicTacToeStatus } from './entity/ticTacToe.interface';
-import User from '../users/entities/user.entity';
-import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 
 @Controller('ttt')
 export class TicTacToeController {
@@ -36,7 +37,7 @@ export class TicTacToeController {
 
       private async getPlayer(tttId: string, userId: string) {
             const player = await this.ticTacToeCommonService.isExistUser(tttId, userId);
-            if (!player) throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            if (!player) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             return player;
       }
 
@@ -48,7 +49,7 @@ export class TicTacToeController {
 
       private async isPlaying(board: TicTacToeBoard) {
             if (board.status === TicTacToeStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
       }
 
       @Post('/pvp')
@@ -56,13 +57,13 @@ export class TicTacToeController {
       async handleOnCreatePvP(@Req() req: Request) {
             const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, false);
 
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: newGameId } });
       }
 
       @Post('/restart')
       @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
-      async handleOnRestartPvP(@Req() req: Request, @Body() body: RoomIdDTO) {
+      @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
+      async handleOnRestartPvP(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
@@ -70,7 +71,7 @@ export class TicTacToeController {
             const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, false);
 
             await this.ticTacToeGateway.restartGame(board.id, newGameId);
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: newGameId } });
       }
 
       @Post('/bot')
@@ -82,12 +83,12 @@ export class TicTacToeController {
             await this.ticTacToeCommonService.toggleReadyStatePlayer(newGameId, playerOne);
             await this.ticTacToeCommonService.toggleReadyStatePlayer(newGameId, bot);
 
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: newGameId } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: newGameId } });
       }
 
       @Post('/join-room')
       @UseGuards(UserGuard)
-      async handleOnJoinRoom(@Req() req: Request, @Body() body: RoomIdDTO) {
+      async handleOnJoinRoom(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
             if (board.status !== TicTacToeStatus['NOT-YET'])
                   throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
@@ -95,27 +96,27 @@ export class TicTacToeController {
             const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
             if (!isExist && board.users.length < 2) await this.ticTacToeCommonService.joinGame(board.id, req.user);
 
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+            return apiResponse.send({ data: board });
       }
 
       @Post('/start')
       @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
-      async handleOnStartGame(@Req() req: Request, @Body() body: RoomIdDTO) {
+      @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
+      async handleOnStartGame(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
             const isStart = await this.ticTacToeCommonService.startGame(board.id);
-            if (!isStart) throw apiResponse.sendError({ details: { messageError: { type: 'error.wait-ready-player' } } }, 'BadRequestException');
+            if (!isStart) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wait-ready-player' } } }, 'BadRequestException');
 
             await this.ticTacToeGateway.sendToRoom(board.id);
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
       @Post('/ready')
       @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
-      async handleOnReadyGame(@Req() req: Request, @Body() body: RoomIdDTO) {
+      @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
+      async handleOnReadyGame(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
             await this.isPlaying(board);
 
@@ -123,35 +124,35 @@ export class TicTacToeController {
             await this.ticTacToeCommonService.toggleReadyStatePlayer(board.id, player);
 
             await this.ticTacToeGateway.sendToRoom(board.id);
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
       @Post('/leave')
       @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vRoomIdDto))
-      async handleOnLeaveGame(@Req() req: Request, @Body() body: RoomIdDTO) {
+      @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
+      async handleOnLeaveGame(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
 
             const player = await this.getPlayer(board.id, req.user.id);
             await this.ticTacToeCommonService.leaveGame(board.id, player);
 
             await this.ticTacToeGateway.sendToRoom(board.id);
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
       @Post('/add-move')
       @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vAddMoveDto))
-      async handleOnAddMoveGame(@Req() req: Request, @Body() body: AddMoveDto) {
+      @UsePipes(new JoiValidatorPipe(vTTTAddMoveDto))
+      async handleOnAddMoveGame(@Req() req: Request, @Body() body: TTTAddMoveDto) {
             const board = await this.getGame(body.roomId);
             if (board.status !== TicTacToeStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { messageError: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             if (board.board[body.x][body.y] !== -1) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
             const isAdd = await this.ticTacToeService.addMoveToBoard(board.id, player, body.x, body.y);
-            if (!isAdd) throw apiResponse.sendError({ details: { messageError: { type: 'error.wrong-turn' } } }, 'BadRequestException');
+            if (!isAdd) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wrong-turn' } } }, 'BadRequestException');
             const isWin = await this.ticTacToeService.isWin(board.id);
             if (board.isBotMode && !isWin) {
                   const userMove = await this.ticTacToeBotService.findBestMove(board.id, board.users[0]);
@@ -162,6 +163,6 @@ export class TicTacToeController {
             }
 
             await this.ticTacToeGateway.sendToRoom(board.id);
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 }

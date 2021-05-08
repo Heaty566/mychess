@@ -4,17 +4,18 @@ import { INestApplication } from '@nestjs/common';
 import { initTestModule } from '../../test/initTest';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { TicTacToe } from '../entity/ticTacToe.entity';
 import { TicTacToeMove } from '../entity/ticTacToeMove.entity';
+import { TicTacToePlayer } from '../entity/ticTacToe.interface';
 
 //---- Service
 import { TicTacToeBotService } from '../ticTacToeBot.service';
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+
 //---- Repository
 import { TicTacToeRepository } from '../entity/ticTacToe.repository';
 import { TicTacToeMoveRepository } from '../entity/ticTacToeMove.repository';
-import { TicTacToePlayer } from '../entity/ticTacToe.interface';
 
 describe('ticTacToeBotService', () => {
       let app: INestApplication;

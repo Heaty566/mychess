@@ -89,7 +89,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                             </div>
                             <div className="w-full space-y-2 md:w-64">
                                 <h1 className="text-3xl text-white ">Update User</h1>
-                                <MsgSuccess message={apiState.message} />
+                                <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
                                 <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
                                 <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
                                 <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />

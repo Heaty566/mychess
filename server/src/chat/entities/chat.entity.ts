@@ -1,7 +1,7 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 //---- Entity
-import User from '../../users/entities/user.entity';
+import User from '../../user/entities/user.entity';
 import { Message } from './message.entity';
 
 @Entity()
@@ -18,4 +18,8 @@ export class Chat {
       @ManyToMany(() => User)
       @JoinTable()
       users: User[];
+
+      constructor() {
+            this.createDate = new Date();
+      }
 }

@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 //---- Entity
-import User from '../../users/entities/user.entity';
+import User from '../../user/entities/user.entity';
 import { TicTacToeStatus } from './ticTacToe.interface';
 import { TicTacToeFlag } from './ticTacToe.interface';
 import { TicTacToeMove } from './ticTacToeMove.entity';
@@ -15,7 +15,7 @@ export class TicTacToe {
       @JoinTable()
       users: User[];
 
-      @Column({ default: -1 })
+      @Column({ default: TicTacToeStatus['NOT-YET'] })
       winner: TicTacToeFlag;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
@@ -27,8 +27,11 @@ export class TicTacToe {
       @OneToMany(() => TicTacToeMove, (move) => move.ticTacToe)
       moves: TicTacToeMove[];
 
+      @Column({ default: null })
+      chatId: string;
+
       constructor() {
             this.startDate = new Date();
-            this.winner = -1;
+            this.winner = TicTacToeFlag.EMPTY;
       }
 }

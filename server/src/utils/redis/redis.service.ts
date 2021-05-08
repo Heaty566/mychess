@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import * as flat from 'flat';
 
 //----- Service
-import { LoggerService } from '../../utils/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class RedisService {
@@ -30,7 +30,15 @@ export class RedisService {
       }
 
       deleteByKey(key: string) {
-            this.redisRepository.del(key);
+            return new Promise<boolean>((res, rej) => {
+                  this.redisRepository.del(key, (error) => {
+                        if (error) {
+                              this.logger.print(error, 'redis.service.ts', 'error');
+                              return rej(false);
+                        }
+                        return res(true);
+                  });
+            });
       }
 
       getObjectByKey<T>(key: string) {
@@ -76,29 +84,6 @@ export class RedisService {
                   });
             });
       }
-
-      /**
-       *
-       * @param expired amount time for redis value to be expired( 1 = 60s )
-       */
-      setArrayByKey<T>(key: string, value: T[], expired?: number) {
-            const convertToString = JSON.stringify(value);
-            this.redisRepository.set(key, convertToString);
-            if (expired) this.redisRepository.expire(key, expired * 60);
-      }
-
-      // getArrayByKey<T>(key) {
-      //       return new Promise<T[]>((res, rej) => {
-      //             this.redisRepository.get(key, (err, data) => {
-      //                   if (err) {
-      //                         this.logger.print(err, 'redis.service.ts', 'error');
-      //                         return rej(null);
-      //                   }
-      //                   const convertToJson = JSON.parse(data);
-      //                   res(convertToJson as T[]);
-      //             });
-      //       });
-      // }
 
       getArrayByKey<T extends Array<any>>(key: string) {
             return new Promise<T>((res, rej) => {

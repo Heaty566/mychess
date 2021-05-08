@@ -7,12 +7,12 @@ import { fakeUser } from '../../../test/fakeEntity';
 import { fakeData } from '../../../test/test.helper';
 
 //---- Entity
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../user/entities/user.entity';
 
 //---- Service
 import { RedisService } from '../redis.service';
 
-import { LoggerService } from '../../../utils/logger/logger.service';
+import { LoggerService } from '../../logger/logger.service';
 
 describe('RedisService', () => {
       let app: INestApplication;
@@ -52,28 +52,6 @@ describe('RedisService', () => {
             });
       });
 
-      describe('setArrayByKey', () => {
-            let user: User;
-            const users: User[] = [];
-
-            beforeEach(() => {
-                  user = fakeUser();
-                  users.push(user);
-            });
-
-            it('Pass', async () => {
-                  await redisService.setArrayByKey('user', users);
-                  const res = await redisService.getArrayByKey<Array<User>>('user');
-                  expect(res).toBeDefined();
-            });
-
-            it('Pass with time', async () => {
-                  await redisService.setArrayByKey('user', users, 10);
-                  const res = await redisService.getArrayByKey<Array<User>>('user');
-                  expect(res).toBeDefined();
-            });
-      });
-
       describe('deleteByKey', () => {
             let user: User;
 
@@ -99,21 +77,6 @@ describe('RedisService', () => {
 
             it('Pass', async () => {
                   const res = await redisService.getObjectByKey<User>('user');
-                  expect(res).toBeDefined();
-            });
-      });
-
-      describe('getArrayByKey', () => {
-            const users: User[] = [];
-            let user: User;
-            beforeEach(async () => {
-                  user = fakeUser();
-                  users.push(user);
-                  await redisService.setArrayByKey('user', users);
-            });
-
-            it('Pass', async () => {
-                  const res = await redisService.getArrayByKey<Array<User>>('user');
                   expect(res).toBeDefined();
             });
       });

@@ -40,7 +40,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                 <div className="w-full max-w-md px-4 py-16 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Register Account</h1>
-                        <MsgSuccess message={apiState.message} />
+                        <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
                         <div className="space-y-2">
                             <TextField name="name" label="Name" error={errors.name} register={register} type="text" />
                             <TextField name="username" label="Username" error={errors.username} register={register} type="text" />

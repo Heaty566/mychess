@@ -4,14 +4,13 @@ import { INestApplication } from '@nestjs/common';
 import { initTestModule } from '../../test/initTest';
 
 //---- Service
-// import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { TicTacToeService } from '../ticTacToe.service';
 import { TicTacToePlayer, TicTacToeStatus } from '../entity/ticTacToe.interface';
 
-import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 //---- Repository
 
 describe('ticTacToeService', () => {
