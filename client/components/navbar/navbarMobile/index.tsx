@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import MobileNavSideMenu from './mobileSideMenu';
 import MobileNavBtn from './mobileNavBtn';
-import { AuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../common/interface/user.interface';
 
 export interface NavbarMobileProps {
     handleChangeActive(): void;

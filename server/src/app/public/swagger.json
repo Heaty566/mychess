@@ -33,6 +33,10 @@
             {
                   "name": "tic-tac-toe",
                   "description": "Service tic-tac-toe game"
+            },
+            {
+                  "name": "chat",
+                  "description": "Service chat box"
             }
       ],
       "servers": [
@@ -681,7 +685,7 @@
                   }
             },
             "/api/ttt/join-room": {
-                  "post": {
+                  "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
@@ -716,7 +720,7 @@
                   }
             },
             "/api/ttt/start": {
-                  "post": {
+                  "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "send request to start tic-tac-toe game when two users are ready",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
@@ -751,7 +755,7 @@
                   }
             },
             "/api/ttt/ready": {
-                  "post": {
+                  "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "send request to toggle ready state to play, two user have to ready before sending a start request (send one more time to change to not ready)",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
@@ -786,7 +790,7 @@
                   }
             },
             "/api/ttt/leave": {
-                  "post": {
+                  "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "send this request when user leave the game, user is leave safely if the game is not start, and count as lose when the game is playing. user can not play any game until they complete leave other game",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
@@ -821,7 +825,7 @@
                   }
             },
             "/api/ttt/add-move": {
-                  "post": {
+                  "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "you the x y in the board which you want to choose",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
@@ -832,6 +836,131 @@
                         "responses": {
                               "200": {
                                     "description": "leave room successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/chat/new": {
+                  "post": {
+                        "tags": ["chat"],
+                        "description": "create new chat room",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+
+                        "responses": {
+                              "200": {
+                                    "description": "return a chatId to user socket io to join",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chat/join": {
+                  "put": {
+                        "tags": ["chat"],
+                        "description": "join a exist room",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "the chatId you want to join",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return a chatId to user socket io to join",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/chat/send-message": {
+                  "put": {
+                        "tags": ["chat"],
+                        "description": "add new message to room ",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "give chat id and content to add",
+                              "$ref": "#/components/requestBodies/SendMessageDTO"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return ok",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/components/schemas/CommonApiResponse"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "$ref": "#/components/responses/400"
+                              },
+                              "401": {
+                                    "$ref": "#/components/responses/401"
+                              },
+                              "403": {
+                                    "$ref": "#/components/responses/403"
+                              },
+                              "404": {
+                                    "$ref": "#/components/responses/404"
+                              }
+                        }
+                  }
+            },
+            "/api/chat/save": {
+                  "put": {
+                        "tags": ["chat"],
+                        "description": "save a room chat to database",
+                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "requestBody": {
+                              "description": "the chatId you want to save",
+                              "$ref": "#/components/requestBodies/RoomIdDto"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return ok",
                                     "content": {
                                           "application/json": {
                                                 "schema": {
@@ -928,10 +1057,7 @@
                                     "type": "object",
                                     "description": "it type any base on your api"
                               },
-                              "message": {
-                                    "type": "string",
-                                    "example": "this is an error message"
-                              },
+
                               "details": {
                                     "type": "object",
                                     "properties": {
@@ -939,6 +1065,14 @@
                                                 "type": "string",
                                                 "description": "field will be the name of invalid field",
                                                 "example": "should not be empty"
+                                          },
+                                          "message": {
+                                                "type": "string",
+                                                "example": "this is an error message"
+                                          },
+                                          "errorMessage": {
+                                                "type": "string",
+                                                "example": "this is an error message"
                                           }
                                     }
                               }
@@ -1227,6 +1361,44 @@
                                                 "confirmPassword": {
                                                       "type": "string",
                                                       "example": "password"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "RoomIdChatDTO": {
+                        "description": "give server the chat room you want to join",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "chatId": {
+                                                      "type": "string",
+                                                      "example": "123124215421"
+                                                }
+                                          }
+                                    }
+                              }
+                        },
+                        "required": true
+                  },
+                  "SendMessageDTO": {
+                        "description": "add new message to chat room",
+                        "content": {
+                              "form-data": {
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "chatId": {
+                                                      "type": "string",
+                                                      "example": "123124215421"
+                                                },
+                                                "content": {
+                                                      "type": "string",
+                                                      "example": "hello world"
                                                 }
                                           }
                                     }

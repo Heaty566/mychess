@@ -7,9 +7,7 @@ export function useDebounce(value: any = '', delay: number = 1000) {
             setCurrentValue(value);
         }, delay);
 
-        return () => {
-            clearTimeout(timeOutId);
-        };
+        return () => clearTimeout(timeOutId);
     }, [value, delay]);
 
     return currentValue;

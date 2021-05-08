@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 
 import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
-import { UserLoginDto } from '../../api/auth/dto';
+import { UserLoginDto } from '../../common/interface/dto/auth.dto';
 import { RootState, store } from '../../store';
 import authThunk from '../../store/auth/thunk';
-import { ApiState } from '../../store/api/interface';
+import { ApiState } from '../../common/interface/api.interface';
 import useFormError from '../../common/hooks/useFormError';
 
 import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
@@ -16,7 +16,7 @@ import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
-import MsgSuccess from '../../components/form/msgSuccess';
+import Msg from '../../components/form/msg';
 
 const defaultValues: UserLoginDto = {
     password: '',
@@ -41,7 +41,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
                     <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <h1 className="text-4xl text-center text-white mb-7">Login Account</h1>
-                            <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
+                            <Msg successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                             <div className="space-y-2">
                                 <TextField name="username" label="Username" error={errors.username} register={register} type="text" />
                                 <TextField name="password" label="Password" error={errors.password} register={register} type="password" />

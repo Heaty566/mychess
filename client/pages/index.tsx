@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import routers from '../common/constants/router';
 import SeoHead from '../components/common/seoHead';
-import { ticTacToeApi } from '../api/ticTacToe';
+import { ticTacToeApi } from '../api/tttApi';
 import TicTacToeIcon from '../public/asset/icons/tictactoe';
 import RobotIcon from '../public/asset/icons/robot';
 import PlayerBlueIcon from '../public/asset/icons/player-blue';

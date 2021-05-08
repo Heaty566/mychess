@@ -2,7 +2,7 @@ import * as React from 'react';
 import Link from 'next/link';
 
 import router from '../../../common/constants/router';
-import { AuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../common/interface/user.interface';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
 import { useClickOutSide } from '../../../common/hooks/useClickOutside';
 

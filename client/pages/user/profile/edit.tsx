@@ -3,12 +3,12 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../../../store';
-import { AuthState } from '../../../store/auth/interface';
-import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../api/user/dto';
+import { AuthState } from '../../../common/interface/user.interface';
+import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../common/interface/dto/user.dto';
 import { useUploadFile } from '../../../common/hooks/useUploadFile';
 import useFormError from '../../../common/hooks/useFormError';
-import { ApiState } from '../../../store/api/interface';
-import userAPI from '../../../api/user';
+import { ApiState } from '../../../common/interface/api.interface';
+import userAPI from '../../../api/userApi';
 import routers from '../../../common/constants/router';
 import { useRouter } from 'next/router';
 
@@ -16,7 +16,7 @@ import FileUpload from '../../../components/form/fileUpload';
 import TextField from '../../../components/form/textField';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import BtnForm from '../../../components/btn/btnForm';
-import MsgSuccess from '../../../components/form/msgSuccess';
+import Msg from '../../../components/form/msg';
 import WaveLoading from '../../../components/loading/waveLoading';
 import SeoHead from '../../../components/common/seoHead';
 
@@ -89,7 +89,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                             </div>
                             <div className="w-full space-y-2 md:w-64">
                                 <h1 className="text-3xl text-white ">Update User</h1>
-                                <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
+                                <Msg successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                                 <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
                                 <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
                                 <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />
