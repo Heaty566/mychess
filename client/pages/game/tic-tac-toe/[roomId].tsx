@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import { TTTGatewayAction, TicTacToeStatus, TicTacToeBoard, ChatGatewayAction, Chat } from '../../../components/game/tttBoard/config';
-import { RoomIdDto } from '../../../common/interface/dto/roomIdDto';
+import { TTTGatewayAction, TicTacToeStatus, TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface';
+import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
+import { Chat, ChatGatewayAction } from '../../../common/interface/chat.interface';
 import { useSocketIo } from '../../../common/hooks/useSocketIo';
-import { AuthState } from '../../../store/auth/interface';
-import { ServerResponse } from '../../../store/api/interface';
+import { AuthState } from '../../../common/interface/user.interface';
+import { ServerResponse } from '../../../common/interface/api.interface';
 import { RootState } from '../../../store';
 import routers from '../../../common/constants/router';
 import SeoHead from '../../../components/common/seoHead';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useRouter } from 'next/router';
-import ticTacToeApi from '../../../api/ticTacToe';
+import ticTacToeApi from '../../../api/tttApi';
 import { copy } from '../../../common/helpers/copy';
 
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
@@ -27,7 +28,7 @@ import PanelReady from '../../../components/game/panel/panelReady';
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
 import ShareIcon from '../../../public/asset/icons/share';
-import chatApi from '../../../api/chat';
+import chatApi from '../../../api/chatApi';
 
 export interface TicTacToePvPProps {
     roomId: string;
@@ -35,7 +36,7 @@ export interface TicTacToePvPProps {
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
     const clientIoTTT = useSocketIo({ namespace: 'tic-tac-toe' });
-    const clientIoChat = useSocketIo({ namespace: 'chats' });
+    const clientIoChat = useSocketIo({ namespace: 'chat' });
     const router = useRouter();
     const chessBoardRef = React.useRef<HTMLDivElement>(null);
     const [tttBoard, setTTTBoard] = React.useState<TicTacToeBoard>();
@@ -127,7 +128,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
         };
     }, [roomId, chatId]);
 
-    const handleOnSendMessage = (event: Event) => {
+    const handleOnSendMessage = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (chatId) chatApi.sendMessageChat({ chatId, content: 'hello world' });
 

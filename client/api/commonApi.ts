@@ -1,9 +1,8 @@
 import { AxiosInstance } from 'axios';
 
-import http from '../axiosCommon';
-import { ServerResponse } from '../../store/api/interface';
-import { User } from '../../store/auth/interface';
-import { SupportDto } from './dto';
+import http from './axiosCommon';
+import { ServerResponse } from '../common/interface/api.interface';
+import { SupportDto } from '../common/interface/dto/common.dto';
 
 export class CommonAPI {
     constructor(private readonly apiCall: AxiosInstance, private readonly prefix: string) {}

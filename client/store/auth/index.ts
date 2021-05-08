@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'universal-cookie';
 
-import { AuthState } from './interface';
+import { AuthState } from '../../common/interface/user.interface';
 import { authThunk } from './thunk';
 import { userThunk } from './userThunk';
 

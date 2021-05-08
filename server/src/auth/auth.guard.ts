@@ -25,7 +25,7 @@ export class UserGuard implements CanActivate {
             const authTokenId = await this.authService.getAuthTokenByReToken(reToken);
             if (!authTokenId) {
                   this.deleteAllAuthToken(res);
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
+                  throw apiResponse.sendError({}, 'UnauthorizedException');
             }
             res.cookie('auth-token', authTokenId, { maxAge: 1000 * 60 * 5 });
             return await this.authService.getUserByAuthToken(authTokenId);
@@ -43,7 +43,7 @@ export class UserGuard implements CanActivate {
             //checking re-token
             if (!refreshToken) {
                   res.cookie('re-token', '', { maxAge: 0 });
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
+                  throw apiResponse.sendError({}, 'UnauthorizedException');
             }
 
             //checking auth-token

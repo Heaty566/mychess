@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { SupportDto } from '../../api/common/dto';
-import { CommonAPI, commonAPI } from '../../api/common';
+import { SupportDto } from '../../common/interface/dto/common.dto';
+import { CommonAPI, commonAPI } from '../../api/commonApi';
 
 class CommonThunk {
     constructor(private readonly apiCall: CommonAPI) {}

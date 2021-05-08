@@ -81,7 +81,7 @@ export class AuthController {
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
             //checking user is exist
             const user = await this.userService.findOneUserByField('id', req.user.id);
-            if (!user) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-token' } } }, 'UnauthorizedException');
+            if (!user) throw apiResponse.sendError({}, 'UnauthorizedException');
 
             //create socket io token
             const socketId = await this.authService.getSocketToken(user);

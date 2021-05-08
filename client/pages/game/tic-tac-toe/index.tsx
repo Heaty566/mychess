@@ -1,31 +1,14 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 
-import XPlayerIcon from '../../../public/asset/icons/x-player';
-import OPlayerIcon from '../../../public/asset/icons/o-player';
-import { TTTGatewayAction, TicTacToeStatus, TicTacToeBoard, TicTacToePlayer } from '../../../components/game/tttBoard/config';
-import { RoomIdDto } from '../../../common/interface/dto/roomIdDto';
-import { useSocketIo } from '../../../common/hooks/useSocketIo';
-import { AuthState, User } from '../../../store/auth/interface';
-import { ServerResponse } from '../../../store/api/interface';
+import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
+
 import routers from '../../../common/constants/router';
-import { RootState } from '../../../store';
 
-import TTTBoard from '../../../components/game/tttBoard';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import PlayerInfo from '../../../components/game/playerInfo';
-import GameTurn from '../../../components/game/gameTurn';
-import GamePanel from '../../../components/game/panel';
-import WaveLoading from '../../../components/loading/waveLoading';
-import PanelRestart from '../../../components/game/panel/panelRestart';
-import PanelStart from '../../../components/game/panel/panelStart';
-import CheckIcon from '../../../public/asset/icons/check';
+
 import SeoHead from '../../../components/common/seoHead';
-import PanelReady from '../../../components/game/panel/panelReady';
-import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useRouter } from 'next/router';
-import BtnLink from '../../../components/link/btnLink';
-import { ticTacToeApi } from '../../../api/ticTacToe';
+import { ticTacToeApi } from '../../../api/tttApi';
 import TextField from '../../../components/form/textField';
 import { useForm } from 'react-hook-form';
 import useFormError from '../../../common/hooks/useFormError';

@@ -2,7 +2,7 @@ import { store } from '../store';
 import axios, { AxiosError } from 'axios';
 import Cookies from 'universal-cookie';
 
-import { ServerResponse } from '../store/api/interface';
+import { ServerResponse } from '../common/interface/api.interface';
 import { apiActions } from '../store/api';
 
 const axiosClient = axios.create({
@@ -18,7 +18,7 @@ axiosClient.interceptors.request.use(function (req) {
 axiosClient.interceptors.response.use(
     function (response) {
         store.dispatch(apiActions.resetState());
-        if (response.data.message) store.dispatch(apiActions.updateSuccessMessage(response.data));
+        if (response?.data?.details?.message) store.dispatch(apiActions.updateSuccessMessage(response.data));
 
         return response;
     },

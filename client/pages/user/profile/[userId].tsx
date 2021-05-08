@@ -7,8 +7,8 @@ import axios from 'axios';
 import { RootState } from '../../../store';
 import SeoHead from '../../../components/common/seoHead';
 import { capitalize } from '../../../common/helpers/string.helper';
-import { ServerResponse } from '../../../store/api/interface';
-import { AuthState, User } from '../../../store/auth/interface';
+import { ServerResponse } from '../../../common/interface/api.interface';
+import { AuthState, User } from '../../../common/interface/user.interface';
 
 import EditIcons from '../../../public/asset/icons/edit';
 import routers from '../../../common/constants/router';
