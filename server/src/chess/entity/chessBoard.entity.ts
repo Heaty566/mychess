@@ -1,10 +1,13 @@
+import { generatorString } from '../../app/helpers/stringGenerator';
 import { Chess } from './chess.entity';
-import { ChessFlag, ChessRole } from './chess.interface';
+import { ChessFlag, ChessPlayer, ChessRole, PlayerFlagEnum } from './chess.interface';
 
 export class ChessBoard {
       board: Array<Array<ChessFlag>>;
-      turn: boolean;
+      turn: 0 | 1;
       id: string;
+      users: ChessPlayer[];
+      winner: PlayerFlagEnum;
 
       constructor() {
             const initCell: ChessFlag = {
@@ -23,6 +26,11 @@ export class ChessBoard {
             ];
 
             this.board = [[...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow]];
+
+            this.id = generatorString(8, 'number');
+            this.turn = 0;
+            this.users = [];
+            this.winner = PlayerFlagEnum.EMPTY;
       }
 
       initBoard() {

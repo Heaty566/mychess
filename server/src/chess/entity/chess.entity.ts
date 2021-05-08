@@ -1,16 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 
 //---- Entity
 import User from '../../users/entities/user.entity';
-import { ChessStatus, PlayerFlag } from './chess.interface';
+import { ChessStatus, PlayerFlagEnum } from './chess.interface';
+import { ChessMove } from './chessMove.entity';
 
 @Entity()
 export class Chess {
       @PrimaryGeneratedColumn('uuid')
       id: string;
-
-      @Column({ default: ChessStatus.NOT_YET })
-      status: ChessStatus;
 
       @ManyToMany(() => User, { onUpdate: 'CASCADE' })
       @JoinTable()
@@ -23,11 +21,19 @@ export class Chess {
       blackUser: string;
 
       @Column({ default: -1 })
-      winner: PlayerFlag;
+      winner: PlayerFlagEnum;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       startDate: Date;
 
       @Column({ default: null })
       endDate: Date;
+
+      @OneToMany(() => ChessMove, (move) => move.chess)
+      moves: ChessMove[];
+
+      constructor() {
+            this.startDate = new Date();
+            this.winner = PlayerFlagEnum.EMPTY;
+      }
 }
