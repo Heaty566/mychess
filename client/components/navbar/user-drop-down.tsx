@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import * as React from 'react';
-import router from '../../../common/constants/router';
-import { AuthState } from '../../../common/interface/user.interface';
+import router from '../../common/constants/router';
+import { AuthState } from '../../common/interface/user.interface';
 
 export interface UserDropDownProps {
     authState: AuthState;
@@ -21,7 +21,7 @@ const UserDropDown: React.FunctionComponent<UserDropDownProps> = ({ authState, h
             <li>
                 <button
                     type="button"
-                    onClick={() => handleLogoutUser()}
+                    onClick={handleLogoutUser}
                     className="w-full px-4 py-2 capitalize duration-300 cursor-pointer focus:outline-none hover:bg-woodsmoke-400"
                 >
                     Logout

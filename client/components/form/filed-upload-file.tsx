@@ -10,7 +10,7 @@ export interface FileUploadProps {
     error: string;
 }
 
-const FileUpload: React.FunctionComponent<FileUploadProps> = ({ handleOnChange, name, error, label }) => {
+const FieldUploadFile: React.FunctionComponent<FileUploadProps> = ({ handleOnChange, name, error, label }) => {
     const [nameFile, setFileName] = React.useState('Chose File');
 
     const handleChangFileName = ({ currentTarget }: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,4 +42,4 @@ const FileUpload: React.FunctionComponent<FileUploadProps> = ({ handleOnChange, 
     );
 };
 
-export default FileUpload;
+export default FieldUploadFile;

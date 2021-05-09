@@ -13,7 +13,7 @@ import authThunk from '../../store/auth/thunk';
 import TextField from '../../components/form/filed-textfield';
 import BtnSideLink from '../../components/btn/btn-side-link';
 import BtnForm from '../../components/btn/btn-form';
-import LoginSocial from '../../components/form/form-social-login';
+import FormSocialLogin from '../../components/form/form-social-login';
 import WaveLoading from '../../components/loading/wave-loading';
 import LabelMessage from '../../components/form/label-message';
 import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
@@ -59,7 +59,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                         {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign Up" />}
                     </form>
                     <p className="my-4 text-center text-mercury">Or continue with</p>
-                    <LoginSocial />
+                    <FormSocialLogin />
                 </div>
             </div>
         </RouteProtectedWrapper>

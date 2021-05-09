@@ -14,7 +14,7 @@ import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
 import TextField from '../../components/form/filed-textfield';
 import BtnSideLink from '../../components/btn/btn-side-link';
 import BtnForm from '../../components/btn/btn-form';
-import LoginSocial from '../../components/form/form-social-login';
+import FormSocialLogin from '../../components/form/form-social-login';
 import WaveLoading from '../../components/loading/wave-loading';
 import LabelMessage from '../../components/form/label-message';
 
@@ -53,7 +53,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
                             {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign In" />}
                         </form>
                         <p className="my-4 text-center text-mercury">Or continue with</p>
-                        <LoginSocial />
+                        <FormSocialLogin />
                         <div className="mt-4">
                             <BtnSideLink label="Forgot Your Password?" position="text-center" href={routers.forgotPasswordEmail.link} />
                         </div>

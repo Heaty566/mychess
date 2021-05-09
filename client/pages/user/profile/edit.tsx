@@ -12,7 +12,7 @@ import userAPI from '../../../api/userApi';
 import routers from '../../../common/constants/router';
 import { useRouter } from 'next/router';
 
-import FileUpload from '../../../components/form/filed-upload-file';
+import FieldUploadFile from '../../../components/form/filed-upload-file';
 import TextField from '../../../components/form/filed-textfield';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import BtnForm from '../../../components/btn/btn-form';
@@ -84,7 +84,7 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                                         alt={authState.name}
                                         className="object-cover w-40 h-40"
                                     />
-                                    <FileUpload name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
+                                    <FieldUploadFile name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
                                 </div>
                             </div>
                             <div className="w-full space-y-2 md:w-64">
