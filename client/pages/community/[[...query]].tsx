@@ -9,7 +9,7 @@ import { useDebounce } from '../../common/hooks/useDebounce';
 import SeoHead from '../../components/common/seoHead';
 import { CommonUser } from '../../common/interface/dto/user.dto';
 
-import WaveLoading from '../../components/loading/waveLoading';
+import WaveLoading from '../../components/loading/wave-loading';
 import Pagination from '../../components/pagination';
 import FindIcon from '../../public/asset/icons/find';
 

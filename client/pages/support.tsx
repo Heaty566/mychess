@@ -9,9 +9,9 @@ import routers from '../common/constants/router';
 import SeoHead from '../components/common/seoHead';
 import commonThunk from '../store/api/thunk';
 
-import TextareaField from '../components/form/textareaField';
-import TextField from '../components/form/textField';
-import BtnForm from '../components/btn/btnForm';
+import TextareaField from '../components/form/field-textarea';
+import TextField from '../components/form/filed-textfield';
+import BtnForm from '../components/btn/btn-form';
 
 const defaultValues: SupportDto = {
     message: '',

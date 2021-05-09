@@ -9,10 +9,14 @@ import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import SeoHead from '../../../components/common/seoHead';
 import { useRouter } from 'next/router';
 import { ticTacToeApi } from '../../../api/tttApi';
-import TextField from '../../../components/form/textField';
+import TextField from '../../../components/form/filed-textfield';
 import { useForm } from 'react-hook-form';
 import useFormError from '../../../common/hooks/useFormError';
-import BtnForm from '../../../components/btn/btnForm';
+import BtnForm from '../../../components/btn/btn-form';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { ApiState } from '../../../common/interface/api.interface';
+import WaveLoading from '../../../components/loading/wave-loading';
 
 export interface TicTacToeForm {
     roomId: string;
@@ -20,6 +24,7 @@ export interface TicTacToeForm {
 
 const TicTacToe: React.FunctionComponent = () => {
     const { register, handleSubmit } = useForm<TicTacToeForm>({ defaultValues: { roomId: '' } });
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const errors = useFormError<TicTacToeForm>({ roomId: '' });
     const router = useRouter();
 
@@ -43,7 +48,8 @@ const TicTacToe: React.FunctionComponent = () => {
                         <form className="space-y-2" onSubmit={handleSubmit(handleOnSubmit)}>
                             <h1 className="text-4xl text-center text-white mb-7">Tic-Tac-Toe Lobby</h1>
                             <TextField name="roomId" type="text" label="Room ID" error={errors.roomId} register={register} />
-                            <BtnForm label="Join Room" />
+                            {apiState.isLoading && <WaveLoading />}
+                            {!apiState.isLoading && <BtnForm label="Join Room" />}
                         </form>
                         <p className="my-2 text-center text-mercury">Or Create New Room</p>
                         <BtnForm label="Create New Room" type="button" handleOnClick={() => handleOnCreateNewRoom()} />
