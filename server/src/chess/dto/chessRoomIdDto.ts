@@ -5,10 +5,10 @@ import { Chess } from '../entity/chess.entity';
 
 const { getJoiSchema } = ValidatorService.joiSchemaGenerator<Chess>(roomJoiSchema);
 
-export class RoomIdDTO {
+export class ChessRoomIdDTO {
       roomId: string;
 }
 
-export const vRoomIdDto = Joi.object({
+export const vChessRoomIdDto = Joi.object({
       roomId: getJoiSchema('id'),
 });

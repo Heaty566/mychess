@@ -13,7 +13,7 @@ import { ChessCommonService } from './chessCommon.service';
 //---- Entity
 
 //---- Dto
-import { RoomIdDTO } from './dto/roomIdDto';
+import { ChessRoomIdDTO } from './dto/chessRoomIdDto';
 
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
@@ -28,11 +28,15 @@ export class ChessGateway {
 
       socketServer = () => ioResponse.getSocketServer(this.server);
 
-      private async isPlaying(userId: string) {
-            const isPlaying = await this.chessCommonService.isPlaying(userId);
-            if (isPlaying)
-                  return this.socketServer().socketEmitToRoomError('BadRequestException', userId, {
-                        details: { errorMessage: { type: 'error.already-join' } },
-                  });
+      // private async isPlaying(userId: string) {
+      //       const isPlaying = await this.chessCommonService.isPlaying(userId);
+      //       if (isPlaying)
+      //             return this.socketServer().socketEmitToRoomError('BadRequestException', userId, {
+      //                   details: { errorMessage: { type: 'error.already-join' } },
+      //             });
+      // }
+      async sendToRoom(boardId: string) {
+            const board = await this.chessCommonService.getBoard(boardId);
+            return this.socketServer().socketEmitToRoom(ChessAction.CHESS_GET, boardId, { data: board }, 'chess');
       }
 }

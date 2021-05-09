@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Request } from 'express';
 
 //---- Service
@@ -11,13 +11,20 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
+import { ChessMove, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessBoard } from './entity/chessBoard.entity';
+import { ChessMoveDB } from './entity/chessMove.entity';
+
+//---- DTO
+import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
+import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
+import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { RoomIdDTO, vRoomIdDto } from './dto/roomIdDto';
 
 @Controller('chess')
 export class ChessController {
@@ -28,17 +35,90 @@ export class ChessController {
             private readonly chessGateway: ChessGateway,
       ) {}
 
-      private async isPlaying(userId: string) {
-            const isPlaying = await this.chessCommonService.isPlaying(userId);
-            if (isPlaying) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.already-join' } } }, 'BadRequestException');
+      private async isPlaying(board: ChessBoard) {
+            if (board.status === ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
       }
 
-      @Post('/')
+      private async getGame(roomId: string) {
+            const board = await this.chessCommonService.getBoard(roomId);
+            if (!board) throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
+            return board;
+      }
+
+      private async getPlayer(boardId: string, userId: string) {
+            const player = await this.chessCommonService.isExistUser(boardId, userId);
+            if (!player) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            return player;
+      }
+
+      @Put('/join-room')
       @UseGuards(UserGuard)
-      async handleOnCreateGame(@Req() req: Request) {
-            await this.isPlaying(req.user.id);
-            const board = await this.chessCommonService.createNewGame(req.user, false);
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnJoinRoom(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+            if (board.status != ChessStatus.NOT_YET)
+                  throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
+            const isExist = await this.chessCommonService.isExistUser(board.id, req.user.id);
+            if (!isExist && board.users.length < 2) await this.chessCommonService.joinGame(board.id, req.user);
 
-            return apiResponse.send<RoomIdDTO>({ data: { roomId: board.id } });
+            return apiResponse.send({ data: board });
       }
+
+      @Put('/start')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnStartGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            await this.isPlaying(board);
+            await this.getPlayer(board.id, req.user.id);
+
+            const isStart = await this.chessCommonService.startGame(board.id);
+            if (!isStart) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wait-ready-player' } } }, 'BadRequestException');
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/ready')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnReadyGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.chessCommonService.toggleReadyStatePlayer(board.id, player);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/choose-piece')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessChooseAPieceDTO))
+      async handleOnChooseAPiece(@Req() req: Request, @Body() body: ChessChooseAPieceDTO) {
+            const board = await this.getGame(body.roomId);
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
+
+            if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            const currentPosition: ChessMove = {
+                  x: body.x,
+                  y: body.y,
+                  flag: body.flag,
+                  chessRole: body.chessRole,
+            };
+            const legalMoves = await this.chessService.legalMove(currentPosition, board);
+            return apiResponse.send<Array<ChessMove>>({ data: legalMoves });
+      }
+
+      @Put('/add-move')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
+      async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {}
 }

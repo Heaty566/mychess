@@ -1,10 +1,18 @@
+import { generatorString } from '../../app/helpers/stringGenerator';
 import { Chess } from './chess.entity';
-import { ChessFlag, ChessRole } from './chess.interface';
+import { ChessFlag, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from './chess.interface';
+import { ChessMoveDB } from './chessMove.entity';
 
 export class ChessBoard {
       board: Array<Array<ChessFlag>>;
-      turn: boolean;
+      moves: Array<ChessMoveDB>;
+      turn: 0 | 1;
       id: string;
+      users: ChessPlayer[];
+      winner: PlayerFlagEnum;
+      startDate: Date;
+      status: ChessStatus;
+      chatId: string;
 
       constructor() {
             const initCell: ChessFlag = {
@@ -23,6 +31,12 @@ export class ChessBoard {
             ];
 
             this.board = [[...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow]];
+            this.moves = [];
+            this.id = generatorString(8, 'number');
+            this.turn = 0;
+            this.users = [];
+            this.winner = PlayerFlagEnum.EMPTY;
+            this.status = ChessStatus.NOT_YET;
       }
 
       initBoard() {

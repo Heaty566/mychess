@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TicTacToeModule } from './ticTacToe/ticTacToe.module';
 import { ChessModule } from './chess/chess.module';
+import { ChatModule } from './chat/chat.module';
 
 //---------Provider
 import { SmailModule } from './providers/smail/smail.module';
@@ -30,7 +31,7 @@ import { Message } from './chat/entities/message.entity';
 import { TicTacToe } from './ticTacToe/entity/ticTacToe.entity';
 import { TicTacToeMove } from './ticTacToe/entity/ticTacToeMove.entity';
 import { Chess } from './chess/entity/chess.entity';
-import { ChatModule } from './chat/chat.module';
+import { ChessMoveDB } from './chess/entity/chessMove.entity';
 
 const Config = ConfigModule.forRoot({
       isGlobal: true,
@@ -46,7 +47,7 @@ const DBConfig = TypeOrmModule.forRoot({
       database: process.env.DB_NAME,
       synchronize: true,
       keepConnectionAlive: true,
-      entities: [User, ReToken, Notification, Chat, Message, TicTacToe, TicTacToeMove, Chess],
+      entities: [User, ReToken, Notification, Chat, Message, TicTacToe, TicTacToeMove, Chess, ChessMoveDB],
       extra: { connectionLimit: 5 },
 });
 
