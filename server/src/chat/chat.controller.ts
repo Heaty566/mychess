@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Request } from 'express';
 
 //---- Service
@@ -40,7 +40,7 @@ export class ChatController {
             return apiResponse.send<RoomIdChatDTO>({ data: { chatId: chat.id } });
       }
 
-      @Post('/join')
+      @Put('/join')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vRoomIdChatDTO))
       async handleOnJoinChat(@Req() req: Request, @Body() body: RoomIdChatDTO) {
@@ -51,7 +51,7 @@ export class ChatController {
             return apiResponse.send<RoomIdChatDTO>({ data: { chatId: chat.id } });
       }
 
-      @Post('/send-message')
+      @Put('/send-message')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vSendMessageDTO))
       async handleOnSendMessage(@Req() req: Request, @Body() body: SendMessageDTO) {
@@ -63,7 +63,7 @@ export class ChatController {
             await this.chatGateway.sendToRoom(chat.id);
             return apiResponse.send<RoomIdChatDTO>({});
       }
-      @Post('/leave')
+      @Put('/save')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vRoomIdChatDTO))
       async handleOnLeave(@Req() req: Request, @Body() body: RoomIdChatDTO) {

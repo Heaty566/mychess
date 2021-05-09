@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form';
 import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
 import { RootState, store } from '../../store';
-import { UserRegisterDto } from '../../api/auth/dto';
-import { ApiState } from '../../store/api/interface';
+import { UserRegisterDto } from '../../common/interface/dto/auth.dto';
+import { ApiState } from '../../common/interface/api.interface';
 import useFormError from '../../common/hooks/useFormError';
 import authThunk from '../../store/auth/thunk';
 
@@ -15,7 +15,7 @@ import SideLink from '../../components/link/sidelink';
 import BtnForm from '../../components/btn/btnForm';
 import LoginSocial from '../../components/form/loginSocial';
 import WaveLoading from '../../components/loading/waveLoading';
-import MsgSuccess from '../../components/form/msgSuccess';
+import Msg from '../../components/form/msg';
 import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: UserRegisterDto = {
@@ -40,7 +40,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                 <div className="w-full max-w-md px-4 py-16 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Register Account</h1>
-                        <MsgSuccess successMessage={apiState.message} errorMessage={apiState.messageError} />
+                        <Msg successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                         <div className="space-y-2">
                             <TextField name="name" label="Name" error={errors.name} register={register} type="text" />
                             <TextField name="username" label="Username" error={errors.username} register={register} type="text" />

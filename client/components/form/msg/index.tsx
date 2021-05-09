@@ -5,7 +5,9 @@ export interface MsgSuccessProps {
     errorMessage: string;
 }
 
-const MsgSuccess: React.FunctionComponent<MsgSuccessProps> = ({ successMessage, errorMessage }) => {
+const Msg: React.FunctionComponent<MsgSuccessProps> = ({ successMessage, errorMessage }) => {
+    console.log(successMessage);
+    console.log(errorMessage);
     return Boolean(successMessage) || Boolean(errorMessage) ? (
         <p className={`${successMessage ? 'text-green-500' : 'text-red-500'}  text-first-uppercase fade-in`}>
             {successMessage ? successMessage : errorMessage}
@@ -13,4 +15,4 @@ const MsgSuccess: React.FunctionComponent<MsgSuccessProps> = ({ successMessage, 
     ) : null;
 };
 
-export default MsgSuccess;
+export default Msg;

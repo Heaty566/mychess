@@ -63,6 +63,7 @@ export class AuthService {
 
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
+            if (!encryptUser) return null;
             const authTokenId = String(uuidv4());
 
             this.redisService.setByValue(authTokenId, encryptUser, 5);
@@ -84,6 +85,7 @@ export class AuthService {
             if (!isStillExit) {
                   const user = await this.userRepository.findOneByField('id', reToken.userId);
                   const newReToken = await this.createAuthToken(user);
+                  if (!newReToken) return null;
                   reToken.data = newReToken;
                   const updateReToken = await this.reTokenRepository.save(reToken);
                   return updateReToken.data;
@@ -106,11 +108,19 @@ export class AuthService {
       //--------------------------------Encrypt Decrypt Service -------------------------------
 
       encryptToken(tokenData: Record<any, any>) {
-            return this.jwtService.sign(JSON.stringify(tokenData));
+            try {
+                  return this.jwtService.sign(JSON.stringify(tokenData));
+            } catch (err) {
+                  return null;
+            }
       }
 
       decodeToken<T>(tokenData: string) {
-            return this.jwtService.decode(tokenData) as T;
+            try {
+                  return this.jwtService.decode(tokenData) as T;
+            } catch (err) {
+                  return null;
+            }
       }
 
       async encryptString(data: string): Promise<string> {

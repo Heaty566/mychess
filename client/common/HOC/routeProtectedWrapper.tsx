@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
 import routers from '../constants/router';
-import { AuthState } from '../../store/auth/interface';
 import { RootState, store } from '../../store';
-import { ApiState } from '../../store/api/interface';
+import { AuthState } from '../../common/interface/user.interface';
+import { ApiState } from '../../common/interface/api.interface';
 import WaveLoading from '../../components/loading/waveLoading';
 import { apiActions } from '../../store/api';
 

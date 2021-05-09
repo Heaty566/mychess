@@ -1,9 +1,9 @@
 import { AxiosInstance } from 'axios';
 
-import http from '../axiosCommon';
-import { ServerResponse } from '../../store/api/interface';
-import { User } from '../../store/auth/interface';
-import { ResetUserPasswordDto, UpdateUserEmailDto, UpdateUserInfoDto, UpdateUserPhoneDto, CommonUser } from './dto';
+import http from './axiosCommon';
+import { ServerResponse } from '../common/interface/api.interface';
+import { User } from '../common/interface/user.interface';
+import { ResetUserPasswordDto, UpdateUserEmailDto, UpdateUserInfoDto, UpdateUserPhoneDto, CommonUser } from '../common/interface/dto/user.dto';
 
 export class UserAPI {
     constructor(private readonly apiCall: AxiosInstance, private readonly prefix: string) {}

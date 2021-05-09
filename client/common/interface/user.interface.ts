@@ -9,6 +9,15 @@ export interface User {
     createDate: string;
 }
 
+export interface PublicUser {
+    id: string;
+    username: string;
+    name: string;
+    avatarUrl: string;
+    elo: number;
+    createDate: string;
+}
+
 export interface AuthState extends User {
     isLogin: boolean;
     isSocketLogin: boolean;

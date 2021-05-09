@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
 
-import MsgSuccess, { MsgSuccessProps } from '.';
+import Msg, { MsgSuccessProps } from '.';
 
 describe('MsgSuccess', () => {
     it('Render Correct Default Type', async () => {
         const data: MsgSuccessProps = { successMessage: 'hello world' };
 
-        const wrapper = render(<MsgSuccess {...data} />);
+        const wrapper = render(<Msg {...data} />);
 
         const successMsg = await wrapper.findByTestId('msgsuccess');
         expect(successMsg.innerHTML).toBe(data.successMessage);

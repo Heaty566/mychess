@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import { store } from '../store';
 import { useFormError } from '../common/hooks/useFormError';
-import { SupportDto } from '../api/common/dto';
+import { SupportDto } from '../common/interface/dto/common.dto';
 import routers from '../common/constants/router';
 import SeoHead from '../components/common/seoHead';
 import commonThunk from '../store/api/thunk';

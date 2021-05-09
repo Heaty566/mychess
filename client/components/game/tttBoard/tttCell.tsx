@@ -1,8 +1,7 @@
 import * as React from 'react';
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
-import { TicTacToeFlag } from './config';
-
+import { TicTacToeFlag } from '../../../common/interface/tic-tac-toe.interface';
 export interface TTTCellProps {
     cellFlag: TicTacToeFlag;
     handleOnClick: () => void;

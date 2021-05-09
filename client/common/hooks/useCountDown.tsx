@@ -16,9 +16,7 @@ export function useCountDown(totalTime: number, isStart: boolean, isPause: boole
                 setTime(totalTime - passTime);
             }, 500);
 
-        return () => {
-            clearInterval(intervalId);
-        };
+        return () => clearInterval(intervalId);
     }, [time, isStart, isPause]);
 
     return [Math.round(time / 1000), isFinish];

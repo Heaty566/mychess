@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from '../../api/auth/dto';
-import { AuthAPI, authApi } from '../../api/auth';
-import { ServerResponse } from '../api/interface';
+import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from '../../common/interface/dto/auth.dto';
+import { AuthAPI, authApi } from '../../api/authApi';
+import { ServerResponse } from '../../common/interface/api.interface';
 
 class AuthThunk {
     constructor(private readonly apiCall: AuthAPI) {}
