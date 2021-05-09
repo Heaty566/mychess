@@ -10,16 +10,26 @@ const defaultValues: MessageDTO = {
     content: '',
 };
 
-export function useChatIo(chatId: string | undefined): [Chat | undefined, UseFormRegister<MessageDTO>, () => Promise<void>] {
+export function useChatIo(
+    chatId: string | undefined,
+): [Chat | undefined, UseFormRegister<MessageDTO>, React.MutableRefObject<HTMLElement | undefined>, () => Promise<void>] {
     const clientChatIo = useSocketIo({ namespace: 'chat' });
     const { register, handleSubmit, reset } = useForm<MessageDTO>({ defaultValues });
+    const wrapperRef = React.useRef<HTMLElement>();
     const [chat, setChat] = React.useState<Chat>();
 
     const handleOnSendMessage = (data: MessageDTO) => {
-        if (chatId && data.content)
-            chatApi.sendMessageChat({ chatId, content: data.content }).then(() => {
-                reset(defaultValues);
-            });
+        if (chatId && data.content) {
+            chatApi
+                .sendMessageChat({ chatId, content: data.content })
+                .then(() => {
+                    if (wrapperRef.current) {
+                        wrapperRef.current.scrollTop = 999999;
+                    }
+                    reset(defaultValues);
+                })
+                .catch((error) => console.log(error));
+        }
     };
 
     const onChatGet = (res: ServerResponse<Chat>) => setChat(res.data);
@@ -39,7 +49,7 @@ export function useChatIo(chatId: string | undefined): [Chat | undefined, UseFor
         };
     }, [chatId]);
 
-    return [chat, register, handleSubmit(handleOnSendMessage)];
+    return [chat, register, wrapperRef, handleSubmit(handleOnSendMessage)];
 }
 
 export default useChatIo;

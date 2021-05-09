@@ -10,10 +10,10 @@ import { ApiState } from '../../../common/interface/api.interface';
 
 import useFormError from '../../../common/hooks/useFormError';
 import { RouteProtectedWrapper } from '../../../common/HOC/routeProtectedWrapper';
-import TextField from '../../../components/form/textField';
-import BtnForm from '../../../components/btn/btnForm';
-import WaveLoading from '../../../components/loading/waveLoading';
-import Msg from '../../../components/form/msg';
+import TextField from '../../../components/form/filed-textfield';
+import BtnForm from '../../../components/btn/btn-form';
+import WaveLoading from '../../../components/loading/wave-loading';
+import LabelMessage from '../../../components/form/label-message';
 import userAPI from '../../../api/userApi';
 import authApi from '../../../api/authApi';
 import { useRouter } from 'next/router';
@@ -65,7 +65,7 @@ const ResetPassword: React.FunctionComponent<ResetPasswordProps> = () => {
                     <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                         <h1 className="text-4xl text-center text-white mb-7">Reset Your Password</h1>
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <Msg successMessage={apiState.message} errorMessage={apiState.errorMessage} />
+                            <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                             {isCheckOtp ? (
                                 <div className="space-y-2">
                                     <p className="py-2 text-mercury-800">Please enter your new password.</p>

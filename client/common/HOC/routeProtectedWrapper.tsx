@@ -6,7 +6,7 @@ import routers from '../constants/router';
 import { RootState, store } from '../../store';
 import { AuthState } from '../../common/interface/user.interface';
 import { ApiState } from '../../common/interface/api.interface';
-import WaveLoading from '../../components/loading/waveLoading';
+import WaveLoading from '../../components/loading/wave-loading';
 import { apiActions } from '../../store/api';
 
 export interface RouteProtectedProps {
