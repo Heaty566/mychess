@@ -142,14 +142,14 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: TTTAddMoveDto) => supertest(app.getHttpServer()).post('/api/ttt/add-move').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTAddMoveDto) => supertest(app.getHttpServer()).put('/api/ttt/add-move').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId, x: 0, y: 0 });
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
 
                   expect(getBoard.board[0][0]).toBe(player1.flag);
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
 
             it('Failed wrong turn', async () => {
@@ -174,7 +174,7 @@ describe('TicTacToeController', () => {
 
                   expect(getBoard.winner).toBe(TicTacToeFlag.BLUE);
                   expect(getBoard.status).toBe(TicTacToeStatus.END);
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
             it('Pass bot win', async () => {
                   const beforeUpdate = await ticTacToeCommonService.getBoard(tttId);
@@ -188,7 +188,7 @@ describe('TicTacToeController', () => {
 
                   expect(getBoard.winner).toBe(TicTacToeFlag.RED);
                   expect(getBoard.status).toBe(TicTacToeStatus.END);
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
 
             it('Failed cell is picked', async () => {
@@ -225,14 +225,14 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/join-room').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).put('/api/ttt/join-room').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId });
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
                   const isExistUser = getBoard.users.find((item) => item.id === user.id);
 
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
                   expect(isExistUser).toBeDefined();
                   expect(getBoard).toBeDefined();
                   expect(getBoard.users[0].id).toBeDefined();
@@ -254,7 +254,7 @@ describe('TicTacToeController', () => {
 
                   const res = await reqApi({ roomId: tttId });
 
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
       });
 
@@ -275,13 +275,13 @@ describe('TicTacToeController', () => {
             });
 
             const reqApi = (input: TTTRoomIdDTO, cookie: string[]) =>
-                  supertest(app.getHttpServer()).post('/api/ttt/start').set({ cookie }).send(input);
+                  supertest(app.getHttpServer()).put('/api/ttt/start').set({ cookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId }, newCookie);
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
 
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
 
                   expect(getBoard).toBeDefined();
                   expect(getBoard.status).toBe(TicTacToeStatus.PLAYING);
@@ -318,12 +318,12 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/ready').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).put('/api/ttt/ready').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId });
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
 
                   expect(getBoard).toBeDefined();
                   expect(getBoard.users[0].ready).toBeTruthy();
@@ -342,13 +342,13 @@ describe('TicTacToeController', () => {
                   newCookie = generateCookie(await authService.createReToken(user));
             });
 
-            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/leave').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).put('/api/ttt/leave').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: tttId });
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
 
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
                   expect(getBoard).toBeDefined();
                   expect(getBoard.users.length).toBe(1);
             });

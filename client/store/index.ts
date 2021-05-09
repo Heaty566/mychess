@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 import { apiReducer } from './api';
-import { ApiState } from './api/interface';
+import { ApiState } from '../common/interface/api.interface';
 import { authReducer } from './auth';
-import { AuthState } from './auth/interface';
+import { AuthState } from '../common/interface/user.interface';
 
 export interface RootState {
     api: ApiState;

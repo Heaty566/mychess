@@ -10,5 +10,5 @@ export interface ApiState {
     errorDetails: JoiError;
     isError: boolean;
     message: string;
-    messageError: string;
+    errorMessage: string;
 }

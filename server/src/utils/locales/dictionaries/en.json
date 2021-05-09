@@ -3,7 +3,6 @@
       "error.request-many-time": "you have requested too many times, please try again after {{time}} minutes",
       "error.user-banned": "you is blocked by an administrator",
       "error.not-allow-action": "you is not allow to do this action",
-      "error.invalid-token": "your token is invalid",
       "error.some-wrong": "something went wrong, please try again later",
       "error.invalid-input": "your request body is wrong",
       "error.method-undefined": "this method is not supported",

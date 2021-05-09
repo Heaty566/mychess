@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState, store } from '../../store';
-import { AuthState } from '../../store/auth/interface';
+import { AuthState } from '../interface/user.interface';
 import * as socketIo from 'socket.io-client';
 import authThunk from '../../store/auth/thunk';
 

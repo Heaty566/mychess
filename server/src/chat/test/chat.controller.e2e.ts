@@ -71,7 +71,7 @@ describe('ChatController', () => {
             });
 
             const reqApi = (input: RoomIdChatDTO, cookie: string[]) =>
-                  supertest(app.getHttpServer()).post('/api/chat/join').set({ cookie }).send(input);
+                  supertest(app.getHttpServer()).put('/api/chat/join').set({ cookie }).send(input);
 
             it('Pass join owner', async () => {
                   const chat = await chatService.createChat(user1);
@@ -80,7 +80,7 @@ describe('ChatController', () => {
 
                   expect(getChat.users.length).toBe(1);
                   expect(res.body.data.chatId).toBeDefined();
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
             it('Pass join other room', async () => {
                   const chat = await chatService.createChat(user1);
@@ -89,7 +89,7 @@ describe('ChatController', () => {
 
                   expect(getChat.users.length).toBe(2);
                   expect(res.body.data.chatId).toBeDefined();
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
       });
       describe('POST /send-message', () => {
@@ -106,7 +106,7 @@ describe('ChatController', () => {
             });
 
             const reqApi = (input: SendMessageDTO, cookie: string[]) =>
-                  supertest(app.getHttpServer()).post('/api/chat/send-message').set({ cookie }).send(input);
+                  supertest(app.getHttpServer()).put('/api/chat/send-message').set({ cookie }).send(input);
 
             it('Pass join user1 add message', async () => {
                   const chat = await chatService.createChat(user1);
@@ -117,7 +117,7 @@ describe('ChatController', () => {
 
                   expect(findMessage).toBeDefined();
                   expect(getChat.messages.length).toBe(1);
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
             it('Pass join user1 send wrong chat id', async () => {
                   const res = await reqApi({ chatId: 'hello-world', content: 'hello world' }, user1Cookie);
@@ -138,7 +138,7 @@ describe('ChatController', () => {
             });
       });
 
-      describe('POST /leave', () => {
+      describe('POST /save', () => {
             let user1: User;
             let user1Cookie: string[];
             let user2: User;
@@ -152,7 +152,7 @@ describe('ChatController', () => {
             });
 
             const reqApi = (input: RoomIdChatDTO, cookie: string[]) =>
-                  supertest(app.getHttpServer()).post('/api/chat/leave').set({ cookie }).send(input);
+                  supertest(app.getHttpServer()).put('/api/chat/save').set({ cookie }).send(input);
 
             it('Pass join user1 add message', async () => {
                   const chat = await chatService.createChat(user1);
@@ -172,7 +172,7 @@ describe('ChatController', () => {
                   expect(findMessage.userId).toBe(user1.id);
                   expect(findMessage).toBeDefined();
                   expect(findUser).toBeDefined();
-                  expect(res.status).toBe(201);
+                  expect(res.status).toBe(200);
             });
 
             it('Failed user2 is not belong to this chat', async () => {

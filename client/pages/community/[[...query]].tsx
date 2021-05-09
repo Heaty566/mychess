@@ -4,10 +4,10 @@ import * as React from 'react';
 import Link from 'next/link';
 
 import routers from '../../common/constants/router';
-import { userAPI } from '../../api/user';
+import { userAPI } from '../../api/userApi';
 import { useDebounce } from '../../common/hooks/useDebounce';
 import SeoHead from '../../components/common/seoHead';
-import { CommonUser } from '../../api/user/dto';
+import { CommonUser } from '../../common/interface/dto/user.dto';
 
 import WaveLoading from '../../components/loading/waveLoading';
 import Pagination from '../../components/pagination';

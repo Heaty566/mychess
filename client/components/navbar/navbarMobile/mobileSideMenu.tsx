@@ -6,7 +6,7 @@ import navbarMenuConfig from '../navbarMenu/config';
 import ArrowDropDownMenu from '../../arrowDropDownMenu';
 import config from './config';
 import NavbarLang from '../navbarLang';
-import { AuthState } from '../../../store/auth/interface';
+import { AuthState } from '../../../common/interface/user.interface';
 
 export interface MobileNavSideMenuProps {
     isActive: boolean;

@@ -11,7 +11,7 @@ import NavbarUser from './navbarUser';
 import NavbarMobile from './navbarMobile';
 import { useSelector } from 'react-redux';
 import { RootState, store } from '../../store';
-import { AuthState } from '../../store/auth/interface';
+import { AuthState } from '../../common/interface/user.interface';
 import authThunk from '../../store/auth/thunk';
 
 const Navbar: React.FunctionComponent = () => {

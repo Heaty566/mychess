@@ -1,7 +1,7 @@
-import http from '../axiosCommon';
+import http from './axiosCommon';
 import { AxiosInstance } from 'axios';
-import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from './dto';
-import { ServerResponse } from '../../store/api/interface';
+import { UserLoginDto, UserRegisterDto, ForgotPasswordEmailDto, ForgotPasswordPhoneDto } from '../common/interface/dto/auth.dto';
+import { ServerResponse } from '../common/interface/api.interface';
 
 export class AuthAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
