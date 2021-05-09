@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Request } from 'express';
 
 //---- Service
@@ -11,18 +11,20 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
+import { ChessMove, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessBoard } from './entity/chessBoard.entity';
+import { ChessMoveDB } from './entity/chessMove.entity';
+
+//---- DTO
+import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
+import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
+import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
-import { ChessMove, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
-import { ChessBoard } from './entity/chessBoard.entity';
-import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
-import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
-import { ChessMoveDB } from './entity/chessMove.entity';
 
 @Controller('chess')
 export class ChessController {
@@ -50,8 +52,9 @@ export class ChessController {
             return player;
       }
 
-      @Post('/join-room')
+      @Put('/join-room')
       @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnJoinRoom(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
             if (board.status != ChessStatus.NOT_YET)
@@ -62,11 +65,12 @@ export class ChessController {
             return apiResponse.send({ data: board });
       }
 
-      @Post('/start')
-      @UseGuards(UseGuards)
+      @Put('/start')
+      @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnStartGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
+
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
 
@@ -76,7 +80,21 @@ export class ChessController {
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Post('/choose-piece')
+      @Put('/ready')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnReadyGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.chessCommonService.toggleReadyStatePlayer(board.id, player);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/choose-piece')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessChooseAPieceDTO))
       async handleOnChooseAPiece(@Req() req: Request, @Body() body: ChessChooseAPieceDTO) {
@@ -99,7 +117,7 @@ export class ChessController {
             return apiResponse.send<Array<ChessMove>>({ data: legalMoves });
       }
 
-      @Post('/add-move')
+      @Put('/add-move')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {}
