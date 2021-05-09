@@ -14,7 +14,7 @@ import { ChatGateway } from './chat.gateway';
 
 //---- Dto
 import { RoomIdChatDTO, vRoomIdChatDTO } from './dto/roomIdChatDto';
-import { SendMessageDTO, vSendMessageDTO } from './dto/sendMessageDTO';
+import { SendMessageDTO, vSendMessageDTO } from './dto/sendMessageDto';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';

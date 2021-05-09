@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import BtnLink from '../components/link/btnLink';
+import BtnLink from '../components/btn/btn-link';
 import SeoHead from '../components/common/seoHead';
 import routers from '../common/constants/router';
 

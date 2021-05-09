@@ -7,15 +7,15 @@ import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { copy } from '../../../common/helpers/copy';
 
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import ToolTip from '../../../components/tooltip';
-import TTTBoard from '../../../components/game/tttBoard';
-import PlayerInfo from '../../../components/game/playerInfo';
-import GameTurn from '../../../components/game/gameTurn';
-import GamePanel from '../../../components/game/panel';
-import PanelRestart from '../../../components/game/panel/panelRestart';
-import WaveLoading from '../../../components/loading/waveLoading';
-import PanelStart from '../../../components/game/panel/panelStart';
-import PanelReady from '../../../components/game/panel/panelReady';
+import ToolTip from '../../../components/tooltip/tooltip-dropbox';
+import TTTBoard from '../../../components/game/ttt-board';
+import PlayerInfo from '../../../components/game/player-info';
+import GameTurn from '../../../components/game/game-turn';
+import ChatBox from '../../../components/chat';
+import PanelRestart from '../../../components/game/panel-restart';
+import WaveLoading from '../../../components/loading/wave-loading';
+import PanelStart from '../../../components/game/panel-start';
+import PanelReady from '../../../components/game/panel-ready';
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
 import ShareIcon from '../../../public/asset/icons/share';
@@ -27,74 +27,94 @@ export interface TicTacToePvPProps {
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const [chatId, setChatId] = React.useState<string>();
     const [board, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameTTT(roomId);
-    const [chat, chatRegister, handleOnSendMessage] = useChatIo(chatId);
+    const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
 
     return (
         <>
             <SeoHead {...routers.ticTacToePvP.header} />
             <RouteProtectedWrapper isNeedLogin>
                 <div className="flex-1 space-y-4 md:p-8 fade-in chess-bg">
-                    {board ? (
-                        <>
-                            <div className="flex flex-wrap justify-between max-w-2xl p-2 mx-auto bg-gray-50">
-                                <div className="flex justify-between w-full mb-2 ">
-                                    <p className="text-lg font-bold">Room ID: {board.id}</p>
-                                    <div>
+                    {board && (
+                        <div className="justify-center py-2 space-y-2 md:space-y-0 md:space-x-2 lg:flex">
+                            <div className="w-full max-w-2xl mx-auto space-y-2 md:mx-0">
+                                <div className="flex flex-col justify-between p-2 bg-gray-50">
+                                    <div className="flex justify-between flex-1">
+                                        <p className="text-lg font-bold">Room ID: {board.id}</p>
+
                                         <ToolTip content="Copy To Clipboard" position="left-full" maxLength={0}>
-                                            <button className="flex font-semibold focus:outline-none" onClick={() => copy(window.location.href)}>
+                                            <button
+                                                className="flex font-semibold duration-200 focus:outline-none hover:text-blue-700"
+                                                onClick={() => copy(window.location.href)}
+                                            >
                                                 <ShareIcon />
                                                 <span className="ml-1">Share</span>
                                             </button>
                                         </ToolTip>
                                     </div>
+                                    <div className="flex">
+                                        <PlayerInfo
+                                            player={board.users[0]}
+                                            isReverse={false}
+                                            time={board.users[0]?.time || 0}
+                                            isTurn={board.currentTurn}
+                                            isStart={board.status === TicTacToeStatus.PLAYING}
+                                        />
+
+                                        <GameTurn
+                                            currentTurn={board.currentTurn}
+                                            SymbolOne={OPlayerIcon}
+                                            SymbolTwo={XPlayerIcon}
+                                            userOneReady={board.users[0]?.ready}
+                                            userTwoReady={board.users[1]?.ready}
+                                        />
+
+                                        <PlayerInfo
+                                            player={board.users[1]}
+                                            time={board.users[1]?.time || 0}
+                                            isReverse={true}
+                                            isTurn={!board.currentTurn}
+                                            isStart={board.status === TicTacToeStatus.PLAYING}
+                                        />
+                                    </div>
                                 </div>
-                                <PlayerInfo player={board.users[0]} isReverse={false} time={board.users[0]?.time} />
+                                <div className="relative m-auto ttt-board">
+                                    <PanelStart
+                                        handleOnClick={handleOnStart}
+                                        isAppear={board.status === TicTacToeStatus['NOT-YET'] && board.users[0]?.ready && board.users[1]?.ready}
+                                    />
 
-                                <div className="flex items-center px-2 space-x-4 ">
-                                    <div className="flex items-center justify-center w-8 h-8 border-2 ">
-                                        {board.users[0]?.ready && <OPlayerIcon />}
-                                    </div>
-                                    <GameTurn currentTurn={board.currentTurn} SymbolOne={OPlayerIcon} SymbolTwo={XPlayerIcon} />
-                                    <div className="flex items-center justify-center w-8 h-8 border-2 ">
-                                        {board.users[1]?.ready && <XPlayerIcon />}
-                                    </div>
+                                    <PanelReady
+                                        isReady={true}
+                                        handleOnClick={handleOnReady}
+                                        isAppear={board.status === TicTacToeStatus['NOT-YET'] && (!board.users[0]?.ready || !board.users[1]?.ready)}
+                                    />
+
+                                    <PanelRestart
+                                        handleOnClick={handleOnRestart}
+                                        winner={board.winner === 0}
+                                        userOneName={board.users[0]?.name ? board.users[0].name : ''}
+                                        userTwoName={board.users[1]?.name ? board.users[1].name : ''}
+                                        isAppear={board.status === TicTacToeStatus['END']}
+                                    />
+
+                                    <TTTBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} />
                                 </div>
-
-                                <PlayerInfo player={board.users[1]} time={board.users[1]?.time} isReverse={true} />
                             </div>
-                            <div className="relative m-auto ttt-board">
-                                <GamePanel isAppear={board.status !== TicTacToeStatus['PLAYING']}>
-                                    <div className="absolute flex items-center justify-center w-full h-full bg-black bg-opacity-20">
-                                        <div className="p-5 m-2 space-y-2 text-center rounded-sm bg-warmGray-50">
-                                            {board.status === TicTacToeStatus['NOT-YET'] && board.users[0]?.ready && board.users[1]?.ready && (
-                                                <PanelStart handleOnClick={handleOnStart} />
-                                            )}
-                                            {board.status === TicTacToeStatus['NOT-YET'] && (!board.users[0]?.ready || !board.users[1]?.ready) && (
-                                                <PanelReady isReady={true} handleOnClick={handleOnReady} />
-                                            )}
 
-                                            {board.status === TicTacToeStatus['END'] && (
-                                                <PanelRestart
-                                                    handleOnClick={handleOnRestart}
-                                                    winner={board.winner === 0}
-                                                    userOneName={board.users[0] && board.users[0].name ? board.users[0].name : ''}
-                                                    userTwoName={board.users[1] && board.users[1].name ? board.users[1].name : ''}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                </GamePanel>
-
-                                <TTTBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} />
-                            </div>
-                        </>
-                    ) : (
-                        <div>
-                            <WaveLoading />
+                            {chat && (
+                                <ChatBox
+                                    wrapperRef={chatWrapperRef}
+                                    chat={chat}
+                                    handleOnSendMessage={handleOnSendMessage}
+                                    register={chatRegister}
+                                    users={board.users}
+                                />
+                            )}
                         </div>
                     )}
+
+                    {!board && <WaveLoading />}
                 </div>
             </RouteProtectedWrapper>
         </>

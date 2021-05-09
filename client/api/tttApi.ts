@@ -42,7 +42,7 @@ export class TicTacToeAPI {
 
     async restartGame(input: RoomIdDto) {
         const url = `${this.prefix + '/restart'}`;
-        const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
+        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url, input);
         return res;
     }
 
