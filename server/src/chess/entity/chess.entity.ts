@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMan
 //---- Entity
 import User from '../../user/entities/user.entity';
 import { ChessStatus, PlayerFlagEnum } from './chess.interface';
-import { ChessMove } from './chessMove.entity';
+import { ChessMoveDB } from './chessMove.entity';
 
 @Entity()
 export class Chess {
@@ -29,8 +29,11 @@ export class Chess {
       @Column({ default: null })
       endDate: Date;
 
-      @OneToMany(() => ChessMove, (move) => move.chess)
-      moves: ChessMove[];
+      @OneToMany(() => ChessMoveDB, (move) => move.chess)
+      moves: ChessMoveDB[];
+
+      @Column({ default: null })
+      chatId: string;
 
       constructor() {
             this.startDate = new Date();

@@ -3,7 +3,7 @@ import { Chess } from './chess.entity';
 import { ChessRole, PlayerFlagEnum } from './chess.interface';
 
 @Entity()
-export class ChessMove {
+export class ChessMoveDB {
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
