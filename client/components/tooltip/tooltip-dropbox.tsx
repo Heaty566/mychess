@@ -12,7 +12,7 @@ const Tooltip: React.FunctionComponent<TooltipProps> = ({ content, position, chi
             {children}
             {content.length > maxLength && (
                 <div
-                    className={`absolute z-10 p-2 text-white duration-300 transform translate-y-4 opacity-0 invisible ${position} bg-woodsmoke content`}
+                    className={`absolute z-10 p-2 text-white hidden md:block duration-300 transform translate-y-4 opacity-0 invisible ${position} bg-woodsmoke content`}
                 >
                     {content}
                 </div>

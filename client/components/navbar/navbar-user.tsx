@@ -1,13 +1,13 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-import router from '../../../common/constants/router';
-import { AuthState } from '../../../common/interface/user.interface';
-import ArrowDropDownMenu from '../../menu/menu-arrow-dropdown';
-import { useClickOutSide } from '../../../common/hooks/useClickOutside';
+import router from '../../common/constants/router';
+import { AuthState } from '../../common/interface/user.interface';
+import ArrowDropDownMenu from '../menu/menu-arrow-dropdown';
+import { useClickOutSide } from '../../common/hooks/useClickOutside';
 
-import NavbarLang from '../../menu/menu-language';
-import UserDropDown from '../userDropdown';
+import NavbarLanguage from './navbar-language';
+import UserDropDown from './user-drop-down';
 
 export interface NavbarUserProps {
     handleChangeLanguage: (data: any) => void;
@@ -38,20 +38,22 @@ const NavbarUser: React.FunctionComponent<NavbarUserProps> = ({ handleChangeLang
             )}
 
             {!authState.isLogin && (
-                <div>
-                    <Link href={router.login.link}>
-                        <a href={router.login.link} className="duration-300 hover:text-cloud-50">
-                            Login
-                        </a>
-                    </Link>
-                </div>
+                <>
+                    <div>
+                        <Link href={router.login.link}>
+                            <a href={router.login.link} className="duration-300 hover:text-cloud-50">
+                                Login
+                            </a>
+                        </Link>
+                    </div>
+                </>
             )}
 
             {!authState.isLogin && (
                 <>
                     <div className="h-3 w-0.5 bg-cloud" />
                     <ArrowDropDownMenu
-                        Component={<NavbarLang handleOnChangeLanguage={handleChangeLanguage} />}
+                        Component={<NavbarLanguage handleOnChangeLanguage={handleChangeLanguage} />}
                         isOpen={isOpenLanguage}
                         setOpen={() => setOpenLanguage(!isOpenLanguage)}
                         dropMenuPosition="right-0"

@@ -6,7 +6,7 @@ import config from './config';
 
 export interface LoginSocialProps {}
 
-const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
+const FormSocialLogin: React.FunctionComponent<LoginSocialProps> = () => {
     const cookies = new Cookies();
     const [openNewWindow, newWindow] = usePopUpNewWindow(() => {
         const reToken = cookies.get('re-token');
@@ -34,4 +34,4 @@ const LoginSocial: React.FunctionComponent<LoginSocialProps> = () => {
     );
 };
 
-export default LoginSocial;
+export default FormSocialLogin;

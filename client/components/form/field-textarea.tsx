@@ -10,7 +10,7 @@ export interface TextFieldProps {
     register: UseFormRegister<any>;
 }
 
-const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register }) => (
+const FieldTextarea: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register }) => (
     <div className="space-y-1.5 text-sm">
         <label htmlFor={name} className="block text-cotton-seed ">
             {label}
@@ -24,4 +24,4 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
     </div>
 );
 
-export default TextField;
+export default FieldTextarea;

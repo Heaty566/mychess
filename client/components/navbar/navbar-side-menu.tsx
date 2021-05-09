@@ -1,12 +1,13 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-import routers from '../../../common/constants/router';
-import navbarMenuConfig from '../navbarMenu/config';
-import ArrowDropDownMenu from '../../menu/menu-arrow-dropdown';
-import config from './config';
-import NavbarLang from '../../menu/menu-language';
-import { AuthState } from '../../../common/interface/user.interface';
+import routers from '../../common/constants/router';
+import { navbarMenuConfig } from './config';
+import ArrowDropDownMenu from '../menu/menu-arrow-dropdown';
+import { navbarMobileConfig } from './config';
+import NavbarLanguage from './navbar-language';
+import { AuthState } from '../../common/interface/user.interface';
+import { SideMenu } from '../../components/menu/menu-side';
 
 export interface MobileNavSideMenuProps {
     isActive: boolean;
@@ -15,15 +16,11 @@ export interface MobileNavSideMenuProps {
     handleLogoutUser: () => void;
 }
 
-const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ isActive, handleChangeLanguage, authState, handleLogoutUser }) => {
+const NavbarSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ isActive, handleChangeLanguage, authState, handleLogoutUser }) => {
     const [isOpenLanguage, setOpenLanguage] = React.useState(false);
 
     return (
-        <div
-            className={`md:hidden fixed w-64 bg-woodsmoke top-0 left-0 h-screen z-40 transform duration-300 shadow-menu ${
-                isActive ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
-            }`}
-        >
+        <SideMenu isActive={isActive}>
             <ul className="text-cloud">
                 {authState.isLogin && (
                     <li>
@@ -44,7 +41,7 @@ const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ is
                         </Link>
                     </li>
                 ))}
-                {config.map(
+                {navbarMobileConfig.map(
                     (item) =>
                         item.isAppearOnLogin === authState.isLogin && (
                             <li key={item.label} className="duration-300 hover:bg-woodsmoke-400">
@@ -59,7 +56,7 @@ const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ is
 
                 <li className="p-4 uppercase duration-300 hover:bg-woodsmoke-400">
                     <ArrowDropDownMenu
-                        Component={<NavbarLang handleOnChangeLanguage={handleChangeLanguage} />}
+                        Component={<NavbarLanguage handleOnChangeLanguage={handleChangeLanguage} />}
                         dropMenuPosition="left-0"
                         isOpen={isOpenLanguage}
                         setOpen={() => setOpenLanguage(!isOpenLanguage)}
@@ -73,8 +70,8 @@ const MobileNavSideMenu: React.FunctionComponent<MobileNavSideMenuProps> = ({ is
                     </li>
                 )}
             </ul>
-        </div>
+        </SideMenu>
     );
 };
 
-export default MobileNavSideMenu;
+export default NavbarSideMenu;
