@@ -90,7 +90,7 @@ export class TicTacToeCommonService {
                         name: user?.name,
                         avatarUrl: user?.avatarUrl,
                         elo: user?.elo,
-                        time: 90000,
+                        time: 900000,
                         id: user?.id,
                         ready: false,
                         flag: userFlag,
