@@ -45,6 +45,7 @@ export class ChessCommonService {
             chess.chatId = chat.id;
 
             const chessBoard = new ChessBoard();
+            chessBoard.initBoard();
             chessBoard.chatId = chat.id;
 
             await this.setBoard(chessBoard);
