@@ -1,4 +1,5 @@
 import { PublicUser } from './user.interface';
+
 export enum TicTacToeFlag {
     EMPTY = -1,
     RED = 0,
@@ -18,15 +19,10 @@ export enum TicTacToeStatus {
     'END' = 2,
 }
 
-export interface TicTacToePlayer {
-    id: string;
+export interface TicTacToePlayer extends PublicUser {
     flag: TicTacToeFlag.BLUE | TicTacToeFlag.RED;
     time: number;
     ready: boolean;
-    username: string;
-    elo: number;
-    avatarUrl: string;
-    name: string;
 }
 
 export interface TicTacToeBoard {

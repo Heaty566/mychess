@@ -66,7 +66,7 @@ export class ChessCommonService {
             const chat = await this.chatService.createChat(user);
             chess.chatId = chat.id;
 
-            const chessBoard = new ChessBoard();
+            const chessBoard = new ChessBoard(isBotMode);
             chessBoard.initBoard();
             chessBoard.chatId = chat.id;
 

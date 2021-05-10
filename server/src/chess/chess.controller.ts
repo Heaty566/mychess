@@ -11,9 +11,8 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMove, ChessStatus, PlayerFlagEnum, ChessRole } from './entity/chess.interface';
+import { ChessMoveRedis, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
-import { ChessMoveDB } from './entity/chessMove.entity';
 
 //---- DTO
 import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
@@ -138,14 +137,14 @@ export class ChessController {
             if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
             if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
-            const currentPosition: ChessMove = {
+            const currentPosition: ChessMoveRedis = {
                   x: body.x,
                   y: body.y,
                   flag: body.flag,
                   chessRole: body.chessRole,
             };
             const legalMoves = await this.chessService.legalMove(currentPosition, board);
-            return apiResponse.send<Array<ChessMove>>({ data: legalMoves });
+            return apiResponse.send<Array<ChessMoveRedis>>({ data: legalMoves });
       }
 
       @Put('/add-move')
@@ -157,28 +156,30 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
+            console.log(board.board[body.curPos.x][body.curPos.y].flag);
             if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
-            const curPos: ChessMove = {
+            const curPos: ChessMoveRedis = {
                   x: body.curPos.x,
                   y: body.curPos.y,
                   flag: body.curPos.flag,
                   chessRole: body.curPos.chessRole,
             };
-            const desPos: ChessMove = {
+            const desPos: ChessMoveRedis = {
                   x: body.desPos.x,
                   y: body.desPos.y,
                   flag: body.desPos.flag,
                   chessRole: body.desPos.chessRole,
             };
 
-            const legalMoves: ChessMove[] = await this.chessService.legalMove(curPos, board);
+            const legalMoves: ChessMoveRedis[] = await this.chessService.legalMove(curPos, board);
             const canMove = legalMoves.find(
                   (move) => move.x === desPos.x && move.y === desPos.y && move.flag === desPos.flag && move.chessRole === desPos.chessRole,
             );
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            console.log('move sai');
 
             await this.chessService.playAMove(curPos, desPos, board);
             if (this.chessService.isPromoted(desPos)) this.chessGateway.promotePawn(board.id, desPos);

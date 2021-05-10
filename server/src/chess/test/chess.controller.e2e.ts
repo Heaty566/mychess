@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
-import { ChessFlag, ChessMove, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
+import { ChessFlag, ChessMoveRedis, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
 
 //---- Service
 import { ChessService } from '../chess.service';
@@ -231,17 +231,17 @@ describe('ChessController', () => {
                   supertest(app.getHttpServer()).put('/api/chess/choose-piece').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 1, flag: 0, chessRole: ChessRole.PAWN });
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 1, flag: PlayerFlagEnum.WHITE, chessRole: ChessRole.PAWN });
                   expect(res.body.data?.length).toBe(2);
             });
 
             it('Failed choose empty square', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 2, flag: 0, chessRole: ChessRole.PAWN });
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 2, flag: PlayerFlagEnum.WHITE, chessRole: ChessRole.PAWN });
                   expect(res.status).toBe(400);
             });
 
             it('Failed choose enemy piece', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 6, flag: 1, chessRole: ChessRole.PAWN });
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 6, flag: PlayerFlagEnum.BLACK, chessRole: ChessRole.PAWN });
                   expect(res.status).toBe(400);
             });
       });
@@ -275,18 +275,19 @@ describe('ChessController', () => {
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
-                              x: 5,
-                              y: 1,
-                              flag: 0,
+                              x: 1,
+                              y: 5,
+                              flag: PlayerFlagEnum.WHITE,
                               chessRole: ChessRole.PAWN,
                         },
                         desPos: {
-                              x: 5,
-                              y: 3,
-                              flag: -1,
+                              x: 3,
+                              y: 5,
+                              flag: PlayerFlagEnum.EMPTY,
                               chessRole: ChessRole.EMPTY,
                         },
                   });
+                  console.log(res.body);
                   const getBoard = await chessCommonService.getBoard(boardId);
                   expect(res.status).toBe(200);
                   expect(getBoard.board[5][3].chessRole).toBe(ChessRole.PAWN);
@@ -299,13 +300,13 @@ describe('ChessController', () => {
                         curPos: {
                               x: 5,
                               y: 1,
-                              flag: 0,
+                              flag: PlayerFlagEnum.WHITE,
                               chessRole: ChessRole.PAWN,
                         },
                         desPos: {
                               x: 5,
                               y: 4,
-                              flag: -1,
+                              flag: PlayerFlagEnum.EMPTY,
                               chessRole: ChessRole.EMPTY,
                         },
                   });
@@ -369,7 +370,7 @@ describe('ChessController', () => {
                         promotePos: {
                               x: 5,
                               y: 7,
-                              flag: 0,
+                              flag: PlayerFlagEnum.WHITE,
                               chessRole: ChessRole.PAWN,
                         },
                         promoteRole: ChessRole.QUEEN,

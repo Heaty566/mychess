@@ -13,7 +13,7 @@ const TTTCell: React.FunctionComponent<TTTCellProps> = ({ cellFlag, handleOnClic
             className="w-10 h-10 p-2 duration-200 border cursor-pointer border-warmGray-500 hover:bg-gray-300 focus:outline-none"
             onClick={() => handleOnClick()}
         >
-            {cellFlag === 1 ? <XPlayerIcon /> : cellFlag === 0 ? <OPlayerIcon /> : null}
+            {cellFlag === TicTacToeFlag.RED ? <XPlayerIcon /> : cellFlag === TicTacToeFlag.BLUE ? <OPlayerIcon /> : null}
         </button>
     );
 };

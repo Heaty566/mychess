@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
-import TTTCell from './tttCell';
+import TTTCell from './ttt-cell';
 
 export interface TTTBoardProps {
     board: TicTacToeFlag[][];

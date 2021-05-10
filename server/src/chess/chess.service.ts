@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
-import { Chess } from './entity/chess.entity';
-import { ChessMove, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessMoveRedis, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- Repository
@@ -10,8 +9,8 @@ import { ChessBoard } from './entity/chessBoard.entity';
 export class ChessService {
       constructor(private readonly chessCommonService: ChessCommonService) {}
 
-      private pawnAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
-            const result: Array<ChessMove> = [];
+      private pawnAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard) {
+            const result: Array<ChessMoveRedis> = [];
             // pawn can not appear on row 0 or 7
             if (currentPosition.y === 0 || currentPosition.y === 7) return result;
             if (currentPosition.flag === PlayerFlagEnum.WHITE) {
@@ -70,8 +69,8 @@ export class ChessService {
             return result;
       }
 
-      private kingAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const result: Array<ChessMove> = [];
+      private kingAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
+            const result: Array<ChessMoveRedis> = [];
             const kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
             const kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
 
@@ -92,8 +91,8 @@ export class ChessService {
             return result;
       }
 
-      private knightAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const result: Array<ChessMove> = [];
+      private knightAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
+            const result: Array<ChessMoveRedis> = [];
             const knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
             const knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
             for (let i = 0; i <= 7; i++) {
@@ -113,8 +112,8 @@ export class ChessService {
             return result;
       }
 
-      private rookAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const result: Array<ChessMove> = [];
+      private rookAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
+            const result: Array<ChessMoveRedis> = [];
             // Right
             let x = currentPosition.x + 1;
             let y = currentPosition.y;
@@ -174,8 +173,8 @@ export class ChessService {
             return result;
       }
 
-      private bishopAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const result: Array<ChessMove> = [];
+      private bishopAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
+            const result: Array<ChessMoveRedis> = [];
             // Top - Left
             let x = currentPosition.x - 1;
             let y = currentPosition.y + 1;
@@ -243,8 +242,8 @@ export class ChessService {
             return result;
       }
 
-      private queenAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            const result: Array<ChessMove> = [];
+      private queenAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
+            const result: Array<ChessMoveRedis> = [];
             const moveLikeBishop = this.bishopAvailableMove(currentPosition, chessBoard);
             const moveLikeRook = this.rookAvailableMove(currentPosition, chessBoard);
             result.push(...moveLikeBishop);
@@ -253,7 +252,7 @@ export class ChessService {
             return result;
       }
 
-      getKing(flag, chessBoard: ChessBoard): ChessMove {
+      getKing(flag, chessBoard: ChessBoard): ChessMoveRedis {
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag && chessBoard.board[i][j].chessRole === ChessRole.KING) {
@@ -270,7 +269,7 @@ export class ChessService {
             return null;
       }
 
-      kingIsChecked(currentPosition: ChessMove, chessBoard: ChessBoard): boolean {
+      kingIsChecked(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): boolean {
             // Check rook, queen
             // Right
             let x = currentPosition.x + 1;
@@ -464,7 +463,7 @@ export class ChessService {
             return false;
       }
 
-      canMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard): boolean {
+      canMove(curPos: ChessMoveRedis, desPos: ChessMoveRedis, chessBoard: ChessBoard): boolean {
             const tmpDestinationPosition = desPos;
             let canMove = true;
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
@@ -474,7 +473,7 @@ export class ChessService {
                   chessRole: ChessRole.EMPTY,
             };
 
-            const kingPosition: ChessMove = this.getKing(curPos.flag, chessBoard);
+            const kingPosition: ChessMoveRedis = this.getKing(curPos.flag, chessBoard);
             if (this.kingIsChecked(kingPosition, chessBoard)) canMove = false;
 
             chessBoard.board[curPos.x][curPos.y] = chessBoard.board[desPos.x][desPos.y];
@@ -487,8 +486,8 @@ export class ChessService {
             return canMove;
       }
 
-      private chessRoleLegalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
-            let availableMove: Array<ChessMove>;
+      private chessRoleLegalMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
+            let availableMove: Array<ChessMoveRedis>;
 
             switch (currentPosition.chessRole) {
                   case ChessRole.BISHOP: {
@@ -521,7 +520,7 @@ export class ChessService {
                   }
             }
 
-            const legalMove: Array<ChessMove> = [];
+            const legalMove: Array<ChessMoveRedis> = [];
             availableMove.forEach((move) => {
                   if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
             });
@@ -529,18 +528,18 @@ export class ChessService {
             return legalMove;
       }
 
-      legalMove(currentPosition: ChessMove, chessBoard: ChessBoard): Array<ChessMove> {
+      legalMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
             return this.chessRoleLegalMove(currentPosition, chessBoard);
       }
 
       checkmate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
-            const kingPosition: ChessMove = this.getKing(flag, chessBoard);
+            const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
             if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
 
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag) {
-                              const legalMove: Array<ChessMove> = this.legalMove(
+                              const legalMove: Array<ChessMoveRedis> = this.legalMove(
                                     { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
                                     chessBoard,
                               );
@@ -553,13 +552,13 @@ export class ChessService {
       }
 
       stalemate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
-            const kingPosition: ChessMove = this.getKing(flag, chessBoard);
+            const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
             if (this.kingIsChecked(kingPosition, chessBoard)) return false;
 
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag) {
-                              const legalMove: Array<ChessMove> = this.legalMove(
+                              const legalMove: Array<ChessMoveRedis> = this.legalMove(
                                     { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
                                     chessBoard,
                               );
@@ -571,7 +570,7 @@ export class ChessService {
             return true;
       }
 
-      async playAMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard) {
+      async playAMove(curPos: ChessMoveRedis, desPos: ChessMoveRedis, chessBoard: ChessBoard) {
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
             chessBoard.board[curPos.x][curPos.y] = {
@@ -583,7 +582,7 @@ export class ChessService {
             await this.chessCommonService.setBoard(chessBoard);
       }
 
-      isPromoted(desPos: ChessMove): boolean {
+      isPromoted(desPos: ChessMoveRedis): boolean {
             if (desPos.chessRole !== ChessRole.PAWN) return false;
             if (desPos.flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
             if (desPos.flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;

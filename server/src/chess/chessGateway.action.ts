@@ -1,5 +1,5 @@
-export enum ChessAction {
-      CHESS_CREATE = 'chess-create',
+export enum ChessGatewayAction {
+      CHESS_JOIN = 'chess-join',
       CHESS_GET = 'chess-get',
       CHESS_PROMOTE_PAWN = 'chess-promote-pawn',
 }

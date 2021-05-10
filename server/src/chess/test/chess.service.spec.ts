@@ -36,7 +36,7 @@ describe('ChessService', () => {
       describe('kingAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
             });
 
             it('x = 1, y = 1', async () => {
@@ -75,7 +75,7 @@ describe('ChessService', () => {
             let chessBoard: ChessBoard;
             ['knightAvailableMove'];
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
             });
 
             it('x = 1, y = 1', () => {
@@ -127,7 +127,7 @@ describe('ChessService', () => {
       describe('rookAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
             });
 
             it('x = 1, y = 1', () => {
@@ -191,7 +191,7 @@ describe('ChessService', () => {
       describe('bishopAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
             });
 
             it('x = 1, y = 1', () => {
@@ -236,7 +236,7 @@ describe('ChessService', () => {
       describe('queenAvailable', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
             });
 
             it('x = 1, y = 1', () => {
@@ -291,7 +291,7 @@ describe('ChessService', () => {
       describe('pawnAvailableMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
             });
 
             it('white pawn: x = 0, y = 0', () => {
@@ -462,7 +462,7 @@ describe('ChessService', () => {
       describe('chessRoleLegalMove', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
-                  chessBoard = new ChessBoard();
+                  chessBoard = new ChessBoard(true);
                   chessBoard.board[4][1] = {
                         chessRole: ChessRole.KING,
                         flag: 0,
