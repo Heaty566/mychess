@@ -86,27 +86,29 @@ describe('UserService', () => {
             });
 
             it('Pass get two', async () => {
-                  const res = await userService.searchUsersByName(name1, 12, 0);
-                  expect(res).toHaveLength(1);
+                  const res = await userService.searchUsersByNameAndCount(name1, 12, 0);
+
+                  expect(res.users).toHaveLength(1);
             });
 
             it('Pass get zero currentPage 1000', async () => {
-                  const res = await userService.searchUsersByName('hello', 12, 1000);
-                  expect(res).toHaveLength(0);
+                  const res = await userService.searchUsersByNameAndCount('hello', 12, 1000);
+                  expect(res.users).toHaveLength(0);
             });
 
             it('Pass get one pageSize=1', async () => {
-                  const res = await userService.searchUsersByName(name1, 1, 0);
-                  expect(res).toHaveLength(1);
+                  const res = await userService.searchUsersByNameAndCount(name1, 1, 0);
+                  expect(res.users).toHaveLength(1);
             });
 
             it('Pass get all', async () => {
                   const exampleUser = fakeUser();
                   exampleUser.name = '123hello21cmaclksa';
                   await userRepository.save(exampleUser);
-                  const res = await userService.searchUsersByName('', 200, 0);
+                  const res = await userService.searchUsersByNameAndCount('', 200, 0);
 
-                  expect(res.length).toBeGreaterThan(1);
+                  expect(res.users.length).toBeGreaterThan(1);
+                  expect(res.count).toBeGreaterThan(2);
             });
       });
 

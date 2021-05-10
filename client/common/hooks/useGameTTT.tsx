@@ -4,18 +4,27 @@ import { useSelector } from 'react-redux';
 import ticTacToeApi from '../../api/tttApi';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { TicTacToeBoard, TicTacToeStatus, TTTGatewayAction } from '../interface/tic-tac-toe.interface';
+import { TicTacToeBoard, TicTacToeStatus, TicTacToePlayer, TTTGatewayAction } from '../interface/tic-tac-toe.interface';
 import { AuthState } from '../interface/user.interface';
 import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
 
 export function useGameTTT(
     roomId: string,
-): [TicTacToeBoard | undefined, React.RefObject<HTMLDivElement>, () => void, () => void, (x: number, y: number) => void, () => void] {
+): [
+    TicTacToeBoard | undefined,
+    TicTacToePlayer[] | undefined,
+    React.RefObject<HTMLDivElement>,
+    () => void,
+    () => void,
+    (x: number, y: number) => void,
+    () => void,
+] {
     const clientIoTTT = useSocketIo({ namespace: 'tic-tac-toe' });
     const router = useRouter();
     const chessBoardRef = React.useRef<HTMLDivElement>(null);
     const [tttBoard, setTTTBoard] = React.useState<TicTacToeBoard>();
+    const [players, setPlayers] = React.useState<TicTacToePlayer[]>([]);
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
 
     const handleOnRestart = () => {
@@ -52,9 +61,23 @@ export function useGameTTT(
     };
 
     const emitTTTGet = () => clientIoTTT.emit(TTTGatewayAction.TTT_GET, { roomId });
+    const emitTTTCounter = () => clientIoTTT.emit(TTTGatewayAction.TTT_COUNTER, { roomId });
 
     const onRestartGame = (res: ServerResponse<TicTacToeBoard>) => router.push(`${routers.ticTacToePvP.link}/${res.data.id}`);
     const onTTTGet = (res: ServerResponse<TicTacToeBoard>) => setTTTBoard(res.data);
+    const onTTTCounter = (res: ServerResponse<TicTacToePlayer[]>) => setPlayers(res.data);
+
+    React.useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (tttBoard?.status === TicTacToeStatus.PLAYING) {
+            interval = setInterval(() => emitTTTCounter(), 1000);
+        }
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, [tttBoard?.status, roomId]);
 
     React.useEffect(() => {
         if (tttBoard && tttBoard.status === TicTacToeStatus.END) {
@@ -82,15 +105,17 @@ export function useGameTTT(
         clientIoTTT.on(TTTGatewayAction.TTT_GET, onTTTGet);
         clientIoTTT.on(TTTGatewayAction.TTT_JOIN, emitTTTGet);
         clientIoTTT.on(TTTGatewayAction.TTT_RESTART, onRestartGame);
+        clientIoTTT.on(TTTGatewayAction.TTT_COUNTER, onTTTCounter);
 
         return () => {
+            clientIoTTT.off(TTTGatewayAction.TTT_COUNTER, onTTTCounter);
             clientIoTTT.off(TTTGatewayAction.TTT_RESTART, onRestartGame);
             clientIoTTT.off(TTTGatewayAction.TTT_GET, onTTTGet);
             clientIoTTT.off(TTTGatewayAction.TTT_JOIN, emitTTTGet);
         };
     }, [roomId]);
 
-    return [tttBoard, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart];
+    return [tttBoard, players, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart];
 }
 
 export default useGameTTT;

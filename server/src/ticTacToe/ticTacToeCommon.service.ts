@@ -26,6 +26,27 @@ export class TicTacToeCommonService {
             private readonly chatService: ChatService,
       ) {}
 
+      async getAllBoardByUserId(userId: string) {
+            const tics = await this.ticTacToeRepository
+                  .createQueryBuilder('tic')
+                  .leftJoinAndSelect('tic.users', 'user')
+                  .where(`user.id = :userId`, { userId })
+                  .take(6)
+                  .getMany();
+
+            if (!tics.length) return { boards: [], count: 0 };
+            const ticIds = tics.map((item) => item.id);
+
+            const board = await this.ticTacToeRepository
+                  .getBoardQuery()
+                  .where(`tic.id in (:...values)`, { values: ticIds })
+                  .orderBy('tic.startDate', 'DESC');
+            const boards = await board.getMany();
+            const count = await board.getCount();
+
+            return { boards, count };
+      }
+
       async getBoard(boardId: string) {
             const newBoardId = `ttt-${boardId}`;
             const board = await this.redisService.getObjectByKey<TicTacToeBoard>(newBoardId);
@@ -36,7 +57,7 @@ export class TicTacToeCommonService {
       async setBoard(board: TicTacToeBoard) {
             const boardId = `ttt-${board.id}`;
 
-            return await this.redisService.setObjectByKey(boardId, board, 1440);
+            return await this.redisService.setObjectByKey(boardId, board, 120);
       }
 
       async isExistUser(boardId: string, userId: string) {
@@ -90,7 +111,7 @@ export class TicTacToeCommonService {
                         name: user?.name,
                         avatarUrl: user?.avatarUrl,
                         elo: user?.elo,
-                        time: 90000,
+                        time: 900000,
                         id: user?.id,
                         ready: false,
                         flag: userFlag,

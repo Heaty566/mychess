@@ -3,15 +3,22 @@ import { useSelector } from 'react-redux';
 import * as React from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-
+import XPlayerIcon from '../../../public/asset/icons/x-player';
+import OPlayerIcon from '../../../public/asset/icons/o-player';
 import { RootState } from '../../../store';
+import TicTacToeIcon from '../../../public/asset/icons/tictactoe';
 import SeoHead from '../../../components/common/seoHead';
 import { capitalize } from '../../../common/helpers/string.helper';
-import { ServerResponse } from '../../../common/interface/api.interface';
+import { ApiState, ServerResponse } from '../../../common/interface/api.interface';
 import { AuthState, User } from '../../../common/interface/user.interface';
 
 import EditIcons from '../../../public/asset/icons/edit';
 import routers from '../../../common/constants/router';
+import ticTacToeApi from '../../../api/tttApi';
+import { TicTacToeBoard, TicTacToeFlag, TicTacToePlayer } from '../../../common/interface/tic-tac-toe.interface';
+import Tooltip from '../../../components/tooltip/tooltip-dropbox';
+import Pagination from '../../../components/pagination';
+import WaveLoading from '../../../components/loading/wave-loading';
 
 export interface ProfileProps {
     user: User | null;
@@ -19,7 +26,16 @@ export interface ProfileProps {
 
 const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
 
+    const [boards, setBoards] = React.useState<TicTacToeBoard[]>([]);
+
+    React.useEffect(() => {
+        if (user)
+            ticTacToeApi.getAllGameByUserId(user.id).then((res) => {
+                setBoards(res.data.data.boards);
+            });
+    }, [user]);
     if (!user) return null;
     else
         return (
@@ -40,8 +56,8 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                             type="video/webm"
                         />
                     </video>
-                    <div className="relative flex-1 px-4 py-6 mx-auto md:w-5/6 xl:w-4/6 background-profile fade-in">
-                        <div className="flex flex-col h-full space-x-0 space-y-4 md:space-y-0 md:space-x-4 md:flex-row">
+                    <div className="relative flex-1 px-4 py-6 mx-auto space-y-2 md:w-5/6 xl:w-4/6 background-profile fade-in">
+                        <div className="flex flex-col space-x-0 space-y-4 md:space-y-0 md:space-x-4 md:flex-row">
                             <div className="w-40 h-40 mx-auto md:mx-0">
                                 <img className="object-cover w-40 h-40" src={user.avatarUrl} alt={user.name} />
                             </div>
@@ -65,6 +81,66 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                 <h3 className="text-lg capitalize text-cloud-700">{user.username}</h3>
                                 <h3 className="mt-2 text-lg text-cloud">ELO: {user.elo}</h3>
                                 <h3 className="mt-2 text-md text-cloud">JOIN: {user.createDate.split('T')[0]}</h3>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <h1 className="text-2xl text-mercury">History</h1>
+                            <div className="flex items-stretch px-4 py-2 space-x-2 text-lg bg-woodsmoke-500 text-mercury">
+                                <button>Tic Tac Toe</button>
+                                <span className="inline-block w-0.5 bg-gray-500"></span>
+                                <button>Chess</button>
+                            </div>
+                            <div className="space-y-2 ">
+                                {apiState.isLoading && <WaveLoading />}
+                                {!apiState.isLoading && (
+                                    <>
+                                        {!Boolean(boards.length) && <p className="text-xl text-mercury">No match is found</p>}
+                                        {Boolean(boards.length) &&
+                                            boards.map((item) => {
+                                                const findWinner = item.users[item.winner];
+                                                const isWin = findWinner.id === user.id;
+                                                const currentPlayer = item.users.find((item) => item.id === user.id);
+                                                const otherPlayer = item.users.find((item) => item.id !== user.id);
+                                                const mmYY = new Date(item.startDate).toLocaleDateString();
+                                                const mmHH = new Date(item.startDate).toLocaleTimeString();
+
+                                                return (
+                                                    <div className="flex items-stretch text-mercury bg-woodsmoke" key={item.id}>
+                                                        <div className={`w-2  ${isWin ? 'bg-green-600' : 'bg-red-500'} `}></div>
+                                                        <div className="flex items-center justify-between flex-1 p-2 space-x-2">
+                                                            <div className="flex space-x-2">
+                                                                <img
+                                                                    src={currentPlayer?.avatarUrl}
+                                                                    alt={currentPlayer?.name}
+                                                                    className="hidden object-cover w-16 h-16 md:block"
+                                                                />
+                                                                <div>
+                                                                    <p className="font-semibold capitalize">{currentPlayer?.name}</p>
+                                                                    <p>Elo: {currentPlayer?.elo}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p>{mmYY}</p>
+                                                                <p>{mmHH}</p>
+                                                            </div>
+
+                                                            <div className="flex flex-row-reverse ">
+                                                                <img
+                                                                    src={otherPlayer?.avatarUrl}
+                                                                    alt={otherPlayer?.name}
+                                                                    className="hidden object-cover w-16 h-16 ml-2 md:block"
+                                                                />
+                                                                <div className="ml-2 text-right">
+                                                                    <p className="font-semibold capitalize">{otherPlayer?.name}</p>
+                                                                    <p>Elo: {otherPlayer?.elo}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

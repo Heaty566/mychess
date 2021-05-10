@@ -26,7 +26,7 @@ export interface CommunityProps {
 const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
     const [users, setUsers] = React.useState<Array<CommonUser>>([]);
     const [name, setName] = React.useState('');
-
+    const [totalUser, setTotalUser] = React.useState(0);
     const debounceValue = useDebounce(name, 700);
     const router = useRouter();
     const [isLoadUsers, setLoadUsers] = React.useState(false);
@@ -35,7 +35,8 @@ const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
         if ((query.name || query.name === '') && query.currentPage && query.pageSize) {
             const { currentPage, name, pageSize } = query;
             userAPI.searchUsers(name, currentPage, pageSize).then(({ data }) => {
-                setUsers(data.data);
+                setUsers(data.data.users);
+                setTotalUser(data.data.count);
                 setLoadUsers(true);
             });
         } else router.push(routers.community.link);
@@ -54,8 +55,6 @@ const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
     const handleOnChange = ({ currentTarget }: React.ChangeEvent<HTMLInputElement>) => {
         setName(currentTarget.value);
     };
-
-    // if (!isLoadUsers) return <div className="p-4"></div>;
 
     return (
         <>
@@ -100,7 +99,7 @@ const Community: React.FunctionComponent<CommunityProps> = ({ query }) => {
                                 <div className="my-20 text-4xl text-center text-mercury">User Was Not Found</div>
                             </div>
                         )}
-                        <Pagination amount={5} currentPage={query.currentPage} />
+                        <Pagination amount={5} currentPage={query.currentPage} total={totalUser} pageSize={12} />
                     </div>
                 ) : (
                     <WaveLoading />

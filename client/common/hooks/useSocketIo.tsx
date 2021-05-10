@@ -10,17 +10,20 @@ interface UseSocketIoProps {
 }
 
 export const useSocketIo = ({ namespace }: UseSocketIoProps) => {
+    const ioClient = React.useMemo(() => {
+        return socketIo.connect(`${process.env.SERVER_URL}/${namespace}`);
+    }, []);
+
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
-    const ioClient = React.useRef<SocketIOClient.Socket>(socketIo.connect(`${process.env.SERVER_URL}/${namespace}`));
 
     React.useEffect(() => {
         if (authState.isSocketLogin) {
-            ioClient.current.on('exception', (data: any) => {
+            ioClient.on('exception', (data: any) => {
                 console.log(data);
             });
         } else store.dispatch(authThunk.getSocketToken());
     }, [authState.isSocketLogin]);
-    return ioClient.current;
+    return ioClient;
 };
 
 export default useSocketIo;

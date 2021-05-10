@@ -12,42 +12,47 @@ export class TicTacToeAPI {
         const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
         return res;
     }
+    async getAllGameByUserId(userId: string) {
+        const url = `${this.prefix}/${userId}`;
+        const res = await this.apiCall.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number }>>(url);
+        return res;
+    }
     async createNewBotRoom() {
-        const url = `${this.prefix + '/bot'}`;
+        const url = `${this.prefix}/bot`;
         const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
         return res;
     }
     async addMovePvP(input: AddMoveDto) {
-        const url = `${this.prefix + '/add-move'}`;
+        const url = `${this.prefix}/add-move`;
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
         return res;
     }
     async readyGame(input: RoomIdDto) {
-        const url = `${this.prefix + '/ready'}`;
+        const url = `${this.prefix}/ready`;
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
         return res;
     }
 
     async leaveGame(input: RoomIdDto) {
-        const url = `${this.prefix + '/leave'}`;
+        const url = `${this.prefix}/leave`;
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
         return res;
     }
 
     async startGame(input: RoomIdDto) {
-        const url = `${this.prefix + '/start'}`;
+        const url = `${this.prefix}/start`;
         const res = await this.apiCall.put<ServerResponse<null>>(url, input);
         return res;
     }
 
     async restartGame(input: RoomIdDto) {
-        const url = `${this.prefix + '/restart'}`;
+        const url = `${this.prefix}/restart`;
         const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url, input);
         return res;
     }
 
     async joinRoom(input: RoomIdDto) {
-        const url = `${this.prefix + '/join-room'}`;
+        const url = `${this.prefix}/join-room`;
         const res = await this.apiCall.put<ServerResponse<TicTacToeBoard>>(url, input);
         return res;
     }

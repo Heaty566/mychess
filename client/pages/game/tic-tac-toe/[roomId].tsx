@@ -27,7 +27,7 @@ export interface TicTacToePvPProps {
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const [board, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameTTT(roomId);
+    const [board, players, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameTTT(roomId);
     const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
 
     return (
@@ -36,7 +36,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
             <RouteProtectedWrapper isNeedLogin>
                 <div className="flex-1 space-y-4 md:p-8 fade-in chess-bg">
                     {board && (
-                        <div className="justify-center py-2 space-y-2 md:space-y-0 md:space-x-2 lg:flex">
+                        <div className="justify-center py-2 space-y-2 lg:space-y-0 lg:space-x-2 lg:flex">
                             <div className="w-full max-w-2xl mx-auto space-y-2 md:mx-0">
                                 <div className="flex flex-col justify-between p-2 bg-gray-50">
                                     <div className="flex justify-between flex-1">
@@ -52,14 +52,9 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                             </button>
                                         </ToolTip>
                                     </div>
+
                                     <div className="flex">
-                                        <PlayerInfo
-                                            player={board.users[0]}
-                                            isReverse={false}
-                                            time={board.users[0]?.time || 0}
-                                            isTurn={board.currentTurn}
-                                            isStart={board.status === TicTacToeStatus.PLAYING}
-                                        />
+                                        <PlayerInfo player={players?.length ? players[0] : board.users[0]} isReverse={false} />
 
                                         <GameTurn
                                             currentTurn={board.currentTurn}
@@ -69,13 +64,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                             userTwoReady={board.users[1]?.ready}
                                         />
 
-                                        <PlayerInfo
-                                            player={board.users[1]}
-                                            time={board.users[1]?.time || 0}
-                                            isReverse={true}
-                                            isTurn={!board.currentTurn}
-                                            isStart={board.status === TicTacToeStatus.PLAYING}
-                                        />
+                                        <PlayerInfo player={players?.length ? players[1] : board.users[1]} isReverse={true} />
                                     </div>
                                 </div>
                                 <div className="relative m-auto ttt-board">
