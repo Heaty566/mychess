@@ -81,6 +81,7 @@ describe('ChessController', () => {
             });
       });
 
+
       describe('PUT /join-room', () => {
             let user: User;
             let newCookie: string[];
@@ -245,6 +246,91 @@ describe('ChessController', () => {
             });
       });
 
+      describe('PUT /add-move', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            let player1: ChessPlayer, player2: ChessPlayer;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1);
+                  await chessCommonService.joinGame(boardId, user2);
+
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+                  await chessCommonService.startGame(boardId);
+
+                  player1 = getBoard.users[0];
+                  player2 = getBoard.users[1];
+
+                  newCookie = generateCookie(await authService.createReToken(user1));
+            });
+            const reqApi = (input: ChessAddMoveDto) =>
+                  supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 5,
+                              y: 1,
+                              flag: 0,
+                              chessRole: ChessRole.PAWN,
+                        },
+                        desPos: {
+                              x: 5,
+                              y: 3,
+                              flag: -1,
+                              chessRole: ChessRole.EMPTY,
+                        },
+                  });
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  expect(res.status).toBe(200);
+                  expect(getBoard.board[5][3].chessRole).toBe(ChessRole.PAWN);
+                  expect(getBoard.board[5][3].flag).toBe(0);
+            });
+
+            it('Failed invalid destination square', async () => {
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 5,
+                              y: 1,
+                              flag: 0,
+                              chessRole: ChessRole.PAWN,
+                        },
+                        desPos: {
+                              x: 5,
+                              y: 4,
+                              flag: -1,
+                              chessRole: ChessRole.EMPTY,
+                        },
+                  });
+                  expect(res.status).toBe(400);
+            });
+
+            it('Failed wrong current square', async () => {
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 5,
+                              y: 6,
+                              flag: 1,
+                              chessRole: ChessRole.PAWN,
+                        },
+                        desPos: {
+                              x: 5,
+                              y: 4,
+                              flag: -1,
+                              chessRole: ChessRole.EMPTY,
+                        },
+                  });
+                  expect(res.status).toBe(400);
+            });
+      });
       afterAll(async () => {
             await resetDB();
             await app.close();

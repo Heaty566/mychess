@@ -6,7 +6,7 @@ import { ChessMoveDB } from './chessMove.entity';
 export class ChessBoard {
       board: Array<Array<ChessFlag>>;
       moves: Array<ChessMoveDB>;
-      turn: 0 | 1;
+      turn: boolean;
       id: string;
       users: ChessPlayer[];
       winner: PlayerFlagEnum;
@@ -33,7 +33,7 @@ export class ChessBoard {
             this.board = [[...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow]];
             this.moves = [];
             this.id = generatorString(8, 'number');
-            this.turn = 0;
+            this.turn = false;
             this.users = [];
             this.winner = PlayerFlagEnum.EMPTY;
             this.status = ChessStatus.NOT_YET;

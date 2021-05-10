@@ -151,6 +151,37 @@ export class ChessController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
-            //
+            let board = await this.getGame(body.roomId);
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            const curPos: ChessMove = {
+                  x: body.curPos.x,
+                  y: body.curPos.y,
+                  flag: body.curPos.flag,
+                  chessRole: body.curPos.chessRole,
+            };
+            const desPos: ChessMove = {
+                  x: body.desPos.x,
+                  y: body.desPos.y,
+                  flag: body.desPos.flag,
+                  chessRole: body.desPos.chessRole,
+            };
+
+            const legalMoves: ChessMove[] = await this.chessService.legalMove(curPos, board);
+            const canMove = legalMoves.find(
+                  (move) => move.x === desPos.x && move.y === desPos.y && move.flag === desPos.flag && move.chessRole === desPos.chessRole,
+            );
+            if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            await this.chessService.playAMove(curPos, desPos, board);
+
+            board = await this.chessCommonService.getBoard(body.roomId);
+            return apiResponse.send({ data: board });
       }
 }
