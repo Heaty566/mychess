@@ -48,7 +48,7 @@ export class ChatService {
       async setChat(chat: Chat) {
             const newChatId = `chat-${chat.id}`;
 
-            return await this.redisService.setObjectByKey(newChatId, chat, 1440);
+            return await this.redisService.setObjectByKey(newChatId, chat, 120);
       }
 
       async joinChat(chatId: string, user: User) {

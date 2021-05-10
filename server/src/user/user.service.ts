@@ -33,14 +33,18 @@ export class UserService {
             return await this.userRepository.save(input);
       }
 
-      async searchUsersByName(name: string, pageSize: number, currentPage: number) {
-            return await this.userRepository
+      async searchUsersByNameAndCount(name: string, pageSize: number, currentPage: number) {
+            const query = await this.userRepository
                   .createQueryBuilder()
                   .select('id, username, name, avatarUrl, createDate, elo')
                   .where('name like :name ', { name: `%${name}%` })
-                  .take(pageSize)
                   .skip(currentPage * pageSize)
-                  .execute();
+                  .take(pageSize);
+
+            const users = await query.getRawMany();
+            const count = await query.getCount();
+
+            return { users, count };
       }
 
       randomAvatar() {

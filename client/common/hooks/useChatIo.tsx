@@ -22,18 +22,26 @@ export function useChatIo(
         if (chatId && data.content) {
             chatApi
                 .sendMessageChat({ chatId, content: data.content })
-                .then(() => {
-                    if (wrapperRef.current) {
-                        wrapperRef.current.scrollTop = 999999;
-                    }
-                    reset(defaultValues);
-                })
+                .then(() => reset(defaultValues))
                 .catch((error) => console.log(error));
         }
     };
 
-    const onChatGet = (res: ServerResponse<Chat>) => setChat(res.data);
+    const onChatGet = (res: ServerResponse<Chat>) => {
+        setChat(res.data);
+        if (wrapperRef.current) {
+            wrapperRef.current.scrollTop = 999999;
+        }
+    };
     const emitChatGet = () => clientChatIo.emit(ChatGatewayAction.CHAT_GET, { chatId });
+
+    React.useEffect(() => {
+        if (chat?.messages.length) {
+            const sound = new Audio('/asset/sounds/message-alert.mp3');
+            sound.volume = 0.2;
+            sound.play();
+        }
+    }, [chat?.messages.length]);
 
     React.useEffect(() => {
         if (chatId) chatApi.joinChat({ chatId }).then(() => clientChatIo.emit(ChatGatewayAction.CHAT_JOIN, { chatId }));

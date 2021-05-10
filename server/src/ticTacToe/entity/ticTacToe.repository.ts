@@ -13,7 +13,6 @@ export class TicTacToeRepository extends RepositoryService<TicTacToe> {
                   .leftJoinAndSelect('tic.users', 'user')
                   .select([
                         'tic.id',
-                        'tic.status',
                         'tic.winner',
                         'tic.startDate',
                         'tic.endDate',
@@ -30,12 +29,27 @@ export class TicTacToeRepository extends RepositoryService<TicTacToe> {
             return res;
       }
 
+      getBoardQuery = () =>
+            this.createQueryBuilder('tic')
+                  .leftJoinAndSelect('tic.users', 'user')
+                  .select([
+                        'tic.id',
+                        'tic.winner',
+                        'tic.startDate',
+                        'tic.endDate',
+                        'user.id',
+                        'user.name',
+                        'user.username',
+                        'user.elo',
+                        'user.avatarUrl',
+                  ])
+                  .leftJoinAndSelect('tic.moves', 'tic-tac-toe-move');
+
       async getOneTTTByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('tic')
                   .leftJoinAndSelect('tic.users', 'user')
                   .select([
                         'tic.id',
-                        'tic.status',
                         'tic.winner',
                         'tic.startDate',
                         'tic.endDate',

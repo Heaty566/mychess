@@ -17,6 +17,7 @@ import { TTTRoomIdDTO, vTTTRoomIdDto } from './dto/tttRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { TTTGatewayAction } from './ticTacToeGateway.action';
+import { TicTacToeFlag, TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {
@@ -66,5 +67,21 @@ export class TicTacToeGateway {
             const getCacheGame = await this.getGameFromCache(body.roomId);
 
             return this.socketServer().socketEmitToRoom(TTTGatewayAction.TTT_GET, getCacheGame.id, { data: getCacheGame }, 'ttt');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(TTTGatewayAction.TTT_COUNTER)
+      async handleGetTime(@MessageBody(new SocketJoiValidatorPipe(vTTTRoomIdDto)) body: TTTRoomIdDTO) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            if (getCacheGame.status === TicTacToeStatus.PLAYING) {
+                  const currentFlag = getCacheGame.currentTurn ? 0 : 1;
+                  const currentTime = new Date().getTime();
+                  getCacheGame.users[currentFlag].time -= currentTime - new Date(getCacheGame.lastStep).getTime();
+                  if (getCacheGame.users[currentFlag].time <= 0) {
+                        await this.ticTacToeCommonService.surrender(getCacheGame.id, getCacheGame.users[currentFlag]);
+                        await this.sendToRoom(getCacheGame.id);
+                  }
+            }
+            return this.socketServer().socketEmitToRoom(TTTGatewayAction.TTT_COUNTER, getCacheGame.id, { data: getCacheGame.users }, 'ttt');
       }
 }

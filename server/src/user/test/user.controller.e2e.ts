@@ -103,35 +103,35 @@ describe('UserController E2E', () => {
             it('Pass get two', async () => {
                   const res = await reqApi(userDb.name, '0', '12');
 
-                  expect(res.body.data).toHaveLength(1);
+                  expect(res.body.data.users).toHaveLength(1);
                   expect(res.status).toBe(200);
             });
 
             it('Pass get zero currentPage 1000', async () => {
                   const res = await reqApi(userDb.name, '10000', '12');
 
-                  expect(res.body.data).toHaveLength(0);
+                  expect(res.body.data.users).toHaveLength(0);
                   expect(res.status).toBe(200);
             });
 
             it('Pass get two currentPage -10', async () => {
                   const res = await reqApi(userDb.name, '-10', '12');
 
-                  expect(res.body.data).toHaveLength(1);
+                  expect(res.body.data.users).toHaveLength(1);
                   expect(res.status).toBe(200);
             });
 
             it('Pass get two currentPage=dksakdmksamk', async () => {
                   const res = await reqApi(userDb.name, 'dksakdmksamk', '12');
 
-                  expect(res.body.data).toHaveLength(1);
+                  expect(res.body.data.users).toHaveLength(1);
                   expect(res.status).toBe(200);
             });
 
             it('Pass get one pageSize=1', async () => {
                   const res = await reqApi(userDb.name, '0', '1');
 
-                  expect(res.body.data).toHaveLength(1);
+                  expect(res.body.data.users).toHaveLength(1);
                   expect(res.status).toBe(200);
             });
 
@@ -141,7 +141,7 @@ describe('UserController E2E', () => {
                   await userRepository.save(exampleUser);
                   const res = await reqApi(userDb.name, '0', '200');
 
-                  expect(res.body.data.length).toBeGreaterThan(1);
+                  expect(res.body.data.users.length).toBeGreaterThan(1);
                   expect(res.status).toBe(200);
             });
       });

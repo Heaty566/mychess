@@ -499,7 +499,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/searchUser" }],
                         "responses": {
                               "200": {
-                                    "description": "Get user information successfully.",
+                                    "description": "Get user information successfully. {user[], count}",
                                     "content": {
                                           "application/json": {
                                                 "schema": {

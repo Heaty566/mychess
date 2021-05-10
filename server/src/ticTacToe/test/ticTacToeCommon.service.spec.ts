@@ -173,6 +173,7 @@ describe('ticTacToeCommonService', () => {
                   expect(getBoard.winner).toBe(TicTacToeFlag.EMPTY);
             });
       });
+
       describe('leaveGame', () => {
             let player1: TicTacToePlayer;
             let player2: TicTacToePlayer;
@@ -197,6 +198,7 @@ describe('ticTacToeCommonService', () => {
                   expect(getBoard.status).toBe(TicTacToeStatus.END);
                   expect(getBoard.winner).toBe(TicTacToeFlag.RED);
             });
+
             it('Pass player 1 leave', async () => {
                   await ticTacToeCommonService.leaveGame(tttId, player1);
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
