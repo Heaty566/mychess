@@ -11,7 +11,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMove, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessMove, ChessStatus, PlayerFlagEnum, ChessRole } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 import { ChessMoveDB } from './entity/chessMove.entity';
 
@@ -19,6 +19,7 @@ import { ChessMoveDB } from './entity/chessMove.entity';
 import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
 import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
+import { ChessPromotePawnDto, vChessPromotePawnDto } from './dto/chessPromotePawnDto';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
@@ -180,7 +181,33 @@ export class ChessController {
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             await this.chessService.playAMove(curPos, desPos, board);
+            if (this.chessService.isPromoted(desPos)) this.chessGateway.promotePawn(board.id, desPos);
 
+            board = await this.chessCommonService.getBoard(body.roomId);
+            return apiResponse.send({ data: board });
+      }
+
+      @Put('/promote-pawn')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessPromotePawnDto))
+      async handleOnPromotePawn(@Req() req: Request, @Body() body: ChessPromotePawnDto) {
+            if (!this.chessService.isPromoted(body.promotePos)) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            let board = await this.getGame(body.roomId);
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            if (board.board[body.promotePos.x][body.promotePos.y].flag === PlayerFlagEnum.EMPTY)
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            if (board.board[body.promotePos.x][body.promotePos.y].flag !== player.flag)
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
+            await this.chessCommonService.setBoard(board);
+
+            await this.chessGateway.sendToRoom(board.id);
             board = await this.chessCommonService.getBoard(body.roomId);
             return apiResponse.send({ data: board });
       }

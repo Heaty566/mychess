@@ -9,6 +9,7 @@ import { ChessBoard } from './entity/chessBoard.entity';
 @Injectable()
 export class ChessService {
       constructor(private readonly chessCommonService: ChessCommonService) {}
+
       private pawnAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
             const result: Array<ChessMove> = [];
             // pawn can not appear on row 0 or 7
@@ -580,5 +581,12 @@ export class ChessService {
 
             chessBoard.turn = !chessBoard.turn;
             await this.chessCommonService.setBoard(chessBoard);
+      }
+
+      isPromoted(desPos: ChessMove): boolean {
+            if (desPos.chessRole !== ChessRole.PAWN) return false;
+            if (desPos.flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
+            if (desPos.flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
+            return false;
       }
 }
