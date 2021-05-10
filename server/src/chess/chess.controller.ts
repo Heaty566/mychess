@@ -52,6 +52,14 @@ export class ChessController {
             return player;
       }
 
+      @Post('/pvp')
+      @UseGuards(UserGuard)
+      async handleOnCreatePvP(@Req() req: Request) {
+            const newGameId = await this.chessCommonService.createNewGame(req.user);
+
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
+      }
+
       @Put('/join-room')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))

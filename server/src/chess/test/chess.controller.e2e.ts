@@ -37,172 +37,196 @@ describe('ChessController', () => {
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
-      /*
-      describe('PUT /join-room', () => {
-            let user: User;
-            let newCookie: string[];
-            let boardId: string;
-            beforeEach(async () => {
-                  user = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
 
-                  newCookie = generateCookie(await authService.createReToken(user));
+      describe('POST /pvp', () => {
+            let newUser: User;
+            let newCookie: string[];
+
+            beforeEach(async () => {
+                  newUser = await generateFakeUser();
+                  newCookie = generateCookie(await authService.createReToken(newUser));
             });
 
-            const reqApi = (input: ChessRoomIdDTO) =>
-                  supertest(app.getHttpServer()).put('/api/chess/join-room').set({ cookie: newCookie }).send(input);
+            const reqApi = () => supertest(app.getHttpServer()).post('/api/chess/pvp').set({ cookie: newCookie }).send();
 
             it('Pass', async () => {
-                  const res = await reqApi({ roomId: boardId });
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  const isExistUser = await chessCommonService.isExistUser(boardId, user.id);
+                  const res = await reqApi();
+                  const getBoard = await chessCommonService.getBoard(res.body.data.roomId);
 
-                  expect(res.status).toBe(200);
+                  const isExistUser = getBoard.users.find((item) => item.id === newUser.id);
+
                   expect(isExistUser).toBeDefined();
                   expect(getBoard).toBeDefined();
-                  expect(getBoard.users[0].id).toBe(user.id);
-            });
-
-            it('Failed game is playing', async () => {
-                  const board = await chessCommonService.getBoard(boardId);
-                  board.status = ChessStatus.PLAYING;
-                  await chessCommonService.setBoard(board);
-
-                  const res = await reqApi({ roomId: boardId });
-
-                  expect(res.status).toBe(404);
-            });
-
-            it('Pass game full', async () => {
-                  await chessCommonService.joinGame(boardId, user);
-                  await chessCommonService.joinGame(boardId, user);
-
-                  const res = await reqApi({ roomId: boardId });
-
-                  expect(res.status).toBe(200);
+                  expect(getBoard.users[0].id).toBeDefined();
+                  expect(getBoard.users[1]).toBeUndefined();
+                  expect(res.status).toBe(201);
             });
       });
 
-      describe('PUT /start', () => {
-            let user1: User, user2: User;
-            let newCookie: string[];
-            let boardId: string;
-            let player1: ChessPlayer, player2: ChessPlayer;
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+      // describe('PUT /join-room', () => {
+      //       let user: User;
+      //       let newCookie: string[];
+      //       let boardId: string;
+      //       beforeEach(async () => {
+      //             user = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
 
-                  newCookie = generateCookie(await authService.createReToken(user1));
+      //             newCookie = generateCookie(await authService.createReToken(user));
+      //       });
 
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
-            });
+      //       const reqApi = (input: ChessRoomIdDTO) =>
+      //             supertest(app.getHttpServer()).put('/api/chess/join-room').set({ cookie: newCookie }).send(input);
 
-            const reqApi = (input: ChessRoomIdDTO, cookie: string[]) =>
-                  supertest(app.getHttpServer()).put('/api/chess/start').set({ cookie }).send(input);
+      //       it('Pass', async () => {
+      //             const res = await reqApi({ roomId: boardId });
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             const isExistUser = await chessCommonService.isExistUser(boardId, user.id);
 
-            it('Pass', async () => {
-                  const res = await reqApi({ roomId: boardId }, newCookie);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //             expect(res.status).toBe(200);
+      //             expect(isExistUser).toBeDefined();
+      //             expect(getBoard).toBeDefined();
+      //             expect(getBoard.users[0].id).toBe(user.id);
+      //       });
 
-                  expect(res.status).toBe(200);
-                  expect(getBoard).toBeDefined();
-                  expect(getBoard.status).toBe(ChessStatus.PLAYING);
-            });
+      //       it('Failed game is playing', async () => {
+      //             const board = await chessCommonService.getBoard(boardId);
+      //             board.status = ChessStatus.PLAYING;
+      //             await chessCommonService.setBoard(board);
 
-            it('Failed only one ready', async () => {
-                  await chessCommonService.toggleReadyStatePlayer(boardId, player2);
-                  const res = await reqApi({ roomId: boardId }, newCookie);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //             const res = await reqApi({ roomId: boardId });
 
-                  expect(res.status).toBe(400);
-                  expect(getBoard).toBeDefined();
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-            });
+      //             expect(res.status).toBe(404);
+      //       });
 
-            it('Failed not a user', async () => {
-                  const fakeCookie = generateCookie(await authService.createReToken(await generateFakeUser()));
-                  const res = await reqApi({ roomId: boardId }, fakeCookie);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //       it('Pass game full', async () => {
+      //             await chessCommonService.joinGame(boardId, user);
+      //             await chessCommonService.joinGame(boardId, user);
 
-                  expect(res.status).toBe(403);
-                  expect(getBoard).toBeDefined();
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-            });
-      });
-      
+      //             const res = await reqApi({ roomId: boardId });
 
-      describe('PUT /ready', () => {
-            let user: User;
-            let newCookie: string[];
-            let boardId: string;
+      //             expect(res.status).toBe(200);
+      //       });
+      // });
 
-            beforeEach(async () => {
-                  user = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user);
-                  newCookie = generateCookie(await authService.createReToken(user));
-            });
+      // describe('PUT /start', () => {
+      //       let user1: User, user2: User;
+      //       let newCookie: string[];
+      //       let boardId: string;
+      //       let player1: ChessPlayer, player2: ChessPlayer;
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             user2 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //             await chessCommonService.joinGame(boardId, user2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
 
-            const reqApi = (input: ChessRoomIdDTO) => supertest(app.getHttpServer()).put('/api/chess/ready').set({ cookie: newCookie }).send(input);
+      //             newCookie = generateCookie(await authService.createReToken(user1));
 
-            it('Pass', async () => {
-                  const res = await reqApi({ roomId: boardId });
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //             player1 = getBoard.users[0];
+      //             player2 = getBoard.users[1];
+      //       });
 
-                  expect(res.status).toBe(200);
-                  expect(getBoard).toBeDefined();
-                  expect(getBoard.users[0].ready).toBeTruthy();
-            });
-      });
-      
-*/
-      describe('PUT /choose-piece', () => {
-            let user1: User, user2: User;
-            let player1: ChessPlayer, player2: ChessPlayer;
-            let newCookie: string[];
-            let boardId: string;
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //       const reqApi = (input: ChessRoomIdDTO, cookie: string[]) =>
+      //             supertest(app.getHttpServer()).put('/api/chess/start').set({ cookie }).send(input);
 
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+      //       it('Pass', async () => {
+      //             const res = await reqApi({ roomId: boardId }, newCookie);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
 
-                  await chessCommonService.startGame(boardId);
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
+      //             expect(res.status).toBe(200);
+      //             expect(getBoard).toBeDefined();
+      //             expect(getBoard.status).toBe(ChessStatus.PLAYING);
+      //       });
 
-                  newCookie = generateCookie(await authService.createReToken(user1));
-            });
+      //       it('Failed only one ready', async () => {
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, player2);
+      //             const res = await reqApi({ roomId: boardId }, newCookie);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
 
-            const reqApi = (input: ChessChooseAPieceDTO) =>
-                  supertest(app.getHttpServer()).put('/api/chess/choose-piece').set({ cookie: newCookie }).send(input);
+      //             expect(res.status).toBe(400);
+      //             expect(getBoard).toBeDefined();
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //       });
 
-            it('Pass', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 1, flag: 0, chessRole: ChessRole.PAWN });
-                  expect(res.body.data?.length).toBe(2);
-            });
+      //       it('Failed not a user', async () => {
+      //             const fakeCookie = generateCookie(await authService.createReToken(await generateFakeUser()));
+      //             const res = await reqApi({ roomId: boardId }, fakeCookie);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
 
-            it('Failed choose empty square', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 2, flag: 0, chessRole: ChessRole.PAWN });
-                  expect(res.status).toBe(400);
-            });
+      //             expect(res.status).toBe(403);
+      //             expect(getBoard).toBeDefined();
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //       });
+      // });
 
-            it('Failed choose enemy piece', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 6, flag: 1, chessRole: ChessRole.PAWN });
-                  expect(res.status).toBe(400);
-            });
-      });
+      // describe('PUT /ready', () => {
+      //       let user: User;
+      //       let newCookie: string[];
+      //       let boardId: string;
+
+      //       beforeEach(async () => {
+      //             user = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user);
+      //             newCookie = generateCookie(await authService.createReToken(user));
+      //       });
+
+      //       const reqApi = (input: ChessRoomIdDTO) => supertest(app.getHttpServer()).put('/api/chess/ready').set({ cookie: newCookie }).send(input);
+
+      //       it('Pass', async () => {
+      //             const res = await reqApi({ roomId: boardId });
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+
+      //             expect(res.status).toBe(200);
+      //             expect(getBoard).toBeDefined();
+      //             expect(getBoard.users[0].ready).toBeTruthy();
+      //       });
+      // });
+
+      // describe('PUT /choose-piece', () => {
+      //       let user1: User, user2: User;
+      //       let player1: ChessPlayer, player2: ChessPlayer;
+      //       let newCookie: string[];
+      //       let boardId: string;
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             user2 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //             await chessCommonService.joinGame(boardId, user2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+      //             await chessCommonService.startGame(boardId);
+      //             player1 = getBoard.users[0];
+      //             player2 = getBoard.users[1];
+
+      //             newCookie = generateCookie(await authService.createReToken(user1));
+      //       });
+
+      //       const reqApi = (input: ChessChooseAPieceDTO) =>
+      //             supertest(app.getHttpServer()).put('/api/chess/choose-piece').set({ cookie: newCookie }).send(input);
+
+      //       it('Pass', async () => {
+      //             const res = await reqApi({ roomId: boardId, x: 3, y: 1, flag: 0, chessRole: ChessRole.PAWN });
+      //             expect(res.body.data?.length).toBe(2);
+      //       });
+
+      //       it('Failed choose empty square', async () => {
+      //             const res = await reqApi({ roomId: boardId, x: 3, y: 2, flag: 0, chessRole: ChessRole.PAWN });
+      //             expect(res.status).toBe(400);
+      //       });
+
+      //       it('Failed choose enemy piece', async () => {
+      //             const res = await reqApi({ roomId: boardId, x: 3, y: 6, flag: 1, chessRole: ChessRole.PAWN });
+      //             expect(res.status).toBe(400);
+      //       });
+      // });
+
       afterAll(async () => {
             await resetDB();
             await app.close();
