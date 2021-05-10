@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
-import { ChessFlag, ChessMove, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
+import { ChessFlag, ChessMoveRedis, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
 
 //---- Service
 import { ChessService } from '../chess.service';
@@ -80,7 +80,6 @@ describe('ChessController', () => {
                   expect(res.status).toBe(201);
             });
       });
-
 
       describe('PUT /join-room', () => {
             let user: User;

@@ -13,11 +13,11 @@ import { ChessCommonService } from './chessCommon.service';
 //---- Entity
 
 //---- Dto
-import { ChessRoomIdDTO } from './dto/chessRoomIdDto';
+import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
-import { ChessAction } from './chess.action';
+import { ChessGatewayAction } from './chessGateway.action';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {
@@ -30,6 +30,36 @@ export class ChessGateway {
 
       async sendToRoom(boardId: string) {
             const board = await this.chessCommonService.getBoard(boardId);
-            return this.socketServer().socketEmitToRoom(ChessAction.CHESS_GET, boardId, { data: board }, 'chess');
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_GET, boardId, { data: board }, 'chess');
+      }
+
+      private async getGameFromCache(roomId: string) {
+            const game = await this.chessCommonService.getBoard(roomId);
+            if (!game) throw ioResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
+
+            return game;
+      }
+
+      private async isExistUser(boardId: string, userId: string) {
+            const getUser = await this.chessCommonService.isExistUser(boardId, userId);
+            if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(ChessGatewayAction.CHESS_JOIN)
+      async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vChessRoomIdDto)) body: ChessRoomIdDTO) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            await this.isExistUser(body.roomId, client.user.id);
+            await client.join(`chess-${getCacheGame.id}`);
+
+            return this.socketServer().socketEmitToRoom<ChessRoomIdDTO>(ChessGatewayAction.CHESS_JOIN, getCacheGame.id, {}, 'chess');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(ChessGatewayAction.CHESS_GET)
+      async handleGetGame(@MessageBody(new SocketJoiValidatorPipe(vChessRoomIdDto)) body: ChessRoomIdDTO) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_GET, getCacheGame.id, { data: getCacheGame }, 'chess');
       }
 }

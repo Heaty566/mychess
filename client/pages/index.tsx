@@ -97,9 +97,9 @@ const Home: React.FunctionComponent<HomeProps> = () => {
                                 </div>
                             </a>
                         </Link>
-                        <Link href="/">
+                        <Link href={routers.chessPvP.link}>
                             <a
-                                href="/"
+                                href={routers.chessPvP.link}
                                 className="p-4 space-y-4 duration-100 transform rounded-md shadow-xl bg-woodsmoke-500 hover:scale-105 hover:bg-gray-900"
                             >
                                 <div className="text-center ">
