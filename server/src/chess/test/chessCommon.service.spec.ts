@@ -10,6 +10,7 @@ import { ChessCommonService } from '../chessCommon.service';
 import User from '../../user/entities/user.entity';
 import { ChessBoard } from '../../chess/entity/chessBoard.entity';
 import { ChessPlayer, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
+import { ChessService } from '../chess.service';
 
 describe('chessCommonService', () => {
       let app: INestApplication;
@@ -149,6 +150,79 @@ describe('chessCommonService', () => {
                   expect(isStart).toBeFalsy();
                   expect(getBoard.status).toBe(ChessStatus.NOT_YET);
                   expect(getBoardAfter.status).toBe(ChessStatus.NOT_YET);
+            });
+      });
+
+      describe('leaveGame', () => {
+            let player1: ChessPlayer;
+            let player2: ChessPlayer;
+            let chessId: string;
+
+            beforeEach(async () => {
+                  const user = await generateFakeUser();
+                  chessId = await chessCommonService.createNewGame(user, true);
+                  await chessCommonService.joinGame(chessId, await generateFakeUser());
+                  const getBoard = await chessCommonService.getBoard(chessId);
+                  await chessCommonService.toggleReadyStatePlayer(chessId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(chessId, getBoard.users[1]);
+
+                  player1 = getBoard.users[0];
+                  player2 = getBoard.users[1];
+            });
+
+            it('Pass player 1 leave when game playing', async () => {
+                  await chessCommonService.startGame(chessId);
+                  await chessCommonService.leaveGame(chessId, player1);
+                  const getBoard = await chessCommonService.getBoard(chessId);
+
+                  expect(getBoard.status).toBe(ChessStatus.END);
+                  expect(getBoard.winner).toBe(PlayerFlagEnum.BLACK);
+            });
+
+            it('Pass player 1 leave', async () => {
+                  await chessCommonService.leaveGame(chessId, player1);
+                  const getBoard = await chessCommonService.getBoard(chessId);
+
+                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+                  expect(getBoard.users.length).toBe(1);
+                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+            });
+
+            it('Pass player 2 leave when game playing', async () => {
+                  await chessCommonService.startGame(chessId);
+                  await chessCommonService.leaveGame(chessId, player2);
+                  const getBoard = await chessCommonService.getBoard(chessId);
+
+                  expect(getBoard.status).toBe(ChessStatus.END);
+                  expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
+            });
+
+            it('Pass player 2 leave when game end', async () => {
+                  await chessCommonService.startGame(chessId);
+                  await chessCommonService.surrender(chessId, player2);
+                  await chessCommonService.leaveGame(chessId, player1);
+                  const getBoard = await chessCommonService.getBoard(chessId);
+
+                  expect(getBoard.status).toBe(ChessStatus.END);
+                  expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
+            });
+
+            it('Pass player 2 leave', async () => {
+                  await chessCommonService.leaveGame(chessId, player2);
+                  const getBoard = await chessCommonService.getBoard(chessId);
+
+                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+                  expect(getBoard.users.length).toBe(1);
+                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+            });
+
+            it('wrong board id ', async () => {
+                  await chessCommonService.leaveGame('hello', player2);
+                  const getBoard = await chessCommonService.getBoard(chessId);
+
+                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+                  expect(getBoard.users.length).toBe(2);
+                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
             });
       });
 
