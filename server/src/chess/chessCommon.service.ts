@@ -124,11 +124,26 @@ export class ChessCommonService {
       }
 
       async saveChess(board: ChessBoard) {
-            //
+            const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
+            const chat = await this.chatService.saveChat(board.chatId);
+            const moves = await this.saveChessMove(board);
+
+            const newChess = new Chess();
+            newChess.whiteUser = users[0].id;
+            newChess.blackUser = users[1].id;
+            newChess.users = users;
+            newChess.winner = board.winner;
+            newChess.chatId = chat.id;
+            newChess.moves = moves;
+            newChess.endDate = new Date();
+
+            const chess = await this.chessRepository.save(newChess);
+            return chess;
       }
 
       async saveChessMove(board: ChessBoard) {
-            //
+            board.moves.forEach(async (move) => await this.chessMoveRepository.save(move));
+            return board.moves;
       }
 
       async leaveGame(boardId: string, player: ChessPlayer) {

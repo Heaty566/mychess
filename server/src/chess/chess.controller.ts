@@ -11,9 +11,9 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMove, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessMoveCache, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
-import { ChessMoveDB } from './entity/chessMove.entity';
+import { ChessMove } from './entity/chessMove.entity';
 
 //---- DTO
 import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
@@ -129,14 +129,14 @@ export class ChessController {
             if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
             if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
-            const currentPosition: ChessMove = {
+            const currentPosition: ChessMoveCache = {
                   x: body.x,
                   y: body.y,
                   flag: body.flag,
                   chessRole: body.chessRole,
             };
             const legalMoves = await this.chessService.legalMove(currentPosition, board);
-            return apiResponse.send<Array<ChessMove>>({ data: legalMoves });
+            return apiResponse.send<Array<ChessMoveCache>>({ data: legalMoves });
       }
 
       @Put('/add-move')
@@ -152,20 +152,20 @@ export class ChessController {
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
-            const curPos: ChessMove = {
+            const curPos: ChessMoveCache = {
                   x: body.curPos.x,
                   y: body.curPos.y,
                   flag: body.curPos.flag,
                   chessRole: body.curPos.chessRole,
             };
-            const desPos: ChessMove = {
+            const desPos: ChessMoveCache = {
                   x: body.desPos.x,
                   y: body.desPos.y,
                   flag: body.desPos.flag,
                   chessRole: body.desPos.chessRole,
             };
 
-            const legalMoves: ChessMove[] = await this.chessService.legalMove(curPos, board);
+            const legalMoves: ChessMoveCache[] = await this.chessService.legalMove(curPos, board);
             const canMove = legalMoves.find(
                   (move) => move.x === desPos.x && move.y === desPos.y && move.flag === desPos.flag && move.chessRole === desPos.chessRole,
             );

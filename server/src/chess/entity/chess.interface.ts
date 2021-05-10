@@ -13,7 +13,7 @@ export interface ChessFlag {
       flag: PlayerFlagEnum;
 }
 
-export interface ChessMove {
+export interface ChessMoveCache {
       x: number;
       y: number;
       chessRole: ChessRole;

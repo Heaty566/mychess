@@ -1,11 +1,11 @@
 import { generatorString } from '../../app/helpers/stringGenerator';
 import { Chess } from './chess.entity';
 import { ChessFlag, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from './chess.interface';
-import { ChessMoveDB } from './chessMove.entity';
+import { ChessMove } from './chessMove.entity';
 
 export class ChessBoard {
       board: Array<Array<ChessFlag>>;
-      moves: Array<ChessMoveDB>;
+      moves: Array<ChessMove>;
       turn: boolean;
       id: string;
       users: ChessPlayer[];

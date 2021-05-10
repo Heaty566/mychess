@@ -3,15 +3,21 @@ import { Chess } from './chess.entity';
 import { ChessRole, PlayerFlagEnum } from './chess.interface';
 
 @Entity()
-export class ChessMoveDB {
+export class ChessMove {
       @PrimaryGeneratedColumn('uuid')
       id: string;
 
       @Column()
-      x: number;
+      fromX: number;
 
       @Column()
-      y: number;
+      fromY: number;
+
+      @Column()
+      toX: number;
+
+      @Column()
+      toY: number;
 
       @Column()
       chessRole: ChessRole;
