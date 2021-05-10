@@ -18,6 +18,7 @@ import { ChessRoomIdDTO } from './dto/chessRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { ChessAction } from './chess.action';
+import { ChessMove } from './entity/chess.interface';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {
@@ -31,5 +32,9 @@ export class ChessGateway {
       async sendToRoom(boardId: string) {
             const board = await this.chessCommonService.getBoard(boardId);
             return this.socketServer().socketEmitToRoom(ChessAction.CHESS_GET, boardId, { data: board }, 'chess');
+      }
+
+      promotePawn(boardId: string, promotePos: ChessMove) {
+            return this.socketServer().socketEmitToRoom(ChessAction.CHESS_PROMOTE_PAWN, boardId, { data: promotePos }, 'chess');
       }
 }
