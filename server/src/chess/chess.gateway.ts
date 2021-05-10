@@ -18,6 +18,7 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { ChessGatewayAction } from './chessGateway.action';
+import { ChessMoveRedis } from './entity/chess.interface';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {
@@ -61,5 +62,9 @@ export class ChessGateway {
             const getCacheGame = await this.getGameFromCache(body.roomId);
 
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_GET, getCacheGame.id, { data: getCacheGame }, 'chess');
+      }
+
+      promotePawn(boardId: string, promotePos: ChessMoveRedis) {
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_PROMOTE_PAWN, boardId, { data: promotePos }, 'chess');
       }
 }

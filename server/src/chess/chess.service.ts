@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
-import { Chess } from './entity/chess.entity';
 import { ChessMoveRedis, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
@@ -9,6 +8,7 @@ import { ChessBoard } from './entity/chessBoard.entity';
 @Injectable()
 export class ChessService {
       constructor(private readonly chessCommonService: ChessCommonService) {}
+
       private pawnAvailableMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard) {
             const result: Array<ChessMoveRedis> = [];
             // pawn can not appear on row 0 or 7
@@ -580,5 +580,12 @@ export class ChessService {
 
             chessBoard.turn = !chessBoard.turn;
             await this.chessCommonService.setBoard(chessBoard);
+      }
+
+      isPromoted(desPos: ChessMoveRedis): boolean {
+            if (desPos.chessRole !== ChessRole.PAWN) return false;
+            if (desPos.flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
+            if (desPos.flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
+            return false;
       }
 }
