@@ -132,7 +132,19 @@ export class ChessCommonService {
       }
 
       async leaveGame(boardId: string, player: ChessPlayer) {
-            //
+            const board = await this.getBoard(boardId);
+            if (board) {
+                  if (board.status === ChessStatus.PLAYING) {
+                        await this.surrender(boardId, player);
+                        return true;
+                  } else if (board.status === ChessStatus.NOT_YET) {
+                        const remainUser = board.users.find((item) => item.id !== player.id);
+                        board.users = [];
+                        await this.setBoard(board);
+                        await this.joinGame(board.id, remainUser);
+                        return true;
+                  }
+            }
       }
 
       async toggleReadyStatePlayer(boardId: string, player: ChessPlayer) {

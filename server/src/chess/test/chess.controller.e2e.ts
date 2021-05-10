@@ -37,7 +37,32 @@ describe('ChessController', () => {
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
-      /*
+
+      describe('POST /pvp', () => {
+            let newUser: User;
+            let newCookie: string[];
+
+            beforeEach(async () => {
+                  newUser = await generateFakeUser();
+                  newCookie = generateCookie(await authService.createReToken(newUser));
+            });
+
+            const reqApi = () => supertest(app.getHttpServer()).post('/api/chess/pvp').set({ cookie: newCookie }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi();
+                  const getBoard = await chessCommonService.getBoard(res.body.data.roomId);
+
+                  const isExistUser = getBoard.users.find((item) => item.id === newUser.id);
+
+                  expect(isExistUser).toBeDefined();
+                  expect(getBoard).toBeDefined();
+                  expect(getBoard.users[0].id).toBeDefined();
+                  expect(getBoard.users[1]).toBeUndefined();
+                  expect(res.status).toBe(201);
+            });
+      });
+
       describe('PUT /join-room', () => {
             let user: User;
             let newCookie: string[];
@@ -137,7 +162,6 @@ describe('ChessController', () => {
                   expect(getBoard.status).toBe(ChessStatus.NOT_YET);
             });
       });
-      
 
       describe('PUT /ready', () => {
             let user: User;
@@ -161,8 +185,7 @@ describe('ChessController', () => {
                   expect(getBoard.users[0].ready).toBeTruthy();
             });
       });
-      
-*/
+
       describe('PUT /choose-piece', () => {
             let user1: User, user2: User;
             let player1: ChessPlayer, player2: ChessPlayer;
@@ -203,6 +226,7 @@ describe('ChessController', () => {
                   expect(res.status).toBe(400);
             });
       });
+
       afterAll(async () => {
             await resetDB();
             await app.close();

@@ -52,6 +52,14 @@ export class ChessController {
             return player;
       }
 
+      @Post('/pvp')
+      @UseGuards(UserGuard)
+      async handleOnCreatePvP(@Req() req: Request) {
+            const newGameId = await this.chessCommonService.createNewGame(req.user);
+
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
+      }
+
       @Put('/join-room')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
@@ -80,11 +88,25 @@ export class ChessController {
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
+      @Put('/leave')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnLeaveGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.chessCommonService.leaveGame(board.id, player);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
       @Put('/ready')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnReadyGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
+            //
             await this.isPlaying(board);
 
             const player = await this.getPlayer(board.id, req.user.id);
@@ -120,5 +142,7 @@ export class ChessController {
       @Put('/add-move')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
-      async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {}
+      async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
+            //
+      }
 }
