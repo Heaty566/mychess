@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ChessCommonService } from './chessCommon.service';
 import { Chess } from './entity/chess.entity';
 import { ChessMove, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
@@ -7,6 +8,7 @@ import { ChessBoard } from './entity/chessBoard.entity';
 
 @Injectable()
 export class ChessService {
+      constructor(private readonly chessCommonService: ChessCommonService) {}
       private pawnAvailableMove(currentPosition: ChessMove, chessBoard: ChessBoard) {
             const result: Array<ChessMove> = [];
             // pawn can not appear on row 0 or 7
@@ -568,12 +570,15 @@ export class ChessService {
             return true;
       }
 
-      playAMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard) {
+      async playAMove(curPos: ChessMove, desPos: ChessMove, chessBoard: ChessBoard) {
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
             chessBoard.board[curPos.x][curPos.y] = {
                   flag: -1,
                   chessRole: ChessRole.EMPTY,
             };
+
+            chessBoard.turn = !chessBoard.turn;
+            await this.chessCommonService.setBoard(chessBoard);
       }
 }
