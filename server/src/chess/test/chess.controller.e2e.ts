@@ -38,6 +38,24 @@ describe('ChessController', () => {
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
 
+      describe('GET /:id', () => {
+            let newUser: User;
+            let newCookie: string[];
+
+            beforeEach(async () => {
+                  newUser = await generateFakeUser();
+                  newCookie = generateCookie(await authService.createReToken(newUser));
+            });
+
+            const reqApi = (id) => supertest(app.getHttpServer()).get(`/api/chess/${id}`).set({ cookie: newCookie }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi(newUser.id);
+
+                  expect(res.body.data).toBeDefined();
+            });
+      });
+
       describe('POST /pvp', () => {
             let newUser: User;
             let newCookie: string[];
