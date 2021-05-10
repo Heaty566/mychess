@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Request } from 'express';
 
 //---- Service
@@ -28,7 +28,6 @@ import { apiResponse } from '../app/interface/apiResponse';
 @Controller('ttt')
 export class TicTacToeController {
       constructor(
-            private readonly redisService: RedisService,
             private readonly ticTacToeCommonService: TicTacToeCommonService,
             private readonly ticTacToeService: TicTacToeService,
             private readonly ticTacToeGateway: TicTacToeGateway,
@@ -50,6 +49,14 @@ export class TicTacToeController {
       private async isPlaying(board: TicTacToeBoard) {
             if (board.status === TicTacToeStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+      }
+
+      @Get('/:id')
+      @UseGuards(UserGuard)
+      async handleOnGameByUserId(@Param('id') id: string) {
+            const result = await this.ticTacToeCommonService.getAllBoardByUserId(id);
+
+            return apiResponse.send({ data: result });
       }
 
       @Post('/pvp')

@@ -30,7 +30,6 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
     const [board, players, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameTTT(roomId);
     const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
 
-    console.log(players);
     return (
         <>
             <SeoHead {...routers.ticTacToePvP.header} />

@@ -50,7 +50,7 @@ export class UserAPI {
     async searchUsers(name: string, currentPage: string, pageSize: string) {
         const url = `${this.prefix}/search?name=${name}&currentPage=${currentPage}&pageSize=${pageSize}`;
 
-        const res = await this.apiCall.get<ServerResponse<Array<CommonUser>>>(url);
+        const res = await this.apiCall.get<ServerResponse<{ users: Array<CommonUser>; count: number }>>(url);
         return res;
     }
     async updateUserPhoneCreateOTP(input: UpdateUserPhoneDto) {

@@ -58,8 +58,8 @@ export class UserController {
             const { value } = <{ value: SearchUsersDTO }>vSearchUsersDTO.validate(queries, { convert: true, stripUnknown: true });
 
             //get user
-            const users = await this.userService.searchUsersByName(value.name, value.pageSize, value.currentPage);
-            return apiResponse.send<Array<User>>({ data: users });
+            const result = await this.userService.searchUsersByNameAndCount(value.name, value.pageSize, value.currentPage);
+            return apiResponse.send<{ users: Array<User>; count: number }>({ data: result });
       }
 
       @Get('/:id')

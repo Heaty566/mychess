@@ -7,6 +7,7 @@ import { useFormError } from '../common/hooks/useFormError';
 import { SupportDto } from '../common/interface/dto/common.dto';
 import routers from '../common/constants/router';
 import SeoHead from '../components/common/seoHead';
+import GithubIcon from '../public/asset/icons/github-login';
 import commonThunk from '../store/api/thunk';
 
 import TextareaField from '../components/form/field-textarea';
@@ -22,14 +23,17 @@ const defaultValues: SupportDto = {
 export interface SupportProps {}
 
 const About: React.FunctionComponent<SupportProps> = () => {
-    const { register, handleSubmit } = useForm<SupportDto>({ defaultValues });
-    const errors = useFormError<SupportDto>(defaultValues);
-    const [isVerify, setVerify] = React.useState(false);
-
     return (
         <>
             <SeoHead {...routers.about.header} />
-            <div className="flex-1 p-4 md:p-8 chess-bg-2"></div>
+            <div className="items-center flex-1 p-4 md:p-8 chess-bg">
+                <div className="flex items-center space-x-2">
+                    <h1 className="text-3xl font-semibold text-white">MyChess Project v1.5.7 - Project Information</h1>
+                    <a href="https://github.com/Heaty566/mychess" target="_blank">
+                        <GithubIcon />
+                    </a>
+                </div>
+            </div>
         </>
     );
 };
