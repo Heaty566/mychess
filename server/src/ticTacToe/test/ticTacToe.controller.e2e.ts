@@ -38,6 +38,24 @@ describe('TicTacToeController', () => {
             authService = module.get<AuthService>(AuthService);
       });
 
+      describe('GET /:id', () => {
+            let newUser: User;
+            let newCookie: string[];
+
+            beforeEach(async () => {
+                  newUser = await generateFakeUser();
+                  newCookie = generateCookie(await authService.createReToken(newUser));
+            });
+
+            const reqApi = (id) => supertest(app.getHttpServer()).get(`/api/ttt/${id}`).set({ cookie: newCookie }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi(newUser.id);
+
+                  expect(res.body.data).toBeDefined();
+            });
+      });
+
       describe('POST /bot', () => {
             let newUser: User;
             let newCookie: string[];
@@ -176,6 +194,7 @@ describe('TicTacToeController', () => {
                   expect(getBoard.status).toBe(TicTacToeStatus.END);
                   expect(res.status).toBe(200);
             });
+
             it('Pass bot win', async () => {
                   const beforeUpdate = await ticTacToeCommonService.getBoard(tttId);
                   beforeUpdate.board[1][1] = TicTacToeFlag.RED;

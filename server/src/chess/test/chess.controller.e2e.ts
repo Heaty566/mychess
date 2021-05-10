@@ -38,6 +38,50 @@ describe('ChessController', () => {
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
 
+      describe('GET /:id', () => {
+            let newUser: User;
+            let newCookie: string[];
+
+            beforeEach(async () => {
+                  newUser = await generateFakeUser();
+                  newCookie = generateCookie(await authService.createReToken(newUser));
+            });
+
+            const reqApi = (id) => supertest(app.getHttpServer()).get(`/api/chess/${id}`).set({ cookie: newCookie }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi(newUser.id);
+
+                  expect(res.body.data).toBeDefined();
+            });
+      });
+
+      describe('POST /pvp', () => {
+            let newUser: User;
+            let newCookie: string[];
+
+            beforeEach(async () => {
+                  newUser = await generateFakeUser();
+                  newCookie = generateCookie(await authService.createReToken(newUser));
+            });
+
+            const reqApi = () => supertest(app.getHttpServer()).post('/api/chess/pvp').set({ cookie: newCookie }).send();
+
+            it('Pass', async () => {
+                  const res = await reqApi();
+                  const getBoard = await chessCommonService.getBoard(res.body.data.roomId);
+
+                  const isExistUser = getBoard.users.find((item) => item.id === newUser.id);
+
+                  expect(isExistUser).toBeDefined();
+                  expect(getBoard).toBeDefined();
+                  expect(getBoard.users[0].id).toBeDefined();
+                  expect(getBoard.users[1]).toBeUndefined();
+                  expect(res.status).toBe(201);
+            });
+      });
+
+
       describe('PUT /join-room', () => {
             let user: User;
             let newCookie: string[];

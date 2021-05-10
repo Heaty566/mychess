@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards, UsePipes, Get, Param } from '@nestjs/common';
 import { Request } from 'express';
 
 //---- Service
@@ -58,6 +58,14 @@ export class ChessController {
             const newGameId = await this.chessCommonService.createNewGame(req.user);
 
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
+      }
+
+      @Get('/:id')
+      @UseGuards(UserGuard)
+      async handleOnGameByUserId(@Param('id') id: string) {
+            const result = await this.chessCommonService.getAllBoardByUserId(id);
+
+            return apiResponse.send({ data: result });
       }
 
       @Put('/join-room')

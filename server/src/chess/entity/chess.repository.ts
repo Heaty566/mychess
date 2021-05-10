@@ -29,6 +29,22 @@ export class ChessRepository extends RepositoryService<Chess> {
             return res;
       }
 
+      getBoardQuery = () =>
+            this.createQueryBuilder('chess')
+                  .leftJoinAndSelect('chess.users', 'user')
+                  .select([
+                        'chess.id',
+                        'chess.winner',
+                        'chess.startDate',
+                        'chess.endDate',
+                        'user.id',
+                        'user.name',
+                        'user.username',
+                        'user.elo',
+                        'user.avatarUrl',
+                  ])
+                  .leftJoinAndSelect('chess.moves', 'chess-move');
+
       async getOneChessByFiled(where: string, parameters: ObjectLiteral) {
             const res = await this.createQueryBuilder('chess')
                   .leftJoinAndSelect('chess.users', 'user')

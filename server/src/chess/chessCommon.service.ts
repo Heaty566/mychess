@@ -20,6 +20,28 @@ export class ChessCommonService {
             private readonly chessMoveRepository: ChessMoveRepository,
       ) {}
 
+      async getAllBoardByUserId(userId: string) {
+            const chesses = await this.chessRepository
+                  .createQueryBuilder('chess')
+                  .leftJoinAndSelect('chess.users', 'user')
+                  .where(`user.id = :userId`, { userId })
+                  .take(6)
+                  .getMany();
+
+            if (!chesses.length) return { boards: [], count: 0 };
+            const chessIds = chesses.map((chess) => chess.id);
+
+            const board = await this.chessRepository
+                  .getBoardQuery()
+                  .where(`chess.id in (:...values)`, { values: chessIds })
+                  .orderBy('chess.startDate', 'DESC');
+
+            const boards = await board.getMany();
+            const count = await board.getCount();
+
+            return { boards, count };
+      }
+
       async getManyChessByQuery(where: string, parameters: ObjectLiteral) {
             const res = await this.chessRepository.getManyChessByField(where, parameters);
             return res;
