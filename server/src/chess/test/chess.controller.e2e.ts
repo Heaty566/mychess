@@ -10,6 +10,7 @@ import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/c
 import { ChessService } from '../chess.service';
 import { ChessCommonService } from '../chessCommon.service';
 import { AuthService } from '../../auth/auth.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- DTO
 import { ChessAddMoveDto } from '../dto/chessAddMoveDto';
@@ -20,6 +21,7 @@ import { ChessPromotePawnDto } from '../dto/chessPromotePawnDto';
 //---- Common
 import { initTestModule } from '../../test/initTest';
 import { generateCookie } from '../../test/test.helper';
+import { ChessEnPassantDto } from '../dto/chessEnPassantDto';
 
 describe('ChessController', () => {
       let app: INestApplication;
@@ -27,6 +29,7 @@ describe('ChessController', () => {
       let generateFakeUser: () => Promise<User>;
       let authService: AuthService;
       let chessService: ChessService;
+      let redisService: RedisService;
       let chessCommonService: ChessCommonService;
 
       beforeAll(async () => {
@@ -35,6 +38,7 @@ describe('ChessController', () => {
             resetDB = resetDatabase;
             generateFakeUser = getFakeUser;
             authService = module.get<AuthService>(AuthService);
+            redisService = module.get<RedisService>(RedisService);
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
@@ -253,7 +257,8 @@ describe('ChessController', () => {
 
       describe('PUT /add-move', () => {
             let user1: User, user2: User;
-            let newCookie: string[];
+            let newCookie1: string[];
+            let newCookie2: string[];
             let boardId: string;
             let player1: ChessPlayer, player2: ChessPlayer;
             beforeEach(async () => {
@@ -271,11 +276,12 @@ describe('ChessController', () => {
                   player1 = getBoard.users[0];
                   player2 = getBoard.users[1];
 
-                  newCookie = generateCookie(await authService.createReToken(user1));
+                  newCookie1 = generateCookie(await authService.createReToken(user1));
+                  newCookie2 = generateCookie(await authService.createReToken(user2));
             });
 
-            const reqApi = (input: ChessAddMoveDto) =>
-                  supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie }).send(input);
+            let reqApi = (input: ChessAddMoveDto) =>
+                  supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie1 }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({
@@ -294,6 +300,24 @@ describe('ChessController', () => {
                   expect(res.status).toBe(200);
                   expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
                   expect(getBoard.board[1][3].flag).toBe(0);
+            });
+
+            it('Pass with en passant condition', async () => {
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
+                  });
+
+                  const enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
+                  expect(enPassantPosRedis).toBeTruthy();
+                  expect(res.status).toBe(200);
             });
 
             it('Failed invalid destination square', async () => {
@@ -324,6 +348,102 @@ describe('ChessController', () => {
                         },
                   });
                   expect(res.status).toBe(400);
+            });
+
+            it('Pass with en passant move', async () => {
+                  const board = await chessCommonService.getBoard(boardId);
+                  board.board[2][3] = { chessRole: ChessRole.PAWN, flag: PlayerFlagEnum.BLACK };
+                  board.board[2][6] = { chessRole: ChessRole.EMPTY, flag: PlayerFlagEnum.EMPTY };
+                  await chessCommonService.setBoard(board);
+
+                  await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
+                  });
+
+                  let enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
+                  expect(enPassantPosRedis).toBeTruthy();
+
+                  reqApi = (input: ChessAddMoveDto) =>
+                        supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie2 }).send(input);
+
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 2,
+                              y: 3,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 2,
+                        },
+                  });
+
+                  enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
+                  expect(enPassantPosRedis).toBeNull();
+                  expect(res.status).toBe(200);
+            });
+      });
+
+      describe('PUT /en-passant', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            let player1: ChessPlayer, player2: ChessPlayer;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1);
+                  await chessCommonService.joinGame(boardId, user2);
+
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+                  await chessCommonService.startGame(boardId);
+
+                  player1 = getBoard.users[0];
+                  player2 = getBoard.users[1];
+
+                  newCookie = generateCookie(await authService.createReToken(user1));
+            });
+            const reqApi = (input: ChessEnPassantDto) =>
+                  supertest(app.getHttpServer()).put('/api/chess/en-passant').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  let getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.board[1][5] = {
+                        flag: PlayerFlagEnum.WHITE,
+                        chessRole: ChessRole.PAWN,
+                  };
+                  getBoard.board[1][1] = {
+                        flag: PlayerFlagEnum.EMPTY,
+                        chessRole: ChessRole.EMPTY,
+                  };
+                  getBoard.board[1][4] = {
+                        flag: PlayerFlagEnum.BLACK,
+                        chessRole: ChessRole.PAWN,
+                  };
+                  await chessCommonService.setBoard(getBoard);
+                  const res = await reqApi({
+                        roomId: boardId,
+                        enPassantPos: {
+                              x: 1,
+                              y: 5,
+                        },
+                  });
+                  getBoard = await chessCommonService.getBoard(boardId);
+
+                  expect(res.status).toBe(200);
+                  expect(getBoard.board[1][4].chessRole).toBe(ChessRole.EMPTY);
+                  expect(getBoard.board[1][4].flag).toBe(PlayerFlagEnum.EMPTY);
             });
       });
 
@@ -371,7 +491,7 @@ describe('ChessController', () => {
 
                   expect(res.status).toBe(200);
                   expect(getBoard.board[5][7].chessRole).toBe(ChessRole.QUEEN);
-                  expect(getBoard.board[5][7].flag).toBe(0);
+                  expect(getBoard.board[5][7].flag).toBe(PlayerFlagEnum.WHITE);
             });
       });
 
