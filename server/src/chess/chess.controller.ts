@@ -225,10 +225,18 @@ export class ChessController {
             return apiResponse.send({ data: board });
       }
 
-      @Put('/restart')
+      @Post('/restart')
       @UseGuards(UserGuard)
-      async handleOnRestart() {
-            //
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnRestart(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
+            await this.getPlayer(board.id, req.user.id);
+
+            const newGameId = await this.chessCommonService.createNewGame(req.user, false);
+
+            await this.chessGateway.restartGame(board.id, newGameId);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
       }
 
       @Put('/draw')

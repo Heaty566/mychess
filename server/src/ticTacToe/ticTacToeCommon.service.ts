@@ -91,6 +91,7 @@ export class TicTacToeCommonService {
       async createNewGame(user: User, isBotMode: boolean) {
             const newBoard = new TicTacToeBoard(isBotMode);
             const newChat = await this.chatService.createChat(user);
+            console.log(newBoard.id);
             newBoard.chatId = newChat.id;
             await this.setBoard(newBoard);
             await this.joinGame(newBoard.id, user);

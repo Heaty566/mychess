@@ -92,9 +92,9 @@ export function useGameChess(
     };
 
     const emitTTTGet = () => clientIoChess.emit(ChessGatewayAction.CHESS_GET, { roomId });
-    // const emitTTTCounter = () => clientIoChess.emit(ChessGatewayAction.TTT_COUNTER, { roomId });
+    const emitTTTCounter = () => clientIoChess.emit(ChessGatewayAction.CHESS_COUNTER, { roomId });
 
-    const onRestartGame = (res: ServerResponse<ChessBoard>) => router.push(`${routers.ticTacToePvP.link}/${res.data.id}`);
+    const onRestartGame = (res: ServerResponse<ChessBoard>) => router.push(`${routers.chessPvP.link}/${res.data.id}`);
     const onTTTGet = (res: ServerResponse<ChessBoard>) => {
         setTTTBoard(res.data);
 
@@ -103,17 +103,17 @@ export function useGameChess(
     };
     const onTTTCounter = (res: ServerResponse<ChessPlayer[]>) => setPlayers(res.data);
 
-    // React.useEffect(() => {
-    //     let interval: NodeJS.Timeout;
+    React.useEffect(() => {
+        let interval: NodeJS.Timeout;
 
-    //     if (tttBoard?.status === ChessStatus.PLAYING) {
-    //         interval = setInterval(() => emitTTTCounter(), 1000);
-    //     }
+        if (tttBoard?.status === ChessStatus.PLAYING) {
+            interval = setInterval(() => emitTTTCounter(), 1000);
+        }
 
-    //     return () => {
-    //         clearInterval(interval);
-    //     };
-    // }, [tttBoard?.status, roomId]);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [tttBoard?.status, roomId]);
 
     React.useEffect(() => {
         if (tttBoard && tttBoard.status === ChessStatus.END) {
@@ -140,12 +140,12 @@ export function useGameChess(
     React.useEffect(() => {
         clientIoChess.on(ChessGatewayAction.CHESS_GET, onTTTGet);
         clientIoChess.on(ChessGatewayAction.CHESS_JOIN, emitTTTGet);
-        // clientIoChess.on(ChessGatewayAction.TTT_RESTART, onRestartGame);
-        // clientIoChess.on(ChessGatewayAction.TTT_COUNTER, onTTTCounter);
+        clientIoChess.on(ChessGatewayAction.CHESS_COUNTER, onTTTCounter);
+        clientIoChess.on(ChessGatewayAction.CHESS_RESTART, onRestartGame);
 
         return () => {
-            // clientIoChess.off(ChessGatewayAction.TTT_COUNTER, onTTTCounter);
-            // clientIoChess.off(ChessGatewayAction.TTT_RESTART, onRestartGame);
+            clientIoChess.off(ChessGatewayAction.CHESS_RESTART, onRestartGame);
+            clientIoChess.off(ChessGatewayAction.CHESS_COUNTER, onTTTCounter);
             clientIoChess.off(ChessGatewayAction.CHESS_GET, onTTTGet);
             clientIoChess.off(ChessGatewayAction.CHESS_JOIN, emitTTTGet);
         };
