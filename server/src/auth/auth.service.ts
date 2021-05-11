@@ -98,7 +98,7 @@ export class AuthService {
             const authToken = await this.redisService.getByKey(authTokenId);
             if (!authToken) return null;
 
-            return await this.decodeToken<User>(authToken);
+            return await this.verifyToken<User>(authToken);
       }
 
       async clearToken(userId: string) {
@@ -115,9 +115,9 @@ export class AuthService {
             }
       }
 
-      decodeToken<T>(tokenData: string) {
+      verifyToken<T>(tokenData: string) {
             try {
-                  return this.jwtService.decode(tokenData) as T;
+                  return this.jwtService.verify<any>(tokenData) as T;
             } catch (err) {
                   return null;
             }
