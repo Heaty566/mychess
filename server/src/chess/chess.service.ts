@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
 import { ChessMoveRedis, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
+import { ChessMove } from './entity/chessMove.entity';
+import { ChessMoveRepository } from './entity/chessMove.repository';
 
 //---- Repository
 
@@ -487,7 +489,7 @@ export class ChessService {
       }
 
       private chessRoleLegalMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
-            let availableMove: Array<ChessMoveRedis>;
+            let availableMove: Array<ChessMoveRedis> = [];
 
             switch (currentPosition.chessRole) {
                   case ChessRole.BISHOP: {
@@ -571,6 +573,14 @@ export class ChessService {
       }
 
       async playAMove(curPos: ChessMoveRedis, desPos: ChessMoveRedis, chessBoard: ChessBoard) {
+            let newChessMove = new ChessMove();
+            newChessMove.fromX = curPos.x;
+            newChessMove.fromY = curPos.y;
+            newChessMove.toX = desPos.x;
+            newChessMove.toY = desPos.y;
+            newChessMove.flag = curPos.flag;
+            newChessMove.chessRole = curPos.chessRole;
+
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
             chessBoard.board[curPos.x][curPos.y] = {
@@ -579,6 +589,7 @@ export class ChessService {
             };
 
             chessBoard.turn = !chessBoard.turn;
+            chessBoard.moves.push(newChessMove);
             await this.chessCommonService.setBoard(chessBoard);
       }
 
