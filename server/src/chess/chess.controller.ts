@@ -162,21 +162,22 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
-            if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
-            if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (board.board[body.curX][body.curY].flag === PlayerFlagEnum.EMPTY) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (board.board[body.curX][body.curY].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if ((board.turn === false && player.flag === PlayerFlagEnum.BLACK) || (board.turn === true && player.flag === PlayerFlagEnum.WHITE))
+                  throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
             const curPos: ChessMoveRedis = {
-                  x: body.curPos.x,
-                  y: body.curPos.y,
-                  flag: body.curPos.flag,
-                  chessRole: body.curPos.chessRole,
+                  x: body.curX,
+                  y: body.curY,
+                  flag: board.board[body.curX][body.curY].flag,
+                  chessRole: board.board[body.curX][body.curY].chessRole,
             };
             const desPos: ChessMoveRedis = {
-                  x: body.desPos.x,
-                  y: body.desPos.y,
-                  flag: body.desPos.flag,
-                  chessRole: body.desPos.chessRole,
+                  x: body.desX,
+                  y: body.desY,
+                  flag: board.board[body.desX][body.desY].flag,
+                  chessRole: board.board[body.desX][body.desY].chessRole,
             };
 
             const legalMoves: ChessMoveRedis[] = await this.chessService.legalMove(curPos, board);
@@ -184,13 +185,15 @@ export class ChessController {
                   (move) => move.x === desPos.x && move.y === desPos.y && move.flag === desPos.flag && move.chessRole === desPos.chessRole,
             );
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
-            console.log('move sai');
-
             await this.chessService.playAMove(curPos, desPos, board);
+
             if (this.chessService.isPromoted(desPos)) this.chessGateway.promotePawn(board.id, desPos);
 
-            board = await this.chessCommonService.getBoard(body.roomId);
-            return apiResponse.send({ data: board });
+            await this.chessService.checkmate(player.flag, board);
+            await this.chessService.stalemate(player.flag, board);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
       @Put('/promote-pawn')

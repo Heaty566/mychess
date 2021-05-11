@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
-import { ChessMoveRedis, ChessRole, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessMoveRedis, ChessRole, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 import { ChessMove } from './entity/chessMove.entity';
 import { ChessMoveRepository } from './entity/chessMove.repository';
@@ -534,7 +534,7 @@ export class ChessService {
             return this.chessRoleLegalMove(currentPosition, chessBoard);
       }
 
-      checkmate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
+      async checkmate(flag: 0 | 1, chessBoard: ChessBoard): Promise<boolean> {
             const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
             if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
 
@@ -549,11 +549,14 @@ export class ChessService {
                         }
                   }
             }
-
+            chessBoard.winner = 1 - flag;
+            chessBoard.status = ChessStatus.END;
+            await this.chessCommonService.setBoard(chessBoard);
+            await this.chessCommonService.saveChessFromCacheToDb(chessBoard.id);
             return true;
       }
 
-      stalemate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
+      async stalemate(flag: 0 | 1, chessBoard: ChessBoard): Promise<boolean> {
             const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
             if (this.kingIsChecked(kingPosition, chessBoard)) return false;
 
@@ -568,7 +571,10 @@ export class ChessService {
                         }
                   }
             }
-
+            chessBoard.winner = -1;
+            chessBoard.status = ChessStatus.END;
+            await this.chessCommonService.setBoard(chessBoard);
+            await this.chessCommonService.saveChessFromCacheToDb(chessBoard.id);
             return true;
       }
 

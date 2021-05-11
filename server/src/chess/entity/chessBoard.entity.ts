@@ -42,14 +42,14 @@ export class ChessBoard {
       initBoard() {
             // Rook
             this.board[0][0] = {
-                  flag: 0,
-                  chessRole: ChessRole.ROOK,
-            };
-            this.board[0][7] = {
-                  flag: 0,
+                  flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.ROOK,
             };
             this.board[7][0] = {
+                  flag: PlayerFlagEnum.WHITE,
+                  chessRole: ChessRole.ROOK,
+            };
+            this.board[0][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.ROOK,
             };
