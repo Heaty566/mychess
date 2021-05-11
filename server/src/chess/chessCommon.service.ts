@@ -28,7 +28,7 @@ export class ChessCommonService {
                   .take(6)
                   .getMany();
 
-            if (!chesses.length) return { boards: [], count: 0 };
+            if (!chesses.length) return { boards: [], count: 0, totalWin: 0 };
             const chessIds = chesses.map((chess) => chess.id);
 
             const board = await this.chessRepository
@@ -38,8 +38,9 @@ export class ChessCommonService {
 
             const boards = await board.getMany();
             const count = await board.getCount();
+            const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
 
-            return { boards, count };
+            return { boards, count, totalWin };
       }
 
       async getManyChessByQuery(where: string, parameters: ObjectLiteral) {
@@ -102,7 +103,7 @@ export class ChessCommonService {
                         name: user?.name,
                         avatarUrl: user?.avatarUrl,
                         elo: user?.elo,
-                        time: 90000,
+                        time: 900000,
                         id: user?.id,
                         ready: false,
                         flag: userFlag,
@@ -120,7 +121,7 @@ export class ChessCommonService {
             if (board && board.users[0]?.ready && board.users[1]?.ready) {
                   board.status = ChessStatus.PLAYING;
                   board.startDate = new Date();
-
+                  board.lastStep = new Date();
                   await this.setBoard(board);
                   return true;
             }

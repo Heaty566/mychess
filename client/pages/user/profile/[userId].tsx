@@ -95,11 +95,13 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                     <span className="inline-block w-0.5 bg-gray-500"></span>
                                     <button>Chess</button>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <p>Total Tic-Tac-Toe: {total}</p>
-                                    <p>Win Rate: {(totalWin / total) * 100}%</p>
-                                    <p>Win Game: {totalWin}</p>
-                                </div>
+                                {Boolean(total) && (
+                                    <div className="flex items-center justify-between">
+                                        <p>Total Tic-Tac-Toe: {total}</p>
+                                        <p>Win Rate: {((totalWin / total) * 100).toFixed(2)}%</p>
+                                        <p>Win Game: {totalWin}</p>
+                                    </div>
+                                )}
                             </div>
                             <div className="space-y-2 ">
                                 {apiState.isLoading && <WaveLoading />}

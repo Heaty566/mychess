@@ -76,15 +76,19 @@ const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOn
         }
     }
 
+    const Chess = getChess(cellFlag);
+
     return (
-        <button
-            className={`w-16 h-16 p-2 duration-200 cursor-pointer hover:bg-gray-600 focus:outline-none 
-            ${isEven && !isSuggestion && 'bg-aths-special-700'} 
-            ${isSuggestion && 'bg-yellow-400'}`}
-            onClick={() => handleOnClick()}
-        >
-            {getChess(cellFlag)}
-        </button>
+        <div className={` ${isEven && 'bg-aths-special-700'} `}>
+            <button
+                className={`w-16 h-16 p-2 duration-200 cursor-pointer hover:bg-gray-600 focus:outline-none relative ${
+                    isSuggestion ? (Boolean(Chess) ? 'bg-blue-700' : 'chess-suggestion') : ''
+                }  `}
+                onClick={() => handleOnClick()}
+            >
+                {Chess}
+            </button>
+        </div>
     );
 };
 

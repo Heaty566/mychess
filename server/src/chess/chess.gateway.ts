@@ -74,12 +74,16 @@ export class ChessGateway {
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_PROMOTE_PAWN, boardId, { data: promotePos }, 'chess');
       }
 
+      enPassantMove(boardId: string, enPassantPos: ChessMoveCoordinates) {
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_EN_PASSANT_MOVE, boardId, { data: enPassantPos }, 'chess');
+      }
+
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(ChessGatewayAction.CHESS_COUNTER)
       async handleGetTime(@MessageBody(new SocketJoiValidatorPipe(vChessRoomIdDto)) body: ChessRoomIdDTO) {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             if (getCacheGame.status === ChessStatus.PLAYING) {
-                  const currentFlag = getCacheGame.turn ? 0 : 1;
+                  const currentFlag = getCacheGame.turn ? 1 : 0;
                   const currentTime = new Date().getTime();
                   getCacheGame.users[currentFlag].time -= currentTime - new Date(getCacheGame.lastStep).getTime();
                   if (getCacheGame.users[currentFlag].time <= 0) {
