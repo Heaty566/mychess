@@ -242,7 +242,6 @@ export class ChessController {
             return apiResponse.send({ data: board });
       }
 
-
       @Put('/en-passant')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessEnPassantDto))

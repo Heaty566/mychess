@@ -209,7 +209,7 @@ describe('ChessController', () => {
             });
       });
 
-      describe('PUT /choose-piece', () => {
+      describe('POST /choose-piece', () => {
             let user1: User, user2: User;
             let player1: ChessPlayer, player2: ChessPlayer;
             let newCookie: string[];
