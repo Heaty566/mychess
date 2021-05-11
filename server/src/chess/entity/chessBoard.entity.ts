@@ -1,5 +1,4 @@
 import { generatorString } from '../../app/helpers/stringGenerator';
-import { Chess } from './chess.entity';
 import { ChessFlag, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from './chess.interface';
 import { ChessMove } from './chessMove.entity';
 
@@ -13,6 +12,7 @@ export class ChessBoard {
       startDate: Date;
       status: ChessStatus;
       chatId: string;
+      lastStep: Date;
 
       constructor(readonly isBotMode: boolean) {
             const initCell: ChessFlag = {
@@ -33,7 +33,7 @@ export class ChessBoard {
             this.board = [[...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow]];
             this.moves = [];
             this.id = generatorString(8, 'number');
-            this.turn = false;
+            this.turn = isBotMode ? true : Boolean(Math.random() < 0.5);
             this.users = [];
             this.winner = PlayerFlagEnum.EMPTY;
             this.status = ChessStatus.NOT_YET;

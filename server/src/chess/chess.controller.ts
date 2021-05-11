@@ -164,6 +164,7 @@ export class ChessController {
             const player = await this.getPlayer(board.id, req.user.id);
             if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const curPos: ChessMoveRedis = {
@@ -183,8 +184,8 @@ export class ChessController {
             const canMove = legalMoves.find(
                   (move) => move.x === desPos.x && move.y === desPos.y && move.flag === desPos.flag && move.chessRole === desPos.chessRole,
             );
+
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
-            console.log('move sai');
 
             await this.chessService.playAMove(curPos, desPos, board);
             if (this.chessService.isPromoted(desPos)) this.chessGateway.promotePawn(board.id, desPos);
