@@ -130,18 +130,28 @@ export class ChessController {
       async handleOnChooseAPiece(@Req() req: Request, @Body() body: ChessChooseAPieceDTO) {
             const board = await this.getGame(body.roomId);
             if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
+            console.log(board.board[3][1]);
+            console.log(board.board[4][1]);
+            console.log(board.board[5][1]);
+            console.log(board.board[0][0]);
+            // pick empty square
+            if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY)
+                  throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
-            if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
-            if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            // pick enemy piece
+            if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
+            // not player turn
+            if ((board.turn === true && player.flag === PlayerFlagEnum.BLACK) || (board.turn === false && player.flag === PlayerFlagEnum.WHITE))
+                  throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
             const currentPosition: ChessMoveRedis = {
                   x: body.x,
                   y: body.y,
-                  flag: body.flag,
-                  chessRole: body.chessRole,
+                  flag: player.flag,
+                  chessRole: board.board[body.x][body.y].chessRole,
             };
             const legalMoves = await this.chessService.legalMove(currentPosition, board);
             return apiResponse.send<Array<ChessMoveRedis>>({ data: legalMoves });
@@ -156,7 +166,6 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
-            console.log(board.board[body.curPos.x][body.curPos.y].flag);
             if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');

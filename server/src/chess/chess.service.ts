@@ -489,7 +489,7 @@ export class ChessService {
       }
 
       private chessRoleLegalMove(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): Array<ChessMoveRedis> {
-            let availableMove: Array<ChessMoveRedis>;
+            let availableMove: Array<ChessMoveRedis> = [];
 
             switch (currentPosition.chessRole) {
                   case ChessRole.BISHOP: {
