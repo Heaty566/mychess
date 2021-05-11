@@ -8,10 +8,16 @@ export class ChessMove {
       id: string;
 
       @Column()
-      x: number;
+      fromX: number;
 
       @Column()
-      y: number;
+      fromY: number;
+
+      @Column()
+      toX: number;
+
+      @Column()
+      toY: number;
 
       @Column()
       chessRole: ChessRole;

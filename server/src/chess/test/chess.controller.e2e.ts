@@ -231,17 +231,22 @@ describe('ChessController', () => {
                   supertest(app.getHttpServer()).put('/api/chess/choose-piece').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 1, flag: PlayerFlagEnum.WHITE, chessRole: ChessRole.PAWN });
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 1 });
                   expect(res.body.data?.length).toBe(2);
             });
 
+            it('Pass no valid move', async () => {
+                  const res = await reqApi({ roomId: boardId, x: 0, y: 0 });
+                  expect(res.body.data?.length).toBe(0);
+            });
+
             it('Failed choose empty square', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 2, flag: PlayerFlagEnum.WHITE, chessRole: ChessRole.PAWN });
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 2 });
                   expect(res.status).toBe(400);
             });
 
             it('Failed choose enemy piece', async () => {
-                  const res = await reqApi({ roomId: boardId, x: 3, y: 6, flag: PlayerFlagEnum.BLACK, chessRole: ChessRole.PAWN });
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 6 });
                   expect(res.status).toBe(400);
             });
       });
@@ -268,12 +273,11 @@ describe('ChessController', () => {
 
                   newCookie = generateCookie(await authService.createReToken(user1));
             });
+
             const reqApi = (input: ChessAddMoveDto) =>
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  console.log(getBoard.board);
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
@@ -286,6 +290,7 @@ describe('ChessController', () => {
                         },
                   });
 
+                  const getBoard = await chessCommonService.getBoard(boardId);
                   expect(res.status).toBe(200);
                   expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
                   expect(getBoard.board[1][3].flag).toBe(0);

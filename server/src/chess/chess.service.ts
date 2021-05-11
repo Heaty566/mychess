@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
 import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
+import { ChessMove } from './entity/chessMove.entity';
+import { ChessMoveRepository } from './entity/chessMove.repository';
 
 //---- Repository
 
@@ -273,8 +275,10 @@ export class ChessService {
       private kingIsChecked(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): boolean {
             // Check rook, queen
             // Right
+
             let x = currentPosition.x + 1;
             let y = currentPosition.y;
+
             while (x >= 0 && x < chessBoard.board.length && y >= 0 && y < chessBoard.board.length) {
                   if (chessBoard.board[x][y].flag === currentPosition.flag) break;
                   else if (
@@ -478,7 +482,7 @@ export class ChessService {
                   chessRole: ChessRole.EMPTY,
             };
 
-            const kingPosition: ChessMoveRedis = this.getKing(curPos, chessBoard);
+            const kingPosition: ChessMoveRedis = this.getKing(desPos, chessBoard);
             if (this.kingIsChecked(kingPosition, chessBoard)) canMove = false;
 
             chessBoard.board[curPos.x][curPos.y] = chessBoard.board[desPos.x][desPos.y];
@@ -540,13 +544,13 @@ export class ChessService {
       }
 
       // checkmate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
-      //       const kingPosition: ChessMoveCoordinates = this.getKing(flag, chessBoard);
+      //       const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
       //       if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
 
       //       for (let i = 0; i <= 7; i++) {
       //             for (let j = 0; j <= 7; j++) {
       //                   if (chessBoard.board[i][j].flag === flag) {
-      //                         const legalMove: Array<ChessMoveCoordinates> = this.legalMove(
+      //                         const legalMove: Array<ChessMoveRedis> = this.legalMove(
       //                               { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
       //                               chessBoard,
       //                         );
@@ -559,13 +563,13 @@ export class ChessService {
       // }
 
       // stalemate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
-      //       const kingPosition: ChessMoveCoordinates = this.getKing(flag, chessBoard);
+      //       const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
       //       if (this.kingIsChecked(kingPosition, chessBoard)) return false;
 
       //       for (let i = 0; i <= 7; i++) {
       //             for (let j = 0; j <= 7; j++) {
       //                   if (chessBoard.board[i][j].flag === flag) {
-      //                         const legalMove: Array<ChessMoveCoordinates> = this.legalMove(
+      //                         const legalMove: Array<ChessMoveRedis> = this.legalMove(
       //                               { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
       //                               chessBoard,
       //                         );
@@ -578,6 +582,14 @@ export class ChessService {
       // }
 
       async playAMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, chessBoard: ChessBoard) {
+            const newChessMove = new ChessMove();
+            newChessMove.fromX = curPos.x;
+            newChessMove.fromY = curPos.y;
+            newChessMove.toX = desPos.x;
+            newChessMove.toY = desPos.y;
+            newChessMove.flag = chessBoard.board[curPos.x][curPos.y].flag;
+            newChessMove.chessRole = chessBoard.board[curPos.x][curPos.y].chessRole;
+
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
             chessBoard.board[curPos.x][curPos.y] = {
@@ -586,6 +598,7 @@ export class ChessService {
             };
 
             chessBoard.turn = !chessBoard.turn;
+            chessBoard.moves.push(newChessMove);
             await this.chessCommonService.setBoard(chessBoard);
       }
 
