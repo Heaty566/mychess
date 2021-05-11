@@ -11,23 +11,27 @@ export interface TTTBoardProps {
 
 const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnClick, register, suggestion }) => {
     return (
-        <div className="grid overflow-x-auto bg-asparagus-500 grid-cols-8-chess" ref={register}>
+        <div className="flex overflow-x-auto bg-asparagus-500 " ref={register}>
             {board.map((item, index) => {
-                return item.map((item2, index2) => {
-                    const isEven = 0 === (index + index2) % 2;
-                    const isSuggestion = true;
-                    const isCheckMate = Boolean(suggestion.find((item) => item.x === index && item.y === index2));
-                    return (
-                        <ChessCell
-                            isCheckMate={isCheckMate}
-                            isSuggestion={isSuggestion}
-                            key={`${index}${index2}`}
-                            cellFlag={item2}
-                            handleOnClick={() => handleOnClick(index, index2)}
-                            isEven={isEven}
-                        />
-                    );
-                });
+                return (
+                    <div key={index}>
+                        {item.map((item2, index2) => {
+                            const isEven = 1 === (index + index2) % 2;
+                            const isSuggestion = Boolean(suggestion.find((item) => item.x === index && item.y === index2));
+                            const isCheckMate = false;
+                            return (
+                                <ChessCell
+                                    isCheckMate={isCheckMate}
+                                    isSuggestion={isSuggestion}
+                                    key={`${index}${index2}`}
+                                    cellFlag={item2}
+                                    handleOnClick={() => handleOnClick(index, index2)}
+                                    isEven={isEven}
+                                />
+                            );
+                        })}
+                    </div>
+                );
             })}
         </div>
     );
