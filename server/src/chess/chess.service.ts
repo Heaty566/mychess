@@ -629,4 +629,19 @@ export class ChessService {
             if (desPos.x === enPassantPos.x && desPos.y === enPassantPos.y) return true;
             return false;
       }
+
+      async enPassantMove(enPassantPos: ChessMoveCoordinates, board: ChessBoard) {
+            if (board.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.WHITE) {
+                  board.board[enPassantPos.x][enPassantPos.y - 1] = {
+                        flag: PlayerFlagEnum.EMPTY,
+                        chessRole: ChessRole.EMPTY,
+                  };
+            } else if (board.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.BLACK) {
+                  board.board[enPassantPos.x][enPassantPos.y + 1] = {
+                        flag: PlayerFlagEnum.EMPTY,
+                        chessRole: ChessRole.EMPTY,
+                  };
+            }
+            await this.chessCommonService.setBoard(board);
+      }
 }

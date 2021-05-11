@@ -19,6 +19,7 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
 import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
 import { ChessPromotePawnDto, vChessPromotePawnDto } from './dto/chessPromotePawnDto';
+import { ChessEnPassantDto, vChessEnPassantDto } from './dto/chessEnPassantDto';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
@@ -235,6 +236,28 @@ export class ChessController {
 
             board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
             await this.chessCommonService.setBoard(board);
+
+            await this.chessGateway.sendToRoom(board.id);
+            board = await this.chessCommonService.getBoard(body.roomId);
+            return apiResponse.send({ data: board });
+      }
+
+      @Put('/en-passant')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vChessEnPassantDto))
+      async handleOnEnPassantMove(@Req() req: Request, @Body() body: ChessEnPassantDto) {
+            let board = await this.getGame(body.roomId);
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag === PlayerFlagEnum.EMPTY)
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag !== player.flag)
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            await this.chessService.enPassantMove(body.enPassantPos, board);
 
             await this.chessGateway.sendToRoom(board.id);
             board = await this.chessCommonService.getBoard(body.roomId);
