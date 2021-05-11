@@ -7,22 +7,16 @@ const { getJoiSchema } = ValidatorService.joiSchemaGenerator<Chess>(roomJoiSchem
 
 export class ChessAddMoveDto {
       roomId: string;
-      curPos: ChessMoveRedis;
-      desPos: ChessMoveRedis;
+      curX: number;
+      curY: number;
+      desX: number;
+      desY: number;
 }
 
 export const vChessAddMoveDto = Joi.object({
       roomId: getJoiSchema('id'),
-      curPos: Joi.object().keys({
-            x: Joi.number().min(0).max(7).required(),
-            y: Joi.number().min(0).max(7).required(),
-            flag: Joi.number().min(-1).max(1).required(),
-            chessRole: Joi.number().min(-1).max(6).required(),
-      }),
-      desPos: Joi.object().keys({
-            x: Joi.number().min(0).max(7).required(),
-            y: Joi.number().min(0).max(7).required(),
-            flag: Joi.number().min(-1).max(1).required(),
-            chessRole: Joi.number().min(-1).max(6).required(),
-      }),
+      curX: Joi.number().min(0).max(7).required(),
+      curY: Joi.number().min(0).max(7).required(),
+      desX: Joi.number().min(0).max(7).required(),
+      desY: Joi.number().min(0).max(7).required(),
 });
