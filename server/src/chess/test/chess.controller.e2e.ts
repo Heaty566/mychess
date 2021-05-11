@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
-import { ChessFlag, ChessMoveRedis, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
+import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
 
 //---- Service
 import { ChessService } from '../chess.service';
@@ -273,31 +273,40 @@ describe('ChessController', () => {
 
                   newCookie = generateCookie(await authService.createReToken(user1));
             });
+
             const reqApi = (input: ChessAddMoveDto) =>
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({
                         roomId: boardId,
-                        curX: 5,
-                        curY: 1,
-                        desX: 5,
-                        desY: 3,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
                   });
 
                   const getBoard = await chessCommonService.getBoard(boardId);
                   expect(res.status).toBe(200);
-                  expect(getBoard.board[5][3].chessRole).toBe(ChessRole.PAWN);
-                  expect(getBoard.board[5][3].flag).toBe(0);
+                  expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
+                  expect(getBoard.board[1][3].flag).toBe(0);
             });
 
             it('Failed invalid destination square', async () => {
                   const res = await reqApi({
                         roomId: boardId,
-                        curX: 5,
-                        curY: 1,
-                        desX: 5,
-                        desY: 4,
+                        curPos: {
+                              x: 5,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 5,
+                              y: 4,
+                        },
                   });
                   expect(res.status).toBe(400);
             });
@@ -305,10 +314,14 @@ describe('ChessController', () => {
             it('Failed wrong current square', async () => {
                   const res = await reqApi({
                         roomId: boardId,
-                        curX: 5,
-                        curY: 6,
-                        desX: 5,
-                        desY: 4,
+                        curPos: {
+                              x: 5,
+                              y: 6,
+                        },
+                        desPos: {
+                              x: 5,
+                              y: 4,
+                        },
                   });
                   expect(res.status).toBe(400);
             });
@@ -351,8 +364,6 @@ describe('ChessController', () => {
                         promotePos: {
                               x: 5,
                               y: 7,
-                              flag: PlayerFlagEnum.WHITE,
-                              chessRole: ChessRole.PAWN,
                         },
                         promoteRole: ChessRole.QUEEN,
                   });

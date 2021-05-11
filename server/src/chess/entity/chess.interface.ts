@@ -20,6 +20,11 @@ export interface ChessMoveRedis {
       flag: PlayerFlagEnum;
 }
 
+export interface ChessMoveCoordinates {
+      x: number;
+      y: number;
+}
+
 export enum PlayerFlagEnum {
       WHITE = 0,
       BLACK = 1,

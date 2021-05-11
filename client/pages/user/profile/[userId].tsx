@@ -27,6 +27,8 @@ export interface ProfileProps {
 const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
     const apiState = useSelector<RootState, ApiState>((state) => state.api);
+    const [totalWin, setTotalWin] = React.useState<number>(0);
+    const [total, setTotal] = React.useState<number>(0);
 
     const [boards, setBoards] = React.useState<TicTacToeBoard[]>([]);
 
@@ -34,6 +36,8 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
         if (user)
             ticTacToeApi.getAllGameByUserId(user.id).then((res) => {
                 setBoards(res.data.data.boards);
+                setTotalWin(res.data.data.totalWin);
+                setTotal(res.data.data.count);
             });
     }, [user]);
     if (!user) return null;
@@ -85,10 +89,17 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                         </div>
                         <div className="space-y-2">
                             <h1 className="text-2xl text-mercury">History</h1>
-                            <div className="flex items-stretch px-4 py-2 space-x-2 text-lg bg-woodsmoke-500 text-mercury">
-                                <button>Tic Tac Toe</button>
-                                <span className="inline-block w-0.5 bg-gray-500"></span>
-                                <button>Chess</button>
+                            <div className="flex flex-col px-4 py-2 space-y-1 text-lg bg-woodsmoke-500 text-mercury">
+                                <div className="flex items-stretch space-x-2">
+                                    <button>Tic Tac Toe</button>
+                                    <span className="inline-block w-0.5 bg-gray-500"></span>
+                                    <button>Chess</button>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <p>Total Tic-Tac-Toe: {total}</p>
+                                    <p>Win Rate: {(totalWin / total) * 100}%</p>
+                                    <p>Win Game: {totalWin}</p>
+                                </div>
                             </div>
                             <div className="space-y-2 ">
                                 {apiState.isLoading && <WaveLoading />}

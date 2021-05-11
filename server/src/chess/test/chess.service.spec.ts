@@ -40,32 +40,48 @@ describe('ChessService', () => {
             });
 
             it('x = 1, y = 1', async () => {
-                  const result = chessService['kingAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.KING }, chessBoard);
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  const result = chessService['kingAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(8);
             });
             it('x = 1, y = 1', async () => {
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
                   chessBoard.board[0][0] = {
                         chessRole: ChessRole.PAWN,
                         flag: 0,
                   };
 
-                  const result = chessService['kingAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.KING }, chessBoard);
+                  const result = chessService['kingAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(7);
             });
 
             it('x = 0, y = 0', async () => {
-                  const result = chessService['kingAvailableMove']({ flag: 0, x: 0, y: 0, chessRole: ChessRole.KING }, chessBoard);
+                  chessBoard.board[0][0] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+                  const result = chessService['kingAvailableMove']({ x: 0, y: 0 }, chessBoard);
 
                   expect(result.length).toBe(3);
             });
 
             it('x = 1, y = 1', async () => {
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.KING,
+                        flag: 0,
+                  };
+
                   chessBoard.board[0][0] = {
                         chessRole: ChessRole.PAWN,
                         flag: 1,
                   };
-
-                  const result = chessService['kingAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.KING }, chessBoard);
+                  const result = chessService['kingAvailableMove']({ x: 1, y: 1 }, chessBoard);
 
                   expect(result.length).toBe(8);
             });
@@ -79,21 +95,37 @@ describe('ChessService', () => {
             });
 
             it('x = 1, y = 1', () => {
-                  const result = chessService['knightAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.KNIGHT }, chessBoard);
+                  chessBoard.board[1][1] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+                  const result = chessService['knightAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(4);
             });
 
             it('x = 7, y = 7', () => {
-                  const result = chessService['knightAvailableMove']({ flag: 0, x: 7, y: 7, chessRole: ChessRole.KNIGHT }, chessBoard);
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+                  const result = chessService['knightAvailableMove']({ x: 7, y: 7 }, chessBoard);
                   expect(result.length).toBe(2);
             });
 
             it('x = 4, y = 4', () => {
-                  const result = chessService['knightAvailableMove']({ flag: 0, x: 4, y: 4, chessRole: ChessRole.KNIGHT }, chessBoard);
+                  chessBoard.board[4][4] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
+                  const result = chessService['knightAvailableMove']({ x: 4, y: 4 }, chessBoard);
                   expect(result.length).toBe(8);
             });
 
             it('x = 7, y = 7', () => {
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
                   chessBoard.board[5][6] = {
                         chessRole: ChessRole.BISHOP,
                         flag: 1,
@@ -104,11 +136,15 @@ describe('ChessService', () => {
                         flag: 1,
                   };
 
-                  const result = chessService['knightAvailableMove']({ flag: 0, x: 7, y: 7, chessRole: ChessRole.KNIGHT }, chessBoard);
+                  const result = chessService['knightAvailableMove']({ x: 7, y: 7 }, chessBoard);
                   expect(result.length).toBe(2);
             });
 
             it('x = 7, y = 7', () => {
+                  chessBoard.board[7][7] = {
+                        chessRole: ChessRole.KNIGHT,
+                        flag: 0,
+                  };
                   chessBoard.board[5][6] = {
                         chessRole: ChessRole.BISHOP,
                         flag: 1,
@@ -119,7 +155,7 @@ describe('ChessService', () => {
                         flag: 0,
                   };
 
-                  const result = chessService['knightAvailableMove']({ flag: 0, x: 7, y: 7, chessRole: ChessRole.KNIGHT }, chessBoard);
+                  const result = chessService['knightAvailableMove']({ x: 7, y: 7 }, chessBoard);
                   expect(result.length).toBe(1);
             });
       });
@@ -128,10 +164,14 @@ describe('ChessService', () => {
             let chessBoard: ChessBoard;
             beforeEach(() => {
                   chessBoard = new ChessBoard(true);
+                  chessBoard.board[1][1] = {
+                        flag: 0,
+                        chessRole: ChessRole.ROOK,
+                  };
             });
 
             it('x = 1, y = 1', () => {
-                  const result = chessService['rookAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.ROOK }, chessBoard);
+                  const result = chessService['rookAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(14);
             });
 
@@ -141,7 +181,7 @@ describe('ChessService', () => {
                         chessRole: ChessRole.KNIGHT,
                   };
 
-                  const result = chessService['rookAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.ROOK }, chessBoard);
+                  const result = chessService['rookAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(11);
             });
 
@@ -162,28 +202,28 @@ describe('ChessService', () => {
                         flag: 0,
                         chessRole: ChessRole.KNIGHT,
                   };
-                  const result = chessService['rookAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.ROOK }, chessBoard);
+                  const result = chessService['rookAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(0);
             });
 
             it('x = 1, y = 1', () => {
                   chessBoard.board[1][0] = {
-                        flag: 0,
+                        flag: 1,
                         chessRole: ChessRole.KNIGHT,
                   };
                   chessBoard.board[0][1] = {
-                        flag: 0,
+                        flag: 1,
                         chessRole: ChessRole.KNIGHT,
                   };
                   chessBoard.board[1][2] = {
-                        flag: 0,
+                        flag: 1,
                         chessRole: ChessRole.KNIGHT,
                   };
                   chessBoard.board[2][1] = {
-                        flag: 0,
+                        flag: 1,
                         chessRole: ChessRole.KNIGHT,
                   };
-                  const result = chessService['rookAvailableMove']({ flag: 1, x: 1, y: 1, chessRole: ChessRole.ROOK }, chessBoard);
+                  const result = chessService['rookAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(4);
             });
       });
@@ -195,11 +235,19 @@ describe('ChessService', () => {
             });
 
             it('x = 1, y = 1', () => {
-                  const result = chessService['bishopAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.BISHOP }, chessBoard);
+                  chessBoard.board[1][1] = {
+                        flag: 0,
+                        chessRole: ChessRole.BISHOP,
+                  };
+                  const result = chessService['bishopAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(9);
             });
 
             it('x = 1, y = 1', () => {
+                  chessBoard.board[1][1] = {
+                        flag: 0,
+                        chessRole: ChessRole.BISHOP,
+                  };
                   chessBoard.board[0][0] = {
                         flag: 1,
                         chessRole: ChessRole.KNIGHT,
@@ -209,11 +257,15 @@ describe('ChessService', () => {
                         chessRole: ChessRole.KNIGHT,
                   };
 
-                  const result = chessService['bishopAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.BISHOP }, chessBoard);
+                  const result = chessService['bishopAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(4);
             });
 
             it('x = 1, y = 1', () => {
+                  chessBoard.board[1][1] = {
+                        flag: 1,
+                        chessRole: ChessRole.BISHOP,
+                  };
                   chessBoard.board[0][0] = {
                         flag: 1,
                         chessRole: ChessRole.KNIGHT,
@@ -223,12 +275,16 @@ describe('ChessService', () => {
                         chessRole: ChessRole.KNIGHT,
                   };
 
-                  const result = chessService['bishopAvailableMove']({ flag: 1, x: 1, y: 1, chessRole: ChessRole.BISHOP }, chessBoard);
+                  const result = chessService['bishopAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(2);
             });
 
             it('x = 4, y = 4', () => {
-                  const result = chessService['bishopAvailableMove']({ flag: 0, x: 4, y: 4, chessRole: ChessRole.BISHOP }, chessBoard);
+                  chessBoard.board[4][4] = {
+                        flag: 0,
+                        chessRole: ChessRole.BISHOP,
+                  };
+                  const result = chessService['bishopAvailableMove']({ x: 4, y: 4 }, chessBoard);
                   expect(result.length).toBe(13);
             });
       });
@@ -240,16 +296,28 @@ describe('ChessService', () => {
             });
 
             it('x = 1, y = 1', () => {
-                  const result = chessService['queenAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.QUEEN }, chessBoard);
+                  chessBoard.board[1][1] = {
+                        flag: 0,
+                        chessRole: ChessRole.QUEEN,
+                  };
+                  const result = chessService['queenAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(23);
             });
 
             it('x = 4, y = 4', () => {
-                  const result = chessService['queenAvailableMove']({ flag: 0, x: 4, y: 4, chessRole: ChessRole.QUEEN }, chessBoard);
+                  chessBoard.board[4][4] = {
+                        flag: 0,
+                        chessRole: ChessRole.QUEEN,
+                  };
+                  const result = chessService['queenAvailableMove']({ x: 4, y: 4 }, chessBoard);
                   expect(result.length).toBe(27);
             });
 
             it('x = 1, y = 1', () => {
+                  chessBoard.board[1][1] = {
+                        flag: 0,
+                        chessRole: ChessRole.QUEEN,
+                  };
                   chessBoard.board[0][0] = {
                         flag: 1,
                         chessRole: ChessRole.BISHOP,
@@ -264,11 +332,15 @@ describe('ChessService', () => {
                         flag: 1,
                         chessRole: ChessRole.BISHOP,
                   };
-                  const result = chessService['queenAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.QUEEN }, chessBoard);
+                  const result = chessService['queenAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(18);
             });
 
             it('x = 1, y = 1', () => {
+                  chessBoard.board[1][1] = {
+                        flag: 0,
+                        chessRole: ChessRole.QUEEN,
+                  };
                   chessBoard.board[0][0] = {
                         flag: 1,
                         chessRole: ChessRole.BISHOP,
@@ -283,7 +355,7 @@ describe('ChessService', () => {
                         flag: 0,
                         chessRole: ChessRole.BISHOP,
                   };
-                  const result = chessService['queenAvailableMove']({ flag: 0, x: 1, y: 1, chessRole: ChessRole.QUEEN }, chessBoard);
+                  const result = chessService['queenAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(11);
             });
       });
@@ -300,7 +372,7 @@ describe('ChessService', () => {
                         flag: 0,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 0, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 0 }, chessBoard);
                   expect(result.length).toBe(0);
             });
 
@@ -310,7 +382,7 @@ describe('ChessService', () => {
                         flag: 0,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 1, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 1 }, chessBoard);
                   expect(result.length).toBe(2);
             });
 
@@ -323,7 +395,7 @@ describe('ChessService', () => {
                         chessRole: ChessRole.PAWN,
                         flag: 0,
                   };
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 1, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 1 }, chessBoard);
                   expect(result.length).toBe(0);
             });
 
@@ -336,7 +408,7 @@ describe('ChessService', () => {
                         chessRole: ChessRole.PAWN,
                         flag: 1,
                   };
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 1, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 1 }, chessBoard);
                   expect(result.length).toBe(3);
             });
 
@@ -353,7 +425,7 @@ describe('ChessService', () => {
                         chessRole: ChessRole.PAWN,
                         flag: 1,
                   };
-                  const result = chessService['pawnAvailableMove']({ x: 1, y: 1, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 1, y: 1 }, chessBoard);
                   expect(result.length).toBe(4);
             });
 
@@ -370,7 +442,7 @@ describe('ChessService', () => {
                         chessRole: ChessRole.PAWN,
                         flag: 1,
                   };
-                  const result = chessService['pawnAvailableMove']({ x: 1, y: 2, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 1, y: 2 }, chessBoard);
                   expect(result.length).toBe(3);
             });
 
@@ -380,7 +452,7 @@ describe('ChessService', () => {
                         flag: 1,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 7, flag: 1, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 7 }, chessBoard);
                   expect(result.length).toBe(0);
             });
 
@@ -390,7 +462,7 @@ describe('ChessService', () => {
                         flag: 1,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 6, flag: 1, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 6 }, chessBoard);
                   expect(result.length).toBe(2);
             });
 
@@ -404,7 +476,7 @@ describe('ChessService', () => {
                         flag: 1,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 6, flag: 1, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 6 }, chessBoard);
                   expect(result.length).toBe(0);
             });
 
@@ -418,7 +490,7 @@ describe('ChessService', () => {
                         flag: 0,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 0, y: 6, flag: 1, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 0, y: 6 }, chessBoard);
                   expect(result.length).toBe(3);
             });
 
@@ -436,7 +508,7 @@ describe('ChessService', () => {
                         flag: 0,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 1, y: 6, flag: 1, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 1, y: 6 }, chessBoard);
                   expect(result.length).toBe(4);
             });
 
@@ -454,7 +526,7 @@ describe('ChessService', () => {
                         flag: 0,
                   };
 
-                  const result = chessService['pawnAvailableMove']({ x: 1, y: 5, flag: 1, chessRole: ChessRole.PAWN }, chessBoard);
+                  const result = chessService['pawnAvailableMove']({ x: 1, y: 5 }, chessBoard);
                   expect(result.length).toBe(3);
             });
       });
@@ -470,32 +542,32 @@ describe('ChessService', () => {
             });
 
             it('pawn', () => {
-                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2, flag: 0, chessRole: ChessRole.PAWN }, chessBoard);
+                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2 }, chessBoard);
                   expect(legalMove.length).toBeDefined();
             });
 
             it('king', () => {
-                  const legalMove = chessService['chessRoleLegalMove']({ x: 4, y: 1, flag: 0, chessRole: ChessRole.KING }, chessBoard);
+                  const legalMove = chessService['chessRoleLegalMove']({ x: 4, y: 1 }, chessBoard);
                   expect(legalMove.length).toBeDefined();
             });
 
             it('queen', () => {
-                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2, flag: 0, chessRole: ChessRole.QUEEN }, chessBoard);
+                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2 }, chessBoard);
                   expect(legalMove.length).toBeDefined();
             });
 
             it('knight', () => {
-                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2, flag: 0, chessRole: ChessRole.KNIGHT }, chessBoard);
+                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2 }, chessBoard);
                   expect(legalMove.length).toBeDefined();
             });
 
             it('bishop', () => {
-                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2, flag: 0, chessRole: ChessRole.BISHOP }, chessBoard);
+                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2 }, chessBoard);
                   expect(legalMove.length).toBeDefined();
             });
 
             it('rook', () => {
-                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2, flag: 0, chessRole: ChessRole.ROOK }, chessBoard);
+                  const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2 }, chessBoard);
                   expect(legalMove.length).toBeDefined();
             });
       });
