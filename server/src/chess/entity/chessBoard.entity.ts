@@ -45,11 +45,11 @@ export class ChessBoard {
                   flag: 0,
                   chessRole: ChessRole.ROOK,
             };
-            this.board[0][7] = {
+            this.board[7][0] = {
                   flag: 0,
                   chessRole: ChessRole.ROOK,
             };
-            this.board[7][0] = {
+            this.board[0][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.ROOK,
             };

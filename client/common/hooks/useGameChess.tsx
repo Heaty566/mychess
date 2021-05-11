@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { chessApi } from '../../api/chessApi';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { ChessGatewayAction, ChessBoard, ChessPlayer, ChessStatus } from '../interface/chess.interface';
+import { ChessGatewayAction, ChessBoard, ChessPlayer, ChessStatus, ChessMoveRedis } from '../interface/chess.interface';
 import { AuthState } from '../interface/user.interface';
 import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
@@ -14,9 +14,11 @@ export function useGameChess(
 ): [
     ChessBoard | undefined,
     ChessPlayer[] | undefined,
+    ChessMoveRedis[],
     React.RefObject<HTMLDivElement>,
     () => void,
     () => void,
+    (x: number, y: number) => void,
     (x: number, y: number) => void,
     () => void,
 ] {
@@ -26,6 +28,7 @@ export function useGameChess(
     const [tttBoard, setTTTBoard] = React.useState<ChessBoard>();
     const [players, setPlayers] = React.useState<ChessPlayer[]>([]);
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
+    const [suggestion, setSuggestion] = React.useState<ChessMoveRedis[]>([]);
 
     const handleOnRestart = () => {
         if (tttBoard) {
@@ -57,7 +60,11 @@ export function useGameChess(
         chessApi.addMovePvP({ roomId, x, y });
     };
 
-    const handleOnSuggestion = () => {};
+    const handleOnSuggestion = (x: number, y: number) => {
+        chessApi.getSuggestion({ roomId, x, y }).then((res) => {
+            setSuggestion(res.data.data);
+        });
+    };
 
     const handleOnReady = () => {
         chessApi.readyGame({ roomId });
@@ -118,7 +125,7 @@ export function useGameChess(
         };
     }, [roomId]);
 
-    return [tttBoard, players, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart];
+    return [tttBoard, players, suggestion, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnSuggestion, handleOnRestart];
 }
 
 export default useGameChess;
