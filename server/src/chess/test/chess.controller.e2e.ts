@@ -272,26 +272,23 @@ describe('ChessController', () => {
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  console.log(getBoard.board);
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
                               x: 1,
-                              y: 5,
-                              flag: PlayerFlagEnum.WHITE,
-                              chessRole: ChessRole.PAWN,
+                              y: 1,
                         },
                         desPos: {
-                              x: 3,
-                              y: 5,
-                              flag: PlayerFlagEnum.EMPTY,
-                              chessRole: ChessRole.EMPTY,
+                              x: 1,
+                              y: 3,
                         },
                   });
-                  console.log(res.body);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+
                   expect(res.status).toBe(200);
-                  expect(getBoard.board[5][3].chessRole).toBe(ChessRole.PAWN);
-                  expect(getBoard.board[5][3].flag).toBe(0);
+                  expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
+                  expect(getBoard.board[1][3].flag).toBe(0);
             });
 
             it('Failed invalid destination square', async () => {
@@ -300,14 +297,10 @@ describe('ChessController', () => {
                         curPos: {
                               x: 5,
                               y: 1,
-                              flag: PlayerFlagEnum.WHITE,
-                              chessRole: ChessRole.PAWN,
                         },
                         desPos: {
                               x: 5,
                               y: 4,
-                              flag: PlayerFlagEnum.EMPTY,
-                              chessRole: ChessRole.EMPTY,
                         },
                   });
                   expect(res.status).toBe(400);
@@ -319,14 +312,10 @@ describe('ChessController', () => {
                         curPos: {
                               x: 5,
                               y: 6,
-                              flag: 1,
-                              chessRole: ChessRole.PAWN,
                         },
                         desPos: {
                               x: 5,
                               y: 4,
-                              flag: -1,
-                              chessRole: ChessRole.EMPTY,
                         },
                   });
                   expect(res.status).toBe(400);
@@ -370,8 +359,6 @@ describe('ChessController', () => {
                         promotePos: {
                               x: 5,
                               y: 7,
-                              flag: PlayerFlagEnum.WHITE,
-                              chessRole: ChessRole.PAWN,
                         },
                         promoteRole: ChessRole.QUEEN,
                   });
