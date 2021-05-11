@@ -227,13 +227,38 @@ export class ChessController {
 
       @Put('/restart')
       @UseGuards(UserGuard)
-      async handleOnRestart() {
-            //
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnRestart(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+            await this.isPlaying(board);
+            await this.getPlayer(board.id, req.user.id);
+
+            const newBoardId = await this.chessCommonService.createNewGame(req.user);
+
+            await this.chessGateway.restartGame(board.id, newBoardId);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newBoardId } });
       }
 
       @Put('/draw')
       @UseGuards(UserGuard)
-      async handleOnDraw() {
-            //
+      async handleOnDraw(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            await this.chessCommonService.draw(board.id);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/surrender')
+      @UseGuards(UserGuard)
+      async handleOnSurrender(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.chessCommonService.surrender(board.id, player);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 }

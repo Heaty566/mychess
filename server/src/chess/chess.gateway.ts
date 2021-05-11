@@ -46,6 +46,12 @@ export class ChessGateway {
             if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
       }
 
+      async restartGame(boardId: string, newBoardId: string) {
+            const board = await this.chessCommonService.getBoard(newBoardId);
+
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_RESTART, boardId, { data: board }, 'chess');
+      }
+
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(ChessGatewayAction.CHESS_JOIN)
       async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vChessRoomIdDto)) body: ChessRoomIdDTO) {
