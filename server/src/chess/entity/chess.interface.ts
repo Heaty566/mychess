@@ -13,7 +13,7 @@ export interface ChessFlag {
       flag: PlayerFlagEnum;
 }
 
-export interface ChessMoveCache {
+export interface ChessMoveRedis {
       x: number;
       y: number;
       chessRole: ChessRole;
@@ -27,9 +27,9 @@ export enum PlayerFlagEnum {
 }
 
 export enum ChessStatus {
-      'NOT_YET' = '-1',
-      'END' = '0',
-      'PLAYING' = '1',
+      'NOT_YET' = 0,
+      'PLAYING' = 1,
+      'END' = 2,
 }
 
 export interface ChessPlayer {

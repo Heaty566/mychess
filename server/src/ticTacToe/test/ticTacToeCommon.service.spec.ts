@@ -344,6 +344,7 @@ describe('ticTacToeCommonService', () => {
                   expect(tttDB).toBeUndefined();
             });
       });
+
       describe('joinGame', () => {
             let tttId: string;
             beforeEach(async () => {

@@ -25,6 +25,11 @@
     max-height: 560px;
 }
 
+.chess-board {
+    max-width: 512px;
+    max-height: 512px;
+}
+
 .chess-bg-2 {
     background: url('/asset/images/chess-board-2.jpg');
     background-repeat: no-repeat;

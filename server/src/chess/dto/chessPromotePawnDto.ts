@@ -1,28 +1,23 @@
 import * as Joi from 'joi';
-import { ChessMoveRedis, ChessRole } from '../entity/chess.interface';
+import { ChessMoveRedis } from '../entity/chess.interface';
 import { ValidatorService } from '../../utils/validator/validator.service';
 import { Chess } from '../entity/chess.entity';
 import { roomJoiSchema } from '../../utils/validator/schema/room.validator';
 const { getJoiSchema } = ValidatorService.joiSchemaGenerator<Chess>(roomJoiSchema);
 
-export class ChessAddMoveDto {
+export class ChessPromotePawnDto {
       roomId: string;
-      curPos: ChessMoveRedis;
-      desPos: ChessMoveRedis;
+      promotePos: ChessMoveRedis;
+      promoteRole: number;
 }
 
-export const vChessAddMoveDto = Joi.object({
+export const vChessPromotePawnDto = Joi.object({
       roomId: getJoiSchema('id'),
-      curPos: Joi.object().keys({
+      promotePos: Joi.object().keys({
             x: Joi.number().min(0).max(7).required(),
             y: Joi.number().min(0).max(7).required(),
             flag: Joi.number().min(-1).max(1).required(),
             chessRole: Joi.number().min(-1).max(6).required(),
       }),
-      desPos: Joi.object().keys({
-            x: Joi.number().min(0).max(7).required(),
-            y: Joi.number().min(0).max(7).required(),
-            flag: Joi.number().min(-1).max(1).required(),
-            chessRole: Joi.number().min(-1).max(6).required(),
-      }),
+      promoteRole: Joi.number().min(-1).max(6).required(),
 });

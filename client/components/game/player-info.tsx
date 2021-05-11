@@ -2,9 +2,10 @@ import * as React from 'react';
 import { truncateContent } from '../../common/helpers/string.helper';
 import Tooltip from '../tooltip/tooltip-dropbox';
 import { TicTacToePlayer } from '../../common/interface/tic-tac-toe.interface';
+import { ChessPlayer } from '../../common/interface/chess.interface';
 
 export interface PlayerInfoProps {
-    player: TicTacToePlayer | undefined;
+    player: TicTacToePlayer | ChessPlayer | undefined;
     isReverse: boolean;
 }
 

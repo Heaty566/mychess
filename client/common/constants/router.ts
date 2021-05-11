@@ -19,7 +19,8 @@ type TRouters =
     | '404'
     | 'updateWithOTP'
     | 'ticTacToeBot'
-    | 'ticTacToePvP';
+    | 'ticTacToePvP'
+    | 'chessPvP';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -132,7 +133,15 @@ const config: Record<TRouters, IRouter> = {
         header: {
             title: 'Tic Tac Toe',
             canonical: '/game/tic-tac-toe',
-            description: 'Please Tic Tac Toe with other player',
+            description: 'play Tic Tac Toe with other player',
+        },
+    },
+    chessPvP: {
+        link: '/game/chess',
+        header: {
+            title: 'Chess',
+            canonical: '/game/chess',
+            description: 'play Tic Tac Toe with other player',
         },
     },
     '404': {
