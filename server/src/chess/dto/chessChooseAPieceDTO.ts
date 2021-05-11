@@ -2,7 +2,6 @@ import * as Joi from 'joi';
 import { roomJoiSchema } from '../../utils/validator/schema/room.validator';
 import { ValidatorService } from '../../utils/validator/validator.service';
 import { Chess } from '../entity/chess.entity';
-import { ChessRole, PlayerFlagEnum } from '../entity/chess.interface';
 const { getJoiSchema } = ValidatorService.joiSchemaGenerator<Chess>(roomJoiSchema);
 
 export class ChessChooseAPieceDTO {
