@@ -48,7 +48,7 @@ const DBConfig = TypeOrmModule.forRoot({
       synchronize: true,
       keepConnectionAlive: true,
       entities: [User, ReToken, Notification, Chat, Message, TicTacToe, TicTacToeMove, Chess, ChessMove],
-      extra: { connectionLimit: 5 },
+      extra: { connectionLimit: 1 },
 });
 
 @Module({
