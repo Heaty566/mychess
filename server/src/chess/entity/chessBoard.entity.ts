@@ -58,64 +58,64 @@ export class ChessBoard {
                   chessRole: ChessRole.ROOK,
             };
             //Knight
-            this.board[0][1] = {
+            this.board[1][0] = {
                   flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.KNIGHT,
             };
-            this.board[0][6] = {
+            this.board[6][0] = {
                   flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.KNIGHT,
             };
-            this.board[7][1] = {
+            this.board[1][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.KNIGHT,
             };
-            this.board[7][6] = {
+            this.board[6][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.KNIGHT,
             };
             //Bishop
-            this.board[0][2] = {
+            this.board[2][0] = {
                   flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.BISHOP,
             };
-            this.board[0][5] = {
+            this.board[5][0] = {
                   flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.BISHOP,
             };
-            this.board[7][2] = {
+            this.board[2][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.BISHOP,
             };
-            this.board[7][5] = {
+            this.board[5][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.BISHOP,
             };
             //King
-            this.board[0][4] = {
+            this.board[4][0] = {
                   flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.KING,
             };
-            this.board[7][4] = {
+            this.board[4][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.KING,
             };
             //Queen
-            this.board[0][3] = {
+            this.board[3][0] = {
                   flag: PlayerFlagEnum.WHITE,
                   chessRole: ChessRole.QUEEN,
             };
-            this.board[7][3] = {
+            this.board[3][7] = {
                   flag: PlayerFlagEnum.BLACK,
                   chessRole: ChessRole.QUEEN,
             };
             // Pawn
             for (let i = 0; i <= 7; i++) {
-                  this.board[1][i] = {
+                  this.board[i][1] = {
                         flag: PlayerFlagEnum.WHITE,
                         chessRole: ChessRole.PAWN,
                   };
-                  this.board[6][i] = {
+                  this.board[i][6] = {
                         flag: PlayerFlagEnum.BLACK,
                         chessRole: ChessRole.PAWN,
                   };
