@@ -125,7 +125,7 @@ export class ChessController {
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Put('/choose-piece')
+      @Post('/choose-piece')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessChooseAPieceDTO))
       async handleOnChooseAPiece(@Req() req: Request, @Body() body: ChessChooseAPieceDTO) {

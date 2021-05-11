@@ -71,3 +71,25 @@
     transform: translateY(0);
     visibility: visible;
 }
+
+.chess-suggestion {
+    transition: 200ms;
+}
+
+.chess-suggestion:hover {
+    @apply bg-blue-700;
+}
+
+.chess-suggestion::before {
+    content: '';
+    display: block;
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: FadeIn 200ms;
+    @apply bg-blue-700;
+}

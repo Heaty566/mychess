@@ -10,7 +10,7 @@ import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import ToolTip from '../../../components/tooltip/tooltip-dropbox';
 import TTTBoard from '../../../components/game/ttt-board';
 import PlayerInfo from '../../../components/game/player-info';
-import GameTurn from '../../../components/game/game-turn';
+import ChessTurn from '../../../components/game/chess-turn';
 import ChatBox from '../../../components/chat';
 import PanelRestart from '../../../components/game/panel-restart';
 import WaveLoading from '../../../components/loading/wave-loading';
@@ -29,9 +29,7 @@ export interface TicTacToePvPProps {
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const [board, players, suggestion, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnSuggestion, handleOnRestart] = useGameChess(
-        roomId,
-    );
+    const [board, players, suggestion, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameChess(roomId);
     const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
 
     return (
@@ -59,7 +57,11 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
 
                                     <div className="flex">
                                         <PlayerInfo player={players?.length ? players[0] : board.users[0]} isReverse={false} />
-
+                                        <ChessTurn
+                                            currentTurn={board.turn}
+                                            userOneReady={board.users[0]?.ready}
+                                            userTwoReady={board.users[1]?.ready}
+                                        />
                                         <PlayerInfo player={players?.length ? players[1] : board.users[1]} isReverse={true} />
                                     </div>
                                 </div>
@@ -83,7 +85,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         isAppear={board.status === ChessStatus.END}
                                     />
 
-                                    <ChessBoard board={board.board} handleOnClick={handleOnSuggestion} register={boardRef} suggestion={suggestion} />
+                                    <ChessBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} suggestion={suggestion} />
                                 </div>
                             </div>
 

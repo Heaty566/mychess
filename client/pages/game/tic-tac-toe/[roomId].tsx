@@ -10,7 +10,7 @@ import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import ToolTip from '../../../components/tooltip/tooltip-dropbox';
 import TTTBoard from '../../../components/game/ttt-board';
 import PlayerInfo from '../../../components/game/player-info';
-import GameTurn from '../../../components/game/game-turn';
+import TTTTurn from '../../../components/game/ttt-turn';
 import ChatBox from '../../../components/chat';
 import PanelRestart from '../../../components/game/panel-restart';
 import WaveLoading from '../../../components/loading/wave-loading';
@@ -55,15 +55,11 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
 
                                     <div className="flex">
                                         <PlayerInfo player={players?.length ? players[0] : board.users[0]} isReverse={false} />
-
-                                        <GameTurn
+                                        <TTTTurn
                                             currentTurn={board.currentTurn}
-                                            SymbolOne={OPlayerIcon}
-                                            SymbolTwo={XPlayerIcon}
                                             userOneReady={board.users[0]?.ready}
                                             userTwoReady={board.users[1]?.ready}
                                         />
-
                                         <PlayerInfo player={players?.length ? players[1] : board.users[1]} isReverse={true} />
                                     </div>
                                 </div>
