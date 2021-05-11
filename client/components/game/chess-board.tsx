@@ -18,6 +18,7 @@ const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnCli
                         {item.map((item2, index2) => {
                             const isEven = 1 === (index + index2) % 2;
                             const isSuggestion = Boolean(suggestion.find((item) => item.x === index && item.y === index2));
+
                             const isCheckMate = false;
                             return (
                                 <ChessCell

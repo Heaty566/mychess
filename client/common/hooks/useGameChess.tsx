@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { chessApi } from '../../api/chessApi';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { ChessGatewayAction, ChessBoard, ChessPlayer, ChessStatus, ChessMoveRedis } from '../interface/chess.interface';
+import { ChessGatewayAction, ChessBoard, ChessPlayer, ChessStatus, ChessMoveRedis, ChessFlag } from '../interface/chess.interface';
 import { AuthState } from '../interface/user.interface';
 import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
@@ -19,7 +19,7 @@ export function useGameChess(
     () => void,
     () => void,
     (x: number, y: number) => void,
-    (x: number, y: number) => void,
+
     () => void,
 ] {
     const clientIoChess = useSocketIo({ namespace: 'chess' });
@@ -29,6 +29,8 @@ export function useGameChess(
     const [players, setPlayers] = React.useState<ChessPlayer[]>([]);
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
     const [suggestion, setSuggestion] = React.useState<ChessMoveRedis[]>([]);
+    const [currentSelect, setCurrentSelect] = React.useState<ChessMoveRedis>();
+    const [currentPlayer, setCurrentPlayer] = React.useState<ChessPlayer>();
 
     const handleOnRestart = () => {
         if (tttBoard) {
@@ -54,16 +56,35 @@ export function useGameChess(
     };
 
     const handleOnAddMove = (x: number, y: number) => {
-        const sound = new Audio('/asset/sounds/ttt-click.mp3');
-        sound.volume = 0.5;
-        sound.play();
-        chessApi.addMovePvP({ roomId, x, y });
-    };
+        if (tttBoard) {
+            const findMove = suggestion.find((item) => item.x === x && item.y === y);
 
-    const handleOnSuggestion = (x: number, y: number) => {
-        chessApi.getSuggestion({ roomId, x, y }).then((res) => {
-            setSuggestion(res.data.data);
-        });
+            if (findMove && currentSelect) {
+                chessApi.addMovePvP({ roomId, curPos: { x: currentSelect.x, y: currentSelect.y }, desPos: { x, y } }).then(() => {
+                    const sound = new Audio('/asset/sounds/ttt-click.mp3');
+                    sound.volume = 0.5;
+                    sound.play();
+                    setSuggestion([]);
+                    setCurrentSelect(undefined);
+                });
+            } else if (!currentSelect || currentSelect.x !== x || currentSelect.y !== y) {
+                setCurrentSelect({
+                    chessRole: tttBoard.board[x][y].chessRole,
+                    flag: tttBoard.board[x][y].flag,
+                    x,
+                    y,
+                });
+                chessApi
+                    .getSuggestion({ roomId, x, y })
+                    .then((res) => {
+                        setSuggestion(res.data.data);
+                    })
+                    .catch(() => {
+                        setSuggestion([]);
+                    });
+            }
+        }
+        console.log(currentSelect);
     };
 
     const handleOnReady = () => {
@@ -74,7 +95,12 @@ export function useGameChess(
     // const emitTTTCounter = () => clientIoChess.emit(ChessGatewayAction.TTT_COUNTER, { roomId });
 
     const onRestartGame = (res: ServerResponse<ChessBoard>) => router.push(`${routers.ticTacToePvP.link}/${res.data.id}`);
-    const onTTTGet = (res: ServerResponse<ChessBoard>) => setTTTBoard(res.data);
+    const onTTTGet = (res: ServerResponse<ChessBoard>) => {
+        setTTTBoard(res.data);
+
+        const player = res.data.users.find((item) => item.id === authState.id);
+        if (player) setCurrentPlayer(player);
+    };
     const onTTTCounter = (res: ServerResponse<ChessPlayer[]>) => setPlayers(res.data);
 
     // React.useEffect(() => {
@@ -125,7 +151,7 @@ export function useGameChess(
         };
     }, [roomId]);
 
-    return [tttBoard, players, suggestion, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnSuggestion, handleOnRestart];
+    return [tttBoard, players, suggestion, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart];
 }
 
 export default useGameChess;

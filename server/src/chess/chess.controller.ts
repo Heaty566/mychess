@@ -124,7 +124,7 @@ export class ChessController {
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Put('/choose-piece')
+      @Post('/choose-piece')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessChooseAPieceDTO))
       async handleOnChooseAPiece(@Req() req: Request, @Body() body: ChessChooseAPieceDTO) {
@@ -157,7 +157,7 @@ export class ChessController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
-            let board = await this.getGame(body.roomId);
+            const board = await this.getGame(body.roomId);
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
