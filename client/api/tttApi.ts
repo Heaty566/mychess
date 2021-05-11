@@ -14,7 +14,7 @@ export class TicTacToeAPI {
     }
     async getAllGameByUserId(userId: string) {
         const url = `${this.prefix}/${userId}`;
-        const res = await this.apiCall.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number }>>(url);
+        const res = await this.apiCall.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number; totalWin: number }>>(url);
         return res;
     }
     async createNewBotRoom() {

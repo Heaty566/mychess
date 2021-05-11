@@ -94,7 +94,7 @@ describe('UserGuard', () => {
                   it('Pass', async () => {
                         const refreshToken = await reTokenRepository.findOneByField('id', reToken);
                         const encryptedUser = await redisService.getByKey(refreshToken.data);
-                        const userInformation = await authService.decodeToken<User>(encryptedUser);
+                        const userInformation = await authService.verifyToken<User>(encryptedUser);
 
                         expect(userInformation).toBeDefined();
                         expect(userInformation.username).toBe(userInformation.username);
@@ -105,7 +105,7 @@ describe('UserGuard', () => {
                   it('Pass', async () => {
                         const authToken = await authService[`createAuthToken`](userDb);
                         const encryptedUser = await redisService.getByKey(authToken);
-                        const userInformation = await authService.decodeToken<User>(encryptedUser);
+                        const userInformation = await authService.verifyToken<User>(encryptedUser);
 
                         expect(userInformation).toBeDefined();
                         expect(userInformation.username).toBe(userInformation.username);
@@ -138,7 +138,7 @@ describe('UserGuard', () => {
                         getReToken = await reTokenRepository.save(getReToken);
                         const authToken = await authService.getAuthTokenByReToken(reToken);
                         const isExist = await redisService.getByKey(authToken);
-                        const decodeUser = authService.decodeToken<User>(isExist);
+                        const decodeUser = authService.verifyToken<User>(isExist);
 
                         expect(userDb.username).toBe(decodeUser.username);
                         expect(isExist).toBeDefined();

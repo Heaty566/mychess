@@ -34,7 +34,7 @@ export class TicTacToeCommonService {
                   .take(6)
                   .getMany();
 
-            if (!tics.length) return { boards: [], count: 0 };
+            if (!tics.length) return { boards: [], count: 0, totalWin: 0 };
             const ticIds = tics.map((item) => item.id);
 
             const board = await this.ticTacToeRepository
@@ -43,8 +43,9 @@ export class TicTacToeCommonService {
                   .orderBy('tic.startDate', 'DESC');
             const boards = await board.getMany();
             const count = await board.getCount();
+            const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
 
-            return { boards, count };
+            return { boards, count, totalWin };
       }
 
       async getBoard(boardId: string) {
