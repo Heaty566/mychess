@@ -42,10 +42,7 @@ export const navbarMenuConfig: Array<NavbarItem> = [
         label: 'COMMUNITY',
         link: router.community.link,
     },
-    {
-        label: 'ABOUT',
-        link: router.about.link,
-    },
+
     {
         label: 'SUPPORT',
         link: router.support.link,

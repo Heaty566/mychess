@@ -16,11 +16,13 @@ import { ChessFlag, ChessRole } from '../../common/interface/chess.interface';
 import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
 export interface ChessCellProps {
     cellFlag: ChessFlag;
-    color: boolean;
+    isEven: boolean;
+    isSuggestion: boolean;
+    isCheckMate: boolean;
     handleOnClick: () => void;
 }
 
-const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOnClick, color }) => {
+const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOnClick, isEven, isSuggestion, isCheckMate }) => {
     function getChess(input: ChessFlag) {
         switch (input.chessRole) {
             case ChessRole.PAWN:
@@ -76,7 +78,9 @@ const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOn
 
     return (
         <button
-            className={`w-16 h-16 p-2 duration-200  cursor-pointer  hover:bg-gray-600 focus:outline-none   ${color && 'bg-aths-special-700'}`}
+            className={`w-16 h-16 p-2 duration-200 cursor-pointer hover:bg-gray-600 focus:outline-none 
+            ${isEven && !isSuggestion && 'bg-aths-special-700'} 
+            ${isSuggestion && 'bg-yellow-400'}`}
             onClick={() => handleOnClick()}
         >
             {getChess(cellFlag)}

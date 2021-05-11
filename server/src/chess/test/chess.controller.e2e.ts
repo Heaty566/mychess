@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
-import { ChessFlag, ChessMoveRedis, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
+import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
 
 //---- Service
 import { ChessService } from '../chess.service';

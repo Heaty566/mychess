@@ -1,6 +1,8 @@
 import http from './axiosCommon';
 import { AxiosInstance } from 'axios';
 import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
+import { ChessChooseAPieceDTO } from '../common/interface/dto/chess.dto';
+import { ChessMoveRedis } from '../common/interface/chess.interface';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
 
@@ -54,6 +56,11 @@ export class ChessAPI {
     async joinRoom(input: RoomIdDto) {
         const url = `${this.prefix}/join-room`;
         const res = await this.apiCall.put<ServerResponse<TicTacToeBoard>>(url, input);
+        return res;
+    }
+    async getSuggestion(input: ChessChooseAPieceDTO) {
+        const url = `${this.prefix}/choose-piece`;
+        const res = await this.apiCall.put<ServerResponse<ChessMoveRedis[]>>(url, input);
         return res;
     }
 }
