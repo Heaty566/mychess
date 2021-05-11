@@ -25,6 +25,7 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
+import { RecordingRulesInstance } from 'twilio/lib/rest/video/v1/room/roomRecordingRule';
 
 @Controller('chess')
 export class ChessController {
@@ -143,13 +144,12 @@ export class ChessController {
             if ((board.turn === false && player.flag === PlayerFlagEnum.BLACK) || (board.turn === true && player.flag === PlayerFlagEnum.WHITE))
                   throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
-            const currentPosition: ChessMoveRedis = {
+            const currentPosition: ChessMoveCoordinates = {
                   x: body.x,
                   y: body.y,
-                  flag: player.flag,
-                  chessRole: board.board[body.x][body.y].chessRole,
             };
-            const legalMoves = await this.chessService.legalMove(currentPosition, board);
+
+            const legalMoves = this.chessService.legalMove(currentPosition, board);
             return apiResponse.send<Array<ChessMoveCoordinates>>({ data: legalMoves });
       }
 
@@ -157,7 +157,7 @@ export class ChessController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
-            let board = await this.getGame(body.roomId);
+            const board = await this.getGame(body.roomId);
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
@@ -179,6 +179,10 @@ export class ChessController {
 
             const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove(curPos, board);
 
+            // add en passant to available move
+            const enPassantPosRedis: ChessMoveCoordinates = await this.redisService.getObjectByKey('chess-en-passant' + board.id);
+            if (enPassantPosRedis) legalMoves.push(enPassantPosRedis);
+
             const canMove = legalMoves.find(
                   (move) =>
                         move.x === desPos.x &&
@@ -189,9 +193,21 @@ export class ChessController {
 
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
+            // move chess
             await this.chessService.playAMove(curPos, desPos, board);
 
-            if (this.chessService.isPromoted(desPos, board)) this.chessGateway.promotePawn(board.id, desPos);
+            // check en passant move
+            if (enPassantPosRedis && this.chessService.isEnPassantMove(desPos, enPassantPosRedis, board)) {
+                  this.chessGateway.enPassantMove(board.id, enPassantPosRedis);
+                  await this.redisService.deleteByKey('chess-en-passant' + board.id);
+            }
+
+            // check en passant conditions
+            const enPassantPos = this.chessService.enPassantPos(curPos, desPos, board);
+            if (enPassantPos) this.redisService.setObjectByKey('chess-en-passant' + board.id, enPassantPos);
+
+            // check promote pawn
+            if (this.chessService.isPromotePawn(desPos, board)) this.chessGateway.promotePawn(board.id, desPos);
 
             await this.chessService.checkmate(player.flag, board);
             await this.chessService.stalemate(player.flag, board);
@@ -208,7 +224,7 @@ export class ChessController {
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
-            if (!this.chessService.isPromoted(body.promotePos, board)) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (!this.chessService.isPromotePawn(body.promotePos, board)) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
             if (board.board[body.promotePos.x][body.promotePos.y].flag === PlayerFlagEnum.EMPTY)
