@@ -165,6 +165,7 @@ export class ChessController {
 
             if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const curPos: ChessMoveCoordinates = {
