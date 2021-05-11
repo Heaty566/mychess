@@ -599,8 +599,11 @@ export class ChessService {
                   flag: -1,
                   chessRole: ChessRole.EMPTY,
             };
-
             chessBoard.turn = !chessBoard.turn;
+            const currentTime = new Date();
+            const stepTime = currentTime.getTime() - new Date(chessBoard.lastStep).getTime();
+            chessBoard.users[newChessMove.flag].time -= stepTime;
+            chessBoard.lastStep = currentTime;
             chessBoard.moves.push(newChessMove);
             await this.chessCommonService.setBoard(chessBoard);
       }

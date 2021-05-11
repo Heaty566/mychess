@@ -77,6 +77,7 @@ export class ChatService {
             if (chat) {
                   const messages = await this.saveMessage(chat);
                   chat.messages = messages;
+                  chat.id = undefined;
                   const saveChat = await this.chatRepository.save(chat);
                   await this.setChat(saveChat);
                   return saveChat;
