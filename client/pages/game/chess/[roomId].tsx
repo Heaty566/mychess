@@ -29,7 +29,9 @@ export interface TicTacToePvPProps {
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const [board, players, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameChess(roomId);
+    const [board, players, suggestion, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnSuggestion, handleOnRestart] = useGameChess(
+        roomId,
+    );
     const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
 
     return (
@@ -62,7 +64,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                     </div>
                                 </div>
                                 <div className="relative m-auto chess-board">
-                                    {/* <PanelStart
+                                    <PanelStart
                                         handleOnClick={handleOnStart}
                                         isAppear={board.status === ChessStatus.NOT_YET && board.users[0]?.ready && board.users[1]?.ready}
                                     />
@@ -79,9 +81,9 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         userOneName={board.users[0]?.name ? board.users[0].name : ''}
                                         userTwoName={board.users[1]?.name ? board.users[1].name : ''}
                                         isAppear={board.status === ChessStatus.END}
-                                    /> */}
+                                    />
 
-                                    <ChessBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} suggestion={[]} />
+                                    <ChessBoard board={board.board} handleOnClick={handleOnSuggestion} register={boardRef} suggestion={suggestion} />
                                 </div>
                             </div>
 
