@@ -47,3 +47,8 @@ export interface ChessPlayer {
       avatarUrl: string;
       name: string;
 }
+
+export interface EloCalculator {
+      whiteElo: number;
+      blackElo: number;
+}

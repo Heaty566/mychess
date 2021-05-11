@@ -193,8 +193,11 @@ export class ChessController {
 
             if (this.chessService.isPromoted(desPos, board)) this.chessGateway.promotePawn(board.id, desPos);
 
-            board = await this.chessCommonService.getBoard(body.roomId);
-            return apiResponse.send({ data: board });
+            await this.chessService.checkmate(player.flag, board);
+            await this.chessService.stalemate(player.flag, board);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
       @Put('/promote-pawn')
@@ -220,5 +223,17 @@ export class ChessController {
             await this.chessGateway.sendToRoom(board.id);
             board = await this.chessCommonService.getBoard(body.roomId);
             return apiResponse.send({ data: board });
+      }
+
+      @Put('/restart')
+      @UseGuards(UserGuard)
+      async handleOnRestart() {
+            //
+      }
+
+      @Put('/draw')
+      @UseGuards(UserGuard)
+      async handleOnDraw() {
+            //
       }
 }

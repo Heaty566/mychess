@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
-import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag } from './entity/chess.interface';
+import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag, ChessStatus } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 import { ChessMove } from './entity/chessMove.entity';
 import { ChessMoveRepository } from './entity/chessMove.repository';
@@ -252,17 +252,14 @@ export class ChessService {
             return result;
       }
 
-      private getKing(curPos: ChessMoveCoordinates, chessBoard: ChessBoard): ChessMoveRedis {
+      private getKing(flag: PlayerFlagEnum, chessBoard: ChessBoard): ChessMoveRedis {
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
-                        if (
-                              chessBoard.board[i][j].flag === chessBoard.board[curPos.x][curPos.y].flag &&
-                              chessBoard.board[i][j].chessRole === ChessRole.KING
-                        ) {
+                        if (chessBoard.board[i][j].flag === flag && chessBoard.board[i][j].chessRole === ChessRole.KING) {
                               return {
                                     x: i,
                                     y: j,
-                                    flag: chessBoard.board[curPos.x][curPos.y].flag,
+                                    flag: chessBoard.board[i][j].flag,
                                     chessRole: ChessRole.KING,
                               };
                         }
@@ -473,6 +470,7 @@ export class ChessService {
                   flag: chessBoard.board[desPos.x][desPos.y].flag,
                   chessRole: chessBoard.board[desPos.x][desPos.y].chessRole,
             };
+            const kingPosition: ChessMoveRedis = this.getKing(chessBoard.board[curPos.x][curPos.y].flag, chessBoard);
 
             let canMove = true;
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
@@ -482,7 +480,6 @@ export class ChessService {
                   chessRole: ChessRole.EMPTY,
             };
 
-            const kingPosition: ChessMoveRedis = this.getKing(desPos, chessBoard);
             if (this.kingIsChecked(kingPosition, chessBoard)) canMove = false;
 
             chessBoard.board[curPos.x][curPos.y] = chessBoard.board[desPos.x][desPos.y];
@@ -543,46 +540,52 @@ export class ChessService {
             return this.chessRoleLegalMove(currentPosition, chessBoard);
       }
 
-      // checkmate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
-      //       const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
-      //       if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
+      async checkmate(flag: 0 | 1, chessBoard: ChessBoard): Promise<boolean> {
+            const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
+            if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
 
-      //       for (let i = 0; i <= 7; i++) {
-      //             for (let j = 0; j <= 7; j++) {
-      //                   if (chessBoard.board[i][j].flag === flag) {
-      //                         const legalMove: Array<ChessMoveRedis> = this.legalMove(
-      //                               { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
-      //                               chessBoard,
-      //                         );
-      //                         if (legalMove.length > 0) return false;
-      //                   }
-      //             }
-      //       }
+            for (let i = 0; i <= 7; i++) {
+                  for (let j = 0; j <= 7; j++) {
+                        if (chessBoard.board[i][j].flag === flag) {
+                              const legalMove: Array<ChessMoveCoordinates> = this.legalMove({ x: i, y: j }, chessBoard);
+                              if (legalMove.length > 0) return false;
+                        }
+                  }
+            }
+            chessBoard.winner = 1 - flag;
+            chessBoard.status = ChessStatus.END;
+            const eloCalculator = this.chessCommonService.calculateElo(chessBoard.winner, chessBoard.users[0], chessBoard.users[1]);
+            chessBoard.users[0].elo += eloCalculator.whiteElo;
+            chessBoard.users[1].elo += eloCalculator.blackElo;
+            await this.chessCommonService.setBoard(chessBoard);
+            await this.chessCommonService.saveChessFromCacheToDb(chessBoard.id);
+            return true;
+      }
 
-      //       return true;
-      // }
+      async stalemate(flag: 0 | 1, chessBoard: ChessBoard): Promise<boolean> {
+            const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
+            if (this.kingIsChecked(kingPosition, chessBoard)) return false;
 
-      // stalemate(flag: 0 | 1, chessBoard: ChessBoard): boolean {
-      //       const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
-      //       if (this.kingIsChecked(kingPosition, chessBoard)) return false;
-
-      //       for (let i = 0; i <= 7; i++) {
-      //             for (let j = 0; j <= 7; j++) {
-      //                   if (chessBoard.board[i][j].flag === flag) {
-      //                         const legalMove: Array<ChessMoveRedis> = this.legalMove(
-      //                               { x: i, y: j, flag: chessBoard.board[i][j].flag, chessRole: chessBoard.board[i][j].chessRole },
-      //                               chessBoard,
-      //                         );
-      //                         if (legalMove.length > 0) return false;
-      //                   }
-      //             }
-      //       }
-
-      //       return true;
-      // }
+            for (let i = 0; i <= 7; i++) {
+                  for (let j = 0; j <= 7; j++) {
+                        if (chessBoard.board[i][j].flag === flag) {
+                              const legalMove: Array<ChessMoveCoordinates> = this.legalMove({ x: i, y: j }, chessBoard);
+                              if (legalMove.length > 0) return false;
+                        }
+                  }
+            }
+            chessBoard.winner = -1;
+            chessBoard.status = ChessStatus.END;
+            const eloCalculator = this.chessCommonService.calculateElo(chessBoard.winner, chessBoard.users[0], chessBoard.users[1]);
+            chessBoard.users[0].elo += eloCalculator.whiteElo;
+            chessBoard.users[1].elo += eloCalculator.blackElo;
+            await this.chessCommonService.setBoard(chessBoard);
+            await this.chessCommonService.saveChessFromCacheToDb(chessBoard.id);
+            return true;
+      }
 
       async playAMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, chessBoard: ChessBoard) {
-            const newChessMove = new ChessMove();
+            let newChessMove = new ChessMove();
             newChessMove.fromX = curPos.x;
             newChessMove.fromY = curPos.y;
             newChessMove.toX = desPos.x;
