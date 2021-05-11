@@ -18,7 +18,7 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { ChessGatewayAction } from './chessGateway.action';
-import { ChessMoveRedis } from './entity/chess.interface';
+import { ChessMoveRedis, ChessStatus } from './entity/chess.interface';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {
@@ -66,5 +66,21 @@ export class ChessGateway {
 
       promotePawn(boardId: string, promotePos: ChessMoveRedis) {
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_PROMOTE_PAWN, boardId, { data: promotePos }, 'chess');
+      }
+
+      @UseGuards(UserSocketGuard)
+      @SubscribeMessage(ChessGatewayAction.CHESS_COUNTER)
+      async handleGetTime(@MessageBody(new SocketJoiValidatorPipe(vChessRoomIdDto)) body: ChessRoomIdDTO) {
+            const getCacheGame = await this.getGameFromCache(body.roomId);
+            if (getCacheGame.status === ChessStatus.PLAYING) {
+                  const currentFlag = getCacheGame.turn ? 0 : 1;
+                  const currentTime = new Date().getTime();
+                  getCacheGame.users[currentFlag].time -= currentTime - new Date(getCacheGame.lastStep).getTime();
+                  if (getCacheGame.users[currentFlag].time <= 0) {
+                        await this.chessCommonService.surrender(getCacheGame.id, getCacheGame.users[currentFlag]);
+                        await this.sendToRoom(getCacheGame.id);
+                  }
+            }
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_COUNTER, getCacheGame.id, { data: getCacheGame.users }, 'chess');
       }
 }

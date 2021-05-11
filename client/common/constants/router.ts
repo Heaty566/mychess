@@ -9,7 +9,6 @@ type TRouters =
     | 'login'
     | 'home'
     | 'community'
-    | 'about'
     | 'support'
     | 'forgotPasswordEmail'
     | 'forgotPasswordPhone'
@@ -40,14 +39,7 @@ const config: Record<TRouters, IRouter> = {
             description: 'My Game',
         },
     },
-    about: {
-        link: '/about',
-        header: {
-            title: 'About Us',
-            canonical: '/about',
-            description: 'My Game',
-        },
-    },
+
     support: {
         link: '/support',
         header: {

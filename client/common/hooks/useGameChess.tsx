@@ -56,6 +56,9 @@ export function useGameChess(
         sound.play();
         chessApi.addMovePvP({ roomId, x, y });
     };
+
+    const handleOnSuggestion = () => {};
+
     const handleOnReady = () => {
         chessApi.readyGame({ roomId });
     };

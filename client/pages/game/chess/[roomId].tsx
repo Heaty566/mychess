@@ -81,7 +81,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         isAppear={board.status === ChessStatus.END}
                                     /> */}
 
-                                    <ChessBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} />
+                                    <ChessBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} suggestion={[]} />
                                 </div>
                             </div>
 
