@@ -585,7 +585,7 @@ export class ChessService {
       }
 
       async playAMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, chessBoard: ChessBoard) {
-            let newChessMove = new ChessMove();
+            const newChessMove = new ChessMove();
             newChessMove.fromX = curPos.x;
             newChessMove.fromY = curPos.y;
             newChessMove.toX = desPos.x;
@@ -605,10 +605,43 @@ export class ChessService {
             await this.chessCommonService.setBoard(chessBoard);
       }
 
-      isPromoted(desPos: ChessMoveCoordinates, board: ChessBoard): boolean {
+      isPromotePawn(desPos: ChessMoveCoordinates, board: ChessBoard): boolean {
             if (board.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return false;
             if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
             if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
             return false;
+      }
+
+      enPassantPos(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, board: ChessBoard): ChessMoveCoordinates {
+            if (board.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return null;
+
+            if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && curPos.y === 1 && desPos.y === 3)
+                  return { x: desPos.x, y: desPos.y - 1 };
+
+            if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && curPos.y === 6 && desPos.y === 4)
+                  return { x: desPos.x, y: desPos.y + 1 };
+
+            return null;
+      }
+
+      isEnPassantMove(desPos: ChessMoveCoordinates, enPassantPos: ChessMoveCoordinates, board: ChessBoard): boolean {
+            if (board.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return false;
+            if (desPos.x === enPassantPos.x && desPos.y === enPassantPos.y) return true;
+            return false;
+      }
+
+      async enPassantMove(enPassantPos: ChessMoveCoordinates, board: ChessBoard) {
+            if (board.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.WHITE) {
+                  board.board[enPassantPos.x][enPassantPos.y - 1] = {
+                        flag: PlayerFlagEnum.EMPTY,
+                        chessRole: ChessRole.EMPTY,
+                  };
+            } else if (board.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.BLACK) {
+                  board.board[enPassantPos.x][enPassantPos.y + 1] = {
+                        flag: PlayerFlagEnum.EMPTY,
+                        chessRole: ChessRole.EMPTY,
+                  };
+            }
+            await this.chessCommonService.setBoard(board);
       }
 }
