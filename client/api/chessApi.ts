@@ -24,7 +24,7 @@ export class ChessAPI {
         const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
         return res;
     }
-    async addMovePvP(input: AddMoveDto) {
+    async addMovePvP(input: { roomId: string; curPos: { x: number; y: number }; desPos: { x: number; y: number } }) {
         const url = `${this.prefix}/add-move`;
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
         return res;
@@ -60,7 +60,7 @@ export class ChessAPI {
     }
     async getSuggestion(input: ChessChooseAPieceDTO) {
         const url = `${this.prefix}/choose-piece`;
-        const res = await this.apiCall.put<ServerResponse<ChessMoveRedis[]>>(url, input);
+        const res = await this.apiCall.post<ServerResponse<ChessMoveRedis[]>>(url, input);
         return res;
     }
 }

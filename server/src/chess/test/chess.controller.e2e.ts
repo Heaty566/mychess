@@ -228,7 +228,7 @@ describe('ChessController', () => {
             });
 
             const reqApi = (input: ChessChooseAPieceDTO) =>
-                  supertest(app.getHttpServer()).put('/api/chess/choose-piece').set({ cookie: newCookie }).send(input);
+                  supertest(app.getHttpServer()).post('/api/chess/choose-piece').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: boardId, x: 3, y: 1 });
