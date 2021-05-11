@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChessRepository } from './entity/chess.repository';
-import { ChessPlayer, ChessStatus, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from './entity/chess.interface';
 import { Chess } from './entity/chess.entity';
 import { User } from '../user/entities/user.entity';
 import { ChessBoard } from './entity/chessBoard.entity';
@@ -131,7 +131,23 @@ export class ChessCommonService {
             const board = await this.getBoard(boardId);
             if (board) {
                   board.winner = surrenderPlayer.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+                  const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
+                  board.users[0].elo += eloCalculator.whiteElo;
+                  board.users[1].elo += eloCalculator.blackElo;
                   board.status = ChessStatus.END;
+                  await this.setBoard(board);
+                  await this.saveChessFromCacheToDb(boardId);
+            }
+      }
+
+      async draw(boardId: string) {
+            const board = await this.getBoard(boardId);
+            if (board) {
+                  board.winner = -1;
+                  board.status = ChessStatus.END;
+                  const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
+                  board.users[0].elo += eloCalculator.whiteElo;
+                  board.users[1].elo += eloCalculator.blackElo;
                   await this.setBoard(board);
                   await this.saveChessFromCacheToDb(boardId);
             }
@@ -188,5 +204,40 @@ export class ChessCommonService {
             const board = await this.getBoard(boardId);
             board.users[player.flag].ready = !board.users[player.flag].ready;
             await this.setBoard(board);
+      }
+
+      calculateElo(result: PlayerFlagEnum, playerWhite: ChessPlayer, playerBlack: ChessPlayer): EloCalculator {
+            const Qw = Math.pow(10, playerWhite.elo / 400);
+            const Qb = Math.pow(10, playerBlack.elo / 400);
+
+            const Ew = Qw / (Qw + Qb);
+            const Eb = Qb / (Qw + Qb);
+
+            let Kw, Kb;
+            if (Kw < 1600) Kw = 25;
+            else if (Kw < 2000) Kw = 20;
+            else if (Kw < 2400) Kw = 15;
+            else Kw = 10;
+            if (Kw < 1600) Kb = 25;
+            else if (Kw < 2000) Kb = 20;
+            else if (Kw < 2400) Kb = 15;
+            else Kb = 10;
+
+            let Aw, Ab;
+            if (result === PlayerFlagEnum.WHITE) {
+                  Aw = 1;
+                  Ab = 0;
+            } else if (result === PlayerFlagEnum.BLACK) {
+                  Aw = 0;
+                  Ab = 1;
+            } else if (result === PlayerFlagEnum.EMPTY) {
+                  Aw = 0;
+                  Ab = 0;
+            }
+
+            return {
+                  whiteElo: Math.floor(Kw * (Aw - Ew)),
+                  blackElo: Math.floor(Kb * (Ab - Eb)),
+            };
       }
 }

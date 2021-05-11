@@ -220,4 +220,16 @@ export class ChessController {
             board = await this.chessCommonService.getBoard(body.roomId);
             return apiResponse.send({ data: board });
       }
+
+      @Put('/restart')
+      @UseGuards(UserGuard)
+      async handleOnRestart() {
+            //
+      }
+
+      @Put('/draw')
+      @UseGuards(UserGuard)
+      async handleOnDraw() {
+            //
+      }
 }

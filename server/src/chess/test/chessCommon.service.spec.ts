@@ -9,7 +9,7 @@ import { ChessCommonService } from '../chessCommon.service';
 //---- Entity
 import User from '../../user/entities/user.entity';
 import { ChessBoard } from '../../chess/entity/chessBoard.entity';
-import { ChessPlayer, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
+import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from '../entity/chess.interface';
 import { ChessService } from '../chess.service';
 
 describe('chessCommonService', () => {
@@ -294,6 +294,43 @@ describe('chessCommonService', () => {
 
                   expect(getBoard.status).toBe(ChessStatus.PLAYING);
                   expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+            });
+      });
+
+      describe('calculateElo', () => {
+            let player1: ChessPlayer, player2: ChessPlayer;
+            let user1: User, user2: User;
+            let boardId: string;
+
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1);
+                  await chessCommonService.joinGame(boardId, user2);
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  player1 = getBoard.users[0];
+                  player2 = getBoard.users[1];
+            });
+
+            it('Test 1', () => {
+                  player1.elo = 1600;
+                  player2.elo = 1800;
+                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.WHITE, player1, player2);
+                  expect(result).toBeDefined();
+            });
+
+            it('Test 2', () => {
+                  player1.elo = 1600;
+                  player2.elo = 1800;
+                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.BLACK, player1, player2);
+                  expect(result).toBeDefined();
+            });
+
+            it('Test 3', () => {
+                  player1.elo = 1600;
+                  player2.elo = 1800;
+                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.EMPTY, player1, player2);
+                  expect(result).toBeDefined();
             });
       });
 

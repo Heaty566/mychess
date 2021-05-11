@@ -551,6 +551,9 @@ export class ChessService {
             }
             chessBoard.winner = 1 - flag;
             chessBoard.status = ChessStatus.END;
+            const eloCalculator = this.chessCommonService.calculateElo(chessBoard.winner, chessBoard.users[0], chessBoard.users[1]);
+            chessBoard.users[0].elo += eloCalculator.whiteElo;
+            chessBoard.users[1].elo += eloCalculator.blackElo;
             await this.chessCommonService.setBoard(chessBoard);
             await this.chessCommonService.saveChessFromCacheToDb(chessBoard.id);
             return true;
@@ -573,6 +576,9 @@ export class ChessService {
             }
             chessBoard.winner = -1;
             chessBoard.status = ChessStatus.END;
+            const eloCalculator = this.chessCommonService.calculateElo(chessBoard.winner, chessBoard.users[0], chessBoard.users[1]);
+            chessBoard.users[0].elo += eloCalculator.whiteElo;
+            chessBoard.users[1].elo += eloCalculator.blackElo;
             await this.chessCommonService.setBoard(chessBoard);
             await this.chessCommonService.saveChessFromCacheToDb(chessBoard.id);
             return true;
