@@ -138,7 +138,7 @@ export class ChessController {
 
             // pick empty square
             if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } }, data: [] }, 'BadRequestException');
             // pick enemy piece
             if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
@@ -194,7 +194,7 @@ export class ChessController {
                         board.board[move.x][move.y].flag === board.board[desPos.x][desPos.y].flag &&
                         board.board[move.x][move.y].chessRole === board.board[desPos.x][desPos.y].chessRole,
             );
-            if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (!canMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
             // move chess
             await this.chessService.playAMove(curPos, desPos, board.id);
 
@@ -222,14 +222,14 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             if (!(await this.chessService.isPromotePawn(body.promotePos, board.id)))
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
             if (board.board[body.promotePos.x][body.promotePos.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
 
             if (board.board[body.promotePos.x][body.promotePos.y].flag !== player.flag)
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
             board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
             await this.chessCommonService.setBoard(board);
@@ -249,10 +249,10 @@ export class ChessController {
 
             const player = await this.getPlayer(board.id, req.user.id);
             if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
 
             if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag !== player.flag)
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
             await this.chessService.enPassantMove(body.enPassantPos, board.id);
 
