@@ -145,6 +145,49 @@ export class ChessService {
                         result.push({ x: x, y: y });
                   }
             }
+
+            // castle
+            const kingIsMoved = await this.kingIsMoved(chessBoard.board[currentPosition.x][currentPosition.y].flag, boardId);
+            const rookKingSiteIsMoved = await this.rookKingSiteIsMoved(chessBoard.board[currentPosition.x][currentPosition.y].flag, boardId);
+            const rookQueenSiteIsMoved = await this.rookQueenSiteIsMoved(chessBoard.board[currentPosition.x][currentPosition.y].flag, boardId);
+
+            if (!kingIsMoved && !rookKingSiteIsMoved) {
+                  if (
+                        chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.WHITE &&
+                        chessBoard.board[5][0].flag === PlayerFlagEnum.EMPTY &&
+                        chessBoard.board[6][0].flag === PlayerFlagEnum.EMPTY &&
+                        (await this.canMove({ x: 4, y: 0 }, { x: 5, y: 0 }, boardId))
+                  )
+                        result.push({ x: 6, y: 0 });
+
+                  if (
+                        chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.BLACK &&
+                        chessBoard.board[5][7].flag === PlayerFlagEnum.EMPTY &&
+                        chessBoard.board[6][7].flag === PlayerFlagEnum.EMPTY &&
+                        (await this.canMove({ x: 4, y: 7 }, { x: 5, y: 7 }, boardId))
+                  )
+                        result.push({ x: 6, y: 7 });
+            }
+
+            if (!kingIsMoved && !rookQueenSiteIsMoved) {
+                  if (
+                        chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.WHITE &&
+                        chessBoard.board[1][0].flag === PlayerFlagEnum.EMPTY &&
+                        chessBoard.board[2][0].flag === PlayerFlagEnum.EMPTY &&
+                        chessBoard.board[3][0].flag === PlayerFlagEnum.EMPTY &&
+                        (await this.canMove({ x: 4, y: 0 }, { x: 3, y: 0 }, boardId))
+                  )
+                        result.push({ x: 2, y: 0 });
+
+                  if (
+                        chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.BLACK &&
+                        chessBoard.board[1][7].flag === PlayerFlagEnum.EMPTY &&
+                        chessBoard.board[2][7].flag === PlayerFlagEnum.EMPTY &&
+                        chessBoard.board[3][7].flag === PlayerFlagEnum.EMPTY &&
+                        (await this.canMove({ x: 4, y: 7 }, { x: 3, y: 7 }, boardId))
+                  )
+                        result.push({ x: 2, y: 7 });
+            }
             return result;
       }
 
@@ -545,6 +588,31 @@ export class ChessService {
             return false;
       }
 
+      private async isCastleKingSite(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            let result = false;
+            const kingIsMoved = await this.kingIsMoved(chessBoard.board[curPos.x][curPos.y].flag, boardId);
+            const rookKingSiteIsMoved = await this.rookKingSiteIsMoved(chessBoard.board[curPos.x][curPos.y].flag, boardId);
+
+            if (chessBoard.board[curPos.x][curPos.y].chessRole === ChessRole.KING && !kingIsMoved && !rookKingSiteIsMoved) {
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE && desPos.x === 6 && desPos.y === 0) result = true;
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK && desPos.x === 6 && desPos.y === 7) result = true;
+            }
+            return result;
+      }
+
+      private async isCaslteQueenSite(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            let result = false;
+            const kingIsMoved = await this.kingIsMoved(chessBoard.board[curPos.x][curPos.y].flag, boardId);
+            const rookQueenSiteIsMoved = await this.rookQueenSiteIsMoved(chessBoard.board[curPos.x][curPos.y].flag, boardId);
+            if (chessBoard.board[curPos.x][curPos.y].chessRole === ChessRole.KING && !kingIsMoved && !rookQueenSiteIsMoved) {
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE && desPos.x === 2 && desPos.y === 0) result = true;
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK && desPos.x === 2 && desPos.y === 7) result = true;
+            }
+            return result;
+      }
+
       private async isEnPassant(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string): Promise<boolean> {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
             let result = false;
@@ -601,6 +669,8 @@ export class ChessService {
 
             // fake move to check the move is valid or not
             let canMove = true;
+
+            // en passant
             if (isEnPassant)
                   chessBoard.board[desPos.x][curPos.y] = {
                         flag: PlayerFlagEnum.EMPTY,
@@ -750,6 +820,54 @@ export class ChessService {
                         flag: PlayerFlagEnum.EMPTY,
                         chessRole: ChessRole.EMPTY,
                   };
+
+            const isCastleKingSite = await this.isCastleKingSite(curPos, desPos, boardId);
+            if (isCastleKingSite) {
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE) {
+                        chessBoard.board[5][0] = {
+                              flag: PlayerFlagEnum.WHITE,
+                              chessRole: ChessRole.ROOK,
+                        };
+                        chessBoard.board[7][0] = {
+                              flag: PlayerFlagEnum.EMPTY,
+                              chessRole: ChessRole.EMPTY,
+                        };
+                  }
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK) {
+                        chessBoard.board[5][7] = {
+                              flag: PlayerFlagEnum.BLACK,
+                              chessRole: ChessRole.ROOK,
+                        };
+                        chessBoard.board[7][7] = {
+                              flag: PlayerFlagEnum.EMPTY,
+                              chessRole: ChessRole.EMPTY,
+                        };
+                  }
+            }
+
+            const isCaslteQueenSite = await this.isCaslteQueenSite(curPos, desPos, boardId);
+            if (isCaslteQueenSite) {
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE) {
+                        chessBoard.board[3][0] = {
+                              flag: PlayerFlagEnum.WHITE,
+                              chessRole: ChessRole.ROOK,
+                        };
+                        chessBoard.board[0][0] = {
+                              flag: PlayerFlagEnum.EMPTY,
+                              chessRole: ChessRole.EMPTY,
+                        };
+                  }
+                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK) {
+                        chessBoard.board[3][7] = {
+                              flag: PlayerFlagEnum.BLACK,
+                              chessRole: ChessRole.ROOK,
+                        };
+                        chessBoard.board[0][7] = {
+                              flag: PlayerFlagEnum.EMPTY,
+                              chessRole: ChessRole.EMPTY,
+                        };
+                  }
+            }
 
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
 
