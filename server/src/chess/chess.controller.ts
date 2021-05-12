@@ -214,8 +214,9 @@ export class ChessController {
             // check promote pawn
             if (this.chessService.isPromotePawn(desPos, board)) this.chessGateway.promotePawn(board.id, desPos);
 
-            await this.chessService.checkmate(player.flag, board);
-            await this.chessService.stalemate(player.flag, board);
+            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+            await this.chessService.checkmate(enemyFlag, board);
+            await this.chessService.stalemate(enemyFlag, board);
 
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
