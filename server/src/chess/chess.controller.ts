@@ -168,8 +168,8 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
             if (
-                  (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK) ||
-                  (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE)
+                  (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE) ||
+                  (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK)
             )
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
 
@@ -197,10 +197,6 @@ export class ChessController {
             if (!canMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
             // move chess
             await this.chessService.playAMove(curPos, desPos, board.id);
-
-            // check en passant move
-            const enPassantPos = await this.chessService.enPassant(curPos, desPos, board.id);
-            if (!enPassantPos) this.chessGateway.enPassantMove(board.id, enPassantPos);
 
             // check promote pawn
             if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, desPos);
@@ -233,28 +229,6 @@ export class ChessController {
 
             board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
             await this.chessCommonService.setBoard(board);
-
-            await this.chessGateway.sendToRoom(board.id);
-            board = await this.chessCommonService.getBoard(body.roomId);
-            return apiResponse.send({ data: board });
-      }
-
-      @Put('/en-passant')
-      @UseGuards(UserGuard)
-      @UsePipes(new JoiValidatorPipe(vChessEnPassantDto))
-      async handleOnEnPassantMove(@Req() req: Request, @Body() body: ChessEnPassantDto) {
-            let board = await this.getGame(body.roomId);
-            if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
-
-            const player = await this.getPlayer(board.id, req.user.id);
-            if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
-
-            if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag !== player.flag)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
-
-            await this.chessService.enPassantMove(body.enPassantPos, board.id);
 
             await this.chessGateway.sendToRoom(board.id);
             board = await this.chessCommonService.getBoard(body.roomId);

@@ -35,7 +35,7 @@ export class ChessBoard {
             this.board = [[...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow], [...initRow]];
             this.moves = [];
             this.id = generatorString(8, 'number');
-            this.turn = isBotMode ? true : Boolean(Math.random() < 0.5);
+            this.turn = false; // false = 0 = white, true = 1 = black
             this.users = [];
             this.winner = PlayerFlagEnum.EMPTY;
             this.status = ChessStatus.NOT_YET;

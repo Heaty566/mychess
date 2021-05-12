@@ -280,7 +280,7 @@ describe('ChessController', () => {
                   newCookie2 = generateCookie(await authService.createReToken(user2));
             });
 
-            let reqApi = (input: ChessAddMoveDto) =>
+            const reqApi = (input: ChessAddMoveDto) =>
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie1 }).send(input);
 
             it('Pass', async () => {
@@ -362,105 +362,6 @@ describe('ChessController', () => {
                         },
                   });
                   expect(res.status).toBe(400);
-            });
-
-            it('Pass with en passant move', async () => {
-                  let board = await chessCommonService.getBoard(boardId);
-                  board.turn = true;
-                  board.board[2][3] = { chessRole: ChessRole.PAWN, flag: PlayerFlagEnum.BLACK };
-                  board.board[2][6] = { chessRole: ChessRole.EMPTY, flag: PlayerFlagEnum.EMPTY };
-                  await chessCommonService.setBoard(board);
-
-                  await reqApi({
-                        roomId: boardId,
-                        curPos: {
-                              x: 1,
-                              y: 1,
-                        },
-                        desPos: {
-                              x: 1,
-                              y: 3,
-                        },
-                  });
-
-                  board = await chessCommonService.getBoard(boardId);
-                  board.turn = false;
-                  expect(board.enPassantPos).toBeTruthy();
-                  await chessCommonService.setBoard(board);
-
-                  reqApi = (input: ChessAddMoveDto) =>
-                        supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie2 }).send(input);
-
-                  const res = await reqApi({
-                        roomId: boardId,
-                        curPos: {
-                              x: 2,
-                              y: 3,
-                        },
-                        desPos: {
-                              x: 1,
-                              y: 2,
-                        },
-                  });
-
-                  board = await chessCommonService.getBoard(boardId);
-                  expect(board.enPassantPos).toBeTruthy();
-                  expect(res.status).toBe(200);
-            });
-      });
-
-      describe('PUT /en-passant', () => {
-            let user1: User, user2: User;
-            let newCookie: string[];
-            let boardId: string;
-            let player1: ChessPlayer, player2: ChessPlayer;
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
-
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
-
-                  await chessCommonService.startGame(boardId);
-
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
-
-                  newCookie = generateCookie(await authService.createReToken(user1));
-            });
-            const reqApi = (input: ChessEnPassantDto) =>
-                  supertest(app.getHttpServer()).put('/api/chess/en-passant').set({ cookie: newCookie }).send(input);
-
-            it('Pass', async () => {
-                  let getBoard = await chessCommonService.getBoard(boardId);
-                  getBoard.board[1][5] = {
-                        flag: PlayerFlagEnum.WHITE,
-                        chessRole: ChessRole.PAWN,
-                  };
-                  getBoard.board[1][1] = {
-                        flag: PlayerFlagEnum.EMPTY,
-                        chessRole: ChessRole.EMPTY,
-                  };
-                  getBoard.board[1][4] = {
-                        flag: PlayerFlagEnum.BLACK,
-                        chessRole: ChessRole.PAWN,
-                  };
-                  await chessCommonService.setBoard(getBoard);
-                  const res = await reqApi({
-                        roomId: boardId,
-                        enPassantPos: {
-                              x: 1,
-                              y: 5,
-                        },
-                  });
-                  getBoard = await chessCommonService.getBoard(boardId);
-
-                  expect(res.status).toBe(200);
-                  expect(getBoard.board[1][4].chessRole).toBe(ChessRole.EMPTY);
-                  expect(getBoard.board[1][4].flag).toBe(PlayerFlagEnum.EMPTY);
             });
       });
 
