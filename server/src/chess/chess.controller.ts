@@ -184,9 +184,6 @@ export class ChessController {
 
             const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove(curPos, board.id);
 
-            // add en passant to available move
-            if (board.board[curPos.x][curPos.y].chessRole === ChessRole.PAWN && board.enPassantPos) legalMoves.push(board.enPassantPos);
-
             const canMove = legalMoves.find(
                   (move) =>
                         move.x === desPos.x &&

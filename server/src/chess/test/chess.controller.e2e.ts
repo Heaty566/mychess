@@ -284,7 +284,7 @@ describe('ChessController', () => {
 
             it('Pass', async () => {
                   let getBoard = await chessCommonService.getBoard(boardId);
-                  getBoard.turn = true;
+                  getBoard.turn = false;
                   await chessCommonService.setBoard(getBoard);
 
                   const res = await reqApi({
@@ -300,31 +300,11 @@ describe('ChessController', () => {
                   });
 
                   getBoard = await chessCommonService.getBoard(boardId);
+                  console.log(res.body);
                   expect(res.status).toBe(200);
 
                   expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
                   expect(getBoard.board[1][3].flag).toBe(PlayerFlagEnum.WHITE);
-            });
-
-            it('Pass with en passant condition', async () => {
-                  let getBoard = await chessCommonService.getBoard(boardId);
-                  getBoard.turn = true;
-                  await chessCommonService.setBoard(getBoard);
-                  const res = await reqApi({
-                        roomId: boardId,
-                        curPos: {
-                              x: 1,
-                              y: 1,
-                        },
-                        desPos: {
-                              x: 1,
-                              y: 3,
-                        },
-                  });
-
-                  getBoard = await chessCommonService.getBoard(boardId);
-                  expect(getBoard.enPassantPos).toBeTruthy();
-                  expect(res.status).toBe(200);
             });
 
             it('Failed invalid destination square', async () => {
