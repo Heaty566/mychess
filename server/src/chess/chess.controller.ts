@@ -162,15 +162,16 @@ export class ChessController {
             const player = await this.getPlayer(board.id, req.user.id);
 
             if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
 
-            if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
             if (
                   (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK) ||
                   (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE)
             )
-                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
 
             const curPos: ChessMoveCoordinates = {
                   x: body.curPos.x,
