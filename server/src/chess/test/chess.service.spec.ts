@@ -11,6 +11,7 @@ import { User } from '../../user/entities/user.entity';
 import { ChessBoard } from '../entity/chessBoard.entity';
 import { ChessRole, PlayerFlagEnum } from '../entity/chess.interface';
 import { ChessCommonService } from '../chessCommon.service';
+import { async } from 'rxjs';
 
 //---- Repository
 
@@ -558,6 +559,17 @@ describe('ChessService', () => {
                         flag: PlayerFlagEnum.WHITE,
                   };
                   await chessCommonService.setBoard(chessBoard);
+            });
+
+            it('king is not going to die', async () => {
+                  chessBoard.board[0][2] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: PlayerFlagEnum.BLACK,
+                  };
+
+                  await chessCommonService.setBoard(chessBoard);
+                  const legalMove = await chessService.legalMove({ x: 4, y: 1 }, chessBoard.id);
+                  expect(legalMove.length).toBe(5);
             });
 
             it('pawn', async () => {

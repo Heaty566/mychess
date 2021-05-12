@@ -141,9 +141,6 @@ export class ChessController {
                   throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
             // pick enemy piece
             if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
-            // not player turn
-            if ((board.turn === false && player.flag === PlayerFlagEnum.BLACK) || (board.turn === true && player.flag === PlayerFlagEnum.WHITE))
-                  throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
             const currentPosition: ChessMoveCoordinates = {
                   x: body.x,
@@ -169,6 +166,12 @@ export class ChessController {
 
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
+            if (
+                  (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK) ||
+                  (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE)
+            )
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
             const curPos: ChessMoveCoordinates = {
                   x: body.curPos.x,
                   y: body.curPos.y,
@@ -191,7 +194,6 @@ export class ChessController {
                         board.board[move.x][move.y].chessRole === board.board[desPos.x][desPos.y].chessRole,
             );
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
-
             // move chess
             await this.chessService.playAMove(curPos, desPos, board.id);
 
@@ -202,8 +204,9 @@ export class ChessController {
             // check promote pawn
             if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, desPos);
 
-            await this.chessService.checkmate(player.flag, board.id);
-            await this.chessService.stalemate(player.flag, board.id);
+            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+            await this.chessService.checkmate(enemyFlag, board.id);
+            await this.chessService.stalemate(enemyFlag, board.id);
 
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
@@ -273,7 +276,30 @@ export class ChessController {
 
       @Put('/draw')
       @UseGuards(UserGuard)
-      async handleOnDraw() {
-            //
+      async handleOnDraw(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
+            await this.chessCommonService.draw(board.id);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/surrender')
+      @UseGuards(UserGuard)
+      async handleOnSurrender(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
+            await this.chessCommonService.surrender(board.id, player);
+
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 }
