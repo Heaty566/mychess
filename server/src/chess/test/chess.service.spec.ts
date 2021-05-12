@@ -541,6 +541,15 @@ describe('ChessService', () => {
                   };
             });
 
+            it('king is not going to die', () => {
+                  chessBoard.board[0][2] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: 1,
+                  };
+                  const legalMove = chessService.legalMove({ x: 4, y: 1 }, chessBoard);
+                  expect(legalMove.length).toBe(5);
+            });
+
             it('pawn', () => {
                   const legalMove = chessService['chessRoleLegalMove']({ x: 0, y: 2 }, chessBoard);
                   expect(legalMove.length).toBeDefined();

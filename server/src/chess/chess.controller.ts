@@ -141,9 +141,6 @@ export class ChessController {
                   throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
             // pick enemy piece
             if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
-            // not player turn
-            if ((board.turn === false && player.flag === PlayerFlagEnum.BLACK) || (board.turn === true && player.flag === PlayerFlagEnum.WHITE))
-                  throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
 
             const currentPosition: ChessMoveCoordinates = {
                   x: body.x,
@@ -151,6 +148,7 @@ export class ChessController {
             };
 
             const legalMoves = this.chessService.legalMove(currentPosition, board);
+
             return apiResponse.send<Array<ChessMoveCoordinates>>({ data: legalMoves });
       }
 
@@ -168,6 +166,12 @@ export class ChessController {
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+
+            if (
+                  (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK) ||
+                  (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE)
+            )
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const curPos: ChessMoveCoordinates = {
                   x: body.curPos.x,
@@ -283,6 +287,9 @@ export class ChessController {
       async handleOnDraw(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
 
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
             await this.chessCommonService.draw(board.id);
 
             await this.chessGateway.sendToRoom(board.id);
@@ -293,6 +300,9 @@ export class ChessController {
       @UseGuards(UserGuard)
       async handleOnSurrender(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
+
+            if (board.status !== ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
             await this.chessCommonService.surrender(board.id, player);
