@@ -38,9 +38,9 @@ export class ChessCommonService {
             const boards = await board.getMany();
             const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
 
+            const count = boards.length;
             const result = boards.splice(0, 6);
-            const count = result.length;
-            return { result, count, totalWin };
+            return { boards: result, count, totalWin };
       }
 
       async getManyChessByQuery(where: string, parameters: ObjectLiteral) {

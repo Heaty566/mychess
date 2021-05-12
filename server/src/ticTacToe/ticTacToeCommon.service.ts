@@ -27,25 +27,27 @@ export class TicTacToeCommonService {
       ) {}
 
       async getAllBoardByUserId(userId: string) {
-            const tics = await this.ticTacToeRepository
+            const chesses = await this.ticTacToeRepository
                   .createQueryBuilder('tic')
                   .leftJoinAndSelect('tic.users', 'user')
                   .where(`user.id = :userId`, { userId })
-                  .take(6)
                   .getMany();
 
-            if (!tics.length) return { boards: [], count: 0, totalWin: 0 };
-            const ticIds = tics.map((item) => item.id);
+            if (!chesses.length) return { boards: [], count: 0, totalWin: 0 };
+            const chessIds = chesses.map((chess) => chess.id);
 
             const board = await this.ticTacToeRepository
                   .getBoardQuery()
-                  .where(`tic.id in (:...values)`, { values: ticIds })
+                  .where(`tic.id in (:...values)`, { values: chessIds })
                   .orderBy('tic.startDate', 'DESC');
+
             const boards = await board.getMany();
-            const count = await board.getCount();
             const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
 
-            return { boards, count, totalWin };
+            const count = boards.length;
+            const result = boards.splice(0, 6);
+
+            return { boards: result, count, totalWin };
       }
 
       async getBoard(boardId: string) {
