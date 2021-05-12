@@ -1,4 +1,5 @@
 {
+      "error.invalid-position": "position is invalid",
       "error.is-not-your-turn": "it is not your turn",
       "error.is-not-your-piece": "this piece is not your piece",
       "error.piece-is-empty": "current position is empty",

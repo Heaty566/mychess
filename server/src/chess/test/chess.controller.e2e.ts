@@ -280,7 +280,7 @@ describe('ChessController', () => {
                   newCookie2 = generateCookie(await authService.createReToken(user2));
             });
 
-            let reqApi = (input: ChessAddMoveDto) =>
+            const reqApi = (input: ChessAddMoveDto) =>
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie1 }).send(input);
 
             it('Pass', async () => {
