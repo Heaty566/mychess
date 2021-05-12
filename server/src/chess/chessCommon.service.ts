@@ -25,7 +25,6 @@ export class ChessCommonService {
                   .createQueryBuilder('chess')
                   .leftJoinAndSelect('chess.users', 'user')
                   .where(`user.id = :userId`, { userId })
-                  .take(6)
                   .getMany();
 
             if (!chesses.length) return { boards: [], count: 0, totalWin: 0 };
@@ -37,10 +36,11 @@ export class ChessCommonService {
                   .orderBy('chess.startDate', 'DESC');
 
             const boards = await board.getMany();
-            const count = await board.getCount();
             const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
 
-            return { boards, count, totalWin };
+            const result = boards.splice(0, 6);
+            const count = result.length;
+            return { result, count, totalWin };
       }
 
       async getManyChessByQuery(where: string, parameters: ObjectLiteral) {
