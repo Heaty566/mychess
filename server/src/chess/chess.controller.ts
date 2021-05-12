@@ -11,7 +11,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMoveRedis, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './entity/chess.interface';
+import { ChessMoveRedis, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates, ChessRole } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- DTO
@@ -147,8 +147,7 @@ export class ChessController {
                   y: body.y,
             };
 
-            const legalMoves = this.chessService.legalMove(currentPosition, board);
-
+            const legalMoves = await this.chessService.legalMove(currentPosition, board.id);
             return apiResponse.send<Array<ChessMoveCoordinates>>({ data: legalMoves });
       }
 
@@ -182,11 +181,10 @@ export class ChessController {
                   y: body.desPos.y,
             };
 
-            const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove(curPos, board);
+            const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove(curPos, board.id);
 
             // add en passant to available move
-            const enPassantPosRedis: ChessMoveCoordinates = await this.redisService.getObjectByKey('chess-en-passant' + board.id);
-            if (enPassantPosRedis) legalMoves.push(enPassantPosRedis);
+            if (board.board[curPos.x][curPos.y].chessRole === ChessRole.PAWN && board.enPassantPos) legalMoves.push(board.enPassantPos);
 
             const canMove = legalMoves.find(
                   (move) =>
@@ -195,28 +193,20 @@ export class ChessController {
                         board.board[move.x][move.y].flag === board.board[desPos.x][desPos.y].flag &&
                         board.board[move.x][move.y].chessRole === board.board[desPos.x][desPos.y].chessRole,
             );
-
             if (!canMove) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
-
             // move chess
-            await this.chessService.playAMove(curPos, desPos, board);
+            await this.chessService.playAMove(curPos, desPos, board.id);
 
             // check en passant move
-            if (enPassantPosRedis && this.chessService.isEnPassantMove(desPos, enPassantPosRedis, board)) {
-                  this.chessGateway.enPassantMove(board.id, enPassantPosRedis);
-                  await this.redisService.deleteByKey('chess-en-passant' + board.id);
-            }
-
-            // check en passant conditions
-            const enPassantPos = this.chessService.enPassantPos(curPos, desPos, board);
-            if (enPassantPos) this.redisService.setObjectByKey('chess-en-passant' + board.id, enPassantPos);
+            const enPassantPos = await this.chessService.enPassant(curPos, desPos, board.id);
+            if (!enPassantPos) this.chessGateway.enPassantMove(board.id, enPassantPos);
 
             // check promote pawn
-            if (this.chessService.isPromotePawn(desPos, board)) this.chessGateway.promotePawn(board.id, desPos);
+            if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, desPos);
 
             const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
-            await this.chessService.checkmate(enemyFlag, board);
-            await this.chessService.stalemate(enemyFlag, board);
+            await this.chessService.checkmate(enemyFlag, board.id);
+            await this.chessService.stalemate(enemyFlag, board.id);
 
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
@@ -230,7 +220,8 @@ export class ChessController {
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
-            if (!this.chessService.isPromotePawn(body.promotePos, board)) throw apiResponse.sendError({ details: {} }, 'BadRequestException');
+            if (!(await this.chessService.isPromotePawn(body.promotePos, board.id)))
+                  throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
             if (board.board[body.promotePos.x][body.promotePos.y].flag === PlayerFlagEnum.EMPTY)
@@ -262,7 +253,7 @@ export class ChessController {
             if (board.board[body.enPassantPos.x][body.enPassantPos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: {} }, 'BadRequestException');
 
-            await this.chessService.enPassantMove(body.enPassantPos, board);
+            await this.chessService.enPassantMove(body.enPassantPos, board.id);
 
             await this.chessGateway.sendToRoom(board.id);
             board = await this.chessCommonService.getBoard(body.roomId);

@@ -284,6 +284,10 @@ describe('ChessController', () => {
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie1 }).send(input);
 
             it('Pass', async () => {
+                  let getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = true;
+                  await chessCommonService.setBoard(getBoard);
+
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
@@ -296,13 +300,17 @@ describe('ChessController', () => {
                         },
                   });
 
-                  const getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard = await chessCommonService.getBoard(boardId);
                   expect(res.status).toBe(200);
+
                   expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
-                  expect(getBoard.board[1][3].flag).toBe(0);
+                  expect(getBoard.board[1][3].flag).toBe(PlayerFlagEnum.WHITE);
             });
 
             it('Pass with en passant condition', async () => {
+                  let getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = true;
+                  await chessCommonService.setBoard(getBoard);
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
@@ -315,12 +323,15 @@ describe('ChessController', () => {
                         },
                   });
 
-                  const enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
-                  expect(enPassantPosRedis).toBeTruthy();
+                  getBoard = await chessCommonService.getBoard(boardId);
+                  expect(getBoard.enPassantPos).toBeTruthy();
                   expect(res.status).toBe(200);
             });
 
             it('Failed invalid destination square', async () => {
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = true;
+                  await chessCommonService.setBoard(getBoard);
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
@@ -336,6 +347,9 @@ describe('ChessController', () => {
             });
 
             it('Failed wrong current square', async () => {
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = false;
+                  await chessCommonService.setBoard(getBoard);
                   const res = await reqApi({
                         roomId: boardId,
                         curPos: {
@@ -351,7 +365,8 @@ describe('ChessController', () => {
             });
 
             it('Pass with en passant move', async () => {
-                  const board = await chessCommonService.getBoard(boardId);
+                  let board = await chessCommonService.getBoard(boardId);
+                  board.turn = true;
                   board.board[2][3] = { chessRole: ChessRole.PAWN, flag: PlayerFlagEnum.BLACK };
                   board.board[2][6] = { chessRole: ChessRole.EMPTY, flag: PlayerFlagEnum.EMPTY };
                   await chessCommonService.setBoard(board);
@@ -368,8 +383,10 @@ describe('ChessController', () => {
                         },
                   });
 
-                  let enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
-                  expect(enPassantPosRedis).toBeTruthy();
+                  board = await chessCommonService.getBoard(boardId);
+                  board.turn = false;
+                  expect(board.enPassantPos).toBeTruthy();
+                  await chessCommonService.setBoard(board);
 
                   reqApi = (input: ChessAddMoveDto) =>
                         supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie2 }).send(input);
@@ -386,8 +403,8 @@ describe('ChessController', () => {
                         },
                   });
 
-                  enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
-                  expect(enPassantPosRedis).toBeNull();
+                  board = await chessCommonService.getBoard(boardId);
+                  expect(board.enPassantPos).toBeTruthy();
                   expect(res.status).toBe(200);
             });
       });
