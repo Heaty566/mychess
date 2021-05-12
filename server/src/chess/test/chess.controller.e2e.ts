@@ -56,7 +56,6 @@ describe('ChessController', () => {
 
             it('Pass', async () => {
                   const res = await reqApi(newUser.id);
-
                   expect(res.body.data).toBeDefined();
             });
       });
