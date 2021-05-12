@@ -30,7 +30,7 @@ export class User {
       @Column({ default: null, unique: true })
       githubId: string;
 
-      @Column({ default: 0 })
+      @Column({ default: 1200 })
       elo: number;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
