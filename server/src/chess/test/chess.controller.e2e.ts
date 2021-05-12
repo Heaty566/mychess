@@ -21,7 +21,6 @@ import { ChessPromotePawnDto } from '../dto/chessPromotePawnDto';
 //---- Common
 import { initTestModule } from '../../test/initTest';
 import { generateCookie } from '../../test/test.helper';
-import { ChessEnPassantDto } from '../dto/chessEnPassantDto';
 
 describe('ChessController', () => {
       let app: INestApplication;
