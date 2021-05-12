@@ -14,7 +14,8 @@ export class ChessBoard {
       chatId: string;
       lastStep: Date;
       enPassantPos: ChessMoveCoordinates;
-      elo: number[];
+      eloBlackUser: number;
+      eloWhiteUser: number;
 
       constructor(readonly isBotMode: boolean) {
             const initCell: ChessFlag = {

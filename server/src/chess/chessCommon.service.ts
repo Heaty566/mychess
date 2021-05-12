@@ -135,7 +135,8 @@ export class ChessCommonService {
                   const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
                   board.users[0].elo += eloCalculator.whiteElo;
                   board.users[1].elo += eloCalculator.blackElo;
-                  board.elo = [eloCalculator.blackElo, eloCalculator.whiteElo];
+                  board.eloBlackUser = eloCalculator.blackElo;
+                  board.eloWhiteUser = eloCalculator.whiteElo;
                   board.status = ChessStatus.END;
                   await this.setBoard(board);
                   await this.saveChessFromCacheToDb(boardId);
@@ -150,7 +151,8 @@ export class ChessCommonService {
                   const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
                   board.users[0].elo += eloCalculator.whiteElo;
                   board.users[1].elo += eloCalculator.blackElo;
-                  board.elo = [eloCalculator.blackElo, eloCalculator.whiteElo];
+                  board.eloBlackUser = eloCalculator.blackElo;
+                  board.eloWhiteUser = eloCalculator.whiteElo;
                   await this.setBoard(board);
                   await this.saveChessFromCacheToDb(boardId);
             }
@@ -176,7 +178,8 @@ export class ChessCommonService {
             newChess.winner = board.winner;
             newChess.chatId = chat.id;
             newChess.moves = moves;
-            newChess.elo = board.elo;
+            newChess.eloBlackUser = board.eloBlackUser;
+            newChess.eloWhiteUser = board.eloWhiteUser;
             newChess.endDate = new Date();
 
             const chess = await this.chessRepository.save(newChess);

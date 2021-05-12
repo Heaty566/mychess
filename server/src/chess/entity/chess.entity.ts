@@ -23,8 +23,11 @@ export class Chess {
       @Column({ default: -1 })
       winner: PlayerFlagEnum;
 
-      @Column()
-      elo: number[];
+      @Column({ default: 0 })
+      eloBlackUser: number;
+
+      @Column({ default: 0 })
+      eloWhiteUser: number;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       startDate: Date;
