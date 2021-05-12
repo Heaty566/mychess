@@ -48,7 +48,6 @@ export class ChessGateway {
 
       async restartGame(boardId: string, newBoardId: string) {
             const board = await this.chessCommonService.getBoard(newBoardId);
-
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_RESTART, boardId, { data: board }, 'chess');
       }
 
@@ -72,10 +71,6 @@ export class ChessGateway {
 
       promotePawn(boardId: string, promotePos: ChessMoveCoordinates) {
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_PROMOTE_PAWN, boardId, { data: promotePos }, 'chess');
-      }
-
-      enPassantMove(boardId: string, enPassantPos: ChessMoveCoordinates) {
-            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_EN_PASSANT_MOVE, boardId, { data: enPassantPos }, 'chess');
       }
 
       @UseGuards(UserSocketGuard)
