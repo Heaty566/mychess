@@ -1,5 +1,5 @@
 import { generatorString } from '../../app/helpers/stringGenerator';
-import { ChessFlag, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from './chess.interface';
+import { ChessFlag, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './chess.interface';
 import { ChessMove } from './chessMove.entity';
 
 export class ChessBoard {
@@ -13,6 +13,7 @@ export class ChessBoard {
       status: ChessStatus;
       chatId: string;
       lastStep: Date;
+      enPassantPos: ChessMoveCoordinates;
 
       constructor(readonly isBotMode: boolean) {
             const initCell: ChessFlag = {

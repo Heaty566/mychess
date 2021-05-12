@@ -315,8 +315,8 @@ describe('ChessController', () => {
                         },
                   });
 
-                  const enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
-                  expect(enPassantPosRedis).toBeTruthy();
+                  const board = await chessCommonService.getBoard(boardId);
+                  expect(board.enPassantPos).toBeTruthy();
                   expect(res.status).toBe(200);
             });
 
@@ -351,7 +351,7 @@ describe('ChessController', () => {
             });
 
             it('Pass with en passant move', async () => {
-                  const board = await chessCommonService.getBoard(boardId);
+                  let board = await chessCommonService.getBoard(boardId);
                   board.board[2][3] = { chessRole: ChessRole.PAWN, flag: PlayerFlagEnum.BLACK };
                   board.board[2][6] = { chessRole: ChessRole.EMPTY, flag: PlayerFlagEnum.EMPTY };
                   await chessCommonService.setBoard(board);
@@ -368,8 +368,8 @@ describe('ChessController', () => {
                         },
                   });
 
-                  let enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
-                  expect(enPassantPosRedis).toBeTruthy();
+                  board = await chessCommonService.getBoard(boardId);
+                  expect(board.enPassantPos).toBeTruthy();
 
                   reqApi = (input: ChessAddMoveDto) =>
                         supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie2 }).send(input);
@@ -386,8 +386,8 @@ describe('ChessController', () => {
                         },
                   });
 
-                  enPassantPosRedis = await redisService.getObjectByKey('chess-en-passant' + boardId);
-                  expect(enPassantPosRedis).toBeNull();
+                  board = await chessCommonService.getBoard(boardId);
+                  expect(board.enPassantPos).toBeNull();
                   expect(res.status).toBe(200);
             });
       });

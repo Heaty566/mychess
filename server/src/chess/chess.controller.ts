@@ -11,7 +11,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMoveRedis, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './entity/chess.interface';
+import { ChessMoveRedis, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates, ChessRole } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- DTO
@@ -181,8 +181,7 @@ export class ChessController {
             const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove(curPos, board);
 
             // add en passant to available move
-            const enPassantPosRedis: ChessMoveCoordinates = await this.redisService.getObjectByKey('chess-en-passant' + board.id);
-            if (enPassantPosRedis) legalMoves.push(enPassantPosRedis);
+            if (board.board[curPos.x][curPos.y].chessRole === ChessRole.PAWN && board.enPassantPos) legalMoves.push(board.enPassantPos);
 
             const canMove = legalMoves.find(
                   (move) =>
@@ -198,14 +197,17 @@ export class ChessController {
             await this.chessService.playAMove(curPos, desPos, board);
 
             // check en passant move
-            if (enPassantPosRedis && this.chessService.isEnPassantMove(desPos, enPassantPosRedis, board)) {
-                  this.chessGateway.enPassantMove(board.id, enPassantPosRedis);
-                  await this.redisService.deleteByKey('chess-en-passant' + board.id);
-            }
+            if (board.enPassantPos && this.chessService.isEnPassantMove(desPos, board.enPassantPos, board))
+                  this.chessGateway.enPassantMove(board.id, board.enPassantPos);
+
+            // reset board.enPassant after a turn
+            board.enPassantPos = null;
 
             // check en passant conditions
             const enPassantPos = this.chessService.enPassantPos(curPos, desPos, board);
-            if (enPassantPos) this.redisService.setObjectByKey('chess-en-passant' + board.id, enPassantPos);
+            if (enPassantPos) board.enPassantPos = enPassantPos;
+
+            await this.chessCommonService.setBoard(board);
 
             // check promote pawn
             if (this.chessService.isPromotePawn(desPos, board)) this.chessGateway.promotePawn(board.id, desPos);
