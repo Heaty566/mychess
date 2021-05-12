@@ -387,7 +387,7 @@ describe('ChessController', () => {
                   });
 
                   board = await chessCommonService.getBoard(boardId);
-                  expect(board.enPassantPos).toBeNull();
+                  expect(board.enPassantPos).toBeTruthy();
                   expect(res.status).toBe(200);
             });
       });

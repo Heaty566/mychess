@@ -11,7 +11,8 @@ import { ChessMoveRepository } from './entity/chessMove.repository';
 export class ChessService {
       constructor(private readonly chessCommonService: ChessCommonService) {}
 
-      private pawnAvailableMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard) {
+      private async pawnAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
             // pawn can not appear on row 0 or 7
             if (currentPosition.y === 0 || currentPosition.y === 7) return result;
@@ -69,7 +70,8 @@ export class ChessService {
             return result;
       }
 
-      private kingAvailableMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
+      private async kingAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
             const kingMoveX = [1, 1, 1, 0, 0, -1, -1, -1];
             const kingMoveY = [1, 0, -1, 1, -1, 1, 0, -1];
@@ -91,7 +93,8 @@ export class ChessService {
             return result;
       }
 
-      private knightAvailableMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
+      private async knightAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
             const knightMoveX = [2, 2, -2, -2, 1, 1, -1, -1];
             const knightMoveY = [1, -1, 1, -1, 2, -2, 2, -2];
@@ -112,7 +115,8 @@ export class ChessService {
             return result;
       }
 
-      private rookAvailableMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
+      private async rookAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
             // Right
             let x = currentPosition.x + 1;
@@ -173,7 +177,8 @@ export class ChessService {
             return result;
       }
 
-      private bishopAvailableMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
+      private async bishopAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
             // Top - Left
             let x = currentPosition.x - 1;
@@ -242,17 +247,20 @@ export class ChessService {
             return result;
       }
 
-      private queenAvailableMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
+      private async queenAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
-            const moveLikeBishop = this.bishopAvailableMove(currentPosition, chessBoard);
-            const moveLikeRook = this.rookAvailableMove(currentPosition, chessBoard);
+            const moveLikeBishop = await this.bishopAvailableMove(currentPosition, chessBoard.id);
+            const moveLikeRook = await this.rookAvailableMove(currentPosition, chessBoard.id);
             result.push(...moveLikeBishop);
             result.push(...moveLikeRook);
 
             return result;
       }
 
-      private getKing(flag: PlayerFlagEnum, chessBoard: ChessBoard): ChessMoveRedis {
+      private async getKing(flag: PlayerFlagEnum, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag && chessBoard.board[i][j].chessRole === ChessRole.KING) {
@@ -269,10 +277,11 @@ export class ChessService {
             return null;
       }
 
-      private kingIsChecked(currentPosition: ChessMoveRedis, chessBoard: ChessBoard): boolean {
+      private async kingIsChecked(currentPosition: ChessMoveRedis, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+
             // Check rook, queen
             // Right
-
             let x = currentPosition.x + 1;
             let y = currentPosition.y;
 
@@ -465,12 +474,14 @@ export class ChessService {
             return false;
       }
 
-      canMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, chessBoard: ChessBoard): boolean {
+      async canMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+
             const tmpDestinationPosition: ChessFlag = {
                   flag: chessBoard.board[desPos.x][desPos.y].flag,
                   chessRole: chessBoard.board[desPos.x][desPos.y].chessRole,
             };
-            const kingPosition: ChessMoveRedis = this.getKing(chessBoard.board[curPos.x][curPos.y].flag, chessBoard);
+            const kingPosition: ChessMoveRedis = await this.getKing(chessBoard.board[curPos.x][curPos.y].flag, chessBoard.id);
 
             let canMove = true;
             chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
@@ -480,7 +491,10 @@ export class ChessService {
                   chessRole: ChessRole.EMPTY,
             };
 
-            if (this.kingIsChecked(kingPosition, chessBoard)) canMove = false;
+            await this.chessCommonService.setBoard(chessBoard);
+
+            const kingIsChecked = await this.kingIsChecked(kingPosition, chessBoard.id);
+            if (kingIsChecked) canMove = false;
 
             chessBoard.board[curPos.x][curPos.y] = chessBoard.board[desPos.x][desPos.y];
 
@@ -489,37 +503,40 @@ export class ChessService {
                   chessRole: tmpDestinationPosition.chessRole,
             };
 
+            await this.chessCommonService.setBoard(chessBoard);
+
             return canMove;
       }
 
-      private chessRoleLegalMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
+      private async chessRoleLegalMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             let availableMove: Array<ChessMoveCoordinates>;
 
             const role = chessBoard.board[currentPosition.x][currentPosition.y].chessRole;
 
             switch (role) {
                   case ChessRole.BISHOP: {
-                        availableMove = this.bishopAvailableMove(currentPosition, chessBoard);
+                        availableMove = await this.bishopAvailableMove(currentPosition, chessBoard.id);
                         break;
                   }
                   case ChessRole.ROOK: {
-                        availableMove = this.rookAvailableMove(currentPosition, chessBoard);
+                        availableMove = await this.rookAvailableMove(currentPosition, chessBoard.id);
                         break;
                   }
                   case ChessRole.QUEEN: {
-                        availableMove = this.queenAvailableMove(currentPosition, chessBoard);
+                        availableMove = await this.queenAvailableMove(currentPosition, chessBoard.id);
                         break;
                   }
                   case ChessRole.KNIGHT: {
-                        availableMove = this.knightAvailableMove(currentPosition, chessBoard);
+                        availableMove = await this.knightAvailableMove(currentPosition, chessBoard.id);
                         break;
                   }
                   case ChessRole.PAWN: {
-                        availableMove = this.pawnAvailableMove(currentPosition, chessBoard);
+                        availableMove = await this.pawnAvailableMove(currentPosition, chessBoard.id);
                         break;
                   }
                   case ChessRole.KING: {
-                        availableMove = this.kingAvailableMove(currentPosition, chessBoard);
+                        availableMove = await this.kingAvailableMove(currentPosition, chessBoard.id);
                         break;
                   }
                   case ChessRole.EMPTY: {
@@ -529,25 +546,27 @@ export class ChessService {
             }
 
             const legalMove: Array<ChessMoveCoordinates> = [];
-            availableMove.forEach((move) => {
-                  if (this.canMove(currentPosition, move, chessBoard)) legalMove.push(move);
-            });
+
+            for (const move of availableMove) {
+                  if (await this.canMove(currentPosition, move, chessBoard.id)) legalMove.push(move);
+            }
 
             return legalMove;
       }
 
-      legalMove(currentPosition: ChessMoveCoordinates, chessBoard: ChessBoard): Array<ChessMoveCoordinates> {
-            return this.chessRoleLegalMove(currentPosition, chessBoard);
+      async legalMove(currentPosition: ChessMoveCoordinates, boardId: string) {
+            return await this.chessRoleLegalMove(currentPosition, boardId);
       }
 
-      async checkmate(flag: 0 | 1, chessBoard: ChessBoard): Promise<boolean> {
-            const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
-            if (!this.kingIsChecked(kingPosition, chessBoard)) return false;
+      async checkmate(flag: 0 | 1, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            const kingPosition: ChessMoveRedis = await this.getKing(flag, chessBoard.id);
+            if (!(await this.kingIsChecked(kingPosition, chessBoard.id))) return false;
 
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag) {
-                              const legalMove: Array<ChessMoveCoordinates> = this.legalMove({ x: i, y: j }, chessBoard);
+                              const legalMove: Array<ChessMoveCoordinates> = await this.legalMove({ x: i, y: j }, chessBoard.id);
                               if (legalMove.length > 0) return false;
                         }
                   }
@@ -562,14 +581,15 @@ export class ChessService {
             return true;
       }
 
-      async stalemate(flag: 0 | 1, chessBoard: ChessBoard): Promise<boolean> {
-            const kingPosition: ChessMoveRedis = this.getKing(flag, chessBoard);
-            if (this.kingIsChecked(kingPosition, chessBoard)) return false;
+      async stalemate(flag: 0 | 1, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            const kingPosition: ChessMoveRedis = await this.getKing(flag, chessBoard.id);
+            if (await this.kingIsChecked(kingPosition, chessBoard.id)) return false;
 
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
                         if (chessBoard.board[i][j].flag === flag) {
-                              const legalMove: Array<ChessMoveCoordinates> = this.legalMove({ x: i, y: j }, chessBoard);
+                              const legalMove: Array<ChessMoveCoordinates> = await this.legalMove({ x: i, y: j }, chessBoard.id);
                               if (legalMove.length > 0) return false;
                         }
                   }
@@ -584,7 +604,8 @@ export class ChessService {
             return true;
       }
 
-      async playAMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, chessBoard: ChessBoard) {
+      async playAMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
             const newChessMove = new ChessMove();
             newChessMove.fromX = curPos.x;
             newChessMove.fromY = curPos.y;
@@ -608,43 +629,63 @@ export class ChessService {
             await this.chessCommonService.setBoard(chessBoard);
       }
 
-      isPromotePawn(desPos: ChessMoveCoordinates, board: ChessBoard): boolean {
-            if (board.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return false;
-            if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
-            if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
+      async isPromotePawn(desPos: ChessMoveCoordinates, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            if (chessBoard.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return false;
+            if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
+            if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
             return false;
       }
 
-      enPassantPos(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, board: ChessBoard): ChessMoveCoordinates {
-            if (board.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return null;
+      async enPassantPos(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string): Promise<ChessMoveCoordinates> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            if (chessBoard.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return null;
 
-            if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && curPos.y === 1 && desPos.y === 3)
+            if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && curPos.y === 1 && desPos.y === 3)
                   return { x: desPos.x, y: desPos.y - 1 };
 
-            if (board.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && curPos.y === 6 && desPos.y === 4)
+            if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && curPos.y === 6 && desPos.y === 4)
                   return { x: desPos.x, y: desPos.y + 1 };
 
             return null;
       }
 
-      isEnPassantMove(desPos: ChessMoveCoordinates, enPassantPos: ChessMoveCoordinates, board: ChessBoard): boolean {
-            if (board.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return false;
+      async isEnPassantMove(desPos: ChessMoveCoordinates, enPassantPos: ChessMoveCoordinates, boardId: string): Promise<boolean> {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            if (chessBoard.board[desPos.x][desPos.y].chessRole !== ChessRole.PAWN) return false;
             if (desPos.x === enPassantPos.x && desPos.y === enPassantPos.y) return true;
             return false;
       }
 
-      async enPassantMove(enPassantPos: ChessMoveCoordinates, board: ChessBoard) {
-            if (board.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.WHITE) {
-                  board.board[enPassantPos.x][enPassantPos.y - 1] = {
+      async enPassant(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            if (chessBoard.enPassantPos && (await this.isEnPassantMove(desPos, chessBoard.enPassantPos, chessBoard.id))) {
+                  return chessBoard.enPassantPos;
+            }
+
+            chessBoard.enPassantPos = null;
+
+            // check en passant conditions
+            const enPassantPos = await this.enPassantPos(curPos, desPos, chessBoard.id);
+            if (enPassantPos) chessBoard.enPassantPos = enPassantPos;
+
+            await this.chessCommonService.setBoard(chessBoard);
+            return null;
+      }
+
+      async enPassantMove(enPassantPos: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            if (chessBoard.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.WHITE) {
+                  chessBoard.board[enPassantPos.x][enPassantPos.y - 1] = {
                         flag: PlayerFlagEnum.EMPTY,
                         chessRole: ChessRole.EMPTY,
                   };
-            } else if (board.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.BLACK) {
-                  board.board[enPassantPos.x][enPassantPos.y + 1] = {
+            } else if (chessBoard.board[enPassantPos.x][enPassantPos.y].flag === PlayerFlagEnum.BLACK) {
+                  chessBoard.board[enPassantPos.x][enPassantPos.y + 1] = {
                         flag: PlayerFlagEnum.EMPTY,
                         chessRole: ChessRole.EMPTY,
                   };
             }
-            await this.chessCommonService.setBoard(board);
+            await this.chessCommonService.setBoard(chessBoard);
       }
 }
