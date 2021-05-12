@@ -86,6 +86,45 @@ export class ChessService {
             return result;
       }
 
+      private async kingIsMoved(kingColor: PlayerFlagEnum, boardId: string): Promise<boolean> {
+            let kingIsMoved = false;
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+
+            chessBoard.moves.forEach((move) => {
+                  if (move.chessRole === ChessRole.KING && move.flag === kingColor) kingIsMoved = true;
+            });
+
+            return kingIsMoved;
+      }
+
+      private async rookKingSiteIsMoved(rookColor: PlayerFlagEnum, boardId: string): Promise<boolean> {
+            let rookKingSiteIsMoved = false;
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+
+            chessBoard.moves.forEach((move) => {
+                  if (move.chessRole === ChessRole.ROOK && move.fromX === 7) {
+                        if (rookColor === PlayerFlagEnum.WHITE && move.fromY === 0) rookKingSiteIsMoved = true;
+                        if (rookColor === PlayerFlagEnum.BLACK && move.fromY === 7) rookKingSiteIsMoved = true;
+                  }
+            });
+
+            return rookKingSiteIsMoved;
+      }
+
+      private async rookQueenSiteIsMoved(rookColor: PlayerFlagEnum, boardId: string): Promise<boolean> {
+            let rookQueenSiteIsMoved = false;
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+
+            chessBoard.moves.forEach((move) => {
+                  if (move.chessRole === ChessRole.ROOK && move.fromX === 0) {
+                        if (rookColor === PlayerFlagEnum.WHITE && move.fromY === 0) rookQueenSiteIsMoved = true;
+                        if (rookColor === PlayerFlagEnum.BLACK && move.fromY === 7) rookQueenSiteIsMoved = true;
+                  }
+            });
+
+            return rookQueenSiteIsMoved;
+      }
+
       private async kingAvailableMove(currentPosition: ChessMoveCoordinates, boardId: string) {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
             const result: Array<ChessMoveCoordinates> = [];
@@ -274,12 +313,12 @@ export class ChessService {
             return result;
       }
 
-      private async getKing(flag: PlayerFlagEnum, boardId: string) {
+      private async getKing(kingColor: PlayerFlagEnum, boardId: string) {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
 
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
-                        if (chessBoard.board[i][j].flag === flag && chessBoard.board[i][j].chessRole === ChessRole.KING) {
+                        if (chessBoard.board[i][j].flag === kingColor && chessBoard.board[i][j].chessRole === ChessRole.KING) {
                               return {
                                     x: i,
                                     y: j,
@@ -524,7 +563,7 @@ export class ChessService {
             if (
                   chessBoard.board[curPos.x][curPos.y].chessRole === ChessRole.PAWN &&
                   chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK &&
-                  curPos.y === 5
+                  curPos.y === 3
             ) {
                   if (
                         chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.EMPTY &&
