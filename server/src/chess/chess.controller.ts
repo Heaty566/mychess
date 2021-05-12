@@ -19,7 +19,6 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
 import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
 import { ChessPromotePawnDto, vChessPromotePawnDto } from './dto/chessPromotePawnDto';
-import { ChessEnPassantDto, vChessEnPassantDto } from './dto/chessEnPassantDto';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
@@ -196,7 +195,7 @@ export class ChessController {
             await this.chessService.playAMove(curPos, desPos, board.id);
 
             // check promote pawn
-            if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, desPos);
+            if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, player.id);
 
             const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
             await this.chessService.checkmate(enemyFlag, board.id);

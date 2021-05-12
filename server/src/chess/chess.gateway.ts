@@ -11,7 +11,7 @@ import { ChessService } from './chess.service';
 import { ChessCommonService } from './chessCommon.service';
 
 //---- Entity
-
+import { ChessRole } from './entity/chess.interface';
 //---- Dto
 import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 
@@ -69,8 +69,14 @@ export class ChessGateway {
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_GET, getCacheGame.id, { data: getCacheGame }, 'chess');
       }
 
-      promotePawn(boardId: string, promotePos: ChessMoveCoordinates) {
-            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_PROMOTE_PAWN, boardId, { data: promotePos }, 'chess');
+      promotePawn(boardId: string, userId: string) {
+            const role = {
+                  KNIGHT: ChessRole.KNIGHT,
+                  BISHOP: ChessRole.BISHOP,
+                  QUEEN: ChessRole.QUEEN,
+                  ROOK: ChessRole.ROOK,
+            };
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_PROMOTE_PAWN, boardId, { data: { role, userId } }, 'chess');
       }
 
       @UseGuards(UserSocketGuard)
