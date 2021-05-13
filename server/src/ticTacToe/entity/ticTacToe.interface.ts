@@ -25,3 +25,8 @@ export enum TicTacToeStatus {
       'PLAYING' = 1,
       'END' = 2,
 }
+
+export interface EloCalculator {
+      redElo: number;
+      blueElo: number;
+}

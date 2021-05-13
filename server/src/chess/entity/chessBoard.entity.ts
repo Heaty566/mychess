@@ -13,7 +13,6 @@ export class ChessBoard {
       status: ChessStatus;
       chatId: string;
       lastStep: Date;
-      enPassantPos: ChessMoveCoordinates;
       eloBlackUser: number;
       eloWhiteUser: number;
 

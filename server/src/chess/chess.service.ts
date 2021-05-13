@@ -794,7 +794,7 @@ export class ChessService {
                         }
                   }
             }
-            chessBoard.winner = -1;
+            chessBoard.winner = PlayerFlagEnum.EMPTY;
             chessBoard.status = ChessStatus.END;
             const eloCalculator = this.chessCommonService.calculateElo(chessBoard.winner, chessBoard.users[0], chessBoard.users[1]);
             chessBoard.users[0].elo += eloCalculator.whiteElo;

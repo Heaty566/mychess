@@ -30,6 +30,15 @@ export class TicTacToeService {
                                     ) {
                                           board.winner = center;
                                           board.status = TicTacToeStatus.END;
+                                          const eloCalculator = this.ticTacToeCommonService.calculateElo(
+                                                board.winner,
+                                                board.users[0],
+                                                board.users[1],
+                                          );
+                                          board.users[0].elo += eloCalculator.blueElo;
+                                          board.users[1].elo += eloCalculator.redElo;
+                                          board.eloBlueUser = eloCalculator.blueElo;
+                                          board.eloRedUser = eloCalculator.redElo;
                                           await this.ticTacToeCommonService.setBoard(board);
                                           await this.ticTacToeCommonService.saveTTTFromCacheToDb(boardId);
                                           return true;
@@ -50,6 +59,15 @@ export class TicTacToeService {
                                     ) {
                                           board.winner = center;
                                           board.status = TicTacToeStatus.END;
+                                          const eloCalculator = this.ticTacToeCommonService.calculateElo(
+                                                board.winner,
+                                                board.users[0],
+                                                board.users[1],
+                                          );
+                                          board.users[0].elo += eloCalculator.blueElo;
+                                          board.users[1].elo += eloCalculator.redElo;
+                                          board.eloBlueUser = eloCalculator.blueElo;
+                                          board.eloRedUser = eloCalculator.redElo;
                                           await this.ticTacToeCommonService.setBoard(board);
                                           await this.ticTacToeCommonService.saveTTTFromCacheToDb(boardId);
                                           return true;
@@ -76,6 +94,15 @@ export class TicTacToeService {
                                     ) {
                                           board.winner = center;
                                           board.status = TicTacToeStatus.END;
+                                          const eloCalculator = this.ticTacToeCommonService.calculateElo(
+                                                board.winner,
+                                                board.users[0],
+                                                board.users[1],
+                                          );
+                                          board.users[0].elo += eloCalculator.blueElo;
+                                          board.users[1].elo += eloCalculator.redElo;
+                                          board.eloBlueUser = eloCalculator.blueElo;
+                                          board.eloRedUser = eloCalculator.redElo;
                                           await this.ticTacToeCommonService.setBoard(board);
                                           await this.ticTacToeCommonService.saveTTTFromCacheToDb(boardId);
                                           return true;
