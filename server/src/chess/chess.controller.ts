@@ -26,6 +26,7 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
 import { RecordingRulesInstance } from 'twilio/lib/rest/video/v1/room/roomRecordingRule';
+import { DrawDto, vDrawDto } from './dto/drawDto';
 
 @Controller('chess')
 export class ChessController {
@@ -165,11 +166,11 @@ export class ChessController {
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
-            if (
-                  (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE) ||
-                  (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK)
-            )
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
+            // if (
+            //       (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE) ||
+            //       (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK)
+            // )
+            //       throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
 
             const curPos: ChessMoveCoordinates = {
                   x: body.curPos.x,
@@ -245,18 +246,38 @@ export class ChessController {
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
       }
 
-      @Put('/draw')
+      @Post('/draw')
       @UseGuards(UserGuard)
-      async handleOnDraw(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
+      @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
+      async handleOnDrawCreate(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
+            const player = await this.getPlayer(board.id, req.user.id);
 
             await this.getPlayer(board.id, req.user.id);
 
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
-            await this.chessCommonService.draw(board.id);
+            await this.chessCommonService.createDrawRequest(board.id, player);
+            await this.chessGateway.sendToRoom(board.id);
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
+      }
 
+      @Put('/draw')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vDrawDto))
+      async handleOnDrawChose(@Req() req: Request, @Body() body: DrawDto) {
+            const board = await this.getGame(body.roomId);
+            const player = await this.getPlayer(board.id, req.user.id);
+
+            if (board.status !== ChessStatus.DRAW)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
+            const remainderUser = board.users.filter((item) => item.id !== player.id);
+            if (!remainderUser[0].isDraw)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
+            await this.chessCommonService.draw(board.id, body.isAccept);
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }

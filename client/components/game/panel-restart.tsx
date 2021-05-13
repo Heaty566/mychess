@@ -1,20 +1,24 @@
 import * as React from 'react';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
+import BtnFunc from '../btn/btn-func';
 import ModalWrapper from '../modal/modal-wrapper';
 export interface PanelRestartProps {
     handleOnClick: () => void;
-    winner: boolean;
+    winner: GamePlayerFlag;
     userOneName: string;
     userTwoName: string;
     isAppear: boolean;
 }
 
 const PanelRestart: React.FunctionComponent<PanelRestartProps> = ({ handleOnClick, userOneName = '', userTwoName = '', winner, isAppear }) => {
+    const message =
+        winner === GamePlayerFlag.EMPTY ? 'Having a fun game' : winner === GamePlayerFlag.USER1 ? `${userOneName} win` : `${userTwoName} win`;
+
     return (
         <ModalWrapper isAppear={isAppear}>
-            <h1 className="text-xl font-bold capitalize">{winner ? userOneName : userTwoName} Win, Thank You For Playing</h1>
-            <button className="px-4 py-2 font-bold bg-blue-700 rounded-sm text-mercury " onClick={() => handleOnClick()}>
-                Restart
-            </button>
+            <h1 className="text-xl font-bold capitalize">{message}</h1>
+            <p>Thank You For Playing</p>
+            <BtnFunc handleOnClick={handleOnClick} label="Restart" />
         </ModalWrapper>
     );
 };

@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
+
 import TTTCell from './ttt-cell';
 
 export interface TTTBoardProps {
-    board: TicTacToeFlag[][];
+    board: GamePlayerFlag[][];
     handleOnClick: (x: number, y: number) => void;
     register: React.LegacyRef<HTMLDivElement> | undefined;
 }

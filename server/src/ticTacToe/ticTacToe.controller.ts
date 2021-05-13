@@ -24,6 +24,7 @@ import { TTTAddMoveDto, vTTTAddMoveDto } from './dto/tttAddMoveDto';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
+import { DrawDto, vDrawDto } from './dto/drawDto';
 
 @Controller('ttt')
 export class TicTacToeController {
@@ -173,17 +174,37 @@ export class TicTacToeController {
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
 
-      @Put('/draw')
+      @Post('/draw')
       @UseGuards(UserGuard)
-      async handleOnDraw(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
+      @UsePipes(new JoiValidatorPipe(vTTTRoomIdDto))
+      async handleOnDrawCreate(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
+            const player = await this.getPlayer(board.id, req.user.id);
 
             await this.getPlayer(board.id, req.user.id);
 
             if (board.status !== TicTacToeStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+
+            await this.ticTacToeCommonService.createDrawRequest(board.id, player);
+            await this.ticTacToeGateway.sendToRoom(board.id);
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/draw')
+      @UseGuards(UserGuard)
+      @UsePipes(new JoiValidatorPipe(vDrawDto))
+      async handleOnDraw(@Req() req: Request, @Body() body: DrawDto) {
+            const board = await this.getGame(body.roomId);
+            const player = await this.getPlayer(board.id, req.user.id);
+
+            if (board.status !== TicTacToeStatus.DRAW)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
-            await this.ticTacToeCommonService.draw(board.id);
+            const remainderUser = board.users.filter((item) => item.id !== player.id);
+            if (!remainderUser[0].isDraw)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+            await this.ticTacToeCommonService.draw(board.id, body.isAccept);
 
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });

@@ -1,8 +1,8 @@
 import http from './axiosCommon';
 import { AxiosInstance } from 'axios';
 import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
-import { ChessChooseAPieceDTO } from '../common/interface/dto/chess.dto';
-import { ChessMoveRedis } from '../common/interface/chess.interface';
+import { ChessChooseAPieceDTO, DrawDTO, PromoteChessDto } from '../common/interface/dto/chess.dto';
+import { ChessMoveRedis, ChessRole } from '../common/interface/chess.interface';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
 
@@ -16,7 +16,7 @@ export class ChessAPI {
     }
     async getAllGameByUserId(userId: string) {
         const url = `${this.prefix}/${userId}`;
-        const res = await this.apiCall.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number }>>(url);
+        const res = await this.apiCall.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number; totalWin: number }>>(url);
         return res;
     }
     async createNewBotRoom() {
@@ -32,6 +32,23 @@ export class ChessAPI {
     async readyGame(input: RoomIdDto) {
         const url = `${this.prefix}/ready`;
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    }
+    async promoteChess(input: PromoteChessDto) {
+        const url = `${this.prefix}/promote-pawn`;
+        const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    }
+
+    async drawGameCreate(input: RoomIdDto) {
+        const url = `${this.prefix}/draw`;
+        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    }
+
+    async drawGameAccept(input: DrawDTO) {
+        const url = `${this.prefix}/draw`;
+        const res = await this.apiCall.put<ServerResponse<DrawDTO>>(url, input);
         return res;
     }
 
@@ -55,12 +72,18 @@ export class ChessAPI {
 
     async joinRoom(input: RoomIdDto) {
         const url = `${this.prefix}/join-room`;
-        const res = await this.apiCall.put<ServerResponse<TicTacToeBoard>>(url, input);
+        const res = await this.apiCall.put<ServerResponse<null>>(url, input);
         return res;
     }
     async getSuggestion(input: ChessChooseAPieceDTO) {
         const url = `${this.prefix}/choose-piece`;
         const res = await this.apiCall.post<ServerResponse<ChessMoveRedis[]>>(url, input);
+        return res;
+    }
+
+    async surrender(input: RoomIdDto) {
+        const url = `${this.prefix}/surrender`;
+        const res = await this.apiCall.put<ServerResponse<void>>(url, input);
         return res;
     }
 }

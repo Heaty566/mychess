@@ -1,10 +1,4 @@
-import { PublicUser } from './user.interface';
-
-export enum TicTacToeFlag {
-    EMPTY = -1,
-    RED = 0,
-    BLUE = 1,
-}
+import { GameStatus, GamePlayerFlag, GamePlayer } from './game.interface';
 
 export enum TTTGatewayAction {
     TTT_JOIN = 'ttt-join',
@@ -13,27 +7,15 @@ export enum TTTGatewayAction {
     TTT_GET = 'ttt-get',
 }
 
-export enum TicTacToeStatus {
-    'NOT-YET' = 0,
-    'PLAYING' = 1,
-    'END' = 2,
-}
-
-export interface TicTacToePlayer extends PublicUser {
-    flag: TicTacToeFlag.BLUE | TicTacToeFlag.RED;
-    time: number;
-    ready: boolean;
-}
-
 export interface TicTacToeBoard {
     id: string;
     startDate: Date;
     lastStep: Date;
-    status: TicTacToeStatus;
-    board: Array<Array<TicTacToeFlag>>;
+    status: GameStatus;
+    board: Array<Array<GamePlayerFlag>>;
     currentTurn: boolean;
-    users: TicTacToePlayer[];
+    users: GamePlayer[];
     isBotMode: boolean;
-    winner: TicTacToeFlag;
+    winner: GamePlayerFlag;
     chatId: string;
 }

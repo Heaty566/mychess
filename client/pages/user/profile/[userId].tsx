@@ -3,10 +3,8 @@ import { useSelector } from 'react-redux';
 import * as React from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import XPlayerIcon from '../../../public/asset/icons/x-player';
-import OPlayerIcon from '../../../public/asset/icons/o-player';
+
 import { RootState } from '../../../store';
-import TicTacToeIcon from '../../../public/asset/icons/tictactoe';
 import SeoHead from '../../../components/common/seoHead';
 import { capitalize } from '../../../common/helpers/string.helper';
 import { ApiState, ServerResponse } from '../../../common/interface/api.interface';
@@ -15,10 +13,11 @@ import { AuthState, User } from '../../../common/interface/user.interface';
 import EditIcons from '../../../public/asset/icons/edit';
 import routers from '../../../common/constants/router';
 import ticTacToeApi from '../../../api/tttApi';
-import { TicTacToeBoard, TicTacToeFlag, TicTacToePlayer } from '../../../common/interface/tic-tac-toe.interface';
-import Tooltip from '../../../components/tooltip/tooltip-dropbox';
-import Pagination from '../../../components/pagination';
+import { TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface';
 import WaveLoading from '../../../components/loading/wave-loading';
+import chessApi from '../../../api/chessApi';
+import CardGameReport from '../../../components/card/card-game-report';
+import { GamePlayerFlag } from '../../../common/interface/game.interface';
 
 export interface ProfileProps {
     user: User | null;
@@ -29,17 +28,25 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
     const apiState = useSelector<RootState, ApiState>((state) => state.api);
     const [totalWin, setTotalWin] = React.useState<number>(0);
     const [total, setTotal] = React.useState<number>(0);
+    const [summaryFlag, setSummaryFlag] = React.useState(false);
 
     const [boards, setBoards] = React.useState<TicTacToeBoard[]>([]);
 
     React.useEffect(() => {
         if (user)
-            ticTacToeApi.getAllGameByUserId(user.id).then((res) => {
-                setBoards(res.data.data.boards);
-                setTotalWin(res.data.data.totalWin);
-                setTotal(res.data.data.count);
-            });
-    }, [user]);
+            if (summaryFlag) {
+                chessApi.getAllGameByUserId(user.id).then((res) => {
+                    setBoards(res.data.data.boards);
+                    setTotalWin(res.data.data.totalWin);
+                    setTotal(res.data.data.count);
+                });
+            } else
+                ticTacToeApi.getAllGameByUserId(user.id).then((res) => {
+                    setBoards(res.data.data.boards);
+                    setTotalWin(res.data.data.totalWin);
+                    setTotal(res.data.data.count);
+                });
+    }, [user, summaryFlag]);
     if (!user) return null;
     else
         return (
@@ -91,13 +98,23 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                             <h1 className="text-2xl text-mercury">History</h1>
                             <div className="flex flex-col px-4 py-2 space-y-1 text-lg bg-woodsmoke-500 text-mercury">
                                 <div className="flex items-stretch space-x-2">
-                                    <button>Tic Tac Toe</button>
+                                    <button
+                                        onClick={() => setSummaryFlag(false)}
+                                        className={`focus:outline-none  ${summaryFlag ? 'text-mercury-800' : 'text-white'}`}
+                                    >
+                                        Tic Tac Toe
+                                    </button>
                                     <span className="inline-block w-0.5 bg-gray-500"></span>
-                                    <button>Chess</button>
+                                    <button
+                                        onClick={() => setSummaryFlag(true)}
+                                        className={`focus:outline-none  ${!summaryFlag ? 'text-mercury-800' : 'text-white'}`}
+                                    >
+                                        Chess
+                                    </button>
                                 </div>
                                 {Boolean(total) && (
                                     <div className="flex items-center justify-between">
-                                        <p>Total Tic-Tac-Toe: {total}</p>
+                                        <p>Total Game: {total}</p>
                                         <p>Win Rate: {((totalWin / total) * 100).toFixed(2)}%</p>
                                         <p>Win Game: {totalWin}</p>
                                     </div>
@@ -110,46 +127,21 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                         {!Boolean(boards.length) && <p className="text-xl text-mercury">No match is found</p>}
                                         {Boolean(boards.length) &&
                                             boards.map((item) => {
-                                                const findWinner = item.users[item.winner];
-                                                const isWin = findWinner.id === user.id;
+                                                const isWin = item.winner !== GamePlayerFlag.EMPTY && item.users[item.winner].id === user.id;
                                                 const currentPlayer = item.users.find((item) => item.id === user.id);
                                                 const otherPlayer = item.users.find((item) => item.id !== user.id);
                                                 const mmYY = new Date(item.startDate).toLocaleDateString();
                                                 const mmHH = new Date(item.startDate).toLocaleTimeString();
 
                                                 return (
-                                                    <div className="flex items-stretch text-mercury bg-woodsmoke" key={item.id}>
-                                                        <div className={`w-2  ${isWin ? 'bg-green-600' : 'bg-red-500'} `}></div>
-                                                        <div className="flex items-center justify-between flex-1 p-2 space-x-2">
-                                                            <div className="flex space-x-2">
-                                                                <img
-                                                                    src={currentPlayer?.avatarUrl}
-                                                                    alt={currentPlayer?.name}
-                                                                    className="hidden object-cover w-16 h-16 md:block"
-                                                                />
-                                                                <div>
-                                                                    <p className="font-semibold capitalize">{currentPlayer?.name}</p>
-                                                                    <p>Elo: {currentPlayer?.elo}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-center">
-                                                                <p>{mmYY}</p>
-                                                                <p>{mmHH}</p>
-                                                            </div>
-
-                                                            <div className="flex flex-row-reverse ">
-                                                                <img
-                                                                    src={otherPlayer?.avatarUrl}
-                                                                    alt={otherPlayer?.name}
-                                                                    className="hidden object-cover w-16 h-16 ml-2 md:block"
-                                                                />
-                                                                <div className="ml-2 text-right">
-                                                                    <p className="font-semibold capitalize">{otherPlayer?.name}</p>
-                                                                    <p>Elo: {otherPlayer?.elo}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <CardGameReport
+                                                        currentPlayer={currentPlayer}
+                                                        otherPlayer={otherPlayer}
+                                                        time={{ mmHH, mmYY }}
+                                                        isWin={isWin}
+                                                        key={item.id}
+                                                        winner={item.winner}
+                                                    />
                                                 );
                                             })}
                                     </>

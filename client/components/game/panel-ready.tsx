@@ -1,4 +1,5 @@
 import * as React from 'react';
+import BtnFunc from '../btn/btn-func';
 import ModalWrapper from '../modal/modal-wrapper';
 export interface PanelReadyProps {
     handleOnClick: () => void;
@@ -10,11 +11,7 @@ const PanelReady: React.FunctionComponent<PanelReadyProps> = ({ handleOnClick, i
     return (
         <ModalWrapper isAppear={isAppear}>
             <h1 className="text-xl font-bold">{isReady ? 'Please Wait For Other Ready' : 'Please Ready To Start'}</h1>
-            <div>
-                <button className="px-4 py-2 font-semibold bg-blue-700 rounded-sm text-mercury " onClick={() => handleOnClick()}>
-                    Ready
-                </button>
-            </div>
+            <BtnFunc label="Ready" handleOnClick={handleOnClick} />
         </ModalWrapper>
     );
 };

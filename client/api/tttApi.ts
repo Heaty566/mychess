@@ -3,6 +3,7 @@ import { AxiosInstance } from 'axios';
 import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
+import { DrawDTO } from '../common/interface/dto/chess.dto';
 
 export class TicTacToeAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
@@ -54,6 +55,24 @@ export class TicTacToeAPI {
     async joinRoom(input: RoomIdDto) {
         const url = `${this.prefix}/join-room`;
         const res = await this.apiCall.put<ServerResponse<TicTacToeBoard>>(url, input);
+        return res;
+    }
+
+    async drawGameCreate(input: RoomIdDto) {
+        const url = `${this.prefix}/draw`;
+        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    }
+
+    async drawGameAccept(input: DrawDTO) {
+        const url = `${this.prefix}/draw`;
+        const res = await this.apiCall.put<ServerResponse<DrawDTO>>(url, input);
+        return res;
+    }
+
+    async surrender(input: RoomIdDto) {
+        const url = `${this.prefix}/surrender`;
+        const res = await this.apiCall.put<ServerResponse<void>>(url, input);
         return res;
     }
 }

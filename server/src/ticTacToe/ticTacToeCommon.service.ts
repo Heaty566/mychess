@@ -27,25 +27,27 @@ export class TicTacToeCommonService {
       ) {}
 
       async getAllBoardByUserId(userId: string) {
-            const tics = await this.ticTacToeRepository
+            const chesses = await this.ticTacToeRepository
                   .createQueryBuilder('tic')
                   .leftJoinAndSelect('tic.users', 'user')
                   .where(`user.id = :userId`, { userId })
-                  .take(6)
                   .getMany();
 
-            if (!tics.length) return { boards: [], count: 0, totalWin: 0 };
-            const ticIds = tics.map((item) => item.id);
+            if (!chesses.length) return { boards: [], count: 0, totalWin: 0 };
+            const chessIds = chesses.map((chess) => chess.id);
 
             const board = await this.ticTacToeRepository
                   .getBoardQuery()
-                  .where(`tic.id in (:...values)`, { values: ticIds })
+                  .where(`tic.id in (:...values)`, { values: chessIds })
                   .orderBy('tic.startDate', 'DESC');
-            const boards = await board.getMany();
-            const count = await board.getCount();
-            const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
 
-            return { boards, count, totalWin };
+            const boards = await board.getMany();
+            const totalWin = boards.filter((item) => item.winner !== TicTacToeFlag.EMPTY && item.users[item.winner].id === userId).length;
+
+            const count = boards.length;
+            const result = boards.splice(0, 6);
+
+            return { boards: result, count, totalWin };
       }
 
       async getBoard(boardId: string) {
@@ -101,6 +103,14 @@ export class TicTacToeCommonService {
 
             return newBoard.id;
       }
+
+      async createDrawRequest(boardId: string, player: TicTacToePlayer) {
+            const board = await this.getBoard(boardId);
+            board.status = TicTacToeStatus.DRAW;
+            board.users[player.flag].isDraw = true;
+            await this.setBoard(board);
+      }
+
       async joinGame(boardId: string, user: User | TicTacToePlayer) {
             const board = await this.getBoard(boardId);
 
@@ -116,6 +126,7 @@ export class TicTacToeCommonService {
                         id: user?.id,
                         ready: false,
                         flag: userFlag,
+                        isDraw: false,
                   });
 
                   await this.setBoard(board);
@@ -217,19 +228,24 @@ export class TicTacToeCommonService {
             return ttt;
       }
 
-      async draw(boardId: string) {
+      async draw(boardId: string, isDraw: boolean) {
             const board = await this.getBoard(boardId);
 
             if (board) {
-                  board.winner = TicTacToeFlag.EMPTY;
-                  board.status = TicTacToeStatus.END;
-                  const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
-                  board.users[0].elo += eloCalculator.blueElo;
-                  board.users[1].elo += eloCalculator.redElo;
-                  board.eloBlueUser = eloCalculator.blueElo;
-                  board.eloRedUser = eloCalculator.redElo;
-                  await this.setBoard(board);
-                  await this.saveTTTFromCacheToDb(boardId);
+                  if (isDraw) {
+                        board.winner = TicTacToeFlag.EMPTY;
+                        board.status = TicTacToeStatus.END;
+                        const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
+                        board.users[0].elo += eloCalculator.blueElo;
+                        board.users[1].elo += eloCalculator.redElo;
+                        board.eloBlueUser = eloCalculator.blueElo;
+                        board.eloRedUser = eloCalculator.redElo;
+                        await this.setBoard(board);
+                        await this.saveTTTFromCacheToDb(boardId);
+                  } else {
+                        board.status = TicTacToeStatus.PLAYING;
+                        await this.setBoard(board);
+                  }
             }
       }
 
