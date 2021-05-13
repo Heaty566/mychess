@@ -36,7 +36,7 @@ export class ChessCommonService {
                   .orderBy('chess.startDate', 'DESC');
 
             const boards = await board.getMany();
-            const totalWin = boards.filter((item) => item.users[item.winner].id === userId).length;
+            const totalWin = boards.filter((item) => item.winner !== PlayerFlagEnum.EMPTY && item.users[item.winner].id === userId).length;
 
             const count = boards.length;
             const result = boards.splice(0, 6);
@@ -148,7 +148,7 @@ export class ChessCommonService {
             const board = await this.getBoard(boardId);
             if (board) {
                   if (isDraw) {
-                        board.winner = -1;
+                        board.winner = PlayerFlagEnum.EMPTY;
                         board.status = ChessStatus.END;
                         const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
                         board.users[0].elo += eloCalculator.whiteElo;

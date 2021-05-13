@@ -16,7 +16,7 @@ const NavbarMenu: React.FunctionComponent<NavbarMenuProps> = () => (
                 </Link>
             </li>
         ))}
-        <a href="https://github.com/Heaty566/mychess" className="duration-300 text-cloud hover:text-cloud-50">
+        <a href="https://github.com/Heaty566/mychess" className="duration-300 text-cloud hover:text-cloud-50" target="_blank">
             ABOUT US
         </a>
     </ul>

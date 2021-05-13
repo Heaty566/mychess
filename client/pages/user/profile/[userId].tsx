@@ -17,6 +17,7 @@ import { TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface'
 import WaveLoading from '../../../components/loading/wave-loading';
 import chessApi from '../../../api/chessApi';
 import CardGameReport from '../../../components/card/card-game-report';
+import { GamePlayerFlag } from '../../../common/interface/game.interface';
 
 export interface ProfileProps {
     user: User | null;
@@ -126,8 +127,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                         {!Boolean(boards.length) && <p className="text-xl text-mercury">No match is found</p>}
                                         {Boolean(boards.length) &&
                                             boards.map((item) => {
-                                                const findWinner = item.users[item.winner];
-                                                const isWin = findWinner.id === user.id;
+                                                const isWin = item.winner !== GamePlayerFlag.EMPTY && item.users[item.winner].id === user.id;
                                                 const currentPlayer = item.users.find((item) => item.id === user.id);
                                                 const otherPlayer = item.users.find((item) => item.id !== user.id);
                                                 const mmYY = new Date(item.startDate).toLocaleDateString();
@@ -139,6 +139,7 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                                         otherPlayer={otherPlayer}
                                                         time={{ mmHH, mmYY }}
                                                         isWin={isWin}
+                                                        key={item.id}
                                                         winner={item.winner}
                                                     />
                                                 );

@@ -72,7 +72,7 @@ export class ChessAPI {
 
     async joinRoom(input: RoomIdDto) {
         const url = `${this.prefix}/join-room`;
-        const res = await this.apiCall.put<ServerResponse<TicTacToeBoard>>(url, input);
+        const res = await this.apiCall.put<ServerResponse<null>>(url, input);
         return res;
     }
     async getSuggestion(input: ChessChooseAPieceDTO) {
@@ -83,7 +83,7 @@ export class ChessAPI {
 
     async surrender(input: RoomIdDto) {
         const url = `${this.prefix}/surrender`;
-        const res = await this.apiCall.put<ServerResponse<ChessMoveRedis[]>>(url, input);
+        const res = await this.apiCall.put<ServerResponse<void>>(url, input);
         return res;
     }
 }

@@ -17,7 +17,7 @@ import { TTTRoomIdDTO, vTTTRoomIdDto } from './dto/tttRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { TTTGatewayAction } from './ticTacToeGateway.action';
-import { TicTacToeFlag, TicTacToeStatus } from './entity/ticTacToe.interface';
+import { TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
 export class TicTacToeGateway {

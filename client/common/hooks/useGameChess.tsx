@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { chessApi } from '../../api/chessApi';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { ChessGatewayAction, ChessBoard, ChessMoveRedis, ChessRole } from '../interface/chess.interface';
+import { ChessGatewayAction, ChessBoard, ChessMoveRedis, ChessRole, ChessFlag } from '../interface/chess.interface';
 import { AuthState } from '../interface/user.interface';
 import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
@@ -12,7 +12,7 @@ import { PromoteChessRole } from '../interface/dto/chess.dto';
 import { GamePlayer, GamePlayerFlag, GameStatus } from '../interface/game.interface';
 
 const playerDefault: GamePlayer = {
-    avatarUrl: '',
+    avatarUrl: '/asset/images/default-avatar.png',
     createDate: '',
     elo: 0,
     flag: GamePlayerFlag.USER1,
@@ -24,8 +24,28 @@ const playerDefault: GamePlayer = {
     username: '',
 };
 
+const chessFlagDefault: Array<ChessFlag> = [
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+    { chessRole: ChessRole.EMPTY, flag: GamePlayerFlag.EMPTY },
+];
+
 const chessBoardDefault: ChessBoard = {
-    board: [],
+    board: [
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+        [...chessFlagDefault],
+    ],
     chatId: '',
     id: '',
     isBotMode: false,
@@ -44,15 +64,13 @@ const chessMoveRedisDefault: ChessMoveRedis = {
     y: 0,
 };
 
-const players: Array<GamePlayer> = [playerDefault, playerDefault];
-
 export function useGameChess(roomId: string) {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
     const clientIoChess = useSocketIo({ namespace: 'chess' });
     const router = useRouter();
     const chessBoardRef = React.useRef<HTMLDivElement>(null);
     const [chessBoard, setChessBoard] = React.useState<ChessBoard>(chessBoardDefault);
-    const [chessPlayers, setChessPlayers] = React.useState<GamePlayer[]>(players);
+    const [chessPlayers, setChessPlayers] = React.useState<GamePlayer[]>(chessBoardDefault.users);
     const [chessSuggestion, setChessSuggestion] = React.useState<ChessMoveRedis[]>([]);
     const [currentChessSelect, setCurrentChessSelect] = React.useState<ChessMoveRedis>(chessMoveRedisDefault);
     const [currentChessPlayer, setCurrentChessPlayer] = React.useState<GamePlayer>(playerDefault);
@@ -139,8 +157,6 @@ export function useGameChess(roomId: string) {
 
         if (user) setChessPromote(true);
     };
-
-    console.log(currentChessPlayer);
 
     React.useEffect(() => {
         let interval: NodeJS.Timeout;

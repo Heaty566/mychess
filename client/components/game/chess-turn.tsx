@@ -12,7 +12,7 @@ const ChessTurn: React.FunctionComponent<TTTTurnProps> = ({ currentTurn, userOne
     return (
         <div className="flex items-center px-2 space-x-4 ">
             <div className="flex items-center justify-center w-8 h-8 border-2 ">{userOneReady && <WhiteKingIcon />}</div>
-            <div className="">
+            <div>
                 <h1 className="text-lg font-bold text-center">Turn</h1>
                 <div className="flex w-12 h-14 ">{currentTurn ? <BlackKingIcon /> : <WhiteKingIcon />}</div>
             </div>
