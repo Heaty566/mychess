@@ -21,6 +21,7 @@ import { ChessPromotePawnDto } from '../dto/chessPromotePawnDto';
 //---- Common
 import { initTestModule } from '../../test/initTest';
 import { generateCookie } from '../../test/test.helper';
+import { exec } from 'child_process';
 
 describe('ChessController', () => {
       let app: INestApplication;
@@ -41,7 +42,7 @@ describe('ChessController', () => {
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
-
+      /*
       describe('GET /:id', () => {
             let newUser: User;
             let newCookie: string[];
@@ -299,7 +300,6 @@ describe('ChessController', () => {
                   });
 
                   getBoard = await chessCommonService.getBoard(boardId);
-                  console.log(res.body);
                   expect(res.status).toBe(200);
 
                   expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
@@ -388,6 +388,59 @@ describe('ChessController', () => {
                   expect(res.status).toBe(200);
                   expect(getBoard.board[5][7].chessRole).toBe(ChessRole.QUEEN);
                   expect(getBoard.board[5][7].flag).toBe(PlayerFlagEnum.WHITE);
+            });
+      });
+*/
+      describe('PUT /draw', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1);
+                  await chessCommonService.joinGame(boardId, user2);
+
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+                  await chessCommonService.startGame(boardId);
+
+                  newCookie = generateCookie(await authService.createReToken(user1));
+            });
+            const reqApi = (input: ChessRoomIdDTO) => supertest(app.getHttpServer()).put('/api/chess/draw').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  const res = await reqApi({ roomId: boardId });
+                  expect(res.status).toBe(200);
+            });
+      });
+
+      describe('PUT /surrender', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1);
+                  await chessCommonService.joinGame(boardId, user2);
+
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+                  await chessCommonService.startGame(boardId);
+
+                  newCookie = generateCookie(await authService.createReToken(user1));
+            });
+            const reqApi = (input: ChessRoomIdDTO) =>
+                  supertest(app.getHttpServer()).put('/api/chess/surrender').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  const res = await reqApi({ roomId: boardId });
+                  expect(res.status).toBe(200);
             });
       });
 

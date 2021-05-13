@@ -6,9 +6,9 @@ import { UserService } from '../user/user.service';
 
 //---- Entity
 import { TicTacToe } from './entity/ticTacToe.entity';
-import User from '../user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { ChatService } from '../chat/chat.service';
-import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
+import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus, EloCalculator } from './entity/ticTacToe.interface';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 import { TicTacToeMove } from './entity/ticTacToeMove.entity';
 
@@ -162,7 +162,12 @@ export class TicTacToeCommonService {
             if (board) {
                   board.winner = player.flag === TicTacToeFlag.BLUE ? TicTacToeFlag.RED : TicTacToeFlag.BLUE;
                   board.status = TicTacToeStatus.END;
+                  const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
 
+                  board.users[0].elo += eloCalculator.blueElo;
+                  board.users[1].elo += eloCalculator.redElo;
+                  board.eloBlueUser = eloCalculator.blueElo;
+                  board.eloRedUser = eloCalculator.redElo;
                   await this.setBoard(board);
                   await this.saveTTTFromCacheToDb(boardId);
             }
@@ -203,10 +208,63 @@ export class TicTacToeCommonService {
             newTicTacToe.winner = board.winner;
             newTicTacToe.users = users;
             newTicTacToe.startDate = board.startDate;
+            newTicTacToe.blueElo = board.eloBlueUser;
+            newTicTacToe.redElo = board.eloRedUser;
             newTicTacToe.chatId = chat.id;
 
             const ttt = await this.ticTacToeRepository.save(newTicTacToe);
 
             return ttt;
+      }
+
+      async draw(boardId: string) {
+            const board = await this.getBoard(boardId);
+
+            if (board) {
+                  board.winner = TicTacToeFlag.EMPTY;
+                  board.status = TicTacToeStatus.END;
+                  const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
+                  board.users[0].elo += eloCalculator.blueElo;
+                  board.users[1].elo += eloCalculator.redElo;
+                  board.eloBlueUser = eloCalculator.blueElo;
+                  board.eloRedUser = eloCalculator.redElo;
+                  await this.setBoard(board);
+                  await this.saveTTTFromCacheToDb(boardId);
+            }
+      }
+
+      calculateElo(result: TicTacToeFlag, playerBlue: TicTacToePlayer, playerRed: TicTacToePlayer): EloCalculator {
+            const Qb = Math.pow(10, playerBlue.elo / 400);
+            const Qr = Math.pow(10, playerRed.elo / 400);
+
+            const Eb = Qb / (Qb + Qr);
+            const Er = Qr / (Qb + Qr);
+
+            let Kb, Kr;
+            if (Kb < 1600) Kb = 25;
+            else if (Kb < 2000) Kb = 20;
+            else if (Kb < 2400) Kb = 15;
+            else Kb = 10;
+            if (Kb < 1600) Kr = 25;
+            else if (Kb < 2000) Kr = 20;
+            else if (Kb < 2400) Kr = 15;
+            else Kr = 10;
+
+            let Ab, Ar;
+            if (result === TicTacToeFlag.BLUE) {
+                  Ab = 1;
+                  Ar = 0;
+            } else if (result === TicTacToeFlag.RED) {
+                  Ab = 0;
+                  Ar = 1;
+            } else if (result === TicTacToeFlag.EMPTY) {
+                  Ab = 0;
+                  Ar = 0;
+            }
+
+            return {
+                  blueElo: Math.floor(Kb * (Ab - Eb)),
+                  redElo: Math.floor(Kr * (Ar - Er)),
+            };
       }
 }
