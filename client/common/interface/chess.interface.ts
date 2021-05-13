@@ -27,12 +27,14 @@ export enum ChessStatus {
     'NOT_YET' = 0,
     'PLAYING' = 1,
     'END' = 2,
+    'DRAW' = 3,
 }
 
 export interface ChessPlayer extends PublicUser {
     flag: TicTacToeFlag.BLUE | TicTacToeFlag.RED;
     time: number;
     ready: boolean;
+    isDraw: boolean;
 }
 export interface ChessMoveRedis {
     x: number;
@@ -40,10 +42,18 @@ export interface ChessMoveRedis {
     chessRole: ChessRole;
     flag: TicTacToeFlag;
 }
+export interface ChessMove {
+    fromX: number;
+    toX: number;
+    fromY: number;
+    toY: number;
+    chessRole: ChessRole;
+    flag: TicTacToeFlag;
+}
 
 export interface ChessBoard {
     board: Array<Array<ChessFlag>>;
-    moves: Array<ChessMoveRedis>;
+    moves: Array<ChessMove>;
     turn: boolean;
     id: string;
     isBotMode: boolean;

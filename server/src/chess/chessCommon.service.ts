@@ -107,6 +107,7 @@ export class ChessCommonService {
                         id: user?.id,
                         ready: false,
                         flag: userFlag,
+                        isDraw: false,
                   });
 
                   await this.setBoard(board);
@@ -143,19 +144,31 @@ export class ChessCommonService {
             }
       }
 
-      async draw(boardId: string) {
+      async draw(boardId: string, isDraw: boolean) {
             const board = await this.getBoard(boardId);
             if (board) {
-                  board.winner = -1;
-                  board.status = ChessStatus.END;
-                  const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
-                  board.users[0].elo += eloCalculator.whiteElo;
-                  board.users[1].elo += eloCalculator.blackElo;
-                  board.eloBlackUser = eloCalculator.blackElo;
-                  board.eloWhiteUser = eloCalculator.whiteElo;
-                  await this.setBoard(board);
-                  await this.saveChessFromCacheToDb(boardId);
+                  if (isDraw) {
+                        board.winner = -1;
+                        board.status = ChessStatus.END;
+                        const eloCalculator = this.calculateElo(board.winner, board.users[0], board.users[1]);
+                        board.users[0].elo += eloCalculator.whiteElo;
+                        board.users[1].elo += eloCalculator.blackElo;
+                        board.eloBlackUser = eloCalculator.blackElo;
+                        board.eloWhiteUser = eloCalculator.whiteElo;
+                        await this.setBoard(board);
+                        await this.saveChessFromCacheToDb(boardId);
+                  } else {
+                        board.status = ChessStatus.PLAYING;
+                        await this.setBoard(board);
+                  }
             }
+      }
+
+      async createDrawRequest(boardId: string, player: ChessPlayer) {
+            const board = await this.getBoard(boardId);
+            board.status = ChessStatus.DRAW;
+            board.users[player.flag].isDraw = true;
+            await this.setBoard(board);
       }
 
       async saveChessFromCacheToDb(boardId: string) {

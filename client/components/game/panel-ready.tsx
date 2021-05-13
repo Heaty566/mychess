@@ -11,7 +11,7 @@ const PanelReady: React.FunctionComponent<PanelReadyProps> = ({ handleOnClick, i
         <ModalWrapper isAppear={isAppear}>
             <h1 className="text-xl font-bold">{isReady ? 'Please Wait For Other Ready' : 'Please Ready To Start'}</h1>
             <div>
-                <button className="px-4 py-2 font-semibold bg-blue-700 rounded-sm text-mercury " onClick={() => handleOnClick()}>
+                <button className="px-4 py-2 font-semibold bg-blue-700 rounded-sm text-mercury " onClick={handleOnClick}>
                     Ready
                 </button>
             </div>

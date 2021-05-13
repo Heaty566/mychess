@@ -16,6 +16,7 @@ import PanelRestart from '../../../components/game/panel-restart';
 import WaveLoading from '../../../components/loading/wave-loading';
 import PanelStart from '../../../components/game/panel-start';
 import PanelReady from '../../../components/game/panel-ready';
+import PanelDraw from '../../../components/game/panel-draw';
 import XPlayerIcon from '../../../public/asset/icons/x-player';
 import OPlayerIcon from '../../../public/asset/icons/o-player';
 import ShareIcon from '../../../public/asset/icons/share';
@@ -82,6 +83,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         userTwoName={board.users[1]?.name ? board.users[1].name : ''}
                                         isAppear={board.status === TicTacToeStatus['END']}
                                     />
+                                    {/* <PanelDraw handleOnAccept={() => {}} handleOnDeny={() => {}} isAppear={true} /> */}
 
                                     <TTTBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} />
                                 </div>

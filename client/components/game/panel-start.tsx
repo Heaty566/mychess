@@ -10,7 +10,7 @@ const PanelStart: React.FunctionComponent<PanelStartProps> = ({ handleOnClick, i
     return (
         <ModalWrapper isAppear={isAppear}>
             <h1 className="text-xl font-bold">Click Start When You Are Ready</h1>
-            <button className="px-4 py-2 font-semibold bg-blue-700 rounded-sm text-mercury " onClick={() => handleOnClick()}>
+            <button className="px-4 py-2 font-semibold bg-blue-700 rounded-sm text-mercury " onClick={handleOnClick}>
                 Start Game
             </button>
         </ModalWrapper>

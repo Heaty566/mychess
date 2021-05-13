@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { TicTacToeStatus } from '../../../common/interface/tic-tac-toe.interface';
+import { TicTacToeFlag, TicTacToeStatus } from '../../../common/interface/tic-tac-toe.interface';
 import routers from '../../../common/constants/router';
 import SeoHead from '../../../components/common/seoHead';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
@@ -23,13 +23,32 @@ import useChatIo from '../../../common/hooks/useChatIo';
 import { useGameChess } from '../../../common/hooks/useGameChess';
 import { ChessStatus } from '../../../common/interface/chess.interface';
 import ChessBoard from '../../../components/game/chess-board';
+import PanelDraw from '../../../components/game/panel-draw';
+import ChessStep from '../../../components/game/chess-step';
+import GameControlMenu from '../../../components/game/game-menu';
+import PanelPromote from '../../../components/game/panel-promote';
 
 export interface TicTacToePvPProps {
     roomId: string;
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const [board, players, suggestion, boardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart] = useGameChess(roomId);
+    const [
+        board,
+        players,
+        player,
+        suggestion,
+        boardRef,
+        handleOnReady,
+        handleOnStart,
+        handleOnAddMove,
+        handleOnDraw,
+        handleOnAcceptDraw,
+        handleOnRestart,
+        handleOnPromote,
+        isPromote,
+        handlsusu,
+    ] = useGameChess(roomId);
     const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
 
     return (
@@ -84,20 +103,33 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         userTwoName={board.users[1]?.name ? board.users[1].name : ''}
                                         isAppear={board.status === ChessStatus.END}
                                     />
-
+                                    <PanelDraw
+                                        handleOnAccept={() => handleOnAcceptDraw(true)}
+                                        handleOnDeny={() => handleOnAcceptDraw(false)}
+                                        isAppear={board.status === ChessStatus.DRAW}
+                                        isDraw={player?.isDraw || false}
+                                    />
+                                    <PanelPromote
+                                        currentFlag={player?.flag || TicTacToeFlag.BLUE}
+                                        handleOnClick={handleOnPromote}
+                                        isAppear={isPromote}
+                                    />
                                     <ChessBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} suggestion={suggestion} />
                                 </div>
                             </div>
-
-                            {chat && (
-                                <ChatBox
-                                    wrapperRef={chatWrapperRef}
-                                    chat={chat}
-                                    handleOnSendMessage={handleOnSendMessage}
-                                    register={chatRegister}
-                                    users={board.users}
-                                />
-                            )}
+                            <div className="flex flex-col flex-1 space-y-2 md:m-0 md:max-w-xs">
+                                <GameControlMenu handleOnDraw={handleOnDraw} handleOnSurrender={handlsusu} />
+                                {chat && (
+                                    <ChatBox
+                                        wrapperRef={chatWrapperRef}
+                                        chat={chat}
+                                        handleOnSendMessage={handleOnSendMessage}
+                                        register={chatRegister}
+                                        users={board.users}
+                                    />
+                                )}
+                                <ChessStep moves={board.moves} />
+                            </div>
                         </div>
                     )}
 

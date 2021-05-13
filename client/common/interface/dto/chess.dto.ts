@@ -3,3 +3,7 @@ export interface ChessChooseAPieceDTO {
     x: number;
     y: number;
 }
+export interface DrawDTO {
+    roomId: string;
+    isAccept: boolean;
+}

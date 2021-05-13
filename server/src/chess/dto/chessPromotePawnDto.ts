@@ -17,5 +17,5 @@ export const vChessPromotePawnDto = Joi.object({
             x: Joi.number().min(0).max(7).required(),
             y: Joi.number().min(0).max(7).required(),
       }),
-      promoteRole: Joi.number().min(-1).max(6).required(),
+      promoteRole: Joi.number().min(2).max(5).required(),
 });

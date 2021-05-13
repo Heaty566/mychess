@@ -3,10 +3,8 @@ import { useSelector } from 'react-redux';
 import * as React from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import XPlayerIcon from '../../../public/asset/icons/x-player';
-import OPlayerIcon from '../../../public/asset/icons/o-player';
+
 import { RootState } from '../../../store';
-import TicTacToeIcon from '../../../public/asset/icons/tictactoe';
 import SeoHead from '../../../components/common/seoHead';
 import { capitalize } from '../../../common/helpers/string.helper';
 import { ApiState, ServerResponse } from '../../../common/interface/api.interface';
@@ -15,9 +13,7 @@ import { AuthState, User } from '../../../common/interface/user.interface';
 import EditIcons from '../../../public/asset/icons/edit';
 import routers from '../../../common/constants/router';
 import ticTacToeApi from '../../../api/tttApi';
-import { TicTacToeBoard, TicTacToeFlag, TicTacToePlayer } from '../../../common/interface/tic-tac-toe.interface';
-import Tooltip from '../../../components/tooltip/tooltip-dropbox';
-import Pagination from '../../../components/pagination';
+import { TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface';
 import WaveLoading from '../../../components/loading/wave-loading';
 import chessApi from '../../../api/chessApi';
 import CardGameReport from '../../../components/card/card-game-report';
@@ -39,14 +35,12 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
         if (user)
             if (summaryFlag) {
                 chessApi.getAllGameByUserId(user.id).then((res) => {
-                    console.log(res.data);
                     setBoards(res.data.data.boards);
                     setTotalWin(res.data.data.totalWin);
                     setTotal(res.data.data.count);
                 });
             } else
                 ticTacToeApi.getAllGameByUserId(user.id).then((res) => {
-                    console.log(res.data.data);
                     setBoards(res.data.data.boards);
                     setTotalWin(res.data.data.totalWin);
                     setTotal(res.data.data.count);

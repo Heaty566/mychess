@@ -12,7 +12,7 @@ const PanelRestart: React.FunctionComponent<PanelRestartProps> = ({ handleOnClic
     return (
         <ModalWrapper isAppear={isAppear}>
             <h1 className="text-xl font-bold capitalize">{winner ? userOneName : userTwoName} Win, Thank You For Playing</h1>
-            <button className="px-4 py-2 font-bold bg-blue-700 rounded-sm text-mercury " onClick={() => handleOnClick()}>
+            <button className="px-4 py-2 font-bold bg-blue-700 rounded-sm text-mercury " onClick={handleOnClick}>
                 Restart
             </button>
         </ModalWrapper>

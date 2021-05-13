@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { chessApi } from '../../api/chessApi';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { ChessGatewayAction, ChessBoard, ChessPlayer, ChessStatus, ChessMoveRedis, ChessFlag } from '../interface/chess.interface';
+import { ChessGatewayAction, ChessBoard, ChessPlayer, ChessStatus, ChessMoveRedis, ChessFlag, ChessRole } from '../interface/chess.interface';
 import { AuthState } from '../interface/user.interface';
 import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
@@ -14,12 +14,17 @@ export function useGameChess(
 ): [
     ChessBoard | undefined,
     ChessPlayer[] | undefined,
+    ChessPlayer | undefined,
     ChessMoveRedis[],
     React.RefObject<HTMLDivElement>,
     () => void,
     () => void,
     (x: number, y: number) => void,
-
+    () => void,
+    (isDraw: boolean) => void,
+    () => void,
+    (role: ChessRole.KNIGHT | ChessRole.QUEEN | ChessRole.ROOK | ChessRole.BISHOP) => void,
+    boolean,
     () => void,
 ] {
     const clientIoChess = useSocketIo({ namespace: 'chess' });
@@ -31,6 +36,7 @@ export function useGameChess(
     const [suggestion, setSuggestion] = React.useState<ChessMoveRedis[]>([]);
     const [currentSelect, setCurrentSelect] = React.useState<ChessMoveRedis>();
     const [currentPlayer, setCurrentPlayer] = React.useState<ChessPlayer>();
+    const [isPromote, setPromote] = React.useState<boolean>(false);
 
     const handleOnRestart = () => {
         if (tttBoard) {
@@ -55,25 +61,35 @@ export function useGameChess(
             .catch(() => router.push(routers[404].link));
     };
 
+    const handleOnDraw = () => {
+        chessApi.drawGameCreate({ roomId });
+    };
+
+    const handleOnAcceptDraw = (isDraw: boolean) => {
+        chessApi.drawGameAccept({ roomId, isAccept: isDraw });
+    };
+
+    const handleOnSurrender = () => {
+        chessApi.surrender({ roomId });
+    };
+
     const handleOnAddMove = (x: number, y: number) => {
         if (tttBoard) {
             const findMove = suggestion.find((item) => item.x === x && item.y === y);
-
+            setCurrentSelect({
+                chessRole: tttBoard.board[x][y].chessRole,
+                flag: tttBoard.board[x][y].flag,
+                x,
+                y,
+            });
             if (findMove && currentSelect) {
                 chessApi.addMovePvP({ roomId, curPos: { x: currentSelect.x, y: currentSelect.y }, desPos: { x, y } }).then(() => {
                     const sound = new Audio('/asset/sounds/ttt-click.mp3');
                     sound.volume = 0.5;
                     sound.play();
                     setSuggestion([]);
-                    setCurrentSelect(undefined);
                 });
             } else if (!currentSelect || currentSelect.x !== x || currentSelect.y !== y) {
-                setCurrentSelect({
-                    chessRole: tttBoard.board[x][y].chessRole,
-                    flag: tttBoard.board[x][y].flag,
-                    x,
-                    y,
-                });
                 chessApi
                     .getSuggestion({ roomId, x, y })
                     .then((res) => {
@@ -84,7 +100,6 @@ export function useGameChess(
                     });
             }
         }
-        console.log(currentSelect);
     };
 
     const handleOnReady = () => {
@@ -137,13 +152,30 @@ export function useGameChess(
         };
     }, [roomId]);
 
+    const onPromote = (res: { data: { userId: string } }) => {
+        console.log(authState.id);
+        console.log(res.data.userId);
+        const user = authState.id === res.data.userId;
+        console.log(user);
+        if (user) setPromote(true);
+    };
+
+    const handleOnPromote = (role: ChessRole.KNIGHT | ChessRole.QUEEN | ChessRole.ROOK | ChessRole.BISHOP) => {
+        if (currentSelect && isPromote)
+            chessApi.promoteChess({ promotePos: { x: currentSelect?.x, y: currentSelect?.y }, promoteRole: role, roomId }).then(() => {
+                setPromote(false);
+            });
+    };
+
     React.useEffect(() => {
         clientIoChess.on(ChessGatewayAction.CHESS_GET, onTTTGet);
         clientIoChess.on(ChessGatewayAction.CHESS_JOIN, emitTTTGet);
         clientIoChess.on(ChessGatewayAction.CHESS_COUNTER, onTTTCounter);
         clientIoChess.on(ChessGatewayAction.CHESS_RESTART, onRestartGame);
+        clientIoChess.on(ChessGatewayAction.CHESS_PROMOTE_PAWN, onPromote);
 
         return () => {
+            clientIoChess.off(ChessGatewayAction.CHESS_PROMOTE_PAWN, onPromote);
             clientIoChess.off(ChessGatewayAction.CHESS_RESTART, onRestartGame);
             clientIoChess.off(ChessGatewayAction.CHESS_COUNTER, onTTTCounter);
             clientIoChess.off(ChessGatewayAction.CHESS_GET, onTTTGet);
@@ -151,7 +183,22 @@ export function useGameChess(
         };
     }, [roomId]);
 
-    return [tttBoard, players, suggestion, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart];
+    return [
+        tttBoard,
+        players,
+        currentPlayer,
+        suggestion,
+        chessBoardRef,
+        handleOnReady,
+        handleOnStart,
+        handleOnAddMove,
+        handleOnDraw,
+        handleOnAcceptDraw,
+        handleOnRestart,
+        handleOnPromote,
+        isPromote,
+        handleOnSurrender,
+    ];
 }
 
 export default useGameChess;
