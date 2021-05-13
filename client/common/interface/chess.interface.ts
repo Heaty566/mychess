@@ -1,5 +1,4 @@
-import { PublicUser } from './user.interface';
-import { TicTacToeFlag } from './tic-tac-toe.interface';
+import { GamePlayer, GameStatus, GamePlayerFlag } from './game.interface';
 
 export enum ChessRole {
     KING = 1,
@@ -12,7 +11,7 @@ export enum ChessRole {
 }
 export interface ChessFlag {
     chessRole: ChessRole;
-    flag: TicTacToeFlag;
+    flag: GamePlayerFlag;
 }
 
 export enum ChessGatewayAction {
@@ -23,32 +22,19 @@ export enum ChessGatewayAction {
     CHESS_RESTART = 'chess-restart',
 }
 
-export enum ChessStatus {
-    'NOT_YET' = 0,
-    'PLAYING' = 1,
-    'END' = 2,
-    'DRAW' = 3,
-}
-
-export interface ChessPlayer extends PublicUser {
-    flag: TicTacToeFlag.BLUE | TicTacToeFlag.RED;
-    time: number;
-    ready: boolean;
-    isDraw: boolean;
-}
-export interface ChessMoveRedis {
-    x: number;
-    y: number;
-    chessRole: ChessRole;
-    flag: TicTacToeFlag;
-}
 export interface ChessMove {
     fromX: number;
     toX: number;
     fromY: number;
     toY: number;
     chessRole: ChessRole;
-    flag: TicTacToeFlag;
+    flag: GamePlayerFlag;
+}
+export interface ChessMoveRedis {
+    x: number;
+    y: number;
+    chessRole: ChessRole;
+    flag: GamePlayerFlag;
 }
 
 export interface ChessBoard {
@@ -57,9 +43,9 @@ export interface ChessBoard {
     turn: boolean;
     id: string;
     isBotMode: boolean;
-    users: ChessPlayer[];
-    winner: TicTacToeFlag;
+    users: GamePlayer[];
+    winner: GamePlayerFlag;
     startDate: Date;
-    status: ChessStatus;
+    status: GameStatus;
     chatId: string;
 }

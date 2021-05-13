@@ -13,39 +13,47 @@ import BlackBishop from '../../public/asset/icons/chess/black-bishop';
 import WhiteBishop from '../../public/asset/icons/chess/white-bishop';
 import ModalWrapper from '../modal/modal-wrapper';
 import { ChessFlag, ChessRole } from '../../common/interface/chess.interface';
-import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
+import { PromoteChessRole } from '../../common/interface/dto/chess.dto';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
 export interface PanelPromoteProps {
-    handleOnClick: (role: ChessRole.KNIGHT | ChessRole.QUEEN | ChessRole.ROOK | ChessRole.BISHOP) => void;
+    handleOnClick: (role: PromoteChessRole) => void;
     isAppear: boolean;
-    currentFlag: TicTacToeFlag;
+    currentFlag: GamePlayerFlag;
 }
 
 const PanelPromote: React.FunctionComponent<PanelPromoteProps> = ({ handleOnClick, isAppear, currentFlag }) => {
-    const chess: Array<{ value: ChessRole.KNIGHT | ChessRole.QUEEN | ChessRole.ROOK | ChessRole.BISHOP; Component: any }> = [
+    const chess: Array<{ value: PromoteChessRole; Component: any }> = [
         {
             value: ChessRole.BISHOP,
-            Component: currentFlag === TicTacToeFlag.BLUE ? WhiteBishop : BlackBishop,
+            Component: currentFlag === GamePlayerFlag.USER1 ? WhiteBishop : BlackBishop,
         },
         {
             value: ChessRole.KNIGHT,
-            Component: currentFlag === TicTacToeFlag.BLUE ? WhiteKnight : BlackKnight,
+            Component: currentFlag === GamePlayerFlag.USER1 ? WhiteKnight : BlackKnight,
         },
         {
             value: ChessRole.QUEEN,
-            Component: currentFlag === TicTacToeFlag.BLUE ? WhiteQueen : BlackQueen,
+            Component: currentFlag === GamePlayerFlag.USER1 ? WhiteQueen : BlackQueen,
         },
         {
             value: ChessRole.ROOK,
-            Component: currentFlag === TicTacToeFlag.BLUE ? WhiteRook : BlackRook,
+            Component: currentFlag === GamePlayerFlag.USER1 ? WhiteRook : BlackRook,
         },
     ];
 
     return (
         <ModalWrapper isAppear={isAppear}>
-            <div>
-                {chess.map((item) => {
-                    return <button onClick={() => handleOnClick(item.value)}>{<item.Component />}</button>;
-                })}
+            <div className="space-y-2 text-center">
+                <h1 className="text-xl font-bold capitalize">Please choose your new chess</h1>
+                <div>
+                    {chess.map((item, index) => {
+                        return (
+                            <button key={index} onClick={() => handleOnClick(item.value)}>
+                                {<item.Component />}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
         </ModalWrapper>
     );

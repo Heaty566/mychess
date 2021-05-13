@@ -13,7 +13,7 @@ import BlackBishop from '../../public/asset/icons/chess/black-bishop';
 import WhiteBishop from '../../public/asset/icons/chess/white-bishop';
 
 import { ChessFlag, ChessRole } from '../../common/interface/chess.interface';
-import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
 export interface ChessCellProps {
     cellFlag: ChessFlag;
     isEven: boolean;
@@ -27,50 +27,50 @@ const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOn
         switch (input.chessRole) {
             case ChessRole.PAWN:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhitePawn />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackPawn />;
                 }
             case ChessRole.BISHOP:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteBishop />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackBishop />;
                 }
             case ChessRole.KING:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteKing />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackKing />;
                 }
             case ChessRole.KNIGHT:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteKnight />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackKnight />;
                 }
             case ChessRole.QUEEN:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteQueen />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackQueen />;
                 }
             case ChessRole.ROOK:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteRook />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackRook />;
                 }
         }

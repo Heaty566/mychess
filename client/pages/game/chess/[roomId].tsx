@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { TicTacToeFlag, TicTacToeStatus } from '../../../common/interface/tic-tac-toe.interface';
 import routers from '../../../common/constants/router';
 import SeoHead from '../../../components/common/seoHead';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
@@ -21,47 +20,47 @@ import ShareIcon from '../../../public/asset/icons/share';
 import useChatIo from '../../../common/hooks/useChatIo';
 
 import { useGameChess } from '../../../common/hooks/useGameChess';
-import { ChessStatus } from '../../../common/interface/chess.interface';
 import ChessBoard from '../../../components/game/chess-board';
 import PanelDraw from '../../../components/game/panel-draw';
 import ChessStep from '../../../components/game/chess-step';
 import GameControlMenu from '../../../components/game/game-menu';
 import PanelPromote from '../../../components/game/panel-promote';
+import { GamePlayerFlag, GameStatus } from '../../../common/interface/game.interface';
 
 export interface TicTacToePvPProps {
     roomId: string;
 }
 
 const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) => {
-    const [
-        board,
-        players,
-        player,
-        suggestion,
-        boardRef,
-        handleOnReady,
-        handleOnStart,
-        handleOnAddMove,
-        handleOnDraw,
-        handleOnAcceptDraw,
-        handleOnRestart,
-        handleOnPromote,
-        isPromote,
-        handlsusu,
-    ] = useGameChess(roomId);
-    const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(board?.chatId);
+    const {
+        chessBoard,
+        isChessPromote,
+        chessPlayers,
+        chessSuggestion,
+        currentChessPlayer,
+        chessBoardRef,
+        chessHandleOnAcceptDraw,
+        chessHandleOnDraw,
+        chessHandleOnPromote,
+        chessHandleOnReady,
+        chessHandleOnRestart,
+        chessHandleOnStart,
+        chessHandleOnSurrender,
+        chessHandleOnClick,
+    } = useGameChess(roomId);
+    const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(chessBoard?.chatId);
 
     return (
         <>
             <SeoHead {...routers.chessPvP.header} />
             <RouteProtectedWrapper isNeedLogin>
                 <div className="flex-1 space-y-4 md:p-8 fade-in chess-bg">
-                    {board && (
+                    {chessBoard && (
                         <div className="justify-center py-2 space-y-2 lg:space-y-0 lg:space-x-2 lg:flex">
                             <div className="w-full max-w-2xl mx-auto space-y-2 md:mx-0">
                                 <div className="flex flex-col justify-between p-2 bg-gray-50">
                                     <div className="flex justify-between flex-1">
-                                        <p className="text-lg font-bold">Room ID: {board.id}</p>
+                                        <p className="text-lg font-bold">Room ID: {chessBoard.id}</p>
 
                                         <ToolTip content="Copy To Clipboard" position="left-full" maxLength={0}>
                                             <button
@@ -75,65 +74,74 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                     </div>
 
                                     <div className="flex">
-                                        <PlayerInfo player={players?.length ? players[0] : board.users[0]} isReverse={false} />
+                                        <PlayerInfo player={chessPlayers?.length ? chessPlayers[0] : chessBoard.users[0]} isReverse={false} />
                                         <ChessTurn
-                                            currentTurn={board.turn}
-                                            userOneReady={board.users[0]?.ready}
-                                            userTwoReady={board.users[1]?.ready}
+                                            currentTurn={chessBoard.turn}
+                                            userOneReady={chessBoard.users[0]?.ready}
+                                            userTwoReady={chessBoard.users[1]?.ready}
                                         />
-                                        <PlayerInfo player={players?.length ? players[1] : board.users[1]} isReverse={true} />
+                                        <PlayerInfo player={chessPlayers?.length ? chessPlayers[1] : chessBoard.users[1]} isReverse={true} />
                                     </div>
                                 </div>
                                 <div className="relative m-auto chess-board">
                                     <PanelStart
-                                        handleOnClick={handleOnStart}
-                                        isAppear={board.status === ChessStatus.NOT_YET && board.users[0]?.ready && board.users[1]?.ready}
+                                        handleOnClick={chessHandleOnStart}
+                                        isAppear={
+                                            chessBoard.status === GameStatus.NOT_YET && chessBoard.users[0]?.ready && chessBoard.users[1]?.ready
+                                        }
                                     />
 
                                     <PanelReady
                                         isReady={true}
-                                        handleOnClick={handleOnReady}
-                                        isAppear={board.status === ChessStatus.NOT_YET && (!board.users[0]?.ready || !board.users[1]?.ready)}
+                                        handleOnClick={chessHandleOnReady}
+                                        isAppear={
+                                            chessBoard.status === GameStatus.NOT_YET && (!chessBoard.users[0]?.ready || !chessBoard.users[1]?.ready)
+                                        }
                                     />
 
                                     <PanelRestart
-                                        handleOnClick={handleOnRestart}
-                                        winner={board.winner === 0}
-                                        userOneName={board.users[0]?.name ? board.users[0].name : ''}
-                                        userTwoName={board.users[1]?.name ? board.users[1].name : ''}
-                                        isAppear={board.status === ChessStatus.END}
+                                        handleOnClick={chessHandleOnRestart}
+                                        winner={chessBoard.winner === 0}
+                                        userOneName={chessBoard.users[0]?.name ? chessBoard.users[0].name : ''}
+                                        userTwoName={chessBoard.users[1]?.name ? chessBoard.users[1].name : ''}
+                                        isAppear={chessBoard.status === GameStatus.END}
                                     />
                                     <PanelDraw
-                                        handleOnAccept={() => handleOnAcceptDraw(true)}
-                                        handleOnDeny={() => handleOnAcceptDraw(false)}
-                                        isAppear={board.status === ChessStatus.DRAW}
-                                        isDraw={player?.isDraw || false}
+                                        handleOnAccept={() => chessHandleOnAcceptDraw(true)}
+                                        handleOnDeny={() => chessHandleOnAcceptDraw(false)}
+                                        isAppear={chessBoard.status === GameStatus.DRAW}
+                                        isDraw={currentChessPlayer.isDraw}
                                     />
                                     <PanelPromote
-                                        currentFlag={player?.flag || TicTacToeFlag.BLUE}
-                                        handleOnClick={handleOnPromote}
-                                        isAppear={isPromote}
+                                        currentFlag={currentChessPlayer?.flag || GamePlayerFlag.USER1}
+                                        handleOnClick={chessHandleOnPromote}
+                                        isAppear={isChessPromote}
                                     />
-                                    <ChessBoard board={board.board} handleOnClick={handleOnAddMove} register={boardRef} suggestion={suggestion} />
+                                    <ChessBoard
+                                        board={chessBoard.board}
+                                        handleOnClick={chessHandleOnClick}
+                                        register={chessBoardRef}
+                                        suggestion={chessSuggestion}
+                                    />
                                 </div>
                             </div>
                             <div className="flex flex-col flex-1 space-y-2 md:m-0 md:max-w-xs">
-                                <GameControlMenu handleOnDraw={handleOnDraw} handleOnSurrender={handlsusu} />
+                                <GameControlMenu handleOnDraw={chessHandleOnDraw} handleOnSurrender={chessHandleOnSurrender} />
                                 {chat && (
                                     <ChatBox
                                         wrapperRef={chatWrapperRef}
                                         chat={chat}
                                         handleOnSendMessage={handleOnSendMessage}
                                         register={chatRegister}
-                                        users={board.users}
+                                        users={chessBoard.users}
                                     />
                                 )}
-                                <ChessStep moves={board.moves} />
+                                <ChessStep moves={chessBoard.moves} />
                             </div>
                         </div>
                     )}
 
-                    {!board && <WaveLoading />}
+                    {!chessBoard && <WaveLoading />}
                 </div>
             </RouteProtectedWrapper>
         </>

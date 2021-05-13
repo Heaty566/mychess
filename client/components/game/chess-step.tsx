@@ -12,7 +12,7 @@ import BlackRook from '../../public/asset/icons/chess/black-rook-mini';
 import WhiteRook from '../../public/asset/icons/chess/white-rook-mini';
 import BlackBishop from '../../public/asset/icons/chess/black-bishop-mini';
 import WhiteBishop from '../../public/asset/icons/chess/white-bishop-mini';
-import { TicTacToeFlag } from '../../common/interface/tic-tac-toe.interface';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
 
 export interface ChessStepProps {
     moves: ChessMove[];
@@ -32,50 +32,50 @@ const ChessStep: React.FunctionComponent<ChessStepProps> = ({ moves }) => {
         switch (input.chessRole) {
             case ChessRole.PAWN:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhitePawn />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackPawn />;
                 }
             case ChessRole.BISHOP:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteBishop />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackBishop />;
                 }
             case ChessRole.KING:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteKing />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackKing />;
                 }
             case ChessRole.KNIGHT:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteKnight />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackKnight />;
                 }
             case ChessRole.QUEEN:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteQueen />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackQueen />;
                 }
             case ChessRole.ROOK:
                 switch (input.flag) {
-                    case TicTacToeFlag.RED:
+                    case GamePlayerFlag.USER1:
                         return <WhiteRook />;
 
-                    case TicTacToeFlag.BLUE:
+                    case GamePlayerFlag.USER2:
                         return <BlackRook />;
                 }
         }
@@ -83,9 +83,12 @@ const ChessStep: React.FunctionComponent<ChessStepProps> = ({ moves }) => {
     return (
         <div className="flex-1 py-1 overflow-auto bg-aths-special-500 max-h-64 fade-in">
             <div className="flex flex-col-reverse px-2 transform rotate-y-180 " ref={boxRef}>
-                {moves.map((item) => {
+                {moves.map((item, index) => {
                     return (
-                        <div className="flex mb-2 font-medium transform rotate-y-180" key={`${item.fromX}${item.fromY}${item.toX}${item.toY}`}>
+                        <div
+                            className="flex mb-2 font-medium transform rotate-y-180"
+                            key={`${item.fromX}${item.fromY}${item.toX}${item.toY}${index}`}
+                        >
                             {getChess({ chessRole: item.chessRole, flag: item.flag })}{' '}
                             {` X: ${item.fromX} -> ${item.toX} vs Y: ${item.fromY} -> ${item.toY}`}
                         </div>

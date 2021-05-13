@@ -167,11 +167,11 @@ export class ChessController {
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
-            if (
-                  (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE) ||
-                  (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK)
-            )
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
+            // if (
+            //       (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE) ||
+            //       (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK)
+            // )
+            //       throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
 
             const curPos: ChessMoveCoordinates = {
                   x: body.curPos.x,

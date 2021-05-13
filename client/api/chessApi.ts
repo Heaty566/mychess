@@ -1,7 +1,7 @@
 import http from './axiosCommon';
 import { AxiosInstance } from 'axios';
 import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
-import { ChessChooseAPieceDTO, DrawDTO } from '../common/interface/dto/chess.dto';
+import { ChessChooseAPieceDTO, DrawDTO, PromoteChessDto } from '../common/interface/dto/chess.dto';
 import { ChessMoveRedis, ChessRole } from '../common/interface/chess.interface';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
@@ -34,7 +34,7 @@ export class ChessAPI {
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
         return res;
     }
-    async promoteChess(input: { promotePos: { x: number; y: number }; roomId: string; promoteRole: ChessRole }) {
+    async promoteChess(input: PromoteChessDto) {
         const url = `${this.prefix}/promote-pawn`;
         const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
         return res;

@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { TicTacToeFlag, TicTacToePlayer } from '../../common/interface/tic-tac-toe.interface';
+import { GamePlayer, GamePlayerFlag } from '../../common/interface/game.interface';
 
 export interface CardGameReportProps {
-    currentPlayer: TicTacToePlayer | undefined;
-    otherPlayer: TicTacToePlayer | undefined;
+    currentPlayer: GamePlayer | undefined;
+    otherPlayer: GamePlayer | undefined;
     time: {
         mmYY: string;
         mmHH: string;
     };
     isWin: boolean;
-    winner: TicTacToeFlag;
+    winner: GamePlayerFlag;
 }
 
 const CardGameReport: React.FunctionComponent<CardGameReportProps> = ({ currentPlayer, otherPlayer, time, isWin, winner }) => {

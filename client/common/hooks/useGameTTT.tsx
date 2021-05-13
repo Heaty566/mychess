@@ -4,27 +4,18 @@ import { useSelector } from 'react-redux';
 import ticTacToeApi from '../../api/tttApi';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { TicTacToeBoard, TicTacToeStatus, TicTacToePlayer, TTTGatewayAction } from '../interface/tic-tac-toe.interface';
+import { TicTacToeBoard, TTTGatewayAction } from '../interface/tic-tac-toe.interface';
 import { AuthState } from '../interface/user.interface';
 import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
+import { GamePlayer, GameStatus } from '../interface/game.interface';
 
-export function useGameTTT(
-    roomId: string,
-): [
-    TicTacToeBoard | undefined,
-    TicTacToePlayer[] | undefined,
-    React.RefObject<HTMLDivElement>,
-    () => void,
-    () => void,
-    (x: number, y: number) => void,
-    () => void,
-] {
+export function useGameTTT(roomId: string) {
     const clientIoTTT = useSocketIo({ namespace: 'tic-tac-toe' });
     const router = useRouter();
     const chessBoardRef = React.useRef<HTMLDivElement>(null);
     const [tttBoard, setTTTBoard] = React.useState<TicTacToeBoard>();
-    const [players, setPlayers] = React.useState<TicTacToePlayer[]>([]);
+    const [players, setPlayers] = React.useState<GamePlayer[]>([]);
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
 
     const handleOnRestart = () => {
@@ -65,22 +56,18 @@ export function useGameTTT(
 
     const onRestartGame = (res: ServerResponse<TicTacToeBoard>) => router.push(`${routers.ticTacToePvP.link}/${res.data.id}`);
     const onTTTGet = (res: ServerResponse<TicTacToeBoard>) => setTTTBoard(res.data);
-    const onTTTCounter = (res: ServerResponse<TicTacToePlayer[]>) => setPlayers(res.data);
+    const onTTTCounter = (res: ServerResponse<GamePlayer[]>) => setPlayers(res.data);
 
     React.useEffect(() => {
         let interval: NodeJS.Timeout;
 
-        if (tttBoard?.status === TicTacToeStatus.PLAYING) {
-            interval = setInterval(() => emitTTTCounter(), 1000);
-        }
+        if (tttBoard?.status === GameStatus.PLAYING) interval = setInterval(() => emitTTTCounter(), 1000);
 
-        return () => {
-            clearInterval(interval);
-        };
+        return () => clearInterval(interval);
     }, [tttBoard?.status, roomId]);
 
     React.useEffect(() => {
-        if (tttBoard && tttBoard.status === TicTacToeStatus.END) {
+        if (tttBoard && tttBoard.status === GameStatus.END) {
             const sound = new Audio('/asset/sounds/end-game.mp3');
             sound.volume = 0.5;
             sound.play();
@@ -115,7 +102,7 @@ export function useGameTTT(
         };
     }, [roomId]);
 
-    return [tttBoard, players, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart];
+    return { tttBoard, players, chessBoardRef, handleOnReady, handleOnStart, handleOnAddMove, handleOnRestart };
 }
 
 export default useGameTTT;
