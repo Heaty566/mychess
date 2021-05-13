@@ -178,10 +178,28 @@ export class TicTacToeController {
       async handleOnDraw(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
             const board = await this.getGame(body.roomId);
 
+            await this.getPlayer(board.id, req.user.id);
+
             if (board.status !== TicTacToeStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             await this.ticTacToeCommonService.draw(board.id);
+
+            await this.ticTacToeGateway.sendToRoom(board.id);
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
+      }
+
+      @Put('/surrender')
+      @UseGuards(UserGuard)
+      async handleOnSurrender(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            if (board.status !== TicTacToeStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.user-is-not-in-room' } } }, 'ForbiddenException');
+
+            const player = await this.getPlayer(board.id, req.user.id);
+
+            await this.ticTacToeCommonService.surrender(board.id, player);
 
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
