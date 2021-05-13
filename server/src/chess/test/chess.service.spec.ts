@@ -36,57 +36,56 @@ describe('ChessService', () => {
 
       describe('kingAvailableMove', () => {
             let chessBoard: ChessBoard;
-            beforeEach(() => {
+            beforeEach(async () => {
                   chessBoard = new ChessBoard(true);
-            });
-
-            it('x = 1, y = 1', async () => {
-                  chessBoard.board[1][1] = {
+                  chessBoard.board[0][0] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: PlayerFlagEnum.WHITE,
+                  };
+                  chessBoard.board[7][0] = {
+                        chessRole: ChessRole.ROOK,
+                        flag: PlayerFlagEnum.WHITE,
+                  };
+                  chessBoard.board[4][0] = {
                         chessRole: ChessRole.KING,
                         flag: PlayerFlagEnum.WHITE,
                   };
                   await chessCommonService.setBoard(chessBoard);
-                  const result = await chessService['kingAvailableMove']({ x: 1, y: 1 }, chessBoard.id);
-                  expect(result.length).toBe(8);
             });
 
-            it('x = 1, y = 1', async () => {
-                  chessBoard.board[1][1] = {
-                        chessRole: ChessRole.KING,
-                        flag: PlayerFlagEnum.WHITE,
-                  };
-                  chessBoard.board[0][0] = {
+            it('x = 4, y = 0 has 7 vailable move', async () => {
+                  const result = await chessService['kingAvailableMove']({ x: 4, y: 0 }, chessBoard.id);
+                  expect(result.length).toBe(7);
+            });
+
+            it('x = 4, y = 0 has 6 vailable move', async () => {
+                  chessBoard.board[4][1] = {
                         chessRole: ChessRole.PAWN,
                         flag: PlayerFlagEnum.WHITE,
                   };
                   await chessCommonService.setBoard(chessBoard);
-                  const result = await chessService['kingAvailableMove']({ x: 1, y: 1 }, chessBoard.id);
-                  expect(result.length).toBe(7);
+                  const result = await chessService['kingAvailableMove']({ x: 4, y: 0 }, chessBoard.id);
+                  expect(result.length).toBe(6);
             });
 
-            it('x = 0, y = 0', async () => {
-                  chessBoard.board[0][0] = {
-                        chessRole: ChessRole.KING,
-                        flag: PlayerFlagEnum.WHITE,
-                  };
-                  await chessCommonService.setBoard(chessBoard);
-                  const result = await chessService['kingAvailableMove']({ x: 0, y: 0 }, chessBoard.id);
-                  expect(result.length).toBe(3);
-            });
-
-            it('x = 1, y = 1', async () => {
-                  chessBoard.board[1][1] = {
-                        chessRole: ChessRole.KING,
-                        flag: PlayerFlagEnum.WHITE,
-                  };
-
-                  chessBoard.board[0][0] = {
+            it('x = 4, y = 0 has 5 vailable move with one enemy can check mate', async () => {
+                  chessBoard.board[4][1] = {
                         chessRole: ChessRole.PAWN,
                         flag: PlayerFlagEnum.BLACK,
                   };
                   await chessCommonService.setBoard(chessBoard);
-                  const result = await chessService['kingAvailableMove']({ x: 1, y: 1 }, chessBoard.id);
-                  expect(result.length).toBe(8);
+                  const result = await chessService['kingAvailableMove']({ x: 4, y: 0 }, chessBoard.id);
+                  expect(result.length).toBe(5);
+            });
+
+            it('x = 4, y = 0 has 6 vailable move with one enemy can not check mate', async () => {
+                  chessBoard.board[3][0] = {
+                        chessRole: ChessRole.PAWN,
+                        flag: PlayerFlagEnum.BLACK,
+                  };
+                  await chessCommonService.setBoard(chessBoard);
+                  const result = await chessService['kingAvailableMove']({ x: 4, y: 0 }, chessBoard.id);
+                  expect(result.length).toBe(6);
             });
       });
 
@@ -548,6 +547,22 @@ describe('ChessService', () => {
                   const result = await chessService['pawnAvailableMove']({ x: 1, y: 5 }, chessBoard.id);
                   expect(result.length).toBe(3);
             });
+
+            describe('en passant move', () => {
+                  it('black pawn: ', async () => {
+                        chessBoard.board[1][3] = {
+                              chessRole: ChessRole.PAWN,
+                              flag: PlayerFlagEnum.BLACK,
+                        };
+                        chessBoard.board[2][3] = {
+                              chessRole: ChessRole.PAWN,
+                              flag: PlayerFlagEnum.WHITE,
+                        };
+                        await chessCommonService.setBoard(chessBoard);
+                        const result = await chessService['pawnAvailableMove']({ x: 1, y: 3 }, chessBoard.id);
+                        // expect(result.length).toBe(3);
+                  });
+            });
       });
 
       describe('chessRoleLegalMove', () => {
@@ -569,7 +584,7 @@ describe('ChessService', () => {
 
                   await chessCommonService.setBoard(chessBoard);
                   const legalMove = await chessService.legalMove({ x: 4, y: 1 }, chessBoard.id);
-                  expect(legalMove.length).toBe(5);
+                  expect(legalMove.length).toBe(7);
             });
 
             it('pawn', async () => {

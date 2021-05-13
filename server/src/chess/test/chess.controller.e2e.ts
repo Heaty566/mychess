@@ -299,7 +299,6 @@ describe('ChessController', () => {
                   });
 
                   getBoard = await chessCommonService.getBoard(boardId);
-                  console.log(res.body);
                   expect(res.status).toBe(200);
 
                   expect(getBoard.board[1][3].chessRole).toBe(ChessRole.PAWN);
