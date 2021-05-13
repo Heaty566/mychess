@@ -172,4 +172,18 @@ export class TicTacToeController {
             await this.ticTacToeGateway.sendToRoom(board.id);
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
       }
+
+      @Put('/draw')
+      @UseGuards(UserGuard)
+      async handleOnDraw(@Req() req: Request, @Body() body: TTTRoomIdDTO) {
+            const board = await this.getGame(body.roomId);
+
+            if (board.status !== TicTacToeStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
+            await this.ticTacToeCommonService.draw(board.id);
+
+            await this.ticTacToeGateway.sendToRoom(board.id);
+            return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: board.id } });
+      }
 }

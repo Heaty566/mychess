@@ -209,4 +209,14 @@ export class TicTacToeCommonService {
 
             return ttt;
       }
+
+      async draw(boardId: string) {
+            const board = await this.getBoard(boardId);
+            if (board) {
+                  board.winner = -1;
+                  board.status = TicTacToeStatus.END;
+                  await this.setBoard(board);
+                  await this.saveTTTFromCacheToDb(boardId);
+            }
+      }
 }
