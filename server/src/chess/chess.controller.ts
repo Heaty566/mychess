@@ -262,6 +262,7 @@ export class ChessController {
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
+
       @Put('/draw')
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vDrawDto))

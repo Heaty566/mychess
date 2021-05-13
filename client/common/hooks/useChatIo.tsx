@@ -6,17 +6,22 @@ import useSocketIo from './useSocketIo';
 import { useForm, UseFormRegister } from 'react-hook-form';
 import { MessageDTO } from '../interface/dto/chat.dto';
 
+const chatDefault: Chat = {
+    createDate: new Date(),
+    id: '',
+    messages: [],
+    users: [],
+};
+
 const defaultValues: MessageDTO = {
     content: '',
 };
 
-export function useChatIo(
-    chatId: string | undefined,
-): [Chat | undefined, UseFormRegister<MessageDTO>, React.MutableRefObject<HTMLElement | undefined>, () => Promise<void>] {
+export function useChatIo(chatId: string | undefined) {
     const clientChatIo = useSocketIo({ namespace: 'chat' });
     const { register, handleSubmit, reset } = useForm<MessageDTO>({ defaultValues });
     const wrapperRef = React.useRef<HTMLElement>();
-    const [chat, setChat] = React.useState<Chat>();
+    const [chat, setChat] = React.useState<Chat>(chatDefault);
 
     const handleOnSendMessage = (data: MessageDTO) => {
         if (chatId && data.content) {
@@ -57,7 +62,7 @@ export function useChatIo(
         };
     }, [chatId]);
 
-    return [chat, register, wrapperRef, handleSubmit(handleOnSendMessage)];
+    return { chat, chatRegister: register, chatWrapperRef: wrapperRef, handleOnSendChatMessage: handleSubmit(handleOnSendMessage) };
 }
 
 export default useChatIo;

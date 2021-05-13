@@ -81,7 +81,7 @@ const ChessStep: React.FunctionComponent<ChessStepProps> = ({ moves }) => {
         }
     }
     return (
-        <div className="flex-1 py-1 overflow-auto bg-aths-special-500 max-h-64 fade-in">
+        <div className="flex-1 hidden py-1 overflow-auto bg-aths-special-500 max-h-64 fade-in md:block">
             <div className="flex flex-col-reverse px-2 transform rotate-y-180 " ref={boxRef}>
                 {moves.map((item, index) => {
                     return (

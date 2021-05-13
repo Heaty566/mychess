@@ -26,6 +26,7 @@ import ChessStep from '../../../components/game/chess-step';
 import GameControlMenu from '../../../components/game/game-menu';
 import PanelPromote from '../../../components/game/panel-promote';
 import { GamePlayerFlag, GameStatus } from '../../../common/interface/game.interface';
+import GameTopMenu from '../../../components/game/game-top-menu';
 
 export interface TicTacToePvPProps {
     roomId: string;
@@ -48,7 +49,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
         chessHandleOnSurrender,
         chessHandleOnClick,
     } = useGameChess(roomId);
-    const [chat, chatRegister, chatWrapperRef, handleOnSendMessage] = useChatIo(chessBoard?.chatId);
+    const { chat, chatRegister, chatWrapperRef, handleOnSendChatMessage } = useChatIo(chessBoard?.chatId);
 
     return (
         <>
@@ -59,19 +60,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                         <div className="justify-center py-2 space-y-2 lg:space-y-0 lg:space-x-2 lg:flex">
                             <div className="w-full max-w-2xl mx-auto space-y-2 md:mx-0">
                                 <div className="flex flex-col justify-between p-2 bg-gray-50">
-                                    <div className="flex justify-between flex-1">
-                                        <p className="text-lg font-bold">Room ID: {chessBoard.id}</p>
-
-                                        <ToolTip content="Copy To Clipboard" position="left-full" maxLength={0}>
-                                            <button
-                                                className="flex font-semibold duration-200 focus:outline-none hover:text-blue-700"
-                                                onClick={() => copy(window.location.href)}
-                                            >
-                                                <ShareIcon />
-                                                <span className="ml-1">Share</span>
-                                            </button>
-                                        </ToolTip>
-                                    </div>
+                                    <GameTopMenu boardId={chessBoard.id} />
 
                                     <div className="flex">
                                         <PlayerInfo player={chessPlayers?.length ? chessPlayers[0] : chessBoard.users[0]} isReverse={false} />
@@ -101,7 +90,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
 
                                     <PanelRestart
                                         handleOnClick={chessHandleOnRestart}
-                                        winner={chessBoard.winner === 0}
+                                        winner={chessBoard.winner}
                                         userOneName={chessBoard.users[0]?.name ? chessBoard.users[0].name : ''}
                                         userTwoName={chessBoard.users[1]?.name ? chessBoard.users[1].name : ''}
                                         isAppear={chessBoard.status === GameStatus.END}
@@ -126,12 +115,16 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                 </div>
                             </div>
                             <div className="flex flex-col flex-1 space-y-2 md:m-0 md:max-w-xs">
-                                <GameControlMenu handleOnDraw={chessHandleOnDraw} handleOnSurrender={chessHandleOnSurrender} />
+                                <GameControlMenu
+                                    handleOnDraw={chessHandleOnDraw}
+                                    handleOnSurrender={chessHandleOnSurrender}
+                                    isBotMode={chessBoard.isBotMode}
+                                />
                                 {chat && (
                                     <ChatBox
                                         wrapperRef={chatWrapperRef}
                                         chat={chat}
-                                        handleOnSendMessage={handleOnSendMessage}
+                                        handleOnSendMessage={handleOnSendChatMessage}
                                         register={chatRegister}
                                         users={chessBoard.users}
                                     />

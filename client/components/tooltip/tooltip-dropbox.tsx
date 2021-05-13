@@ -6,7 +6,7 @@ export interface TooltipProps {
     maxLength: number;
 }
 
-const Tooltip: React.FunctionComponent<TooltipProps> = ({ content, position, children, maxLength }) => {
+const TooltipDropBox: React.FunctionComponent<TooltipProps> = ({ content, position, children, maxLength }) => {
     return (
         <div className="relative tooltip">
             {children}
@@ -21,4 +21,4 @@ const Tooltip: React.FunctionComponent<TooltipProps> = ({ content, position, chi
     );
 };
 
-export default Tooltip;
+export default TooltipDropBox;

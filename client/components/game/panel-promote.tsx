@@ -48,7 +48,7 @@ const PanelPromote: React.FunctionComponent<PanelPromoteProps> = ({ handleOnClic
                 <div>
                     {chess.map((item, index) => {
                         return (
-                            <button key={index} onClick={() => handleOnClick(item.value)}>
+                            <button className="p-2 duration-200 hover:bg-blue-600" key={index} onClick={() => handleOnClick(item.value)}>
                                 {<item.Component />}
                             </button>
                         );
