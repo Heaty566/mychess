@@ -68,21 +68,24 @@ export class ChessService {
                         result.push({ x: x + 1, y: y - 1 });
             }
             // en passant
-            if (chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.WHITE && currentPosition.y === 4) {
-                  const lastMove: ChessMove = chessBoard.moves[chessBoard.moves.length - 1];
-                  if (lastMove.chessRole === ChessRole.PAWN && lastMove.fromY === 6 && lastMove.toY === 4) {
-                        if (lastMove.toX === currentPosition.x + 1) result.push({ x: currentPosition.x + 1, y: 5 });
-                        if (lastMove.toX === currentPosition.x - 1) result.push({ x: currentPosition.x - 1, y: 5 });
+            const lastMove: ChessMove = chessBoard.moves[chessBoard.moves.length - 1];
+
+            if (lastMove) {
+                  if (chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.WHITE && currentPosition.y === 4) {
+                        if (lastMove.chessRole === ChessRole.PAWN && lastMove.fromY === 6 && lastMove.toY === 4) {
+                              if (lastMove.toX === currentPosition.x + 1) result.push({ x: currentPosition.x + 1, y: 5 });
+                              if (lastMove.toX === currentPosition.x - 1) result.push({ x: currentPosition.x - 1, y: 5 });
+                        }
+                  }
+
+                  if (chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.BLACK && currentPosition.y === 3) {
+                        if (lastMove.chessRole === ChessRole.PAWN && lastMove.fromY === 1 && lastMove.toY === 3) {
+                              if (lastMove.toX === currentPosition.x + 1) result.push({ x: currentPosition.x + 1, y: 2 });
+                              if (lastMove.toX === currentPosition.x - 1) result.push({ x: currentPosition.x - 1, y: 2 });
+                        }
                   }
             }
 
-            if (chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.BLACK && currentPosition.y === 3) {
-                  const lastMove: ChessMove = chessBoard.moves[chessBoard.moves.length - 1];
-                  if (lastMove.chessRole === ChessRole.PAWN && lastMove.fromY === 1 && lastMove.toY === 3) {
-                        if (lastMove.toX === currentPosition.x + 1) result.push({ x: currentPosition.x + 1, y: 2 });
-                        if (lastMove.toX === currentPosition.x - 1) result.push({ x: currentPosition.x - 1, y: 2 });
-                  }
-            }
             return result;
       }
 
@@ -687,7 +690,7 @@ export class ChessService {
             await this.chessCommonService.setBoard(chessBoard);
 
             const kingPosition: ChessMoveRedis = await this.getKing(kingColor, chessBoard.id);
-            if (await this.kingIsChecked(kingPosition, chessBoard.id)) canMove = false;
+            if (kingPosition) if (await this.kingIsChecked(kingPosition, chessBoard.id)) canMove = false;
 
             // restore data
             if (isEnPassant) chessBoard.board[desPos.x][curPos.y] = tmpForEnPassant;
@@ -791,7 +794,7 @@ export class ChessService {
                         }
                   }
             }
-            chessBoard.winner = -1;
+            chessBoard.winner = PlayerFlagEnum.EMPTY;
             chessBoard.status = ChessStatus.END;
             const eloCalculator = this.chessCommonService.calculateElo(chessBoard.winner, chessBoard.users[0], chessBoard.users[1]);
             chessBoard.users[0].elo += eloCalculator.whiteElo;

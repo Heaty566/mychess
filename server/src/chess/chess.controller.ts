@@ -135,7 +135,6 @@ export class ChessController {
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
             const player = await this.getPlayer(board.id, req.user.id);
-
             // pick empty square
             if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } }, data: [] }, 'BadRequestException');
@@ -218,6 +217,7 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
+
             if (board.board[body.promotePos.x][body.promotePos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
 
@@ -253,8 +253,10 @@ export class ChessController {
             const board = await this.getGame(body.roomId);
             const player = await this.getPlayer(board.id, req.user.id);
 
+            await this.getPlayer(board.id, req.user.id);
+
             if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             await this.chessCommonService.createDrawRequest(board.id, player);
             await this.chessGateway.sendToRoom(board.id);
@@ -285,9 +287,10 @@ export class ChessController {
             const board = await this.getGame(body.roomId);
 
             if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.user-is-not-in-room' } } }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
+
             await this.chessCommonService.surrender(board.id, player);
 
             await this.chessGateway.sendToRoom(board.id);
