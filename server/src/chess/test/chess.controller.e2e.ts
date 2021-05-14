@@ -42,7 +42,7 @@ describe('ChessController', () => {
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
-      /*
+
       describe('GET /:id', () => {
             let newUser: User;
             let newCookie: string[];
@@ -390,7 +390,7 @@ describe('ChessController', () => {
                   expect(getBoard.board[5][7].flag).toBe(PlayerFlagEnum.WHITE);
             });
       });
-*/
+
       describe('PUT /draw', () => {
             let user1: User, user2: User;
             let newCookie: string[];
@@ -409,11 +409,11 @@ describe('ChessController', () => {
 
                   newCookie = generateCookie(await authService.createReToken(user1));
             });
-            const reqApi = (input: ChessRoomIdDTO) => supertest(app.getHttpServer()).put('/api/chess/draw').set({ cookie: newCookie }).send(input);
+            const reqApi = (input: ChessRoomIdDTO) => supertest(app.getHttpServer()).post('/api/chess/draw').set({ cookie: newCookie }).send(input);
 
             it('Pass', async () => {
                   const res = await reqApi({ roomId: boardId });
-                  expect(res.status).toBe(200);
+                  expect(res.status).toBe(201);
             });
       });
 

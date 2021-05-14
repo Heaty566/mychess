@@ -18,11 +18,11 @@ export interface ChessCellProps {
     cellFlag: ChessFlag;
     isEven: boolean;
     isSuggestion: boolean;
-    isCheckMate: boolean;
+    isKingCheck: boolean;
     handleOnClick: () => void;
 }
 
-const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOnClick, isEven, isSuggestion, isCheckMate }) => {
+const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOnClick, isEven, isSuggestion, isKingCheck }) => {
     function getChess(input: ChessFlag) {
         switch (input.chessRole) {
             case ChessRole.PAWN:
@@ -79,7 +79,7 @@ const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOn
     const Chess = getChess(cellFlag);
 
     return (
-        <div className={` ${isEven && 'bg-aths-special-700'} `}>
+        <div className={` ${isEven && 'bg-aths-special-700'} ${isKingCheck && 'bg-red-500'}`}>
             <button
                 className={`w-16 h-16 p-2 duration-200 cursor-pointer hover:bg-gray-600 focus:outline-none relative ${
                     isSuggestion ? (Boolean(Chess) ? 'bg-blue-700' : 'chess-suggestion') : ''

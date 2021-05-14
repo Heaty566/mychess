@@ -3,7 +3,6 @@ import { Request } from 'express';
 
 //---- Service
 import { ChessService } from './chess.service';
-import { RedisService } from '../utils/redis/redis.service';
 import { ChessCommonService } from './chessCommon.service';
 import { UserGuard } from '../auth/auth.guard';
 
@@ -11,7 +10,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMoveRedis, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates, ChessRole } from './entity/chess.interface';
+import { ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- DTO
@@ -25,13 +24,11 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { RecordingRulesInstance } from 'twilio/lib/rest/video/v1/room/roomRecordingRule';
 import { DrawDto, vDrawDto } from './dto/drawDto';
 
 @Controller('chess')
 export class ChessController {
       constructor(
-            private readonly redisService: RedisService,
             private readonly chessCommonService: ChessCommonService,
             private readonly chessService: ChessService,
             private readonly chessGateway: ChessGateway,

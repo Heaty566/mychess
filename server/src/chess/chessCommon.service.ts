@@ -62,7 +62,7 @@ export class ChessCommonService {
             return Boolean(currentPlay.length);
       }
 
-      async createNewGame(user: User, isBotMode?: boolean) {
+      async createNewGame(user: User, isBotMode = false) {
             const chess = new Chess();
             const chat = await this.chatService.createChat(user);
             chess.chatId = chat.id;

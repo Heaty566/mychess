@@ -18,7 +18,7 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { ChessGatewayAction } from './chessGateway.action';
-import { ChessMoveRedis, ChessMoveCoordinates, ChessStatus } from './entity/chess.interface';
+import { ChessStatus } from './entity/chess.interface';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {
@@ -53,7 +53,12 @@ export class ChessGateway {
 
       async kingIsChecked(kingColor: PlayerFlagEnum, checkerId: string, boardId: string) {
             const kingPosition = await this.chessService.getKing(kingColor, boardId);
-            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_CHECK_KING, boardId, { data: { kingPosition, checkerId } }, 'chess');
+            return this.socketServer().socketEmitToRoom(
+                  ChessGatewayAction.CHESS_CHECK_KING,
+                  boardId,
+                  { data: { x: kingPosition.x, y: kingPosition.y, userId: checkerId } },
+                  'chess',
+            );
       }
 
       @UseGuards(UserSocketGuard)

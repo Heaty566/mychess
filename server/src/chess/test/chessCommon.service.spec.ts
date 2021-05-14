@@ -11,18 +11,24 @@ import User from '../../user/entities/user.entity';
 import { ChessBoard } from '../../chess/entity/chessBoard.entity';
 import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from '../entity/chess.interface';
 import { ChessService } from '../chess.service';
+import { TicTacToe } from '../../ticTacToe/entity/ticTacToe.entity';
+import { TicTacToeRepository } from '../../ticTacToe/entity/ticTacToe.repository';
+import { Chess } from '../entity/chess.entity';
+import { ChessRepository } from '../entity/chess.repository';
 
 describe('chessCommonService', () => {
       let app: INestApplication;
       let resetDB: any;
       let generateFakeUser: () => Promise<User>;
       let chessCommonService: ChessCommonService;
+      let chessRepository: ChessRepository;
       beforeAll(async () => {
             const { getApp, module, resetDatabase, getFakeUser } = await initTestModule();
             app = getApp;
             resetDB = resetDatabase;
             generateFakeUser = getFakeUser;
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
+            chessRepository = module.get<ChessRepository>(ChessRepository);
       });
 
       describe('getBoard', () => {
@@ -80,259 +86,300 @@ describe('chessCommonService', () => {
             });
       });
 
-      describe('joinGame', () => {
-            let boardId: string;
-            let user1: User, user2: User;
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-            });
-
-            it('Pass user2 join', async () => {
-                  user2 = await generateFakeUser();
-                  await chessCommonService.joinGame(boardId, user2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-
-                  expect(getBoard.users[1].id).toBe(user2.id);
-            });
-
-            it('Failed join wrong id', async () => {
-                  user2 = await generateFakeUser();
-                  await chessCommonService.joinGame('haideptrai', user2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-
-                  expect(getBoard.users.length).toBe(1);
-            });
-      });
-
-      describe('createNewGame', () => {
-            let user: User;
-            beforeEach(async () => {
-                  user = await generateFakeUser();
-            });
-
-            it('Pass User', async () => {
-                  const boardId = await chessCommonService.createNewGame(user);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  expect(getBoard).toBeDefined();
-                  expect(getBoard.users[0].id).toBe(user.id);
-                  expect(getBoard.users[1]).toBeUndefined();
-            });
-      });
-
-      describe('startGame', () => {
-            let user1: User, user2: User;
-            let boardId: string;
+      describe('getAllBoardByUserId', () => {
+            let user1: User;
 
             beforeEach(async () => {
                   user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
+            });
+            it('Pass nothing', async () => {
+                  const getBoard = await chessCommonService.getAllBoardByUserId(user1.id);
+
+                  expect(getBoard.boards.length).toBe(0);
             });
 
-            it('Pass start with 2 ready', async () => {
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
-                  const isStart = await chessCommonService.startGame(boardId);
-                  const getBoardAfter = await chessCommonService.getBoard(boardId);
-                  expect(isStart).toBeTruthy();
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-                  expect(getBoardAfter.status).toBe(ChessStatus.PLAYING);
+            it('Pass two game', async () => {
+                  const ttt1 = new Chess();
+                  ttt1.users = [user1];
+                  await chessRepository.save(ttt1);
+                  const ttt2 = new Chess();
+                  ttt2.users = [user1];
+                  await chessRepository.save(ttt2);
+
+                  const getBoard = await chessCommonService.getAllBoardByUserId(user1.id);
+                  expect(getBoard.boards.length).toBe(2);
+                  expect(getBoard.totalWin).toBe(0);
+                  expect(getBoard.count).toBe(2);
             });
+            it('Pass two game, one win', async () => {
+                  const ttt1 = new Chess();
+                  ttt1.users = [user1];
+                  ttt1.winner = PlayerFlagEnum.WHITE;
+                  await chessRepository.save(ttt1);
+                  const ttt2 = new Chess();
+                  ttt2.users = [user1];
+                  await chessRepository.save(ttt2);
 
-            it('Failed start with 1 ready', async () => {
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  const isStart = await chessCommonService.startGame(boardId);
-                  const getBoardAfter = await chessCommonService.getBoard(boardId);
-                  expect(isStart).toBeFalsy();
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-                  expect(getBoardAfter.status).toBe(ChessStatus.NOT_YET);
-            });
-      });
-
-      describe('leaveGame', () => {
-            let player1: ChessPlayer;
-            let player2: ChessPlayer;
-            let chessId: string;
-
-            beforeEach(async () => {
-                  const user = await generateFakeUser();
-                  chessId = await chessCommonService.createNewGame(user, true);
-                  await chessCommonService.joinGame(chessId, await generateFakeUser());
-                  const getBoard = await chessCommonService.getBoard(chessId);
-                  await chessCommonService.toggleReadyStatePlayer(chessId, getBoard.users[0]);
-                  await chessCommonService.toggleReadyStatePlayer(chessId, getBoard.users[1]);
-
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
-            });
-
-            it('Pass player 1 leave when game playing', async () => {
-                  await chessCommonService.startGame(chessId);
-                  await chessCommonService.leaveGame(chessId, player1);
-                  const getBoard = await chessCommonService.getBoard(chessId);
-
-                  expect(getBoard.status).toBe(ChessStatus.END);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.BLACK);
-            });
-
-            it('Pass player 1 leave', async () => {
-                  await chessCommonService.leaveGame(chessId, player1);
-                  const getBoard = await chessCommonService.getBoard(chessId);
-
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-                  expect(getBoard.users.length).toBe(1);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
-            });
-
-            it('Pass player 2 leave when game playing', async () => {
-                  await chessCommonService.startGame(chessId);
-                  await chessCommonService.leaveGame(chessId, player2);
-                  const getBoard = await chessCommonService.getBoard(chessId);
-
-                  expect(getBoard.status).toBe(ChessStatus.END);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
-            });
-
-            it('Pass player 2 leave when game end', async () => {
-                  await chessCommonService.startGame(chessId);
-                  await chessCommonService.surrender(chessId, player2);
-                  await chessCommonService.leaveGame(chessId, player1);
-                  const getBoard = await chessCommonService.getBoard(chessId);
-
-                  expect(getBoard.status).toBe(ChessStatus.END);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
-            });
-
-            it('Pass player 2 leave', async () => {
-                  await chessCommonService.leaveGame(chessId, player2);
-                  const getBoard = await chessCommonService.getBoard(chessId);
-
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-                  expect(getBoard.users.length).toBe(1);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
-            });
-
-            it('wrong board id ', async () => {
-                  await chessCommonService.leaveGame('hello', player2);
-                  const getBoard = await chessCommonService.getBoard(chessId);
-
-                  expect(getBoard.status).toBe(ChessStatus.NOT_YET);
-                  expect(getBoard.users.length).toBe(2);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+                  const getBoard = await chessCommonService.getAllBoardByUserId(user1.id);
+                  expect(getBoard.boards.length).toBe(2);
+                  expect(getBoard.totalWin).toBe(1);
+                  expect(getBoard.count).toBe(2);
             });
       });
 
-      describe('toggleReadyStatePlayer', () => {
-            let boardId: string;
-            let user1: User, user2: User;
+      // describe('joinGame', () => {
+      //       let boardId: string;
+      //       let user1: User, user2: User;
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //       });
 
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
-            });
+      //       it('Pass user2 join', async () => {
+      //             user2 = await generateFakeUser();
+      //             await chessCommonService.joinGame(boardId, user2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
 
-            it('Pass 1 ready', async () => {
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  const getBoardAfter = await chessCommonService.getBoard(boardId);
+      //             expect(getBoard.users[1].id).toBe(user2.id);
+      //       });
 
-                  expect(getBoardAfter.users[0].ready).toBeTruthy();
-            });
+      //       it('Failed join wrong id', async () => {
+      //             user2 = await generateFakeUser();
+      //             await chessCommonService.joinGame('haideptrai', user2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
 
-            it('Pass 2 ready', async () => {
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
-                  const getBoardAfter = await chessCommonService.getBoard(boardId);
+      //             expect(getBoard.users.length).toBe(1);
+      //       });
+      // });
 
-                  expect(getBoardAfter.users[1].ready).toBeTruthy();
-            });
-      });
+      // describe('createNewGame', () => {
+      //       let user: User;
+      //       beforeEach(async () => {
+      //             user = await generateFakeUser();
+      //       });
 
-      describe('surrender', () => {
-            let player1: ChessPlayer, player2: ChessPlayer;
-            let user1: User, user2: User;
-            let boardId: string;
+      //       it('Pass User', async () => {
+      //             const boardId = await chessCommonService.createNewGame(user);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             expect(getBoard).toBeDefined();
+      //             expect(getBoard.users[0].id).toBe(user.id);
+      //             expect(getBoard.users[1]).toBeUndefined();
+      //       });
+      // });
 
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
-                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
-                  await chessCommonService.startGame(boardId);
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
-            });
+      // describe('startGame', () => {
+      //       let user1: User, user2: User;
+      //       let boardId: string;
 
-            it('Pass player1 surrender', async () => {
-                  await chessCommonService.surrender(boardId, player1);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             user2 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //             await chessCommonService.joinGame(boardId, user2);
+      //       });
 
-                  expect(getBoard.status).toBe(ChessStatus.END);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.BLACK);
-            });
+      //       it('Pass start with 2 ready', async () => {
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+      //             const isStart = await chessCommonService.startGame(boardId);
+      //             const getBoardAfter = await chessCommonService.getBoard(boardId);
+      //             expect(isStart).toBeTruthy();
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //             expect(getBoardAfter.status).toBe(ChessStatus.PLAYING);
+      //       });
 
-            it('Pass player2 surrender', async () => {
-                  await chessCommonService.surrender(boardId, player2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //       it('Failed start with 1 ready', async () => {
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+      //             const isStart = await chessCommonService.startGame(boardId);
+      //             const getBoardAfter = await chessCommonService.getBoard(boardId);
+      //             expect(isStart).toBeFalsy();
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //             expect(getBoardAfter.status).toBe(ChessStatus.NOT_YET);
+      //       });
+      // });
 
-                  expect(getBoard.status).toBe(ChessStatus.END);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
-            });
+      // describe('leaveGame', () => {
+      //       let player1: ChessPlayer;
+      //       let player2: ChessPlayer;
+      //       let chessId: string;
 
-            it('Failed wron id', async () => {
-                  await chessCommonService.surrender('haideptrai', player2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
+      //       beforeEach(async () => {
+      //             const user = await generateFakeUser();
+      //             chessId = await chessCommonService.createNewGame(user, true);
+      //             await chessCommonService.joinGame(chessId, await generateFakeUser());
+      //             const getBoard = await chessCommonService.getBoard(chessId);
+      //             await chessCommonService.toggleReadyStatePlayer(chessId, getBoard.users[0]);
+      //             await chessCommonService.toggleReadyStatePlayer(chessId, getBoard.users[1]);
 
-                  expect(getBoard.status).toBe(ChessStatus.PLAYING);
-                  expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
-            });
-      });
+      //             player1 = getBoard.users[0];
+      //             player2 = getBoard.users[1];
+      //       });
 
-      describe('calculateElo', () => {
-            let player1: ChessPlayer, player2: ChessPlayer;
-            let user1: User, user2: User;
-            let boardId: string;
+      //       it('Pass player 1 leave when game playing', async () => {
+      //             await chessCommonService.startGame(chessId);
+      //             await chessCommonService.leaveGame(chessId, player1);
+      //             const getBoard = await chessCommonService.getBoard(chessId);
 
-            beforeEach(async () => {
-                  user1 = await generateFakeUser();
-                  user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1);
-                  await chessCommonService.joinGame(boardId, user2);
-                  const getBoard = await chessCommonService.getBoard(boardId);
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
-            });
+      //             expect(getBoard.status).toBe(ChessStatus.END);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.BLACK);
+      //       });
 
-            it('Test 1', () => {
-                  player1.elo = 1600;
-                  player2.elo = 1800;
-                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.WHITE, player1, player2);
-                  expect(result).toBeDefined();
-            });
+      //       it('Pass player 1 leave', async () => {
+      //             await chessCommonService.leaveGame(chessId, player1);
+      //             const getBoard = await chessCommonService.getBoard(chessId);
 
-            it('Test 2', () => {
-                  player1.elo = 1600;
-                  player2.elo = 1800;
-                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.BLACK, player1, player2);
-                  expect(result).toBeDefined();
-            });
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //             expect(getBoard.users.length).toBe(1);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+      //       });
 
-            it('Test 3', () => {
-                  player1.elo = 1600;
-                  player2.elo = 1800;
-                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.EMPTY, player1, player2);
-                  expect(result).toBeDefined();
-            });
-      });
+      //       it('Pass player 2 leave when game playing', async () => {
+      //             await chessCommonService.startGame(chessId);
+      //             await chessCommonService.leaveGame(chessId, player2);
+      //             const getBoard = await chessCommonService.getBoard(chessId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.END);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
+      //       });
+
+      //       it('Pass player 2 leave when game end', async () => {
+      //             await chessCommonService.startGame(chessId);
+      //             await chessCommonService.surrender(chessId, player2);
+      //             await chessCommonService.leaveGame(chessId, player1);
+      //             const getBoard = await chessCommonService.getBoard(chessId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.END);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
+      //       });
+
+      //       it('Pass player 2 leave', async () => {
+      //             await chessCommonService.leaveGame(chessId, player2);
+      //             const getBoard = await chessCommonService.getBoard(chessId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //             expect(getBoard.users.length).toBe(1);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+      //       });
+
+      //       it('wrong board id ', async () => {
+      //             await chessCommonService.leaveGame('hello', player2);
+      //             const getBoard = await chessCommonService.getBoard(chessId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.NOT_YET);
+      //             expect(getBoard.users.length).toBe(2);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+      //       });
+      // });
+
+      // describe('toggleReadyStatePlayer', () => {
+      //       let boardId: string;
+      //       let user1: User, user2: User;
+
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             user2 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //             await chessCommonService.joinGame(boardId, user2);
+      //       });
+
+      //       it('Pass 1 ready', async () => {
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+      //             const getBoardAfter = await chessCommonService.getBoard(boardId);
+
+      //             expect(getBoardAfter.users[0].ready).toBeTruthy();
+      //       });
+
+      //       it('Pass 2 ready', async () => {
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+      //             const getBoardAfter = await chessCommonService.getBoard(boardId);
+
+      //             expect(getBoardAfter.users[1].ready).toBeTruthy();
+      //       });
+      // });
+
+      // describe('surrender', () => {
+      //       let player1: ChessPlayer, player2: ChessPlayer;
+      //       let user1: User, user2: User;
+      //       let boardId: string;
+
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             user2 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //             await chessCommonService.joinGame(boardId, user2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+      //             await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+      //             await chessCommonService.startGame(boardId);
+      //             player1 = getBoard.users[0];
+      //             player2 = getBoard.users[1];
+      //       });
+
+      //       it('Pass player1 surrender', async () => {
+      //             await chessCommonService.surrender(boardId, player1);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.END);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.BLACK);
+      //       });
+
+      //       it('Pass player2 surrender', async () => {
+      //             await chessCommonService.surrender(boardId, player2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.END);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.WHITE);
+      //       });
+
+      //       it('Failed wron id', async () => {
+      //             await chessCommonService.surrender('haideptrai', player2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+
+      //             expect(getBoard.status).toBe(ChessStatus.PLAYING);
+      //             expect(getBoard.winner).toBe(PlayerFlagEnum.EMPTY);
+      //       });
+      // });
+
+      // describe('calculateElo', () => {
+      //       let player1: ChessPlayer, player2: ChessPlayer;
+      //       let user1: User, user2: User;
+      //       let boardId: string;
+
+      //       beforeEach(async () => {
+      //             user1 = await generateFakeUser();
+      //             user2 = await generateFakeUser();
+      //             boardId = await chessCommonService.createNewGame(user1);
+      //             await chessCommonService.joinGame(boardId, user2);
+      //             const getBoard = await chessCommonService.getBoard(boardId);
+      //             player1 = getBoard.users[0];
+      //             player2 = getBoard.users[1];
+      //       });
+
+      //       it('Test 1', () => {
+      //             player1.elo = 1600;
+      //             player2.elo = 1800;
+      //             const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.WHITE, player1, player2);
+      //             expect(result).toBeDefined();
+      //       });
+
+      //       it('Test 2', () => {
+      //             player1.elo = 1600;
+      //             player2.elo = 1800;
+      //             const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.BLACK, player1, player2);
+      //             expect(result).toBeDefined();
+      //       });
+
+      //       it('Test 3', () => {
+      //             player1.elo = 1600;
+      //             player2.elo = 1800;
+      //             const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.EMPTY, player1, player2);
+      //             expect(result).toBeDefined();
+      //       });
+      // });
 
       afterAll(async () => {
             await resetDB();

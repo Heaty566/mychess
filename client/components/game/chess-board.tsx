@@ -7,11 +7,12 @@ export interface TTTBoardProps {
     handleOnClick: (x: number, y: number) => void;
     register: React.LegacyRef<HTMLDivElement> | undefined;
     suggestion: ChessMoveRedis[];
+    kingCheck: { x: number; y: number } | undefined;
 }
 
-const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnClick, register, suggestion }) => {
+const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnClick, register, suggestion, kingCheck }) => {
     return (
-        <div className="flex overflow-x-auto bg-asparagus-500 " ref={register}>
+        <div className={`flex overflow-x-auto bg-asparagus-500 `} ref={register}>
             {board.map((item, index) => {
                 return (
                     <div key={index}>
@@ -19,10 +20,10 @@ const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnCli
                             const isEven = 1 === (index + index2) % 2;
                             const isSuggestion = Boolean(suggestion.find((item) => item.x === index && item.y === index2));
 
-                            const isCheckMate = false;
+                            const isKingCheck = kingCheck?.x === index && kingCheck?.y === index2;
                             return (
                                 <ChessCell
-                                    isCheckMate={isCheckMate}
+                                    isKingCheck={isKingCheck}
                                     isSuggestion={isSuggestion}
                                     key={`${index}${index2}`}
                                     cellFlag={item2}
