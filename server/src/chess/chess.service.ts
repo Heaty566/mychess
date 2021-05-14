@@ -359,7 +359,7 @@ export class ChessService {
             return result;
       }
 
-      private async getKing(kingColor: PlayerFlagEnum, boardId: string) {
+      async getKing(kingColor: PlayerFlagEnum, boardId: string) {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
 
             for (let i = 0; i <= 7; i++) {
@@ -378,7 +378,7 @@ export class ChessService {
             return null;
       }
 
-      private async kingIsChecked(currentPosition: ChessMoveRedis, boardId: string): Promise<boolean> {
+      async kingIsChecked(currentPosition: ChessMoveRedis, boardId: string): Promise<boolean> {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
 
             // Check rook, queen
