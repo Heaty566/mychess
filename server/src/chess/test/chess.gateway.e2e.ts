@@ -7,29 +7,31 @@ import { initTestModule } from '../../test/initTest';
 //---- Entity
 
 import { User } from '../../user/entities/user.entity';
-import { TicTacToeBoard } from '../entity/ticTacToeBoard.entity';
 
 //---- Service
-import { TicTacToeCommonService } from '../ticTacToeCommon.service';
+
 import { AuthService } from '../../auth/auth.service';
 
 //---- Gateway
-import { TicTacToeGateway } from '../ticTacToe.gateway';
 
 //---- Common
-import { TTTGatewayAction } from '../ticTacToeGateway.action';
-import { SocketServerResponse } from '../../app/interface/socketResponse';
-import { TicTacToePlayer } from '../entity/ticTacToe.interface';
 
-describe('TicTacToeGateway ', () => {
+import { SocketServerResponse } from '../../app/interface/socketResponse';
+import { ChessGateway } from '../chess.gateway';
+import { ChessGatewayAction } from '../chessGateway.action';
+import { ChessBoard } from '../entity/chessBoard.entity';
+import { ChessCommonService } from '../chessCommon.service';
+import { ChessPlayer } from '../entity/chess.interface';
+
+describe('ChessGateway ', () => {
       let app: INestApplication;
-      const port = 3021;
+      const port = 5032;
       let authService: AuthService;
 
       let resetDB: any;
-      let ticTacToeGateWay: TicTacToeGateway;
+      let ticTacToeGateWay: ChessGateway;
       let generateFakeUser: () => Promise<User>;
-      let ticTacToeCommonService: TicTacToeCommonService;
+      let ticTacToeCommonService: ChessCommonService;
 
       beforeAll(async () => {
             const { configModule, resetDatabase, getFakeUser } = await initTestModule();
@@ -39,12 +41,12 @@ describe('TicTacToeGateway ', () => {
             await app.listen(port);
 
             authService = app.get<AuthService>(AuthService);
-            ticTacToeGateWay = app.get<TicTacToeGateway>(TicTacToeGateway);
-            ticTacToeCommonService = app.get<TicTacToeCommonService>(TicTacToeCommonService);
+            ticTacToeGateWay = app.get<ChessGateway>(ChessGateway);
+            ticTacToeCommonService = app.get<ChessCommonService>(ChessCommonService);
             jest.spyOn(ticTacToeGateWay.server, 'to').mockImplementation().mockReturnThis();
       });
 
-      describe(`${TTTGatewayAction.TTT_GET}`, () => {
+      describe(`${ChessGatewayAction.CHESS_GET}`, () => {
             let client1: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;
             let user1: User;
@@ -59,10 +61,10 @@ describe('TicTacToeGateway ', () => {
                   await ticTacToeCommonService.startGame(tttId);
 
                   const socketToken1 = await authService.getSocketToken(user1);
-                  client1 = await getIoClient(port, 'tic-tac-toe', socketToken1);
+                  client1 = await getIoClient(port, 'chess', socketToken1);
                   const user2 = await generateFakeUser();
                   const socketToken2 = await authService.getSocketToken(user2);
-                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken2);
+                  client2 = await getIoClient(port, 'chess', socketToken2);
                   await client2.connect();
                   await client1.connect();
             });
@@ -73,7 +75,7 @@ describe('TicTacToeGateway ', () => {
             });
 
             it('Pass', async (done) => {
-                  client1.on(TTTGatewayAction.TTT_GET, async (data: SocketServerResponse<TicTacToeBoard>) => {
+                  client1.on(ChessGatewayAction.CHESS_GET, async (data: SocketServerResponse<ChessBoard>) => {
                         const isExistUser = data.data.users.find((item) => item.id === user1.id);
 
                         expect(isExistUser).toBeDefined();
@@ -82,7 +84,7 @@ describe('TicTacToeGateway ', () => {
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_GET, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_GET, { roomId: tttId });
             });
 
             it('Failed Not Found', async (done) => {
@@ -91,16 +93,16 @@ describe('TicTacToeGateway ', () => {
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_GET, { roomId: 'hello-world' });
+                  client1.emit(ChessGatewayAction.CHESS_GET, { roomId: 'hello-world' });
             });
       });
 
-      describe(`${TTTGatewayAction.TTT_COUNTER}`, () => {
+      describe(`${ChessGatewayAction.CHESS_COUNTER}`, () => {
             let client1: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;
             let user1: User;
             let tttId: string;
-            let player1: TicTacToePlayer;
+            let player1: ChessPlayer;
 
             beforeEach(async () => {
                   user1 = await generateFakeUser();
@@ -111,10 +113,10 @@ describe('TicTacToeGateway ', () => {
                   await ticTacToeCommonService.startGame(tttId);
 
                   const socketToken1 = await authService.getSocketToken(user1);
-                  client1 = await getIoClient(port, 'tic-tac-toe', socketToken1);
+                  client1 = await getIoClient(port, 'chess', socketToken1);
                   const user2 = await generateFakeUser();
                   const socketToken2 = await authService.getSocketToken(user2);
-                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken2);
+                  client2 = await getIoClient(port, 'chess', socketToken2);
 
                   player1 = getBoard.users[0];
 
@@ -129,58 +131,58 @@ describe('TicTacToeGateway ', () => {
 
             it('Pass user1', async (done) => {
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  getBoard.currentTurn = true;
+                  getBoard.turn = false;
                   await ticTacToeCommonService.setBoard(getBoard);
 
-                  client1.on(TTTGatewayAction.TTT_COUNTER, async (data: SocketServerResponse<Array<TicTacToePlayer>>) => {
+                  client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<Array<ChessPlayer>>) => {
                         expect(data.data[0].time).not.toBe(900000);
                         expect(data.statusCode).toBe(200);
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
             });
             it('Pass user2', async (done) => {
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  getBoard.currentTurn = false;
+                  getBoard.turn = true;
                   await ticTacToeCommonService.setBoard(getBoard);
 
-                  client1.on(TTTGatewayAction.TTT_COUNTER, async (data: SocketServerResponse<Array<TicTacToePlayer>>) => {
+                  client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<Array<ChessPlayer>>) => {
                         expect(data.data[1].time).not.toBe(900000);
                         expect(data.statusCode).toBe(200);
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
             });
 
             it('Failed game is end', async (done) => {
                   await ticTacToeCommonService.surrender(tttId, player1);
 
-                  client1.on(TTTGatewayAction.TTT_COUNTER, async (data: SocketServerResponse<Array<TicTacToePlayer>>) => {
+                  client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<Array<ChessPlayer>>) => {
                         expect(data.data[0].time).toBe(900000);
                         expect(data.statusCode).toBe(200);
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
             });
             it('Failed user time out', async (done) => {
                   const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  getBoard.currentTurn = true;
+                  getBoard.turn = false;
                   getBoard.users[0].time = 0;
                   await ticTacToeCommonService.setBoard(getBoard);
 
-                  client1.on(TTTGatewayAction.TTT_GET, async (data: SocketServerResponse<TicTacToeBoard>) => {
+                  client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<ChessBoard>) => {
                         expect(data.statusCode).toBe(200);
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
             });
       });
 
-      describe(`${TTTGatewayAction.TTT_JOIN}`, () => {
+      describe(`${ChessGatewayAction.CHESS_JOIN}`, () => {
             let client1: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;
             let user1: User;
@@ -195,10 +197,10 @@ describe('TicTacToeGateway ', () => {
                   await ticTacToeCommonService.startGame(tttId);
 
                   const socketToken1 = await authService.getSocketToken(user1);
-                  client1 = await getIoClient(port, 'tic-tac-toe', socketToken1);
+                  client1 = await getIoClient(port, 'chess', socketToken1);
                   const user2 = await generateFakeUser();
                   const socketToken2 = await authService.getSocketToken(user2);
-                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken2);
+                  client2 = await getIoClient(port, 'chess', socketToken2);
                   await client2.connect();
                   await client1.connect();
             });
@@ -209,12 +211,12 @@ describe('TicTacToeGateway ', () => {
             });
 
             it('Pass', async (done) => {
-                  client1.on(TTTGatewayAction.TTT_JOIN, async (data: SocketServerResponse<null>) => {
+                  client1.on(ChessGatewayAction.CHESS_JOIN, async (data: SocketServerResponse<null>) => {
                         expect(data.statusCode).toBe(200);
                         done();
                   });
 
-                  client1.emit(TTTGatewayAction.TTT_JOIN, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_JOIN, { roomId: tttId });
             });
             it('Failed wrong user', async (done) => {
                   client2.on('exception', async (data: SocketServerResponse<null>) => {
@@ -222,7 +224,7 @@ describe('TicTacToeGateway ', () => {
                         done();
                   });
 
-                  client2.emit(TTTGatewayAction.TTT_JOIN, { roomId: tttId });
+                  client2.emit(ChessGatewayAction.CHESS_JOIN, { roomId: tttId });
             });
       });
 

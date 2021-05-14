@@ -100,7 +100,6 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnStartGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
-
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
 
@@ -292,6 +291,7 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             const remainderUser = board.users.filter((item) => item.id !== player.id);
+
             if (!remainderUser[0].isDraw)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 

@@ -11,9 +11,8 @@ import { AwsService } from '../../providers/aws/aws.service';
 export class DatabaseService {
       constructor(private readonly logger: LoggerService, private readonly awsService: AwsService) {}
 
-      @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-      cronBackupDatabase() {
-            const path = `${__dirname}/backup.sql`;
+      @Cron(CronExpression.EVERY_12_HOURS)
+      cronBackupDatabase(path = 'backup.sql') {
             exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${path}`, (err) => {
                   if (err) this.logger.print('Create a backup database failed', 'database.service.ts', 'error');
                   this.logger.print(`Create a backup database in ${new Date()}`, 'database.service.ts', 'info');

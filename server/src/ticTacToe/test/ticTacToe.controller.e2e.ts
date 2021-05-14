@@ -18,6 +18,7 @@ import { TTTAddMoveDto } from '../dto/tttAddMoveDto';
 //---- Common
 import { initTestModule } from '../../test/initTest';
 import { generateCookie } from '../../test/test.helper';
+import { DrawDto } from '../dto/drawDto';
 
 describe('TicTacToeController', () => {
       let app: INestApplication;
@@ -370,6 +371,133 @@ describe('TicTacToeController', () => {
                   expect(res.status).toBe(200);
                   expect(getBoard).toBeDefined();
                   expect(getBoard.users.length).toBe(1);
+            });
+      });
+      describe('PUT /draw', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            let player1: TicTacToePlayer;
+            let player2: TicTacToePlayer;
+
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await ticTacToeCommonService.createNewGame(user1);
+                  await ticTacToeCommonService.joinGame(boardId, user2);
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+                  await ticTacToeCommonService.startGame(boardId);
+                  player1 = getBoard.users[0];
+                  player2 = getBoard.users[1];
+                  newCookie = generateCookie(await authService.createReToken(user2));
+            });
+
+            const reqApi = (input: DrawDto) => supertest(app.getHttpServer()).put('/api/ttt/draw').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  await ticTacToeCommonService.createDrawRequest(boardId, player1);
+                  const res = await reqApi({ roomId: boardId, isAccept: true });
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+
+                  expect(getBoard.status).toBe(TicTacToeStatus.END);
+                  expect(res.status).toBe(200);
+            });
+            it('Pass', async () => {
+                  await ticTacToeCommonService.createDrawRequest(boardId, player1);
+                  const res = await reqApi({ roomId: boardId, isAccept: false });
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+
+                  expect(getBoard.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(res.status).toBe(200);
+            });
+            it('Failed user accept their request', async () => {
+                  await ticTacToeCommonService.createDrawRequest(boardId, player2);
+                  const res = await reqApi({ roomId: boardId, isAccept: true });
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+
+                  expect(getBoard.status).toBe(TicTacToeStatus.DRAW);
+                  expect(res.status).toBe(403);
+                  expect(res.status).toBe(403);
+            });
+
+            it('Failed other user does not create draw  request', async () => {
+                  const res = await reqApi({ roomId: boardId, isAccept: true });
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+
+                  expect(getBoard.status).toBe(TicTacToeStatus.PLAYING);
+                  expect(res.status).toBe(403);
+            });
+      });
+      describe('POST /draw', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            let player1: TicTacToePlayer;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await ticTacToeCommonService.createNewGame(user1);
+                  await ticTacToeCommonService.joinGame(boardId, user2);
+
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+                  await ticTacToeCommonService.startGame(boardId);
+                  player1 = getBoard.users[0];
+                  newCookie = generateCookie(await authService.createReToken(user1));
+            });
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).post('/api/ttt/draw').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  const res = await reqApi({ roomId: boardId });
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+
+                  expect(getBoard.status).toBe(TicTacToeStatus.DRAW);
+                  expect(res.status).toBe(201);
+            });
+
+            it('Failed game is not playing', async () => {
+                  await ticTacToeCommonService.surrender(boardId, player1);
+                  const res = await reqApi({ roomId: boardId });
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+
+                  expect(getBoard.status).not.toBe(TicTacToeStatus.DRAW);
+                  expect(res.status).toBe(403);
+            });
+      });
+      describe('PUT /surrender', () => {
+            let user1: User, user2: User;
+            let newCookie: string[];
+            let boardId: string;
+            let player1: TicTacToePlayer;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  boardId = await ticTacToeCommonService.createNewGame(user1);
+                  await ticTacToeCommonService.joinGame(boardId, user2);
+
+                  const getBoard = await ticTacToeCommonService.getBoard(boardId);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+
+                  await ticTacToeCommonService.startGame(boardId);
+                  player1 = getBoard.users[0];
+                  newCookie = generateCookie(await authService.createReToken(user1));
+            });
+            const reqApi = (input: TTTRoomIdDTO) => supertest(app.getHttpServer()).put('/api/ttt/surrender').set({ cookie: newCookie }).send(input);
+
+            it('Pass', async () => {
+                  const res = await reqApi({ roomId: boardId });
+                  expect(res.status).toBe(200);
+            });
+            it('Failed game is end', async () => {
+                  await ticTacToeCommonService.surrender(boardId, player1);
+                  const res = await reqApi({ roomId: boardId });
+
+                  expect(res.status).toBe(403);
             });
       });
 

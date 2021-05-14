@@ -2,6 +2,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+//--------- Service
+import { AppService } from './app.service';
 
 //---------Module
 import { CommonModule } from './common/common.module';
@@ -78,6 +80,7 @@ const DBConfig = TypeOrmModule.forRoot({
             ChessModule,
             ChatModule,
       ],
+      providers: [AppService],
       controllers: [],
 })
 export class AppModule {}

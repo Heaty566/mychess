@@ -12,6 +12,6 @@ import { DatabaseService } from './database.service';
 @Module({
       imports: [LoggerModule, AwsModule],
       providers: [DatabaseService],
-      exports: [],
+      exports: [DatabaseService],
 })
 export class RepositoryModule {}

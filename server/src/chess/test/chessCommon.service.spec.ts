@@ -10,9 +10,6 @@ import { ChessCommonService } from '../chessCommon.service';
 import User from '../../user/entities/user.entity';
 import { ChessBoard } from '../../chess/entity/chessBoard.entity';
 import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from '../entity/chess.interface';
-import { ChessService } from '../chess.service';
-import { TicTacToe } from '../../ticTacToe/entity/ticTacToe.entity';
-import { TicTacToeRepository } from '../../ticTacToe/entity/ticTacToe.repository';
 import { Chess } from '../entity/chess.entity';
 import { ChessRepository } from '../entity/chess.repository';
 

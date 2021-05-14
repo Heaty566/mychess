@@ -84,17 +84,4 @@ export class RedisService {
                   });
             });
       }
-
-      getArrayByKey<T extends Array<any>>(key: string) {
-            return new Promise<T>((res, rej) => {
-                  this.redisRepository.get(key, (err, data) => {
-                        if (err) {
-                              this.logger.print(err, 'redis.service.ts', 'error');
-                              return rej(null);
-                        }
-                        const convertToJson = JSON.parse(data);
-                        res(convertToJson as T);
-                  });
-            });
-      }
 }
