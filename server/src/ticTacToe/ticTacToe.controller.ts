@@ -3,7 +3,6 @@ import { Request } from 'express';
 
 //---- Service
 import { TicTacToeBotService } from './ticTacToeBot.service';
-import { RedisService } from '../utils/redis/redis.service';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 import { TicTacToeService } from './ticTacToe.service';
 import { UserGuard } from '../auth/auth.guard';
@@ -76,7 +75,7 @@ export class TicTacToeController {
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
 
-            const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, false);
+            const newGameId = await this.ticTacToeCommonService.restartGame(body.roomId);
 
             await this.ticTacToeGateway.restartGame(board.id, newGameId);
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: newGameId } });

@@ -53,15 +53,6 @@ export class ChessCommonService {
             return res;
       }
 
-      async isPlaying(userId: string) {
-            const currentPlay = await this.chessRepository.getManyChessByField('chess.status = :status', {
-                  status: ChessStatus.PLAYING,
-                  userId,
-            });
-
-            return Boolean(currentPlay.length);
-      }
-
       async createNewGame(user: User, isBotMode = false) {
             const chess = new Chess();
             const chat = await this.chatService.createChat(user);
@@ -99,12 +90,12 @@ export class ChessCommonService {
                   const userFlag = board.users.length === 0 ? PlayerFlagEnum.WHITE : PlayerFlagEnum.BLACK;
 
                   board.users.push({
-                        username: user?.username,
-                        name: user?.name,
-                        avatarUrl: user?.avatarUrl,
-                        elo: user?.elo,
+                        username: user.username,
+                        name: user.name,
+                        avatarUrl: user.avatarUrl,
+                        elo: user.elo,
                         time: 900000,
-                        id: user?.id,
+                        id: user.id,
                         ready: false,
                         flag: userFlag,
                         isDraw: false,
@@ -119,7 +110,7 @@ export class ChessCommonService {
       async startGame(boardId: string) {
             const board = await this.getBoard(boardId);
 
-            if (board && board.users[0]?.ready && board.users[1]?.ready) {
+            if (board && board.users[0].ready && board.users[1].ready) {
                   board.status = ChessStatus.PLAYING;
                   board.startDate = new Date();
                   board.lastStep = new Date();
@@ -162,6 +153,7 @@ export class ChessCommonService {
                         await this.setBoard(board);
                   }
             }
+            return false;
       }
 
       async createDrawRequest(boardId: string, player: ChessPlayer) {

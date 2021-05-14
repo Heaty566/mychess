@@ -283,4 +283,19 @@ export class TicTacToeCommonService {
                   redElo: Math.floor(Kr * (Ar - Er)),
             };
       }
+
+      async restartGame(boardId: string) {
+            const board = await this.getBoard(boardId);
+
+            const player1 = board.users[0];
+            const player2 = board.users[1];
+
+            const user1 = await this.userService.findOneUserByField('id', player1.id);
+            const user2 = await this.userService.findOneUserByField('id', player2.id);
+
+            const newBoardId = await this.createNewGame(user2, false);
+            await this.joinGame(newBoardId, user1);
+
+            return newBoardId;
+      }
 }
