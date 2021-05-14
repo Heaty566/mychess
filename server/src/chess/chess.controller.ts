@@ -196,7 +196,6 @@ export class ChessController {
             await this.chessService.playAMove(curPos, desPos, board.id);
 
             // check king enemy
-
             if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyColor, board.id), board.id))
                   this.chessGateway.kingIsChecked(enemyColor, player.id, board.id);
 
@@ -246,7 +245,7 @@ export class ChessController {
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
 
-            const newGameId = await this.chessCommonService.createNewGame(req.user, false);
+            const newGameId = await this.chessCommonService.restartGame(board.id);
 
             await this.chessGateway.restartGame(board.id, newGameId);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
