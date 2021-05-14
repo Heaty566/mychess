@@ -87,7 +87,6 @@ describe('chessCommonService', () => {
                   user1 = await generateFakeUser();
                   boardId = await chessCommonService.createNewGame(user1);
             });
-
             it('Pass user2 join', async () => {
                   user2 = await generateFakeUser();
                   await chessCommonService.joinGame(boardId, user2);
@@ -95,7 +94,6 @@ describe('chessCommonService', () => {
 
                   expect(getBoard.users[1].id).toBe(user2.id);
             });
-
             it('Failed join wrong id', async () => {
                   user2 = await generateFakeUser();
                   await chessCommonService.joinGame('haideptrai', user2);
