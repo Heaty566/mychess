@@ -25,7 +25,7 @@ export class AwsService {
             const fileType = path.extname(file.originalname).toLocaleLowerCase();
             const id = uuidv4();
 
-            const locationFile = `${prefix}/${awsPath}/${id}${fileType}`;
+            const locationFile = `${prefix}/${awsPath}/${id}-${file.filename}${fileType}`;
 
             return await this.s3
                   .putObject({ Bucket: process.env.AWS_S3_BUCKET_NAME, Body: file.buffer, Key: locationFile, ContentType: file.mimetype })

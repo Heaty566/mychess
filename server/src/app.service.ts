@@ -11,6 +11,6 @@ export class AppService implements BeforeApplicationShutdown {
 
       async beforeApplicationShutdown() {
             //save database
-            if (process.env.NODE_ENV === 'development') await this.databaseService.cronBackupDatabase('server.sql');
+            if (process.env.NODE_ENV === 'development') await this.databaseService.cronBackupDatabase('shut-down-server');
       }
 }
