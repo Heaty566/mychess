@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
-import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag, ChessStatus } from './entity/chess.interface';
+import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag, ChessStatus, ChessPlayer } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 import { ChessMove } from './entity/chessMove.entity';
 import { ChessMoveRepository } from './entity/chessMove.repository';
@@ -756,7 +756,7 @@ export class ChessService {
             return await this.chessRoleLegalMove(currentPosition, boardId);
       }
 
-      async checkmate(flag: 0 | 1, boardId: string): Promise<boolean> {
+      async checkmate(flag: PlayerFlagEnum.WHITE | PlayerFlagEnum.BLACK, boardId: string): Promise<boolean> {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
             const kingPosition: ChessMoveRedis = await this.getKing(flag, chessBoard.id);
             if (!(await this.kingIsChecked(kingPosition, chessBoard.id))) return false;
@@ -781,7 +781,7 @@ export class ChessService {
             return true;
       }
 
-      async stalemate(flag: 0 | 1, boardId: string): Promise<boolean> {
+      async stalemate(flag: PlayerFlagEnum.WHITE | PlayerFlagEnum.BLACK, boardId: string): Promise<boolean> {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
             const kingPosition: ChessMoveRedis = await this.getKing(flag, chessBoard.id);
             if (await this.kingIsChecked(kingPosition, chessBoard.id)) return false;
@@ -807,84 +807,98 @@ export class ChessService {
             return true;
       }
 
-      async playAMove(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string) {
+      async isWin(flag: PlayerFlagEnum.WHITE | PlayerFlagEnum.BLACK, boardId: string): Promise<boolean> {
+            const isCheckmate = await this.checkmate(flag, boardId);
+            const isStalemate = await this.stalemate(flag, boardId);
+            if (isCheckmate || isStalemate) return true;
+            return false;
+      }
+
+      async playAMove(player: ChessPlayer, curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string) {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
-            const newChessMove = new ChessMove();
-            newChessMove.fromX = curPos.x;
-            newChessMove.fromY = curPos.y;
-            newChessMove.toX = desPos.x;
-            newChessMove.toY = desPos.y;
-            newChessMove.flag = chessBoard.board[curPos.x][curPos.y].flag;
-            newChessMove.chessRole = chessBoard.board[curPos.x][curPos.y].chessRole;
+            if (chessBoard) {
+                  const currentFlag = chessBoard.turn ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+                  if (currentFlag === player.flag) {
+                        const newChessMove = new ChessMove();
+                        newChessMove.fromX = curPos.x;
+                        newChessMove.fromY = curPos.y;
+                        newChessMove.toX = desPos.x;
+                        newChessMove.toY = desPos.y;
+                        newChessMove.flag = chessBoard.board[curPos.x][curPos.y].flag;
+                        newChessMove.chessRole = chessBoard.board[curPos.x][curPos.y].chessRole;
 
-            const isEnPassant = await this.isEnPassant(curPos, desPos, boardId);
-            if (isEnPassant)
-                  chessBoard.board[desPos.x][curPos.y] = {
-                        flag: PlayerFlagEnum.EMPTY,
-                        chessRole: ChessRole.EMPTY,
-                  };
+                        const isEnPassant = await this.isEnPassant(curPos, desPos, boardId);
+                        if (isEnPassant)
+                              chessBoard.board[desPos.x][curPos.y] = {
+                                    flag: PlayerFlagEnum.EMPTY,
+                                    chessRole: ChessRole.EMPTY,
+                              };
 
-            const isCastleKingSite = await this.isCastleKingSite(curPos, desPos, boardId);
-            if (isCastleKingSite) {
-                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE) {
-                        chessBoard.board[5][0] = {
-                              flag: PlayerFlagEnum.WHITE,
-                              chessRole: ChessRole.ROOK,
-                        };
-                        chessBoard.board[7][0] = {
+                        const isCastleKingSite = await this.isCastleKingSite(curPos, desPos, boardId);
+                        if (isCastleKingSite) {
+                              if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE) {
+                                    chessBoard.board[5][0] = {
+                                          flag: PlayerFlagEnum.WHITE,
+                                          chessRole: ChessRole.ROOK,
+                                    };
+                                    chessBoard.board[7][0] = {
+                                          flag: PlayerFlagEnum.EMPTY,
+                                          chessRole: ChessRole.EMPTY,
+                                    };
+                              }
+                              if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK) {
+                                    chessBoard.board[5][7] = {
+                                          flag: PlayerFlagEnum.BLACK,
+                                          chessRole: ChessRole.ROOK,
+                                    };
+                                    chessBoard.board[7][7] = {
+                                          flag: PlayerFlagEnum.EMPTY,
+                                          chessRole: ChessRole.EMPTY,
+                                    };
+                              }
+                        }
+
+                        const isCaslteQueenSite = await this.isCaslteQueenSite(curPos, desPos, boardId);
+                        if (isCaslteQueenSite) {
+                              if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE) {
+                                    chessBoard.board[3][0] = {
+                                          flag: PlayerFlagEnum.WHITE,
+                                          chessRole: ChessRole.ROOK,
+                                    };
+                                    chessBoard.board[0][0] = {
+                                          flag: PlayerFlagEnum.EMPTY,
+                                          chessRole: ChessRole.EMPTY,
+                                    };
+                              }
+                              if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK) {
+                                    chessBoard.board[3][7] = {
+                                          flag: PlayerFlagEnum.BLACK,
+                                          chessRole: ChessRole.ROOK,
+                                    };
+                                    chessBoard.board[0][7] = {
+                                          flag: PlayerFlagEnum.EMPTY,
+                                          chessRole: ChessRole.EMPTY,
+                                    };
+                              }
+                        }
+
+                        chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
+
+                        chessBoard.board[curPos.x][curPos.y] = {
                               flag: PlayerFlagEnum.EMPTY,
                               chessRole: ChessRole.EMPTY,
                         };
-                  }
-                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK) {
-                        chessBoard.board[5][7] = {
-                              flag: PlayerFlagEnum.BLACK,
-                              chessRole: ChessRole.ROOK,
-                        };
-                        chessBoard.board[7][7] = {
-                              flag: PlayerFlagEnum.EMPTY,
-                              chessRole: ChessRole.EMPTY,
-                        };
-                  }
+                        chessBoard.turn = !chessBoard.turn;
+                        const currentTime = new Date();
+                        const stepTime = currentTime.getTime() - new Date(chessBoard.lastStep).getTime();
+                        chessBoard.users[newChessMove.flag].time -= stepTime;
+                        chessBoard.lastStep = currentTime;
+                        chessBoard.moves.push(newChessMove);
+                        await this.chessCommonService.setBoard(chessBoard);
+                  } else return false;
+
+                  return true;
             }
-
-            const isCaslteQueenSite = await this.isCaslteQueenSite(curPos, desPos, boardId);
-            if (isCaslteQueenSite) {
-                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.WHITE) {
-                        chessBoard.board[3][0] = {
-                              flag: PlayerFlagEnum.WHITE,
-                              chessRole: ChessRole.ROOK,
-                        };
-                        chessBoard.board[0][0] = {
-                              flag: PlayerFlagEnum.EMPTY,
-                              chessRole: ChessRole.EMPTY,
-                        };
-                  }
-                  if (chessBoard.board[curPos.x][curPos.y].flag === PlayerFlagEnum.BLACK) {
-                        chessBoard.board[3][7] = {
-                              flag: PlayerFlagEnum.BLACK,
-                              chessRole: ChessRole.ROOK,
-                        };
-                        chessBoard.board[0][7] = {
-                              flag: PlayerFlagEnum.EMPTY,
-                              chessRole: ChessRole.EMPTY,
-                        };
-                  }
-            }
-
-            chessBoard.board[desPos.x][desPos.y] = chessBoard.board[curPos.x][curPos.y];
-
-            chessBoard.board[curPos.x][curPos.y] = {
-                  flag: -1,
-                  chessRole: ChessRole.EMPTY,
-            };
-            chessBoard.turn = !chessBoard.turn;
-            const currentTime = new Date();
-            const stepTime = currentTime.getTime() - new Date(chessBoard.lastStep).getTime();
-            chessBoard.users[newChessMove.flag].time -= stepTime;
-            chessBoard.lastStep = currentTime;
-            chessBoard.moves.push(newChessMove);
-            await this.chessCommonService.setBoard(chessBoard);
       }
 
       async isPromotePawn(desPos: ChessMoveCoordinates, boardId: string): Promise<boolean> {
