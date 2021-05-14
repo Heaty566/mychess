@@ -62,3 +62,12 @@ export interface EloCalculator {
       whiteElo: number;
       blackElo: number;
 }
+
+export enum StandardPieceValue {
+      KING = 10000,
+      QUEEN = 1000,
+      ROOK = 525,
+      KNIGHT = 350,
+      BISHOP = 350,
+      PAWN = 100,
+}
