@@ -10,10 +10,11 @@ import { ChessService } from './chess.service';
 import { ChessCommonService } from './chessCommon.service';
 import { ChessRepository } from './entity/chess.repository';
 import { ChessMoveRepository } from './entity/chessMove.repository';
+import { ChessBotService } from './chessBot.service';
 
 @Module({
       imports: [TypeOrmModule.forFeature([ChessRepository, ChessMoveRepository]), AuthModule, RedisModule, UserModule, ChatModule],
-      providers: [ChessService, ChessCommonService, ChessGateway],
+      providers: [ChessService, ChessCommonService, ChessGateway, ChessBotService],
       controllers: [ChessController],
 })
 export class ChessModule {}

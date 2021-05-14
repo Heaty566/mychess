@@ -42,7 +42,7 @@ export class ChessGateway {
       }
 
       private async isExistUser(boardId: string, userId: string) {
-            const getUser = await this.chessCommonService.isExistUser(boardId, userId);
+            const getUser = await this.chessCommonService.findUser(boardId, userId);
             if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
       }
 

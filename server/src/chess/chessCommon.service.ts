@@ -9,6 +9,7 @@ import { ObjectLiteral } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { ChessMoveRepository } from './entity/chessMove.repository';
 import { ChatService } from '../chat/chat.service';
+import { TicTacToeStatus } from 'src/ticTacToe/entity/ticTacToe.interface';
 
 @Injectable()
 export class ChessCommonService {
@@ -53,7 +54,15 @@ export class ChessCommonService {
             return res;
       }
 
-      async createNewGame(user: User, isBotMode = false) {
+      async findUser(boardId: string, userId: string) {
+            const board = await this.getBoard(boardId);
+            if (board) {
+                  const getUser = board.users.find((item) => item.id === userId);
+                  return getUser;
+            }
+      }
+
+      async createNewGame(user: User, isBotMode?: boolean) {
             const chess = new Chess();
             const chat = await this.chatService.createChat(user);
             chess.chatId = chat.id;
@@ -63,8 +72,12 @@ export class ChessCommonService {
             chessBoard.chatId = chat.id;
 
             await this.setBoard(chessBoard);
-
             await this.joinGame(chessBoard.id, user);
+
+            if (isBotMode) {
+                  const bot = this.getBotInfo();
+                  await this.joinGame(chessBoard.id, bot);
+            }
 
             return chessBoard.id;
       }
@@ -76,12 +89,6 @@ export class ChessCommonService {
       async getBoard(boardId: string) {
             const board = await this.redisService.getObjectByKey<ChessBoard>(`chess-${boardId}`);
             return board;
-      }
-
-      async isExistUser(boardId: string, userId: string) {
-            const board = await this.getBoard(boardId);
-            const user = board.users.find((item) => item.id === userId);
-            return user;
       }
 
       async joinGame(boardId: string, user: User | ChessPlayer) {
@@ -120,6 +127,17 @@ export class ChessCommonService {
             return false;
       }
 
+      getBotInfo() {
+            const user = new User();
+            user.id = 'BOT';
+            user.elo = 200;
+            user.name = 'BOT';
+            user.username = 'BOT';
+            user.avatarUrl = this.userService.randomAvatar();
+
+            return user;
+      }
+
       async surrender(boardId: string, surrenderPlayer: ChessPlayer) {
             const board = await this.getBoard(boardId);
             if (board) {
@@ -133,6 +151,7 @@ export class ChessCommonService {
                   await this.setBoard(board);
                   await this.saveChessFromCacheToDb(boardId);
             }
+            return false;
       }
 
       async draw(boardId: string, isDraw: boolean) {
@@ -158,13 +177,17 @@ export class ChessCommonService {
 
       async createDrawRequest(boardId: string, player: ChessPlayer) {
             const board = await this.getBoard(boardId);
-            board.status = ChessStatus.DRAW;
-            board.users[player.flag].isDraw = true;
-            await this.setBoard(board);
+            if (board && board.status === ChessStatus.PLAYING) {
+                  board.status = ChessStatus.DRAW;
+                  board.users[player.flag].isDraw = true;
+                  await this.setBoard(board);
+            }
+            return false;
       }
 
       async saveChessFromCacheToDb(boardId: string) {
             const board = await this.getBoard(boardId);
+
             if (board && board.status === ChessStatus.END) {
                   const chess = await this.saveChess(board);
                   return chess;
@@ -190,14 +213,14 @@ export class ChessCommonService {
       }
 
       async saveChessMove(board: ChessBoard) {
-            board.moves.forEach(async (move) => await this.chessMoveRepository.save(move));
-            return board.moves;
+            const moves = await this.chessMoveRepository.save(board.moves);
+            return moves;
       }
 
       async leaveGame(boardId: string, player: ChessPlayer) {
             const board = await this.getBoard(boardId);
             if (board) {
-                  if (board.status === ChessStatus.PLAYING) {
+                  if (board.status === ChessStatus.PLAYING || board.status === ChessStatus.DRAW) {
                         await this.surrender(boardId, player);
                         return true;
                   } else if (board.status === ChessStatus.NOT_YET) {
@@ -208,12 +231,16 @@ export class ChessCommonService {
                         return true;
                   }
             }
+            return false;
       }
 
       async toggleReadyStatePlayer(boardId: string, player: ChessPlayer) {
             const board = await this.getBoard(boardId);
-            board.users[player.flag].ready = !board.users[player.flag].ready;
-            await this.setBoard(board);
+            if (board) {
+                  board.users[player.flag].ready = !board.users[player.flag].ready;
+                  await this.setBoard(board);
+            }
+            return false;
       }
 
       calculateElo(result: PlayerFlagEnum, playerWhite: ChessPlayer, playerBlack: ChessPlayer): EloCalculator {
@@ -253,16 +280,17 @@ export class ChessCommonService {
 
       async restartGame(boardId: string) {
             const board = await this.getBoard(boardId);
+            if (board) {
+                  const player1 = board.users[0];
+                  const player2 = board.users[1];
 
-            const player1 = board.users[0];
-            const player2 = board.users[1];
+                  const user1 = await this.userService.findOneUserByField('id', player1.id);
+                  const user2 = await this.userService.findOneUserByField('id', player2.id);
 
-            const user1 = await this.userService.findOneUserByField('id', player1.id);
-            const user2 = await this.userService.findOneUserByField('id', player2.id);
+                  const newBoardId = await this.createNewGame(user2, false);
+                  await this.joinGame(newBoardId, user1);
 
-            const newBoardId = await this.createNewGame(user2, false);
-            await this.joinGame(newBoardId, user1);
-
-            return newBoardId;
+                  return newBoardId;
+            }
       }
 }

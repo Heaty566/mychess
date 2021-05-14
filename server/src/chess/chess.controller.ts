@@ -3,6 +3,8 @@ import { Request } from 'express';
 
 //---- Service
 import { ChessService } from './chess.service';
+import { ChessBotService } from './chessBot.service';
+import { RedisService } from '../utils/redis/redis.service';
 import { ChessCommonService } from './chessCommon.service';
 import { UserGuard } from '../auth/auth.guard';
 
@@ -32,6 +34,7 @@ export class ChessController {
             private readonly chessCommonService: ChessCommonService,
             private readonly chessService: ChessService,
             private readonly chessGateway: ChessGateway,
+            private readonly chessBotService: ChessBotService,
       ) {}
 
       private async isPlaying(board: ChessBoard) {
@@ -46,7 +49,7 @@ export class ChessController {
       }
 
       private async getPlayer(boardId: string, userId: string) {
-            const player = await this.chessCommonService.isExistUser(boardId, userId);
+            const player = await this.chessCommonService.findUser(boardId, userId);
             if (!player) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             return player;
       }
@@ -55,6 +58,18 @@ export class ChessController {
       @UseGuards(UserGuard)
       async handleOnCreatePvP(@Req() req: Request) {
             const newGameId = await this.chessCommonService.createNewGame(req.user);
+
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
+      }
+
+      @Post('/bot')
+      @UseGuards(UserGuard)
+      async handleOnCreateBot(@Req() req: Request) {
+            const newGameId = await this.chessCommonService.createNewGame(req.user, true);
+            const playerOne = await this.chessCommonService.findUser(newGameId, req.user.id);
+            const bot = await this.chessCommonService.findUser(newGameId, 'BOT');
+            await this.chessCommonService.toggleReadyStatePlayer(newGameId, playerOne);
+            await this.chessCommonService.toggleReadyStatePlayer(newGameId, bot);
 
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
       }
@@ -74,7 +89,7 @@ export class ChessController {
             const board = await this.getGame(body.roomId);
             if (board.status != ChessStatus.NOT_YET)
                   throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
-            const isExist = await this.chessCommonService.isExistUser(board.id, req.user.id);
+            const isExist = await this.chessCommonService.findUser(board.id, req.user.id);
             if (!isExist && board.users.length < 2) await this.chessCommonService.joinGame(board.id, req.user);
 
             return apiResponse.send({ data: board });
@@ -164,12 +179,6 @@ export class ChessController {
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
-            // if (
-            //       (board.turn === true && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE) ||
-            //       (board.turn === false && board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.BLACK)
-            // )
-            //       throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-turn' } } }, 'BadRequestException');
-
             const curPos: ChessMoveCoordinates = {
                   x: body.curPos.x,
                   y: body.curPos.y,
@@ -190,7 +199,8 @@ export class ChessController {
             );
             if (!canMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
             // move chess
-            await this.chessService.playAMove(curPos, desPos, board.id);
+            const isMove = await this.chessService.playAMove(player, curPos, desPos, board.id);
+            if (!isMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wrong-turn' } } }, 'BadRequestException');
 
             // check king enemy
             if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyColor, board.id), board.id))
@@ -200,8 +210,13 @@ export class ChessController {
             if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, player.id);
 
             const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
-            await this.chessService.checkmate(enemyFlag, board.id);
-            await this.chessService.stalemate(enemyFlag, board.id);
+            const isWin = await this.chessService.isWin(enemyFlag, board.id);
+
+            if (board.isBotMode && !isWin) {
+                  const botMove = await this.chessBotService.randomMove(board.id, player.flag);
+                  await this.chessService.playAMove(player, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
+                  await this.chessService.isWin(enemyFlag, board.id);
+            }
 
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
