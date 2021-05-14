@@ -11,7 +11,7 @@ import { ChessService } from './chess.service';
 import { ChessCommonService } from './chessCommon.service';
 
 //---- Entity
-import { ChessRole } from './entity/chess.interface';
+import { ChessRole, PlayerFlagEnum } from './entity/chess.interface';
 //---- Dto
 import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 
@@ -49,6 +49,11 @@ export class ChessGateway {
       async restartGame(boardId: string, newBoardId: string) {
             const board = await this.chessCommonService.getBoard(newBoardId);
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_RESTART, boardId, { data: board }, 'chess');
+      }
+
+      async kingIsChecked(kingColor: PlayerFlagEnum, checkerId: string, boardId: string) {
+            const kingPosition = await this.chessService.getKing(kingColor, boardId);
+            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_CHECK_KING, boardId, { data: { kingPosition, checkerId } }, 'chess');
       }
 
       @UseGuards(UserSocketGuard)
