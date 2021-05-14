@@ -19,6 +19,7 @@ import { TicTacToeGateway } from '../ticTacToe.gateway';
 //---- Common
 import { TTTGatewayAction } from '../ticTacToeGateway.action';
 import { SocketServerResponse } from '../../app/interface/socketResponse';
+import { TicTacToePlayer } from '../entity/ticTacToe.interface';
 
 describe('TicTacToeGateway ', () => {
       let app: INestApplication;
@@ -91,6 +92,91 @@ describe('TicTacToeGateway ', () => {
                   });
 
                   client1.emit(TTTGatewayAction.TTT_GET, { roomId: 'hello-world' });
+            });
+      });
+
+      describe(`${TTTGatewayAction.TTT_COUNTER}`, () => {
+            let client1: SocketIOClient.Socket;
+            let client2: SocketIOClient.Socket;
+            let user1: User;
+            let tttId: string;
+            let player1: TicTacToePlayer;
+
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  tttId = await ticTacToeCommonService.createNewGame(user1, true);
+                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[0]);
+                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
+                  await ticTacToeCommonService.startGame(tttId);
+
+                  const socketToken1 = await authService.getSocketToken(user1);
+                  client1 = await getIoClient(port, 'tic-tac-toe', socketToken1);
+                  const user2 = await generateFakeUser();
+                  const socketToken2 = await authService.getSocketToken(user2);
+                  client2 = await getIoClient(port, 'tic-tac-toe', socketToken2);
+
+                  player1 = getBoard.users[0];
+
+                  await client2.connect();
+                  await client1.connect();
+            });
+
+            afterEach(async () => {
+                  client1.disconnect();
+                  client2.disconnect();
+            });
+
+            it('Pass user1', async (done) => {
+                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  getBoard.currentTurn = true;
+                  await ticTacToeCommonService.setBoard(getBoard);
+
+                  client1.on(TTTGatewayAction.TTT_COUNTER, async (data: SocketServerResponse<Array<TicTacToePlayer>>) => {
+                        expect(data.data[0].time).not.toBe(900000);
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+            });
+            it('Pass user2', async (done) => {
+                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  getBoard.currentTurn = false;
+                  await ticTacToeCommonService.setBoard(getBoard);
+
+                  client1.on(TTTGatewayAction.TTT_COUNTER, async (data: SocketServerResponse<Array<TicTacToePlayer>>) => {
+                        expect(data.data[1].time).not.toBe(900000);
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+            });
+
+            it('Failed game is end', async (done) => {
+                  await ticTacToeCommonService.surrender(tttId, player1);
+
+                  client1.on(TTTGatewayAction.TTT_COUNTER, async (data: SocketServerResponse<Array<TicTacToePlayer>>) => {
+                        expect(data.data[0].time).toBe(900000);
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
+            });
+            it('Failed user time out', async (done) => {
+                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  getBoard.currentTurn = true;
+                  getBoard.users[0].time = 0;
+                  await ticTacToeCommonService.setBoard(getBoard);
+
+                  client1.on(TTTGatewayAction.TTT_GET, async (data: SocketServerResponse<TicTacToeBoard>) => {
+                        expect(data.statusCode).toBe(200);
+                        done();
+                  });
+
+                  client1.emit(TTTGatewayAction.TTT_COUNTER, { roomId: tttId });
             });
       });
 

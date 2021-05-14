@@ -12,7 +12,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessMoveRedis, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates, ChessRole } from './entity/chess.interface';
+import { ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- DTO
@@ -26,13 +26,11 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { RecordingRulesInstance } from 'twilio/lib/rest/video/v1/room/roomRecordingRule';
 import { DrawDto, vDrawDto } from './dto/drawDto';
 
 @Controller('chess')
 export class ChessController {
       constructor(
-            private readonly redisService: RedisService,
             private readonly chessCommonService: ChessCommonService,
             private readonly chessService: ChessService,
             private readonly chessGateway: ChessGateway,
@@ -51,7 +49,7 @@ export class ChessController {
       }
 
       private async getPlayer(boardId: string, userId: string) {
-            const player = await this.chessCommonService.isExistUser(boardId, userId);
+            const player = await this.chessCommonService.findUser(boardId, userId);
             if (!player) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             return player;
       }
@@ -91,7 +89,7 @@ export class ChessController {
             const board = await this.getGame(body.roomId);
             if (board.status != ChessStatus.NOT_YET)
                   throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
-            const isExist = await this.chessCommonService.isExistUser(board.id, req.user.id);
+            const isExist = await this.chessCommonService.findUser(board.id, req.user.id);
             if (!isExist && board.users.length < 2) await this.chessCommonService.joinGame(board.id, req.user);
 
             return apiResponse.send({ data: board });
@@ -102,7 +100,6 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnStartGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
-
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
 
@@ -294,6 +291,7 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             const remainderUser = board.users.filter((item) => item.id !== player.id);
+
             if (!remainderUser[0].isDraw)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 

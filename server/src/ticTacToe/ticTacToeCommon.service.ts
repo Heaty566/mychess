@@ -63,12 +63,6 @@ export class TicTacToeCommonService {
             return await this.redisService.setObjectByKey(boardId, board, 120);
       }
 
-      async isExistUser(boardId: string, userId: string) {
-            const board = await this.getBoard(boardId);
-            const user = board.users.find((item) => item.id === userId);
-            return user;
-      }
-
       async startGame(boardId: string) {
             const board = await this.getBoard(boardId);
             if (board && board.users[0].ready && board.users[1].ready) {
@@ -90,7 +84,7 @@ export class TicTacToeCommonService {
             }
       }
 
-      async createNewGame(user: User, isBotMode: boolean) {
+      async createNewGame(user: User, isBotMode = false) {
             const newBoard = new TicTacToeBoard(isBotMode);
             const newChat = await this.chatService.createChat(user);
             newBoard.chatId = newChat.id;
@@ -106,9 +100,11 @@ export class TicTacToeCommonService {
 
       async createDrawRequest(boardId: string, player: TicTacToePlayer) {
             const board = await this.getBoard(boardId);
-            board.status = TicTacToeStatus.DRAW;
-            board.users[player.flag].isDraw = true;
-            await this.setBoard(board);
+            if (board) {
+                  board.status = TicTacToeStatus.DRAW;
+                  board.users[player.flag].isDraw = true;
+                  await this.setBoard(board);
+            }
       }
 
       async joinGame(boardId: string, user: User | TicTacToePlayer) {
@@ -118,12 +114,12 @@ export class TicTacToeCommonService {
                   const userFlag = board.users.length === 0 ? TicTacToeFlag.BLUE : TicTacToeFlag.RED;
 
                   board.users.push({
-                        username: user?.username,
-                        name: user?.name,
-                        avatarUrl: user?.avatarUrl,
-                        elo: user?.elo,
+                        username: user.username,
+                        name: user.name,
+                        avatarUrl: user.avatarUrl,
+                        elo: user.elo,
                         time: 900000,
-                        id: user?.id,
+                        id: user.id,
                         ready: false,
                         flag: userFlag,
                         isDraw: false,
@@ -137,8 +133,10 @@ export class TicTacToeCommonService {
 
       async toggleReadyStatePlayer(boardId: string, player: TicTacToePlayer) {
             const board = await this.getBoard(boardId);
-            board.users[player.flag].ready = !board.users[player.flag].ready;
-            await this.setBoard(board);
+            if (board) {
+                  board.users[player.flag].ready = !board.users[player.flag].ready;
+                  await this.setBoard(board);
+            }
       }
 
       getBotInfo() {
@@ -282,5 +280,22 @@ export class TicTacToeCommonService {
                   blueElo: Math.floor(Kb * (Ab - Eb)),
                   redElo: Math.floor(Kr * (Ar - Er)),
             };
+      }
+
+      async restartGame(boardId: string) {
+            const board = await this.getBoard(boardId);
+
+            if (board) {
+                  const player1 = board.users[0];
+                  const player2 = board.users[1];
+
+                  const user1 = await this.userService.findOneUserByField('id', player1.id);
+                  const user2 = await this.userService.findOneUserByField('id', player2.id);
+
+                  const newBoardId = await this.createNewGame(user2, false);
+                  await this.joinGame(newBoardId, user1);
+
+                  return newBoardId;
+            }
       }
 }

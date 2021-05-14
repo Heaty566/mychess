@@ -12,24 +12,23 @@ export class DatabaseService {
       constructor(private readonly logger: LoggerService, private readonly awsService: AwsService) {}
 
       @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-      cronBackupDatabase() {
-            const path = `${__dirname}/backup.sql`;
-            exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${path}`, (err) => {
+      cronBackupDatabase(filename = 'backup') {
+            exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${filename}.sql`, (err) => {
                   if (err) this.logger.print('Create a backup database failed', 'database.service.ts', 'error');
                   this.logger.print(`Create a backup database in ${new Date()}`, 'database.service.ts', 'info');
 
-                  fs.readFile(path, async (err, data) => {
+                  fs.readFile(`${filename}.sql`, async (err, data) => {
                         if (err) {
                               this.logger.print('Read a backup database failed', 'database.service.ts', 'error');
                               return;
                         }
 
-                        const fileName = `backup-${Date.now()}.sql`;
+                        const fileName = `${Date.now()}-${filename}`;
 
                         const databaseFile: Express.Multer.File = {
                               buffer: data,
                               originalname: fileName,
-                              fieldname: 'backup',
+                              fieldname: filename,
                               mimetype: 'application/x-sql',
                               encoding: '7bit',
                               destination: '',

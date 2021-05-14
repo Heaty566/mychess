@@ -3,7 +3,6 @@ import { Request } from 'express';
 
 //---- Service
 import { TicTacToeBotService } from './ticTacToeBot.service';
-import { RedisService } from '../utils/redis/redis.service';
 import { TicTacToeCommonService } from './ticTacToeCommon.service';
 import { TicTacToeService } from './ticTacToe.service';
 import { UserGuard } from '../auth/auth.guard';
@@ -36,7 +35,7 @@ export class TicTacToeController {
       ) {}
 
       private async getPlayer(tttId: string, userId: string) {
-            const player = await this.ticTacToeCommonService.isExistUser(tttId, userId);
+            const player = await this.ticTacToeCommonService.findUser(tttId, userId);
             if (!player) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
             return player;
       }
@@ -76,7 +75,7 @@ export class TicTacToeController {
             await this.isPlaying(board);
             await this.getPlayer(board.id, req.user.id);
 
-            const newGameId = await this.ticTacToeCommonService.createNewGame(req.user, false);
+            const newGameId = await this.ticTacToeCommonService.restartGame(body.roomId);
 
             await this.ticTacToeGateway.restartGame(board.id, newGameId);
             return apiResponse.send<TTTRoomIdDTO>({ data: { roomId: newGameId } });
@@ -101,7 +100,7 @@ export class TicTacToeController {
             if (board.status !== TicTacToeStatus['NOT-YET'])
                   throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
 
-            const isExist = await this.ticTacToeCommonService.isExistUser(board.id, req.user.id);
+            const isExist = await this.ticTacToeCommonService.findUser(board.id, req.user.id);
             if (!isExist && board.users.length < 2) await this.ticTacToeCommonService.joinGame(board.id, req.user);
 
             return apiResponse.send({ data: board });

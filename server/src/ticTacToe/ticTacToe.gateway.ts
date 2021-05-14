@@ -29,7 +29,7 @@ export class TicTacToeGateway {
       socketServer = () => ioResponse.getSocketServer(this.server);
 
       private async isExistUser(boardId: string, userId: string) {
-            const getUser = await this.ticTacToeCommonService.isExistUser(boardId, userId);
+            const getUser = await this.ticTacToeCommonService.findUser(boardId, userId);
             if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
       }
 
@@ -77,6 +77,7 @@ export class TicTacToeGateway {
                   const currentFlag = getCacheGame.currentTurn ? 0 : 1;
                   const currentTime = new Date().getTime();
                   getCacheGame.users[currentFlag].time -= currentTime - new Date(getCacheGame.lastStep).getTime();
+
                   if (getCacheGame.users[currentFlag].time <= 0) {
                         await this.ticTacToeCommonService.surrender(getCacheGame.id, getCacheGame.users[currentFlag]);
                         await this.sendToRoom(getCacheGame.id);

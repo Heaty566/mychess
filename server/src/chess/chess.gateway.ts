@@ -18,7 +18,7 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { ChessGatewayAction } from './chessGateway.action';
-import { ChessMoveRedis, ChessMoveCoordinates, ChessStatus } from './entity/chess.interface';
+import { ChessStatus } from './entity/chess.interface';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {
@@ -42,7 +42,7 @@ export class ChessGateway {
       }
 
       private async isExistUser(boardId: string, userId: string) {
-            const getUser = await this.chessCommonService.isExistUser(boardId, userId);
+            const getUser = await this.chessCommonService.findUser(boardId, userId);
             if (!getUser) throw ioResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'UnauthorizedException');
       }
 
@@ -53,7 +53,12 @@ export class ChessGateway {
 
       async kingIsChecked(kingColor: PlayerFlagEnum, checkerId: string, boardId: string) {
             const kingPosition = await this.chessService.getKing(kingColor, boardId);
-            return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_CHECK_KING, boardId, { data: { kingPosition, checkerId } }, 'chess');
+            return this.socketServer().socketEmitToRoom(
+                  ChessGatewayAction.CHESS_CHECK_KING,
+                  boardId,
+                  { data: { x: kingPosition.x, y: kingPosition.y, userId: checkerId } },
+                  'chess',
+            );
       }
 
       @UseGuards(UserSocketGuard)

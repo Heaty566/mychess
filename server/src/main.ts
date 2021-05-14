@@ -8,6 +8,7 @@ async function bootstrap() {
       const app = await NestFactory.create(AppModule);
 
       const logger = new Logger('SERVER');
+      app.enableShutdownHooks();
 
       //init all middleware
       router(app);

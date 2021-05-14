@@ -10,18 +10,28 @@ import PlayerBlueIcon from '../public/asset/icons/player-blue';
 import PlayerIcon from '../public/asset/icons/player';
 import ChessBoardIcon from '../public/asset/icons/chess';
 import { useRouter } from 'next/router';
+import chessApi from '../api/chessApi';
 
 export interface HomeProps {}
 
 const Home: React.FunctionComponent<HomeProps> = () => {
     const router = useRouter();
 
-    const handleCreateBot = () => {
+    const handleCreateBotTTT = () => {
         ticTacToeApi
             .createNewBotRoom()
             .then((res) => {
                 const roomId = res.data.data.roomId;
                 router.push(`${routers.ticTacToePvP.link}/${roomId}`);
+            })
+            .catch(() => router.push(routers.login.link));
+    };
+    const handleCreateBotChess = () => {
+        chessApi
+            .createNewBotRoom()
+            .then((res) => {
+                const roomId = res.data.data.roomId;
+                router.push(`${routers.chessPvP.link}/${roomId}`);
             })
             .catch(() => router.push(routers.login.link));
     };
@@ -34,7 +44,7 @@ const Home: React.FunctionComponent<HomeProps> = () => {
                     <div className="flex flex-col space-y-2 md:grid md:grid-cols-2 md:grid-rows-2 md:gap-10 md:space-y-0">
                         <button
                             className="p-4 space-y-4 duration-100 transform rounded-md shadow-xl bg-woodsmoke-500 hover:scale-105 hover:bg-gray-900"
-                            onClick={() => handleCreateBot()}
+                            onClick={handleCreateBotTTT}
                         >
                             <div className="text-center ">
                                 <h1 className="text-3xl font-bold text-mercury">Tic Tac Toe</h1>
@@ -54,29 +64,28 @@ const Home: React.FunctionComponent<HomeProps> = () => {
                             </div>
                         </button>
 
-                        <Link href="/">
-                            <a
-                                href="/"
-                                className="p-4 space-y-4 duration-100 transform rounded-md shadow-xl bg-woodsmoke-500 hover:scale-105 hover:bg-gray-900"
-                            >
-                                <div className="text-center ">
-                                    <h1 className="text-3xl font-bold text-mercury">Chess</h1>
-                                    <h2 className="font-medium text-mercury-600">Player VS BOT</h2>
-                                    <div className="w-1/2 h-1 mx-auto bg-gray-600"></div>
+                        <button
+                            className="p-4 space-y-4 duration-100 transform rounded-md shadow-xl bg-woodsmoke-500 hover:scale-105 hover:bg-gray-900"
+                            onClick={handleCreateBotChess}
+                        >
+                            <div className="text-center ">
+                                <h1 className="text-3xl font-bold text-mercury">Chess</h1>
+                                <h2 className="font-medium text-mercury-600">Player VS BOT</h2>
+                                <div className="w-1/2 h-1 mx-auto bg-gray-600"></div>
+                            </div>
+                            <div className="flex items-center justify-around">
+                                <div>
+                                    <PlayerIcon />
                                 </div>
-                                <div className="flex items-center justify-around">
-                                    <div>
-                                        <PlayerIcon />
-                                    </div>
-                                    <div>
-                                        <ChessBoardIcon />
-                                    </div>
-                                    <div>
-                                        <RobotIcon />
-                                    </div>
+                                <div>
+                                    <ChessBoardIcon />
                                 </div>
-                            </a>
-                        </Link>
+                                <div>
+                                    <RobotIcon />
+                                </div>
+                            </div>
+                        </button>
+
                         <Link href={routers.ticTacToePvP.link}>
                             <a className="p-4 space-y-4 duration-100 transform rounded-md shadow-xl bg-woodsmoke-500 hover:scale-105 hover:bg-gray-900">
                                 <div className="text-center ">
