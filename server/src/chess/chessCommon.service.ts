@@ -62,6 +62,14 @@ export class ChessCommonService {
             return Boolean(currentPlay.length);
       }
 
+      async findUser(boardId: string, userId: string) {
+            const board = await this.getBoard(boardId);
+            if (board) {
+                  const getUser = board.users.find((item) => item.id === userId);
+                  return getUser;
+            }
+      }
+
       async createNewGame(user: User, isBotMode?: boolean) {
             const chess = new Chess();
             const chat = await this.chatService.createChat(user);
@@ -72,8 +80,12 @@ export class ChessCommonService {
             chessBoard.chatId = chat.id;
 
             await this.setBoard(chessBoard);
-
             await this.joinGame(chessBoard.id, user);
+
+            if (isBotMode) {
+                  const bot = this.getBotInfo();
+                  await this.joinGame(chessBoard.id, bot);
+            }
 
             return chessBoard.id;
       }
@@ -127,6 +139,17 @@ export class ChessCommonService {
                   return true;
             }
             return false;
+      }
+
+      getBotInfo() {
+            const user = new User();
+            user.id = 'BOT';
+            user.elo = 200;
+            user.name = 'BOT';
+            user.username = 'BOT';
+            user.avatarUrl = this.userService.randomAvatar();
+
+            return user;
       }
 
       async surrender(boardId: string, surrenderPlayer: ChessPlayer) {
