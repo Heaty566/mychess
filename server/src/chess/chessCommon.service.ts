@@ -185,8 +185,6 @@ export class ChessCommonService {
             const moves = await this.saveChessMove(board);
 
             const newChess = new Chess();
-            newChess.whiteUser = users[0].id;
-            newChess.blackUser = users[1].id;
             newChess.users = users;
             newChess.winner = board.winner;
             newChess.chatId = chat.id;
