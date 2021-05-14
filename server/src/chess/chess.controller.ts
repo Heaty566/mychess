@@ -213,9 +213,10 @@ export class ChessController {
             const isWin = await this.chessService.isWin(enemyFlag, board.id);
 
             if (board.isBotMode && !isWin) {
-                  const botMove = await this.chessBotService.randomMove(board.id, player.flag);
-                  await this.chessService.playAMove(player, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
-                  await this.chessService.isWin(enemyFlag, board.id);
+                  const bot = await this.chessCommonService.findUser(board.id, 'BOT');
+                  const botMove = await this.chessBotService.randomMove(board.id, enemyFlag);
+                  await this.chessService.playAMove(bot, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
+                  await this.chessService.isWin(player.flag, board.id);
             }
 
             await this.chessGateway.sendToRoom(board.id);
