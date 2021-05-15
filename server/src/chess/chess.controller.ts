@@ -177,11 +177,11 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
             const board = await this.getGame(body.roomId);
-            const enemyColor = board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
+            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
 
             if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
@@ -213,22 +213,24 @@ export class ChessController {
             if (!isMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wrong-turn' } } }, 'BadRequestException');
 
             // check king enemy
-            if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyColor, board.id), board.id))
-                  this.chessGateway.kingIsChecked(enemyColor, player.id, board.id);
+            if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyFlag, board.id), board.id))
+                  await this.chessGateway.kingIsChecked(enemyFlag, player.id, board.id);
 
             // check promote pawn
             if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, player.id);
 
-            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
             const isWin = await this.chessService.isWin(enemyFlag, board.id);
 
             if (board.isBotMode && !isWin) {
                   const bot = await this.chessCommonService.findUser(board.id, 'BOT');
-                  const botMove = await this.chessBotService.findBestMove(board.id, enemyFlag);
+                  const botMove = await this.chessBotService.randomMove(board.id, enemyFlag);
                   await this.chessService.playAMove(bot, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
 
                   const isPromote = await this.chessService.isPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
                   if (isPromote) await this.chessBotService.botPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
+
+                  if (await this.chessService.kingIsChecked(await this.chessService.getKing(player.flag, board.id), board.id))
+                        this.chessGateway.kingIsChecked(player.flag, bot.id, board.id);
 
                   await this.chessService.isWin(player.flag, board.id);
             }
@@ -249,6 +251,7 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
 
             const player = await this.getPlayer(board.id, req.user.id);
+            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
 
             if (board.board[body.promotePos.x][body.promotePos.y].flag === PlayerFlagEnum.EMPTY)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
@@ -259,9 +262,14 @@ export class ChessController {
             board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
             await this.chessCommonService.setBoard(board);
 
+            // check king enemy
+            if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyFlag, board.id), board.id))
+                  await this.chessGateway.kingIsChecked(enemyFlag, player.id, board.id);
+
+            await this.chessService.isWin(enemyFlag, board.id);
+
             await this.chessGateway.sendToRoom(board.id);
-            board = await this.chessCommonService.getBoard(body.roomId);
-            return apiResponse.send({ data: board });
+            return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
 
       @Post('/restart')
