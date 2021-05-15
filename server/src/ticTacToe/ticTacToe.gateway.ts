@@ -91,10 +91,11 @@ export class TicTacToeGateway implements OnGatewayDisconnect {
             if (client.user?.games?.tttId) {
                   const boardId = client.user.games.tttId;
                   const user = await this.ticTacToeCommonService.findUser(boardId, client.user.id);
-
-                  await this.ticTacToeCommonService.leaveGame(boardId, user);
-                  await this.sendToRoom(boardId);
-                  await client.leave(`ttt-${boardId}`);
+                  if (user) {
+                        await this.ticTacToeCommonService.leaveGame(boardId, user);
+                        await this.sendToRoom(boardId);
+                        await client.leave(`ttt-${boardId}`);
+                  }
             }
       }
 }

@@ -1,15 +1,16 @@
-import { Response, NextFunction, Request } from 'express';
-import { INestApplication } from '@nestjs/common';
-import * as swagger from 'swagger-ui-express';
-import * as cookieParser from 'cookie-parser';
-import * as compression from 'compression';
-import * as morgan from 'morgan';
-import * as helmet from 'helmet';
 import * as I18n from 'i18n';
+import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import * as doc from './app/public/swagger.json';
+import * as helmet from 'helmet';
+import * as morgan from 'morgan';
+import * as swagger from 'swagger-ui-express';
 
+import { NextFunction, Request, Response } from 'express';
+
+import { INestApplication } from '@nestjs/common';
 import { NotFoundApiHandler } from './app/exception/notfound.exception';
 import { RuntimeApiHandler } from './app/exception/runtime.exception';
-import * as doc from './app/public/swagger.json';
 import { SocketExceptionsFilter } from './app/exception/socket.exception';
 
 I18n.configure({
