@@ -895,6 +895,16 @@ export class ChessService {
                         chessBoard.lastStep = currentTime;
                         chessBoard.moves.push(newChessMove);
                         await this.chessCommonService.setBoard(chessBoard);
+
+                        const enemyColor = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+                        const enemyKingPosition = await this.getKing(enemyColor, boardId);
+                        if (await this.kingIsChecked(enemyKingPosition, boardId)) {
+                              chessBoard.checkedPiece = {
+                                    x: enemyKingPosition.x,
+                                    y: enemyKingPosition.y,
+                              };
+                        } else chessBoard.checkedPiece = undefined;
+                        await this.chessCommonService.setBoard(chessBoard);
                   } else return false;
 
                   return true;
