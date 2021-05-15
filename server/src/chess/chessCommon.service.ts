@@ -44,16 +44,6 @@ export class ChessCommonService {
             return { boards: result, count, totalWin };
       }
 
-      async getManyChessByQuery(where: string, parameters: ObjectLiteral) {
-            const res = await this.chessRepository.getManyChessByField(where, parameters);
-            return res;
-      }
-
-      async getOneChessByField(where: string, parameters: ObjectLiteral) {
-            const res = await this.chessRepository.getOneChessByFiled(where, parameters);
-            return res;
-      }
-
       async findUser(boardId: string, userId: string) {
             const board = await this.getBoard(boardId);
             if (board) {

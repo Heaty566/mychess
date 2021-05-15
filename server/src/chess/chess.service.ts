@@ -156,6 +156,8 @@ export class ChessService {
 
             if (!kingIsMoved && !rookKingSiteIsMoved) {
                   if (
+                        currentPosition.x === 4 &&
+                        currentPosition.y === 0 &&
                         chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.WHITE &&
                         chessBoard.board[5][0].flag === PlayerFlagEnum.EMPTY &&
                         chessBoard.board[6][0].flag === PlayerFlagEnum.EMPTY &&
@@ -164,6 +166,8 @@ export class ChessService {
                         result.push({ x: 6, y: 0 });
 
                   if (
+                        currentPosition.x === 4 &&
+                        currentPosition.y === 7 &&
                         chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.BLACK &&
                         chessBoard.board[5][7].flag === PlayerFlagEnum.EMPTY &&
                         chessBoard.board[6][7].flag === PlayerFlagEnum.EMPTY &&
@@ -174,6 +178,8 @@ export class ChessService {
 
             if (!kingIsMoved && !rookQueenSiteIsMoved) {
                   if (
+                        currentPosition.x === 4 &&
+                        currentPosition.y === 0 &&
                         chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.WHITE &&
                         chessBoard.board[1][0].flag === PlayerFlagEnum.EMPTY &&
                         chessBoard.board[2][0].flag === PlayerFlagEnum.EMPTY &&
@@ -183,6 +189,8 @@ export class ChessService {
                         result.push({ x: 2, y: 0 });
 
                   if (
+                        currentPosition.x === 4 &&
+                        currentPosition.y === 7 &&
                         chessBoard.board[currentPosition.x][currentPosition.y].flag === PlayerFlagEnum.BLACK &&
                         chessBoard.board[1][7].flag === PlayerFlagEnum.EMPTY &&
                         chessBoard.board[2][7].flag === PlayerFlagEnum.EMPTY &&
@@ -759,7 +767,9 @@ export class ChessService {
       async checkmate(flag: PlayerFlagEnum.WHITE | PlayerFlagEnum.BLACK, boardId: string): Promise<boolean> {
             const chessBoard = await this.chessCommonService.getBoard(boardId);
             const kingPosition: ChessMoveRedis = await this.getKing(flag, chessBoard.id);
-            if (!(await this.kingIsChecked(kingPosition, chessBoard.id))) return false;
+
+            const kingIsChecked: boolean = await this.kingIsChecked(kingPosition, chessBoard.id);
+            if (!kingIsChecked) return false;
 
             for (let i = 0; i <= 7; i++) {
                   for (let j = 0; j <= 7; j++) {
