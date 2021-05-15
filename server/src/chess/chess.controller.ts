@@ -158,11 +158,10 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             const player = await this.getPlayer(board.id, req.user.id);
-            // pick empty square
-            if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } }, data: [] }, 'BadRequestException');
+
             // pick enemy piece
-            if (board.board[body.x][body.y].flag !== player.flag) throw apiResponse.sendError({ details: {}, data: [] }, 'BadRequestException');
+            if (board.board[body.x][body.y].flag !== player.flag)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } }, data: [] }, 'BadRequestException');
 
             const currentPosition: ChessMoveCoordinates = {
                   x: body.x,
@@ -184,9 +183,6 @@ export class ChessController {
 
             const player = await this.getPlayer(board.id, req.user.id);
             const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
-
-            if (board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.EMPTY)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.piece-is-empty' } } }, 'BadRequestException');
 
             if (board.board[body.curPos.x][body.curPos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
@@ -226,10 +222,9 @@ export class ChessController {
 
                   const isPromote = await this.chessService.isPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
                   if (isPromote) await this.chessBotService.botPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
-
-                  await this.chessService.isWin(player.flag, board.id);
             }
 
+            await this.chessService.isWin(player.flag, board.id);
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
@@ -251,20 +246,7 @@ export class ChessController {
             if (board.board[body.promotePos.x][body.promotePos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
-            // promote action, can be fix
-            board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
-            await this.chessCommonService.setBoard(board);
-
-            const enemyColor = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
-            const enemyKingPosition = await this.chessService.getKing(enemyColor, board.id);
-            if (await this.chessService.kingIsChecked(enemyKingPosition, board.id)) {
-                  board.checkedPiece = {
-                        x: enemyKingPosition.x,
-                        y: enemyKingPosition.y,
-                  };
-            } else board.checkedPiece = undefined;
-            await this.chessCommonService.setBoard(board);
-            // end of promote action
+            await this.chessService.promoteMove(body.promotePos, body.promoteRole, board.id);
 
             await this.chessService.isWin(enemyFlag, board.id);
 

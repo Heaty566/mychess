@@ -21,7 +21,7 @@
                         "description": "The user has requested too many times, please try again after 30 minutes",
                         "$ref": "../../exception/400.json"
                   },
-                  "400": {
+                  "400,": {
                         "description": "The user email is taken by another user",
                         "$ref": "../../exception/400.json"
                   },

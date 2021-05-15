@@ -11,16 +11,11 @@ import { User } from '../../user/entities/user.entity';
 import { ChessBoard } from '../entity/chessBoard.entity';
 import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
 import { ChessCommonService } from '../chessCommon.service';
-import { async } from 'rxjs';
 import { ChessMove } from '../entity/chessMove.entity';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'node:constants';
-
 //---- Repository
 
 describe('ChessService', () => {
       let app: INestApplication;
-      let user1: User;
-      let user2: User;
       let resetDB: any;
       let generateFakeUser: () => Promise<User>;
       let chessService: ChessService;
@@ -688,7 +683,7 @@ describe('ChessService', () => {
                         };
                         await chessCommonService.setBoard(chessBoard);
                         const result = await chessService['pawnAvailableMove']({ x: 1, y: 3 }, chessBoard.id);
-                        // expect(result.length).toBe(3);
+                        expect(result.length).toBe(1);
                   });
             });
       });
@@ -1866,6 +1861,51 @@ describe('ChessService', () => {
 
                   expect(chessBoard.board[0][7].chessRole).toBe(ChessRole.EMPTY);
                   expect(chessBoard.board[0][7].flag).toBe(PlayerFlagEnum.EMPTY);
+            });
+      });
+
+      describe('promoteMove', () => {
+            let chessBoardId: string;
+            let user1: User;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  chessBoardId = await chessCommonService.createNewGame(user1);
+            });
+
+            it('promote at x = 1, y = 0 to QUEEN', async () => {
+                  await chessService.promoteMove({ x: 1, y: 0 }, ChessRole.QUEEN, chessBoardId);
+                  const board = await chessCommonService.getBoard(chessBoardId);
+                  expect(board.board[1][0].chessRole).toBe(ChessRole.QUEEN);
+            });
+
+            it('promote at x = 2, y = 0 to KNIGHT', async () => {
+                  await chessService.promoteMove({ x: 2, y: 0 }, ChessRole.KNIGHT, chessBoardId);
+                  const board = await chessCommonService.getBoard(chessBoardId);
+                  expect(board.board[2][0].chessRole).toBe(ChessRole.KNIGHT);
+            });
+
+            it('promote at x = 1, y = 0 to ROOK', async () => {
+                  await chessService.promoteMove({ x: 1, y: 0 }, ChessRole.ROOK, chessBoardId);
+                  const board = await chessCommonService.getBoard(chessBoardId);
+                  expect(board.board[1][0].chessRole).toBe(ChessRole.ROOK);
+            });
+
+            it('promote at x = 1, y = 0 to BISHOP', async () => {
+                  await chessService.promoteMove({ x: 1, y: 0 }, ChessRole.BISHOP, chessBoardId);
+                  const board = await chessCommonService.getBoard(chessBoardId);
+                  expect(board.board[1][0].chessRole).toBe(ChessRole.BISHOP);
+            });
+
+            it('promote at x = 3, y = 0 with king is checked', async () => {
+                  let board = await chessCommonService.getBoard(chessBoardId);
+                  board.board[3][0] = { chessRole: ChessRole.PAWN, flag: PlayerFlagEnum.BLACK };
+                  await chessCommonService.setBoard(board);
+
+                  await chessService.promoteMove({ x: 3, y: 0 }, ChessRole.QUEEN, chessBoardId);
+                  board = await chessCommonService.getBoard(chessBoardId);
+
+                  expect(board.board[3][0].chessRole).toBe(ChessRole.QUEEN);
+                  expect(board.checkedPiece).toBeDefined();
             });
       });
 

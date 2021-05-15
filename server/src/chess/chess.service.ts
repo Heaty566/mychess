@@ -928,4 +928,22 @@ export class ChessService {
             if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
             return false;
       }
+
+      async promoteMove(promotePos: ChessMoveCoordinates, role: ChessRole, boardId: string) {
+            const board = await this.chessCommonService.getBoard(boardId);
+            board.board[promotePos.x][promotePos.y].chessRole = role;
+            await this.chessCommonService.setBoard(board);
+
+            const playerFlag = board.board[promotePos.x][promotePos.y].flag;
+            const enemyColor = playerFlag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+            const enemyKingPosition = await this.getKing(enemyColor, board.id);
+
+            if (await this.kingIsChecked(enemyKingPosition, board.id)) {
+                  board.checkedPiece = {
+                        x: enemyKingPosition.x,
+                        y: enemyKingPosition.y,
+                  };
+            } else board.checkedPiece = undefined;
+            await this.chessCommonService.setBoard(board);
+      }
 }
