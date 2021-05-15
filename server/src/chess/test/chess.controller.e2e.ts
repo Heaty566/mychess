@@ -440,6 +440,14 @@ describe('ChessController', () => {
                   const res = await reqApi({ roomId: boardId, x: 3, y: 6 });
                   expect(res.status).toBe(400);
             });
+
+            it('Failed board is not PLAYING', async () => {
+                  const board = await chessCommonService.getBoard(boardId);
+                  board.status = ChessStatus.NOT_YET;
+                  await chessCommonService.setBoard(board);
+                  const res = await reqApi({ roomId: boardId, x: 3, y: 2 });
+                  expect(res.status).toBe(403);
+            });
       });
       describe('PUT /draw', () => {
             let user1: User, user2: User;
@@ -631,6 +639,42 @@ describe('ChessController', () => {
                         },
                   });
                   expect(res.status).toBe(400);
+            });
+
+            it('Failed choose empty square', async () => {
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = false;
+                  await chessCommonService.setBoard(getBoard);
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 3,
+                              y: 3,
+                        },
+                        desPos: {
+                              x: 4,
+                              y: 4,
+                        },
+                  });
+                  expect(res.status).toBe(400);
+            });
+
+            it('Failed board is not PLAYING', async () => {
+                  const board = await chessCommonService.getBoard(boardId);
+                  board.status = ChessStatus.NOT_YET;
+                  await chessCommonService.setBoard(board);
+                  const res = await reqApi({
+                        roomId: boardId,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
+                  });
+                  expect(res.status).toBe(403);
             });
       });
 

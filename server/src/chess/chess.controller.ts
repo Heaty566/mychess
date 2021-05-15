@@ -156,6 +156,7 @@ export class ChessController {
 
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
+
             const player = await this.getPlayer(board.id, req.user.id);
             // pick empty square
             if (board.board[body.x][body.y].flag === PlayerFlagEnum.EMPTY)
