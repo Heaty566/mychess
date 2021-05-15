@@ -39,24 +39,31 @@ export class ChessBotService {
             return bestMoveSoFar;
       }
 
+      async botPromotePawn(promotePos: ChessMoveCoordinates, boardId: string) {
+            const board = await this.chessCommonService.getBoard(boardId);
+            board.board[promotePos.x][promotePos.y].chessRole = ChessRole.QUEEN;
+            await this.chessCommonService.setBoard(board);
+      }
+
       private async getAllMoves(boardId: string, playerFlag: PlayerFlagEnum) {
             const board = await this.chessCommonService.getBoard(boardId);
             const moves: Array<ChessMove> = [];
-
-            for (let i = 0; i <= 7; i++) {
-                  for (let j = 0; j <= 7; j++) {
-                        if (board.board[i][j].flag === playerFlag) {
-                              const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove({ x: i, y: j }, board.id);
-                              if (legalMoves.length !== 0) {
-                                    for (const move of legalMoves) {
-                                          moves.push({
-                                                chessRole: board.board[i][j].chessRole,
-                                                flag: playerFlag,
-                                                fromX: i,
-                                                fromY: j,
-                                                toX: move.x,
-                                                toY: move.y,
-                                          });
+            if (board) {
+                  for (let i = 0; i <= 7; i++) {
+                        for (let j = 0; j <= 7; j++) {
+                              if (board.board[i][j].flag === playerFlag) {
+                                    const legalMoves: ChessMoveCoordinates[] = await this.chessService.legalMove({ x: i, y: j }, board.id);
+                                    if (legalMoves.length !== 0) {
+                                          for (const move of legalMoves) {
+                                                moves.push({
+                                                      chessRole: board.board[i][j].chessRole,
+                                                      flag: playerFlag,
+                                                      fromX: i,
+                                                      fromY: j,
+                                                      toX: move.x,
+                                                      toY: move.y,
+                                                });
+                                          }
                                     }
                               }
                         }
