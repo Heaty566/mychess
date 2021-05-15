@@ -18,16 +18,13 @@
                               }
                         }
                   },
-                  "400": {
-                        "$ref": "../../exception/400.json"
-                  },
-                  "401": {
-                        "$ref": "../../exception/401.json"
-                  },
+
                   "403": {
+                        "description": "user does not belong to this game",
                         "$ref": "../../exception/403.json"
                   },
                   "404": {
+                        "description": "ttt game with the given id was not found",
                         "$ref": "../../exception/404.json"
                   }
             }
