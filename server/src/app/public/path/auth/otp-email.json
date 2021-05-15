@@ -13,6 +13,10 @@
                                     }
                               }
                         }
+                  },
+                  "400": {
+                        "description": "too many request, mail does not exist, or server cannot send",
+                        "$ref": "../../exception/400.json"
                   }
             }
       }

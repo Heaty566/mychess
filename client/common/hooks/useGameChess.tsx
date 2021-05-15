@@ -57,6 +57,7 @@ const chessBoardDefault: ChessBoard = {
     turn: false,
     users: [playerDefault, playerDefault],
     winner: GamePlayerFlag.EMPTY,
+    checkedPiece: undefined,
 };
 
 const chessMoveRedisDefault: ChessMoveRedis = {
@@ -77,7 +78,6 @@ export function useGameChess(roomId: string) {
     const [currentChessSelect, setCurrentChessSelect] = React.useState<ChessMoveRedis>(chessMoveRedisDefault);
     const [currentChessPlayer, setCurrentChessPlayer] = React.useState<GamePlayer>(playerDefault);
     const [isChessPromote, setChessPromote] = React.useState<boolean>(false);
-    const [kingCheck, setKingCheck] = React.useState<{ x: number; y: number }>();
 
     const chessHandleOnRestart = () => {
         if (chessBoard.isBotMode)
@@ -188,20 +188,14 @@ export function useGameChess(roomId: string) {
                 .catch(() => router.push(routers[404].link));
     }, [authState.isSocketLogin, roomId]);
 
-    const onKingCheck = (res: ServerResponse<{ x: number; y: number; userId: string }>) => {
-        setKingCheck({ x: res.data.x, y: res.data.y });
-    };
-
     React.useEffect(() => {
         clientIoChess.on(ChessGatewayAction.CHESS_GET, onChessGet);
         clientIoChess.on(ChessGatewayAction.CHESS_JOIN, emitChessGet);
         clientIoChess.on(ChessGatewayAction.CHESS_COUNTER, onChessCounter);
         clientIoChess.on(ChessGatewayAction.CHESS_RESTART, onRestartGame);
         clientIoChess.on(ChessGatewayAction.CHESS_PROMOTE_PAWN, onPromote);
-        clientIoChess.on(ChessGatewayAction.CHESS_CHECK_KING, onKingCheck);
 
         return () => {
-            clientIoChess.off(ChessGatewayAction.CHESS_CHECK_KING, onKingCheck);
             clientIoChess.off(ChessGatewayAction.CHESS_PROMOTE_PAWN, onPromote);
             clientIoChess.off(ChessGatewayAction.CHESS_RESTART, onRestartGame);
             clientIoChess.off(ChessGatewayAction.CHESS_COUNTER, onChessCounter);
@@ -223,7 +217,6 @@ export function useGameChess(roomId: string) {
         chessSuggestion,
         chessBoardRef,
         isChessPromote,
-        kingCheck,
         //-------------
         chessHandleOnClick,
         chessHandleOnReady,

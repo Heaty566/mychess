@@ -15,6 +15,10 @@
                                     }
                               }
                         }
+                  },
+                  "400": {
+                        "description": "too many request, phoneNumber does not exist, or server cannot send",
+                        "$ref": "../../exception/400.json"
                   }
             }
       }
