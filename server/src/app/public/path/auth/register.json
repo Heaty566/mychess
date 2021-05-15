@@ -8,6 +8,10 @@
             "responses": {
                   "200": {
                         "$ref": "../../schema/apiResponse.json"
+                  },
+                  "400": {
+                        "description": "username is taken",
+                        "$ref": "../../exception/400.json"
                   }
             }
       }

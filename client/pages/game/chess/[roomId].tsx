@@ -48,7 +48,6 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
         chessHandleOnStart,
         chessHandleOnSurrender,
         chessHandleOnClick,
-        kingCheck,
     } = useGameChess(roomId);
     const { chat, chatRegister, chatWrapperRef, handleOnSendChatMessage } = useChatIo(chessBoard?.chatId);
 
@@ -109,8 +108,8 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                     />
                                     <ChessBoard
                                         board={chessBoard.board}
-                                        kingCheck={kingCheck}
                                         handleOnClick={chessHandleOnClick}
+                                        kingCheck={chessBoard.checkedPiece}
                                         register={chessBoardRef}
                                         suggestion={chessSuggestion}
                                     />

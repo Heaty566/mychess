@@ -5,7 +5,12 @@
             "requestBody": { "$ref": "../../dto/loginUser.json" },
             "responses": {
                   "200": {
+                        "description": "login success server will return re-token",
                         "$ref": "../../schema/apiResponse.json"
+                  },
+                  "400": {
+                        "description": "user is not found or wrong password",
+                        "$ref": "../../exception/400.json"
                   }
             }
       }

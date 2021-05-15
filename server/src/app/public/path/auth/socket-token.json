@@ -13,6 +13,10 @@
                                     }
                               }
                         }
+                  },
+                  "403": {
+                        "description": "client is not a user",
+                        "$ref": "../../exception/400.json"
                   }
             }
       }
