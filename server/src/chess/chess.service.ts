@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
 import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag, ChessStatus, ChessPlayer } from './entity/chess.interface';
-import { ChessBoard } from './entity/chessBoard.entity';
 import { ChessMove } from './entity/chessMove.entity';
-import { ChessMoveRepository } from './entity/chessMove.repository';
 
 //---- Repository
 

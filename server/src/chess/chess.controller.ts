@@ -4,7 +4,6 @@ import { Request } from 'express';
 //---- Service
 import { ChessService } from './chess.service';
 import { ChessBotService } from './chessBot.service';
-import { RedisService } from '../utils/redis/redis.service';
 import { ChessCommonService } from './chessCommon.service';
 import { UserGuard } from '../auth/auth.guard';
 
@@ -12,7 +11,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessStatus, PlayerFlagEnum, ChessMoveCoordinates, ChessRole } from './entity/chess.interface';
+import { ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- DTO
@@ -215,16 +214,8 @@ export class ChessController {
 
             const isWin = await this.chessService.isWin(enemyFlag, board.id);
 
-            if (board.isBotMode && !isWin) {
-                  const bot = await this.chessCommonService.findUser(board.id, 'BOT');
-                  const botMove = await this.chessBotService.randomMove(board.id, enemyFlag);
-                  await this.chessService.playAMove(bot, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
+            if (board.isBotMode && !isWin) await this.chessBotService.botMove(board.id, enemyFlag);
 
-                  const isPromote = await this.chessService.isPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
-                  if (isPromote) await this.chessBotService.botPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
-            }
-
-            await this.chessService.isWin(player.flag, board.id);
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }

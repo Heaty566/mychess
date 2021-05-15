@@ -9,10 +9,7 @@ import { ChessCommonService } from '../chessCommon.service';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
-import { ChessBoard } from '../../chess/entity/chessBoard.entity';
-import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum, ChessMove, ChessMoveCoordinates, ChessRole } from '../entity/chess.interface';
-import { Chess } from '../entity/chess.entity';
-import { ChessRepository } from '../entity/chess.repository';
+import { PlayerFlagEnum, ChessMove, ChessMoveCoordinates, ChessRole } from '../entity/chess.interface';
 import { ChessBotService } from '../chessBot.service';
 
 describe('chessBotService', () => {
@@ -20,7 +17,6 @@ describe('chessBotService', () => {
       let resetDB: any;
       let generateFakeUser: () => Promise<User>;
       let chessCommonService: ChessCommonService;
-      let chessRepository: ChessRepository;
       let chessBotService: ChessBotService;
 
       beforeAll(async () => {
@@ -29,7 +25,6 @@ describe('chessBotService', () => {
             resetDB = resetDatabase;
             generateFakeUser = getFakeUser;
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
-            chessRepository = module.get<ChessRepository>(ChessRepository);
             chessBotService = module.get<ChessBotService>(ChessBotService);
       });
 
@@ -168,6 +163,24 @@ describe('chessBotService', () => {
                   await chessBotService.botPromotePawn(promotePos, boardId);
                   const board = await chessCommonService.getBoard(boardId);
                   expect(board.board[promotePos.x][promotePos.y].chessRole).toBe(ChessRole.QUEEN);
+            });
+      });
+
+      describe('botMove', () => {
+            let user1: User;
+            let boardId: string;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1, true);
+                  const board = await chessCommonService.getBoard(boardId);
+                  board.turn = true;
+                  await chessCommonService.setBoard(board);
+            });
+
+            it('enemy is WHITE', async () => {
+                  await chessBotService.botMove(boardId, PlayerFlagEnum.WHITE);
+                  const board = await chessCommonService.getBoard(boardId);
+                  expect(board.turn).toBeFalsy();
             });
       });
 
