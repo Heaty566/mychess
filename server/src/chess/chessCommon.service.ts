@@ -260,13 +260,13 @@ export class ChessCommonService {
             const Eb = Qb / (Qw + Qb);
 
             let Kw, Kb;
-            if (Kw < 1600) Kw = 25;
-            else if (Kw < 2000) Kw = 20;
-            else if (Kw < 2400) Kw = 15;
-            else Kw = 10;
-            if (Kw < 1600) Kb = 25;
-            else if (Kw < 2000) Kb = 20;
-            else if (Kw < 2400) Kb = 15;
+            if (playerWhite.elo < 1600) Kw = 25;
+            else if (playerWhite.elo < 2000) Kw = 20;
+            else if (playerWhite.elo < 2400) Kw = 15;
+            else playerWhite.elo = 10;
+            if (playerBlack.elo < 1600) Kb = 25;
+            else if (playerBlack.elo < 2000) Kb = 20;
+            else if (playerBlack.elo < 2400) Kb = 15;
             else Kb = 10;
 
             let Aw, Ab;
