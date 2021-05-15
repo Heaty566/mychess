@@ -1,0 +1,5 @@
+{
+      "type": "string",
+      "description": "Game Flag for user",
+      "enum": ["EMPTY(-1)", "USER1(0)", "USER2(1)"]
+}

@@ -1,0 +1,33 @@
+{
+      "type": "object",
+      "description": "information of player in game",
+      "properties": {
+            "id": {
+                  "type": "string"
+            },
+            "username": {
+                  "type": "string"
+            },
+            "avatarUrl": {
+                  "type": "string"
+            },
+            "name": {
+                  "type": "string"
+            },
+            "elo": {
+                  "type": "number"
+            },
+            "isDraw": {
+                  "type": "boolean"
+            },
+            "ready": {
+                  "type": "boolean"
+            },
+            "flag": {
+                  "$ref": "./gamePlayerFlag.json"
+            },
+            "currentTurn": {
+                  "type": "boolean"
+            }
+      }
+}

@@ -1,0 +1,20 @@
+{
+      "description": "draw information",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "roomId": {
+                                    "type": "string",
+                                    "example": "username"
+                              },
+                              "isAccept": {
+                                    "type": "boolean"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

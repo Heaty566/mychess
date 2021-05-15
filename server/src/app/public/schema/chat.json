@@ -1,0 +1,26 @@
+{
+      "type": "object",
+      "description": "chat object",
+      "properties": {
+            "id": {
+                  "type": "string",
+                  "description": "chat id use to join chat in socketId"
+            },
+            "createDate": {
+                  "type": "string",
+                  "description": "create new"
+            },
+            "users": {
+                  "type": "array",
+                  "items": {
+                        "$ref": "./public-user.json"
+                  }
+            },
+            "messages": {
+                  "type": "array",
+                  "items": {
+                        "$ref": "./chat-message.json"
+                  }
+            }
+      }
+}

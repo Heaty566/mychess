@@ -13,15 +13,6 @@
                                     }
                               }
                         }
-                  },
-                  "400": {
-                        "$ref": "../../exception/400.json"
-                  },
-                  "401": {
-                        "$ref": "../../exception/401.json"
-                  },
-                  "403": {
-                        "$ref": "../../exception/403.json"
                   }
             }
       }
