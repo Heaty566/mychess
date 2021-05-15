@@ -1,0 +1,14 @@
+{
+      "post": {
+            "tags": ["common"],
+            "description": "The support API allows users to send their problem to our support team.",
+            "requestBody": {
+                  "$ref": "../../dto/support.json"
+            },
+            "responses": {
+                  "200": {
+                        "$ref": "../../schema/apiResponse.json"
+                  }
+            }
+      }
+}

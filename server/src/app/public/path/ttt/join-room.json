@@ -1,0 +1,35 @@
+{
+      "put": {
+            "tags": ["tic-tac-toe"],
+            "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "provide room id for server to connect with that room",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "User status update successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "$ref": "../../exception/400.json"
+                  },
+                  "401": {
+                        "$ref": "../../exception/401.json"
+                  },
+                  "403": {
+                        "$ref": "../../exception/403.json"
+                  },
+                  "404": {
+                        "$ref": "../../exception/404.json"
+                  }
+            }
+      }
+}

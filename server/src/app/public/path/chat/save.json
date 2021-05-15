@@ -1,0 +1,35 @@
+{
+      "put": {
+            "tags": ["chat"],
+            "description": "save a room chat to database",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "the chatId you want to save",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "return ok",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "$ref": "../../exception/400.json"
+                  },
+                  "401": {
+                        "$ref": "../../exception/401.json"
+                  },
+                  "403": {
+                        "$ref": "../../exception/403.json"
+                  },
+                  "404": {
+                        "$ref": "../../exception/404.json"
+                  }
+            }
+      }
+}

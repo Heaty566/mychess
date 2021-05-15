@@ -1,11 +1,12 @@
+import { TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
+
 import { Injectable } from '@nestjs/common';
+import { TicTacToeCommonService } from './ticTacToeCommon.service';
+import { TicTacToeFlag } from './entity/ticTacToe.interface';
 
 //---- Service
-import { TicTacToeCommonService } from './ticTacToeCommon.service';
 
 //---- Entity
-import { TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
-import { TicTacToeFlag } from './entity/ticTacToe.interface';
 
 //---- Repository
 
@@ -75,8 +76,8 @@ export class TicTacToeService {
                               }
                         }
 
-                  for (let i = 2; i < board.board.length; i++)
-                        for (let j = 2; j < board.board[i].length; j++) {
+                  for (let i = 2; i < board.board.length - 2; i++)
+                        for (let j = 2; j < board.board[i].length - 2; j++) {
                               if (board.board[i][j] !== -1) {
                                     const center: TicTacToeFlag = board.board[i][j];
 

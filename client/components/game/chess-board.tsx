@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import { ChessFlag, ChessMoveRedis } from '../../common/interface/chess.interface';
+
 import ChessCell from './chess-cell';
 
 export interface TTTBoardProps {

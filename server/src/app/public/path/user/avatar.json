@@ -1,0 +1,20 @@
+{
+      "put": {
+            "tags": ["user"],
+            "description": "This API allows user to upload their avatar image.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": { "$ref": "../../dto/updateAvatar.json" },
+            "responses": {
+                  "200": {
+                        "description": "User avatar update successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

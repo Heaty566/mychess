@@ -36,20 +36,58 @@
                               },
                               "required": true
                         },
-                        "responses": { "200": { "$ref": "#/components/responses/reTokenKey" }, "400": { "$ref": "#/components/responses/400" } }
+                        "responses": {
+                              "200": {
+                                    "type": "object",
+                                    "properties": {
+                                          "data": { "type": "object", "description": "it type any base on your api" },
+                                          "details": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "field": {
+                                                            "type": "string",
+                                                            "description": "field will be the name of invalid field",
+                                                            "example": "should not be empty"
+                                                      },
+                                                      "message": { "type": "string", "example": "this is an error message" },
+                                                      "errorMessage": { "type": "string", "example": "this is an error message" }
+                                                }
+                                          }
+                                    }
+                              }
+                        }
                   }
             },
             "/api/auth/logout": {
                   "post": {
                         "tags": ["auth"],
                         "description": "The Logout operation terminates user session.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [
+                              {
+                                    "name": "token",
+                                    "in": "cookie",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "re-token": {
+                                                      "type": "string",
+                                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                                },
+                                                "auth-token": {
+                                                      "type": "string",
+                                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                                }
+                                          }
+                                    }
+                              }
+                        ],
                         "responses": {
                               "200": {
                                     "description": "Access token removed successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "401": { "$ref": "#/components/responses/401" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -74,7 +112,7 @@
                               },
                               "required": true
                         },
-                        "responses": { "200": { "$ref": "#/components/responses/reTokenKey" }, "400": { "$ref": "#/components/responses/400" } }
+                        "responses": { "200": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } }
                   }
             },
             "/api/auth/otp-email": {
@@ -96,10 +134,100 @@
                         "responses": {
                               "200": {
                                     "description": "The mail has been sent successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/otp-sms": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "Create an OTP code is sent to the user phone number. Users can use\nit to access a webpage which contains a form where the user can enter\nthe new password.",
+                        "requestBody": {
+                              "description": "provide phone number to send an otp key",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": { "phoneNumber": { "type": "string", "example": "+20401230312" } }
+                                          }
+                                    }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "500": { "$ref": "#/components/responses/500" }
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "The OTP code has been sent successfully.",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/check-otp?key=": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "Check-otp API is user to check a OTP code is exist or not.",
+                        "parameters": [
+                              {
+                                    "name": "key",
+                                    "description": "otp key",
+                                    "in": "query",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": { "type": "string", "example": "123456789aa" }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "OTP code is existed.",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/google": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Mychess integrates with Google to support user authentication and\nlogin into a Mychess application with a Google account.",
+                        "responses": {
+                              "200": {
+                                    "description": "re-token key",
+                                    "content": {
+                                          "header": {
+                                                "schema": {
+                                                      "type": "string",
+                                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/github": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Mychess integrates with Github to support user authentication and\nlogin into a Mychess application with a Github account.",
+                        "responses": { "200": { "$ref": "#/paths/~1api~1auth~1google/get/responses/200" } }
+                  }
+            },
+            "/api/auth/facebook": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Mychess integrates with Facebook to support user authentication and\nlogin into a Mychess application with a Facebook account.",
+                        "responses": { "200": { "$ref": "#/paths/~1api~1auth~1google/get/responses/200" } }
+                  }
+            },
+            "/api/auth/socket-token": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Create an io cookie and return it to clients.",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "responses": {
+                              "200": {
+                                    "description": "The server creates io cookie successfully.",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -123,101 +251,25 @@
                               },
                               "required": true
                         },
-                        "responses": { "200": { "$ref": "#/components/responses/reTokenKey" }, "400": { "$ref": "#/components/responses/400" } }
-                  }
-            },
-            "/api/auth/otp-sms": {
-                  "post": {
-                        "tags": ["auth"],
-                        "description": "Create an OTP code is sent to the user phone number. Users can use\nit to access a webpage which contains a form where the user can enter\nthe new password.",
-                        "requestBody": {
-                              "description": "provide phone number to send an otp key",
-                              "content": {
-                                    "form-data": {
-                                          "schema": {
-                                                "type": "object",
-                                                "properties": { "phoneNumber": { "type": "string", "example": "+20401230312" } }
-                                          }
-                                    }
-                              },
-                              "required": true
-                        },
-                        "responses": {
-                              "200": {
-                                    "description": "The OTP code has been sent successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "500": { "$ref": "#/components/responses/500" }
-                        }
-                  }
-            },
-            "/api/auth/check-otp?key=": {
-                  "post": {
-                        "tags": ["auth"],
-                        "description": "Check-otp API is user to check a OTP code is exist or not.",
-                        "parameters": [{ "$ref": "#/components/parameters/OTPkey" }],
-                        "responses": {
-                              "200": {
-                                    "description": "OTP code is existed.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "403": { "$ref": "#/components/responses/403" }
-                        }
-                  }
-            },
-            "/api/auth/google": {
-                  "get": {
-                        "tags": ["auth"],
-                        "description": "Mychess integrates with Google to support user authentication and\nlogin into a Mychess application with a Google account.",
-                        "responses": { "200": { "$ref": "#/components/responses/reTokenKey" } }
-                  }
-            },
-            "/api/auth/github": {
-                  "get": {
-                        "tags": ["auth"],
-                        "description": "Mychess integrates with Github to support user authentication and\nlogin into a Mychess application with a Github account.",
-                        "responses": { "200": { "$ref": "#/components/responses/reTokenKey" } }
-                  }
-            },
-            "/api/auth/facebook": {
-                  "get": {
-                        "tags": ["auth"],
-                        "description": "Mychess integrates with Facebook to support user authentication and\nlogin into a Mychess application with a Facebook account.",
-                        "responses": { "200": { "$ref": "#/components/responses/reTokenKey" } }
-                  }
-            },
-            "/api/auth/socket-token": {
-                  "get": {
-                        "tags": ["auth"],
-                        "description": "Create an io cookie and return it to clients.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
-                        "responses": {
-                              "200": {
-                                    "description": "The server creates io cookie successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "401": { "$ref": "#/components/responses/401" }
-                        }
+                        "responses": { "200": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } }
                   }
             },
             "/api/user": {
                   "get": {
                         "tags": ["user"],
                         "description": "This API get information of the current user from server and return\nit to client without some sensitive fields.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "responses": {
                               "200": {
                                     "description": "The server returns user information without some sensitive fields.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "401": { "$ref": "#/components/responses/401" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   },
                   "put": {
                         "tags": ["user"],
                         "description": "User property values of the logged in users can be updated with\nthis API operation.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": {
                               "content": {
                                     "application/json": {
@@ -230,10 +282,8 @@
                         "responses": {
                               "200": {
                                     "description": "User information update successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -244,9 +294,8 @@
                         "responses": {
                               "200": {
                                     "description": "The server returns any user information without some sensitive\nfields.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "401": { "$ref": "#/components/responses/401" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -254,7 +303,7 @@
                   "put": {
                         "tags": ["user"],
                         "description": "This API allows user to upload their avatar image.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": {
                               "description": "put avatar image here",
                               "content": {
@@ -267,11 +316,8 @@
                         "responses": {
                               "200": {
                                     "description": "User avatar update successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "500": { "$ref": "#/components/responses/500" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -279,7 +325,7 @@
                   "put": {
                         "tags": ["user"],
                         "description": "Changes the passwords of users in the native realm and built-in users.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": {
                               "description": "provide new password and current password to change password by user",
                               "content": {
@@ -299,9 +345,8 @@
                         "responses": {
                               "200": {
                                     "description": "User password update successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -309,7 +354,10 @@
                   "put": {
                         "tags": ["user"],
                         "description": "Allow user to enter new password with OTP code is provided.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
+                        "parameters": [
+                              { "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" },
+                              { "$ref": "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0" }
+                        ],
                         "requestBody": {
                               "description": "provide new password to reset password",
                               "content": {
@@ -328,10 +376,8 @@
                         "responses": {
                               "200": {
                                     "description": "User password update successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -339,13 +385,15 @@
                   "put": {
                         "tags": ["user"],
                         "description": "Allow user to update information with OTP code is provided.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
+                        "parameters": [
+                              { "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" },
+                              { "$ref": "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0" }
+                        ],
                         "responses": {
                               "200": {
                                     "description": "User information update successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "403": { "$ref": "#/components/responses/403" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -353,16 +401,13 @@
                   "post": {
                         "tags": ["user"],
                         "description": "Create an OTP code is sent to the user phone number. Users can use\nit to access a webpage which contains a form where the user can update\nphone number.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1auth~1otp-sms/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "The OTP code has been sent successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "500": { "$ref": "#/components/responses/500" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -370,16 +415,13 @@
                   "post": {
                         "tags": ["user"],
                         "description": "Create an email is sent with a link to a webpage which contains a\nform where the user can update email.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1auth~1otp-email/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "The mail has been sent successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                              },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "500": { "$ref": "#/components/responses/500" }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -387,11 +429,26 @@
                   "post": {
                         "tags": ["user"],
                         "description": "This API allows user enter a name of another user to find out their\ninformation.",
-                        "parameters": [{ "$ref": "#/components/parameters/searchUser" }],
+                        "parameters": [
+                              {
+                                    "name": "searchUserQuery",
+                                    "in": "query",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "name": { "type": "string", "example": "hello world" },
+                                                "currentPage": { "type": "number", "example": 1 },
+                                                "pageSize": { "type": "number", "example": 1 }
+                                          }
+                                    }
+                              }
+                        ],
                         "responses": {
                               "200": {
                                     "description": "Get user information successfully. {user[], count}",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               }
                         }
                   }
@@ -400,14 +457,20 @@
                   "get": {
                         "tags": ["admin"],
                         "description": "Get all users information except some sensitive information.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "responses": {
                               "200": {
                                     "description": "The server returns array of user information.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" }
+                              "401": {
+                                    "description": "user has not a re-token",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": {
+                                    "description": "user has to be an administrator",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -415,15 +478,21 @@
                   "put": {
                         "tags": ["admin"],
                         "description": "Toggle user role from USER to ADMIN and vice versa.",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/userId" }],
+                        "parameters": [
+                              { "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" },
+                              { "$ref": "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0" }
+                        ],
                         "responses": {
                               "200": {
                                     "description": "User role update successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": {
+                                    "description": "entity does not exist in database",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
@@ -431,15 +500,18 @@
                   "put": {
                         "tags": ["admin"],
                         "description": "Toggle user status from true to false and vice versa (block user).",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/userId" }],
+                        "parameters": [
+                              { "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" },
+                              { "$ref": "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0" }
+                        ],
                         "responses": {
                               "200": {
                                     "description": "User status update successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -447,15 +519,18 @@
                   "post": {
                         "tags": ["tic-tac-toe"],
                         "description": "Create a tic-tac-toe game for player vs player return roomId to\nconnect socket.io",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "responses": {
                               "200": {
                                     "description": "Create a game with player successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" }
+                              "400": {
+                                    "description": "invalid body input",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" }
                         }
                   }
             },
@@ -463,15 +538,15 @@
                   "post": {
                         "tags": ["tic-tac-toe"],
                         "description": "Create a tic-tac-toe game for player vs bot return roomId to\nconnect socket.io",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "responses": {
                               "200": {
                                     "description": "Create new game with bot successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" }
                         }
                   }
             },
@@ -479,7 +554,7 @@
                   "post": {
                         "tags": ["tic-tac-toe"],
                         "description": "Create a tic-tac-toe game for player vs player and alert\nconnecting user to push router to other room ",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": {
                               "description": "provide roomId",
                               "content": {
@@ -492,12 +567,12 @@
                         "responses": {
                               "200": {
                                     "description": "Restart game successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -505,17 +580,17 @@
                   "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "Provide room id which user want to join, redirect roomId in\nresponse body when return 200",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "User status update successfully.",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -523,17 +598,17 @@
                   "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "send request to start tic-tac-toe game when two users are ready",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "Game is playing",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -541,17 +616,17 @@
                   "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "send request to toggle ready state to play, two user have to ready\nbefore sending a start request (send one more time to change to not\nready)",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "user state change to ready",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -559,17 +634,17 @@
                   "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "send this request when user leave the game, user is leave safely if\nthe game is not start, and count as lose when the game is playing. user\ncan not play any game until they complete leave other game",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "leave room successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -577,17 +652,17 @@
                   "put": {
                         "tags": ["tic-tac-toe"],
                         "description": "you the x y in the board which you want to choose",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "leave room successfully",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -595,11 +670,11 @@
                   "post": {
                         "tags": ["chat"],
                         "description": "create new chat room",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "responses": {
                               "200": {
                                     "description": "return a chatId to user socket io to join",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               }
                         }
                   }
@@ -608,17 +683,17 @@
                   "put": {
                         "tags": ["chat"],
                         "description": "join a exist room",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "return a chatId to user socket io to join",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -626,17 +701,17 @@
                   "put": {
                         "tags": ["chat"],
                         "description": "add new message to room ",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "return ok",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             },
@@ -644,141 +719,17 @@
                   "put": {
                         "tags": ["chat"],
                         "description": "save a room chat to database",
-                        "parameters": [{ "$ref": "#/components/parameters/token" }],
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
                                     "description": "return ok",
-                                    "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/components/responses/400" },
-                              "401": { "$ref": "#/components/responses/401" },
-                              "403": { "$ref": "#/components/responses/403" },
-                              "404": { "$ref": "#/components/responses/404" }
-                        }
-                  }
-            }
-      },
-      "components": {
-            "responses": {
-                  "400": {
-                        "description": "invalid body input",
-                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                  },
-                  "401": {
-                        "description": "user has not a re-token",
-                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                  },
-                  "403": {
-                        "description": "user has to be an administrator",
-                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                  },
-                  "404": {
-                        "description": "entity does not exist in database",
-                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                  },
-                  "500": {
-                        "description": "some went wrong( 3rd shutdown or server errors)",
-                        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommonApiResponse" } } }
-                  },
-                  "reTokenKey": {
-                        "description": "re-token key",
-                        "content": {
-                              "header": {
-                                    "schema": {
-                                          "type": "string",
-                                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-                                    }
-                              }
-                        }
-                  }
-            },
-            "schemas": {
-                  "CommonApiResponse": {
-                        "type": "object",
-                        "properties": {
-                              "data": { "type": "object", "description": "it type any base on your api" },
-                              "details": {
-                                    "type": "object",
-                                    "properties": {
-                                          "field": {
-                                                "type": "string",
-                                                "description": "field will be the name of invalid field",
-                                                "example": "should not be empty"
-                                          },
-                                          "message": { "type": "string", "example": "this is an error message" },
-                                          "errorMessage": { "type": "string", "example": "this is an error message" }
-                                    }
-                              }
-                        }
-                  },
-                  "UserEntity": {
-                        "type": "object",
-                        "properties": {
-                              "username": { "type": "string", "example": "username" },
-                              "name": { "type": "string", "example": "my name" },
-                              "password": { "type": "string", "example": "my password" },
-                              "_id": { "type": "string", "example": "1321r3121421421res" },
-                              "avatarUrl": { "type": "string", "example": "/user/2132132132/hello.png" },
-                              "googleId": { "type": "string", "example": "1232142142" },
-                              "facebookId": { "type": "string", "example": "1232142142" },
-                              "githubId": { "type": "string", "example": "1232142142" },
-                              "createDate": { "type": "string", "example": "10/20/2000" },
-                              "elo": { "type": "integer", "example": 1000 },
-                              "isDisabled": { "type": "string", "example": "username" },
-                              "email": { "type": "string", "example": "username" },
-                              "phoneNumber": { "type": "string", "example": "username" }
-                        }
-                  }
-            },
-            "parameters": {
-                  "token": {
-                        "name": "token",
-                        "in": "cookie",
-                        "required": true,
-                        "style": "form",
-                        "schema": {
-                              "type": "object",
-                              "properties": {
-                                    "re-token": {
-                                          "type": "string",
-                                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-                                    },
-                                    "auth-token": {
-                                          "type": "string",
-                                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-                                    }
-                              }
-                        }
-                  },
-                  "userId": {
-                        "name": "id",
-                        "description": "user id",
-                        "in": "query",
-                        "required": true,
-                        "style": "form",
-                        "schema": { "type": "string", "example": "123456789aa" }
-                  },
-                  "OTPkey": {
-                        "name": "key",
-                        "description": "otp key",
-                        "in": "query",
-                        "required": true,
-                        "style": "form",
-                        "schema": { "type": "string", "example": "123456789aa" }
-                  },
-                  "searchUser": {
-                        "name": "searchUserQuery",
-                        "in": "query",
-                        "required": true,
-                        "style": "form",
-                        "schema": {
-                              "type": "object",
-                              "properties": {
-                                    "name": { "type": "string", "example": "hello world" },
-                                    "currentPage": { "type": "number", "example": 1 },
-                                    "pageSize": { "type": "number", "example": 1 }
-                              }
+                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
+                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
             }

@@ -1,0 +1,19 @@
+{
+      "post": {
+            "tags": ["auth"],
+            "description": "The Logout operation terminates user session.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "responses": {
+                  "200": {
+                        "description": "Access token removed successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

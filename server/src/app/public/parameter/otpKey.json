@@ -1,0 +1,11 @@
+{
+      "name": "key",
+      "description": "otp key",
+      "in": "query",
+      "required": true,
+      "style": "form",
+      "schema": {
+            "type": "string",
+            "example": "123456789aa"
+      }
+}
