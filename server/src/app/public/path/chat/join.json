@@ -1,0 +1,35 @@
+{
+      "put": {
+            "tags": ["chat"],
+            "description": "join a exist room",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "the chatId you want to join",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "return a chatId to user socket io to join",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "$ref": "../../exception/400.json"
+                  },
+                  "401": {
+                        "$ref": "../../exception/401.json"
+                  },
+                  "403": {
+                        "$ref": "../../exception/403.json"
+                  },
+                  "404": {
+                        "$ref": "../../exception/404.json"
+                  }
+            }
+      }
+}

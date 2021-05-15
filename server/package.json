@@ -8,6 +8,7 @@
       "scripts": {
             "prebuild": "rimraf dist",
             "build": "nest build",
+            "build:swagger": "speccy resolve ./src/app/public/swagger.json -o ./src/app/public/doc.yml && yaml2json ./src/app/public/doc.yml -s",
             "format": "prettier --write \"src/**/*.ts\" ",
             "start": "NODE_ENV=production nest start",
             "start:dev": "NODE_ENV=development nest start --watch",

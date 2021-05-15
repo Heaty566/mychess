@@ -1,0 +1,17 @@
+{
+      "description": "provide an email to send an otp key",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "phoneNumber": {
+                                    "type": "string",
+                                    "example": "hello@gmail.com"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

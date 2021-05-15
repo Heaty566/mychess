@@ -1,0 +1,19 @@
+{
+      "post": {
+            "tags": ["user"],
+            "description": "This API allows user enter a name of another user to find out their information.",
+            "parameters": [{ "$ref": "../../parameter/searchUser.json" }],
+            "responses": {
+                  "200": {
+                        "description": "Get user information successfully. {user[], count}",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

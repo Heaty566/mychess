@@ -177,6 +177,7 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
             const board = await this.getGame(body.roomId);
+
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
@@ -212,10 +213,6 @@ export class ChessController {
             const isMove = await this.chessService.playAMove(player, curPos, desPos, board.id);
             if (!isMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wrong-turn' } } }, 'BadRequestException');
 
-            // check king enemy
-            if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyFlag, board.id), board.id))
-                  await this.chessGateway.kingIsChecked(enemyFlag, player.id, board.id);
-
             // check promote pawn
             if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, player.id);
 
@@ -228,9 +225,6 @@ export class ChessController {
 
                   const isPromote = await this.chessService.isPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
                   if (isPromote) await this.chessBotService.botPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
-
-                  if (await this.chessService.kingIsChecked(await this.chessService.getKing(player.flag, board.id), board.id))
-                        this.chessGateway.kingIsChecked(player.flag, bot.id, board.id);
 
                   await this.chessService.isWin(player.flag, board.id);
             }
@@ -259,12 +253,20 @@ export class ChessController {
             if (board.board[body.promotePos.x][body.promotePos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
 
+            // promote action, can be fix
             board.board[body.promotePos.x][body.promotePos.y].chessRole = body.promoteRole;
             await this.chessCommonService.setBoard(board);
 
-            // check king enemy
-            if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyFlag, board.id), board.id))
-                  await this.chessGateway.kingIsChecked(enemyFlag, player.id, board.id);
+            const enemyColor = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+            const enemyKingPosition = await this.chessService.getKing(enemyColor, board.id);
+            if (await this.chessService.kingIsChecked(enemyKingPosition, board.id)) {
+                  board.checkedPiece = {
+                        x: enemyKingPosition.x,
+                        y: enemyKingPosition.y,
+                  };
+            } else board.checkedPiece = undefined;
+            await this.chessCommonService.setBoard(board);
+            // end of promote action
 
             await this.chessService.isWin(enemyFlag, board.id);
 

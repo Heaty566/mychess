@@ -1,0 +1,22 @@
+{
+      "post": {
+            "tags": ["user"],
+            "description": "Create an email is sent with a link to a webpage which contains a form where the user can update email.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "$ref": "../../dto/updateEmail.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "The mail has been sent successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

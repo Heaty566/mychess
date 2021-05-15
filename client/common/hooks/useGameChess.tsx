@@ -1,15 +1,17 @@
-import { useRouter } from 'next/router';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
-import { chessApi } from '../../api/chessApi';
+
+import { ChessBoard, ChessFlag, ChessGatewayAction, ChessMoveRedis, ChessRole } from '../interface/chess.interface';
+import { GamePlayer, GamePlayerFlag, GameStatus } from '../interface/game.interface';
+
+import { AuthState } from '../interface/user.interface';
+import { PromoteChessRole } from '../interface/dto/chess.dto';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { ChessGatewayAction, ChessBoard, ChessMoveRedis, ChessRole, ChessFlag } from '../interface/chess.interface';
-import { AuthState } from '../interface/user.interface';
-import useSocketIo from './useSocketIo';
+import { chessApi } from '../../api/chessApi';
 import routers from '../constants/router';
-import { PromoteChessRole } from '../interface/dto/chess.dto';
-import { GamePlayer, GamePlayerFlag, GameStatus } from '../interface/game.interface';
+import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import useSocketIo from './useSocketIo';
 
 const playerDefault: GamePlayer = {
     avatarUrl: '/asset/images/default-avatar.png',
@@ -55,6 +57,7 @@ const chessBoardDefault: ChessBoard = {
     turn: false,
     users: [playerDefault, playerDefault],
     winner: GamePlayerFlag.EMPTY,
+    checkedPiece: undefined,
 };
 
 const chessMoveRedisDefault: ChessMoveRedis = {
@@ -75,7 +78,6 @@ export function useGameChess(roomId: string) {
     const [currentChessSelect, setCurrentChessSelect] = React.useState<ChessMoveRedis>(chessMoveRedisDefault);
     const [currentChessPlayer, setCurrentChessPlayer] = React.useState<GamePlayer>(playerDefault);
     const [isChessPromote, setChessPromote] = React.useState<boolean>(false);
-    const [kingCheck, setKingCheck] = React.useState<{ x: number; y: number }>();
 
     const chessHandleOnRestart = () => {
         if (chessBoard.isBotMode)
@@ -131,13 +133,16 @@ export function useGameChess(roomId: string) {
                     y,
                 });
 
-                chessApi.addMovePvP({ roomId, curPos: { x: currentChessSelect.x, y: currentChessSelect.y }, desPos: { x, y } }).then(() => {
-                    const sound = new Audio('/asset/sounds/ttt-click.mp3');
-                    sound.volume = 0.5;
-                    sound.play();
-                    setChessSuggestion([]);
-                    setKingCheck(undefined);
-                });
+                chessApi
+                    .addMovePvP({ roomId, curPos: { x: currentChessSelect.x, y: currentChessSelect.y }, desPos: { x, y } })
+                    .then(() => {
+                        const sound = new Audio('/asset/sounds/ttt-click.mp3');
+                        sound.volume = 0.5;
+                        sound.play();
+                    })
+                    .finally(() => {
+                        setChessSuggestion([]);
+                    });
             }
         }
     };
@@ -153,7 +158,9 @@ export function useGameChess(roomId: string) {
         const currentUser = res.data.users.find((item) => item.id === authState.id);
         if (currentUser) setCurrentChessPlayer(currentUser);
     };
-    const onChessCounter = (res: ServerResponse<GamePlayer[]>) => setChessPlayers(res.data);
+    const onChessCounter = (res: ServerResponse<GamePlayer[]>) => {
+        setChessPlayers(res.data);
+    };
     const onPromote = (res: { data: { userId: string } }) => {
         const user = authState.id === res.data.userId;
 
@@ -181,20 +188,14 @@ export function useGameChess(roomId: string) {
                 .catch(() => router.push(routers[404].link));
     }, [authState.isSocketLogin, roomId]);
 
-    const onKingCheck = (res: ServerResponse<{ x: number; y: number; userId: string }>) => {
-        if (res.data.userId !== authState.id) setKingCheck({ x: res.data.x, y: res.data.y });
-    };
-
     React.useEffect(() => {
         clientIoChess.on(ChessGatewayAction.CHESS_GET, onChessGet);
         clientIoChess.on(ChessGatewayAction.CHESS_JOIN, emitChessGet);
         clientIoChess.on(ChessGatewayAction.CHESS_COUNTER, onChessCounter);
         clientIoChess.on(ChessGatewayAction.CHESS_RESTART, onRestartGame);
         clientIoChess.on(ChessGatewayAction.CHESS_PROMOTE_PAWN, onPromote);
-        clientIoChess.on(ChessGatewayAction.CHESS_CHECK_KING, onKingCheck);
 
         return () => {
-            clientIoChess.off(ChessGatewayAction.CHESS_CHECK_KING, onKingCheck);
             clientIoChess.off(ChessGatewayAction.CHESS_PROMOTE_PAWN, onPromote);
             clientIoChess.off(ChessGatewayAction.CHESS_RESTART, onRestartGame);
             clientIoChess.off(ChessGatewayAction.CHESS_COUNTER, onChessCounter);
@@ -216,7 +217,6 @@ export function useGameChess(roomId: string) {
         chessSuggestion,
         chessBoardRef,
         isChessPromote,
-        kingCheck,
         //-------------
         chessHandleOnClick,
         chessHandleOnReady,

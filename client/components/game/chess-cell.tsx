@@ -1,19 +1,21 @@
 import * as React from 'react';
-import BlackPawn from '../../public/asset/icons/chess/black-pawn';
-import WhitePawn from '../../public/asset/icons/chess/white-pawn';
-import BlackQueen from '../../public/asset/icons/chess/black-queen';
-import WhiteQueen from '../../public/asset/icons/chess/white-queen';
-import BlackKnight from '../../public/asset/icons/chess/black-knight';
-import WhiteKnight from '../../public/asset/icons/chess/white-knight';
-import BlackKing from '../../public/asset/icons/chess/black-king';
-import WhiteKing from '../../public/asset/icons/chess/white-king';
-import BlackRook from '../../public/asset/icons/chess/black-rook';
-import WhiteRook from '../../public/asset/icons/chess/white-rook';
-import BlackBishop from '../../public/asset/icons/chess/black-bishop';
-import WhiteBishop from '../../public/asset/icons/chess/white-bishop';
 
 import { ChessFlag, ChessRole } from '../../common/interface/chess.interface';
+
+import BlackBishop from '../../public/asset/icons/chess/black-bishop';
+import BlackKing from '../../public/asset/icons/chess/black-king';
+import BlackKnight from '../../public/asset/icons/chess/black-knight';
+import BlackPawn from '../../public/asset/icons/chess/black-pawn';
+import BlackQueen from '../../public/asset/icons/chess/black-queen';
+import BlackRook from '../../public/asset/icons/chess/black-rook';
 import { GamePlayerFlag } from '../../common/interface/game.interface';
+import WhiteBishop from '../../public/asset/icons/chess/white-bishop';
+import WhiteKing from '../../public/asset/icons/chess/white-king';
+import WhiteKnight from '../../public/asset/icons/chess/white-knight';
+import WhitePawn from '../../public/asset/icons/chess/white-pawn';
+import WhiteQueen from '../../public/asset/icons/chess/white-queen';
+import WhiteRook from '../../public/asset/icons/chess/white-rook';
+
 export interface ChessCellProps {
     cellFlag: ChessFlag;
     isEven: boolean;
@@ -79,7 +81,7 @@ const ChessCell: React.FunctionComponent<ChessCellProps> = ({ cellFlag, handleOn
     const Chess = getChess(cellFlag);
 
     return (
-        <div className={` ${isEven && 'bg-aths-special-700'} ${isKingCheck && 'bg-red-500'}`}>
+        <div className={` ${isEven && !isKingCheck && 'bg-aths-special-700'} ${isKingCheck && 'bg-red-500'}`}>
             <button
                 className={`w-16 h-16 p-2 duration-200 cursor-pointer hover:bg-gray-600 focus:outline-none relative ${
                     isSuggestion ? (Boolean(Chess) ? 'bg-blue-700' : 'chess-suggestion') : ''

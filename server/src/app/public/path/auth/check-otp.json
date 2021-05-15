@@ -1,0 +1,19 @@
+{
+      "post": {
+            "tags": ["auth"],
+            "description": "Check-otp API is user to check a OTP code is exist or not.",
+            "parameters": [{ "$ref": "../../parameter/oTPkey.json" }],
+            "responses": {
+                  "200": {
+                        "description": "OTP code is existed.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

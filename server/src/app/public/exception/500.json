@@ -1,0 +1,10 @@
+{
+      "description": "some went wrong( 3rd shutdown or server errors)",
+      "content": {
+            "application/json": {
+                  "schema": {
+                        "$ref": "../schema/apiResponse.json"
+                  }
+            }
+      }
+}

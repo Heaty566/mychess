@@ -1,4 +1,4 @@
-import { GamePlayer, GameStatus, GamePlayerFlag } from './game.interface';
+import { GamePlayer, GamePlayerFlag, GameStatus } from './game.interface';
 
 export enum ChessRole {
     KING = 1,
@@ -20,7 +20,6 @@ export enum ChessGatewayAction {
     CHESS_PROMOTE_PAWN = 'chess-promote-pawn',
     CHESS_COUNTER = 'chess-counter',
     CHESS_RESTART = 'chess-restart',
-    CHESS_CHECK_KING = 'chess-check-king',
 }
 
 export interface ChessMove {
@@ -49,4 +48,5 @@ export interface ChessBoard {
     startDate: Date;
     status: GameStatus;
     chatId: string;
+    checkedPiece: { x: number; y: number } | undefined;
 }

@@ -1,0 +1,17 @@
+{
+      "description": "provide phone number to send an otp key",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "phoneNumber": {
+                                    "type": "string",
+                                    "example": "+20401230312"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

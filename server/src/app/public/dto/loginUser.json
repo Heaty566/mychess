@@ -1,0 +1,21 @@
+{
+      "description": "login user information",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "username": {
+                                    "type": "string",
+                                    "example": "username"
+                              },
+                              "password": {
+                                    "type": "string",
+                                    "example": "password"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

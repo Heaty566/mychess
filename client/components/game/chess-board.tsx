@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import { ChessFlag, ChessMoveRedis } from '../../common/interface/chess.interface';
+
 import ChessCell from './chess-cell';
 
 export interface TTTBoardProps {
@@ -20,7 +22,7 @@ const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnCli
                             const isEven = 1 === (index + index2) % 2;
                             const isSuggestion = Boolean(suggestion.find((item) => item.x === index && item.y === index2));
 
-                            const isKingCheck = kingCheck?.x === index && kingCheck?.y === index2;
+                            const isKingCheck = kingCheck ? kingCheck?.x === index && kingCheck?.y === index2 : false;
                             return (
                                 <ChessCell
                                     isKingCheck={isKingCheck}
