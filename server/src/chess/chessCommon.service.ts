@@ -307,7 +307,7 @@ export class ChessCommonService {
             }
 
             if (roomOneUserIds.length > 0) return roomOneUserIds[Math.floor(Math.random() * (roomOneUserIds.length - 1))];
-            if (emptyRoomIds.length > 0) return emptyRoomIds[Math.floor(Math.random() * (emptyRoomIds.length - 1))];
+            else if (emptyRoomIds.length > 0) return emptyRoomIds[Math.floor(Math.random() * (emptyRoomIds.length - 1))];
 
             return '';
       }
