@@ -67,6 +67,7 @@ export class ChessGateway {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             await this.isExistUser(body.roomId, client.user.id);
             await client.join(`chess-${getCacheGame.id}`);
+            client.user.games.chessId = getCacheGame.id;
 
             return this.socketServer().socketEmitToRoom<ChessRoomIdDTO>(ChessGatewayAction.CHESS_JOIN, getCacheGame.id, {}, 'chess');
       }
@@ -103,5 +104,18 @@ export class ChessGateway {
                   }
             }
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_COUNTER, getCacheGame.id, { data: getCacheGame.users }, 'chess');
+      }
+
+      async handleDisconnect(@ConnectedSocket() client: SocketExtend) {
+            if (client?.user?.games?.chessId) {
+                  const boardId = client.user.games.chessId;
+                  const user = await this.chessCommonService.findUser(boardId, client.user.id);
+
+                  if (user) {
+                        await this.chessCommonService.leaveGame(boardId, user);
+                        await this.sendToRoom(boardId);
+                        await client.leave(`chess-${boardId}`);
+                  }
+            }
       }
 }

@@ -35,10 +35,20 @@ const Chess: React.FunctionComponent = () => {
     };
 
     const handleOnCreateNewRoom = async () => {
-        await chessApi.createNewPvPRoom().then((res) => {
+        chessApi.createNewPvPRoom().then((res) => {
             router.push(`${routers.chessPvP.link}/${res.data.data.roomId}`);
         });
     };
+
+    const handleOnQuickJoin = async () => {
+        chessApi.quickJoin().then((res) => {
+            console.log(res.data.data);
+            chessApi.joinRoom({ roomId: res.data.data.roomId }).then((res2) => {
+                router.push(`${routers.chessPvP.link}/${res.data.data.roomId}`);
+            });
+        });
+    };
+
     return (
         <>
             <SeoHead {...routers.chessPvP.header} />
@@ -52,7 +62,8 @@ const Chess: React.FunctionComponent = () => {
                             {!apiState.isLoading && <BtnForm label="Join Room" />}
                         </form>
                         <p className="my-2 text-center text-mercury">Or Create New Room</p>
-                        <BtnForm label="Create New Room" type="button" handleOnClick={() => handleOnCreateNewRoom()} />
+                        <BtnForm label="Quick Join" type="button" handleOnClick={handleOnQuickJoin} />
+                        <BtnForm label="Create New Room" type="button" handleOnClick={handleOnCreateNewRoom} />
                     </div>
                 </div>
             </RouteProtectedWrapper>

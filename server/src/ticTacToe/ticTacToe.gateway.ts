@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, SocketExtend } from 'socket.io';
 
 //---- Pipe
@@ -20,7 +20,7 @@ import { TTTGatewayAction } from './ticTacToeGateway.action';
 import { TicTacToeStatus } from './entity/ticTacToe.interface';
 
 @WebSocketGateway({ namespace: 'tic-tac-toe' })
-export class TicTacToeGateway {
+export class TicTacToeGateway implements OnGatewayDisconnect {
       constructor(private readonly ticTacToeCommonService: TicTacToeCommonService) {}
 
       @WebSocketServer()
@@ -57,6 +57,7 @@ export class TicTacToeGateway {
             const getCacheGame = await this.getGameFromCache(body.roomId);
             await this.isExistUser(body.roomId, client.user.id);
             await client.join(`ttt-${getCacheGame.id}`);
+            client.user.games.tttId = getCacheGame.id;
 
             return this.socketServer().socketEmitToRoom<TTTRoomIdDTO>(TTTGatewayAction.TTT_JOIN, getCacheGame.id, {}, 'ttt');
       }
@@ -84,5 +85,17 @@ export class TicTacToeGateway {
                   }
             }
             return this.socketServer().socketEmitToRoom(TTTGatewayAction.TTT_COUNTER, getCacheGame.id, { data: getCacheGame.users }, 'ttt');
+      }
+
+      async handleDisconnect(@ConnectedSocket() client: SocketExtend) {
+            if (client.user?.games?.tttId) {
+                  const boardId = client.user.games.tttId;
+                  const user = await this.ticTacToeCommonService.findUser(boardId, client.user.id);
+                  if (user) {
+                        await this.ticTacToeCommonService.leaveGame(boardId, user);
+                        await this.sendToRoom(boardId);
+                        await client.leave(`ttt-${boardId}`);
+                  }
+            }
       }
 }

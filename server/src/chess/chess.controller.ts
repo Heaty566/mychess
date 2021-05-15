@@ -73,16 +73,7 @@ export class ChessController {
 
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
       }
-
-      @Get('/:id')
-      @UseGuards(UserGuard)
-      async handleOnGameByUserId(@Param('id') id: string) {
-            const result = await this.chessCommonService.getAllBoardByUserId(id);
-
-            return apiResponse.send({ data: result });
-      }
-
-      @Post('/quick-join-room')
+      @Get('/quick-join-room')
       @UseGuards(UserGuard)
       async handleOnQuickJoinRoom(@Req() req: Request) {
             const boardId = await this.chessCommonService.quickJoinRoom();
@@ -91,7 +82,15 @@ export class ChessController {
             const isExist = await this.chessCommonService.findUser(board.id, req.user.id);
             if (!isExist) await this.chessCommonService.joinGame(board.id, req.user);
 
-            return apiResponse.send({ data: board });
+            return apiResponse.send({ data: { roomId: board.id } });
+      }
+
+      @Get('/:id')
+      @UseGuards(UserGuard)
+      async handleOnGameByUserId(@Param('id') id: string) {
+            const result = await this.chessCommonService.getAllBoardByUserId(id);
+
+            return apiResponse.send({ data: result });
       }
 
       @Put('/join-room')

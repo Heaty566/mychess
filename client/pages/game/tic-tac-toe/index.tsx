@@ -52,7 +52,7 @@ const TicTacToe: React.FunctionComponent = () => {
                             {!apiState.isLoading && <BtnForm label="Join Room" />}
                         </form>
                         <p className="my-2 text-center text-mercury">Or Create New Room</p>
-                        <BtnForm label="Create New Room" type="button" handleOnClick={() => handleOnCreateNewRoom()} />
+                        <BtnForm label="Create New Room" type="button" handleOnClick={handleOnCreateNewRoom} />
                     </div>
                 </div>
             </RouteProtectedWrapper>

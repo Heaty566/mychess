@@ -11,8 +11,7 @@ export interface PanelRestartProps {
 }
 
 const PanelRestart: React.FunctionComponent<PanelRestartProps> = ({ handleOnClick, userOneName = '', userTwoName = '', winner, isAppear }) => {
-    const message =
-        winner === GamePlayerFlag.EMPTY ? 'Having a fun game' : winner === GamePlayerFlag.USER1 ? `${userOneName} win` : `${userTwoName} win`;
+    const message = winner === GamePlayerFlag.EMPTY ? 'Draw' : winner === GamePlayerFlag.USER1 ? `${userOneName} win` : `${userTwoName} win`;
 
     return (
         <ModalWrapper isAppear={isAppear}>
