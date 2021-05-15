@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ChessCommonService } from './chessCommon.service';
 import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag, ChessStatus, ChessPlayer } from './entity/chess.interface';
-import { ChessBoard } from './entity/chessBoard.entity';
 import { ChessMove } from './entity/chessMove.entity';
-import { ChessMoveRepository } from './entity/chessMove.repository';
 
 //---- Repository
 
@@ -927,5 +925,23 @@ export class ChessService {
             if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.WHITE && desPos.y === 7) return true;
             if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
             return false;
+      }
+
+      async promoteMove(promotePos: ChessMoveCoordinates, role: ChessRole, boardId: string) {
+            const board = await this.chessCommonService.getBoard(boardId);
+            board.board[promotePos.x][promotePos.y].chessRole = role;
+            await this.chessCommonService.setBoard(board);
+
+            const playerFlag = board.board[promotePos.x][promotePos.y].flag;
+            const enemyColor = playerFlag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+            const enemyKingPosition = await this.getKing(enemyColor, board.id);
+
+            if (await this.kingIsChecked(enemyKingPosition, board.id)) {
+                  board.checkedPiece = {
+                        x: enemyKingPosition.x,
+                        y: enemyKingPosition.y,
+                  };
+            } else board.checkedPiece = undefined;
+            await this.chessCommonService.setBoard(board);
       }
 }

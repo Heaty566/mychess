@@ -21,7 +21,7 @@ export class ChessBotService {
             const possibleMoves = await this.getAllMoves(boardId, playerFlag);
 
             // Sort moves randomly, so the same move isn't always picked on ties
-            possibleMoves.sort(function (a, b) {
+            possibleMoves.sort(function () {
                   return 0.5 - Math.random();
             });
 
@@ -121,5 +121,17 @@ export class ChessBotService {
             }
 
             return value;
+      }
+
+      async botMove(boardId: string, enemyFlag: PlayerFlagEnum.WHITE | PlayerFlagEnum.BLACK) {
+            const board = await this.chessCommonService.getBoard(boardId);
+            const bot = await this.chessCommonService.findUser(board.id, 'BOT');
+            const botMove = await this.findBestMove(board.id, enemyFlag);
+            await this.chessService.playAMove(bot, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
+
+            const isPromote = await this.chessService.isPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
+            if (isPromote) await this.botPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
+
+            await this.chessService.isWin(enemyFlag, board.id);
       }
 }

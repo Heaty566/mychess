@@ -14,6 +14,22 @@
                                     }
                               }
                         }
+                  },
+                  "400": {
+                        "description": "The avatar file is required",
+                        "$ref": "../../exception/400.json"
+                  },
+                  "400,": {
+                        "description": "The avatar file couldn't be uploaded. Photos should be smaller than {{size}} MB",
+                        "$ref": "../../exception/400.json"
+                  },
+                  "400,,": {
+                        "description": "The avatar file couldn't be uploaded. Photos should be saved as JPEG, JPG, PNG, BMP files",
+                        "$ref": "../../exception/400.json"
+                  },
+                  "500": {
+                        "description": "Internal server error from aws server, upload failed to aws server",
+                        "$ref": "../../exception/500.json"
                   }
             }
       }

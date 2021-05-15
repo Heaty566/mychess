@@ -10,7 +10,6 @@ import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/c
 import { ChessService } from '../chess.service';
 import { ChessCommonService } from '../chessCommon.service';
 import { AuthService } from '../../auth/auth.service';
-import { RedisService } from '../../utils/redis/redis.service';
 
 //---- DTO
 import { ChessAddMoveDto } from '../dto/chessAddMoveDto';
@@ -21,7 +20,6 @@ import { ChessPromotePawnDto } from '../dto/chessPromotePawnDto';
 //---- Common
 import { initTestModule } from '../../test/initTest';
 import { generateCookie } from '../../test/test.helper';
-import { exec } from 'child_process';
 import { DrawDto } from 'src/ticTacToe/dto/drawDto';
 
 describe('ChessController', () => {
@@ -30,7 +28,6 @@ describe('ChessController', () => {
       let generateFakeUser: () => Promise<User>;
       let authService: AuthService;
       let chessService: ChessService;
-      let redisService: RedisService;
       let chessCommonService: ChessCommonService;
 
       beforeAll(async () => {
@@ -39,7 +36,6 @@ describe('ChessController', () => {
             resetDB = resetDatabase;
             generateFakeUser = getFakeUser;
             authService = module.get<AuthService>(AuthService);
-            redisService = module.get<RedisService>(RedisService);
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
       });
@@ -241,7 +237,7 @@ describe('ChessController', () => {
             let user1: User, user2: User;
             let newCookie1: string[], newCookie2: string[];
             let boardId: string;
-            let player1: ChessPlayer, player2: ChessPlayer;
+            let player1: ChessPlayer;
             beforeEach(async () => {
                   user1 = await generateFakeUser();
                   user2 = await generateFakeUser();
@@ -255,7 +251,6 @@ describe('ChessController', () => {
                   await chessCommonService.startGame(boardId);
 
                   player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
 
                   newCookie1 = generateCookie(await authService.createReToken(user1));
                   newCookie2 = generateCookie(await authService.createReToken(user2));
@@ -650,7 +645,6 @@ describe('ChessController', () => {
             let newCookie2: string[];
             let boardId: string;
             let boardBotId: string;
-            let player1: ChessPlayer, player2: ChessPlayer;
             beforeEach(async () => {
                   user1 = await generateFakeUser();
                   user2 = await generateFakeUser();
@@ -662,9 +656,6 @@ describe('ChessController', () => {
                   await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
 
                   await chessCommonService.startGame(boardId);
-
-                  player1 = getBoard.users[0];
-                  player2 = getBoard.users[1];
 
                   newCookie1 = generateCookie(await authService.createReToken(user1));
                   newCookie2 = generateCookie(await authService.createReToken(user2));
@@ -724,7 +715,7 @@ describe('ChessController', () => {
             });
 
             it('Failed wrong turn', async () => {
-                  let getBoard = await chessCommonService.getBoard(boardId);
+                  const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = true;
                   await chessCommonService.setBoard(getBoard);
 

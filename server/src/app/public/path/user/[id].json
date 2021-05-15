@@ -12,6 +12,10 @@
                                     }
                               }
                         }
+                  },
+                  "400": {
+                        "description": "user with the given Id was not found",
+                        "$ref": "../../exception/400.json"
                   }
             }
       }
