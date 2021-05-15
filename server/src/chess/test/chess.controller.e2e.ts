@@ -558,6 +558,7 @@ describe('ChessController', () => {
             let newCookie1: string[];
             let newCookie2: string[];
             let boardId: string;
+            let boardBotId: string;
             let player1: ChessPlayer, player2: ChessPlayer;
             beforeEach(async () => {
                   user1 = await generateFakeUser();
@@ -578,15 +579,17 @@ describe('ChessController', () => {
                   newCookie2 = generateCookie(await authService.createReToken(user2));
             });
 
-            const reqApi = (input: ChessAddMoveDto) =>
+            const reqApi1 = (input: ChessAddMoveDto) =>
                   supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie1 }).send(input);
+            const reqApi2 = (input: ChessAddMoveDto) =>
+                  supertest(app.getHttpServer()).put('/api/chess/add-move').set({ cookie: newCookie2 }).send(input);
 
             it('Pass', async () => {
                   let getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = false;
                   await chessCommonService.setBoard(getBoard);
 
-                  const res = await reqApi({
+                  const res = await reqApi1({
                         roomId: boardId,
                         curPos: {
                               x: 1,
@@ -605,11 +608,55 @@ describe('ChessController', () => {
                   expect(getBoard.board[1][3].flag).toBe(PlayerFlagEnum.WHITE);
             });
 
+            it('Pass', async () => {
+                  let getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = true;
+                  await chessCommonService.setBoard(getBoard);
+
+                  const res = await reqApi2({
+                        roomId: boardId,
+                        curPos: {
+                              x: 6,
+                              y: 6,
+                        },
+                        desPos: {
+                              x: 6,
+                              y: 5,
+                        },
+                  });
+
+                  getBoard = await chessCommonService.getBoard(boardId);
+                  expect(res.status).toBe(200);
+
+                  expect(getBoard.board[6][5].chessRole).toBe(ChessRole.PAWN);
+                  expect(getBoard.board[6][5].flag).toBe(PlayerFlagEnum.BLACK);
+            });
+
+            it('Failed wrong turn', async () => {
+                  let getBoard = await chessCommonService.getBoard(boardId);
+                  getBoard.turn = true;
+                  await chessCommonService.setBoard(getBoard);
+
+                  const res = await reqApi1({
+                        roomId: boardId,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
+                  });
+
+                  expect(res.status).toBe(400);
+            });
+
             it('Failed invalid destination square', async () => {
                   const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = true;
                   await chessCommonService.setBoard(getBoard);
-                  const res = await reqApi({
+                  const res = await reqApi1({
                         roomId: boardId,
                         curPos: {
                               x: 5,
@@ -627,7 +674,7 @@ describe('ChessController', () => {
                   const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = false;
                   await chessCommonService.setBoard(getBoard);
-                  const res = await reqApi({
+                  const res = await reqApi1({
                         roomId: boardId,
                         curPos: {
                               x: 5,
@@ -645,7 +692,7 @@ describe('ChessController', () => {
                   const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = false;
                   await chessCommonService.setBoard(getBoard);
-                  const res = await reqApi({
+                  const res = await reqApi1({
                         roomId: boardId,
                         curPos: {
                               x: 3,
@@ -663,7 +710,7 @@ describe('ChessController', () => {
                   const board = await chessCommonService.getBoard(boardId);
                   board.status = ChessStatus.NOT_YET;
                   await chessCommonService.setBoard(board);
-                  const res = await reqApi({
+                  const res = await reqApi1({
                         roomId: boardId,
                         curPos: {
                               x: 1,
@@ -675,6 +722,44 @@ describe('ChessController', () => {
                         },
                   });
                   expect(res.status).toBe(403);
+            });
+
+            it('Add a promote move', async () => {
+                  const mySpy = jest.spyOn(chessService, 'isPromotePawn').mockImplementation(() => Promise.resolve(true));
+                  const res = await reqApi1({
+                        roomId: boardId,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
+                  });
+                  expect(res.status).toBe(200);
+                  mySpy.mockClear();
+            });
+
+            it('Bot mode', async () => {
+                  boardBotId = await chessCommonService.createNewGame(user1, true);
+                  const getBoardBot = await chessCommonService.getBoard(boardBotId);
+                  await chessCommonService.toggleReadyStatePlayer(boardBotId, getBoardBot.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardBotId, getBoardBot.users[1]);
+                  await chessCommonService.startGame(boardBotId);
+
+                  const res = await reqApi1({
+                        roomId: boardBotId,
+                        curPos: {
+                              x: 1,
+                              y: 1,
+                        },
+                        desPos: {
+                              x: 1,
+                              y: 3,
+                        },
+                  });
+                  expect(res.status).toBe(200);
             });
       });
 
