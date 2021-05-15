@@ -32,11 +32,15 @@
             },
             {
                   "name": "tic-tac-toe",
-                  "description": "Service tic-tac-toe game"
+                  "description": "service tic-tac-toe game"
             },
             {
                   "name": "chat",
-                  "description": "Service chat box"
+                  "description": "service chat box"
+            },
+            {
+                  "name": "chess",
+                  "description": "service chess"
             }
       ],
       "servers": [
@@ -84,6 +88,17 @@
             "/api/ttt/surrender": { "$ref": "./path/ttt/surrender.json" },
             "/api/ttt/draw": { "$ref": "./path/ttt/draw.json" },
             "/api/ttt/:id": { "$ref": "./path/ttt/[id].json" },
+
+            "/api/chess/pvp": { "$ref": "./path/chess/pvp.json" },
+            "/api/chess/bot": { "$ref": "./path/chess/bot.json" },
+            "/api/chess/join-room": { "$ref": "./path/chess/join-room.json" },
+            "/api/chess/start": { "$ref": "./path/chess/start.json" },
+            "/api/chess/leave": { "$ref": "./path/chess/leave.json" },
+            "/api/chess/ready": { "$ref": "./path/chess/ready.json" },
+            "/api/chess/restart": { "$ref": "./path/chess/restart.json" },
+            "/api/chess/surrender": { "$ref": "./path/chess/surrender.json" },
+            "/api/chess/draw": { "$ref": "./path/chess/draw.json" },
+            "/api/chess/:id": { "$ref": "./path/chess/[id].json" },
 
             "/api/chat/new": { "$ref": "./path/chat/new.json" },
             "/api/chat/join": { "$ref": "./path/chat/join.json" },

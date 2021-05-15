@@ -5,15 +5,16 @@
             "description": "a board game build base on NestJs and NextJs",
             "contact": { "name": "Pham Vinh Nhan", "email": "heaty566@gmail.com" },
             "license": { "name": "Apache 2.0", "url": "http://www.apache.org/licenses/LICENSE-2.0.html" },
-            "version": "0.0.1"
+            "version": "2.1.1"
       },
       "tags": [
             { "name": "auth", "description": "handle authentication" },
             { "name": "user", "description": "service for user" },
             { "name": "admin", "description": "service for administrator, have to login and with role is ADMIN" },
             { "name": "common", "description": "service for basic request" },
-            { "name": "tic-tac-toe", "description": "Service tic-tac-toe game" },
-            { "name": "chat", "description": "Service chat box" }
+            { "name": "tic-tac-toe", "description": "service tic-tac-toe game" },
+            { "name": "chat", "description": "service chat box" },
+            { "name": "chess", "description": "service chess" }
       ],
       "servers": [{ "url": "http://localhost:4000", "description": "Development server" }],
       "paths": {
@@ -38,22 +39,12 @@
                         },
                         "responses": {
                               "200": {
-                                    "type": "object",
-                                    "properties": {
-                                          "data": { "type": "object", "description": "it type any base on your api" },
-                                          "details": {
-                                                "type": "object",
-                                                "properties": {
-                                                      "field": {
-                                                            "type": "string",
-                                                            "description": "field will be the name of invalid field",
-                                                            "example": "should not be empty"
-                                                      },
-                                                      "message": { "type": "string", "example": "this is an error message" },
-                                                      "errorMessage": { "type": "string", "example": "this is an error message" }
-                                                }
-                                          }
-                                    }
+                                    "description": "hello",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "400": {
+                                    "description": "invalid body input",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               }
                         }
                   }
@@ -112,7 +103,10 @@
                               },
                               "required": true
                         },
-                        "responses": { "200": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } }
+                        "responses": {
+                              "200": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" }
+                        }
                   }
             },
             "/api/auth/otp-email": {
@@ -135,7 +129,8 @@
                               "200": {
                                     "description": "The mail has been sent successfully.",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
-                              }
+                              },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" }
                         }
                   }
             },
@@ -159,7 +154,8 @@
                               "200": {
                                     "description": "The OTP code has been sent successfully.",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
-                              }
+                              },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" }
                         }
                   }
             },
@@ -227,7 +223,8 @@
                               "200": {
                                     "description": "The server creates io cookie successfully.",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
-                              }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" }
                         }
                   }
             },
@@ -524,13 +521,7 @@
                               "200": {
                                     "description": "Create a game with player successfully",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
-                              },
-                              "400": {
-                                    "description": "invalid body input",
-                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
-                              },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
-                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" }
+                              }
                         }
                   }
             },
@@ -543,10 +534,7 @@
                               "200": {
                                     "description": "Create new game with bot successfully",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
-                              },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
-                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" }
+                              }
                         }
                   }
             },
@@ -569,8 +557,7 @@
                                     "description": "Restart game successfully",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
@@ -587,9 +574,6 @@
                                     "description": "User status update successfully.",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
-                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
@@ -605,8 +589,6 @@
                                     "description": "Game is playing",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
@@ -623,8 +605,6 @@
                                     "description": "user state change to ready",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
@@ -641,8 +621,6 @@
                                     "description": "leave room successfully",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
@@ -659,21 +637,267 @@
                                     "description": "leave room successfully",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/ttt/surrender": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Surrender a game",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "surrender game ok",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/ttt/draw": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "create a draw request to current board",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  },
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Accept draw game in ttt",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": {
+                              "description": "draw information",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "roomId": { "type": "string", "example": "username" },
+                                                      "isAccept": { "type": "boolean" }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/ttt/:id": {
+                  "get": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "get tic tac toe summary of a user",
+                        "parameters": [
+                              {
+                                    "name": "userId",
+                                    "description": "user id",
+                                    "in": "query",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": { "type": "string", "example": "123456789aa" }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "return tic tac toe summary of a user",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/pvp": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "Create a chess game for player vs player return roomId to connect\nsocket.io",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "responses": {
+                              "200": {
+                                    "description": "Create a game with player successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/bot": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "Create a chess game for player vs bot return roomId to connect socket.io",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "responses": {
+                              "200": {
+                                    "description": "Create new game with bot successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/join-room": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "Provide room id which user want to join, redirect roomId in\nresponse body when return 200",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "User status update successfully.",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/start": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "send request to start chess game when two users are ready",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "Game is playing",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/leave": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "send this request when user leave the game, user is leave safely if\nthe game is not start, and count as lose when the game is playing. user\ncan not play any game until they complete leave other game",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "leave room successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/ready": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "send request to toggle ready state to play, two user have to ready\nbefore sending a start request (send one more time to change to not\nready)",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "user state change to ready",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/restart": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "Create a chess game for player vs player and alert connecting user\nto push router to other room ",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "Restart game successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/surrender": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "Surrender a game",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "surrender game ok",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/draw": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "create a draw request to current board",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  },
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "Accept draw game in chess",
+                        "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
+                        "requestBody": { "$ref": "#/paths/~1api~1ttt~1draw/put/requestBody" },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              },
+                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            },
+            "/api/chess/:id": {
+                  "get": {
+                        "tags": ["chess"],
+                        "description": "get chess summary of a user",
+                        "parameters": [{ "$ref": "#/paths/~1api~1ttt~1%3Aid/get/parameters/0" }],
+                        "responses": {
+                              "200": {
+                                    "description": "return chess summary of a user",
+                                    "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
+                              }
                         }
                   }
             },
             "/api/chat/new": {
                   "post": {
                         "tags": ["chat"],
-                        "description": "create new chat room",
+                        "description": "create new chat room chat",
                         "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "responses": {
                               "200": {
-                                    "description": "return a chatId to user socket io to join",
+                                    "description": "return a chatId to user socket io to join chat",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               }
                         }
@@ -682,17 +906,15 @@
             "/api/chat/join": {
                   "put": {
                         "tags": ["chat"],
-                        "description": "join a exist room",
+                        "description": "join a exist room chat",
                         "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
-                                    "description": "return a chatId to user socket io to join",
+                                    "description": "return a chatId to user socket io to join chat",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
-                              "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
                   }
@@ -700,7 +922,7 @@
             "/api/chat/send-message": {
                   "put": {
                         "tags": ["chat"],
-                        "description": "add new message to room ",
+                        "description": "add new message to room chat",
                         "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
@@ -708,8 +930,7 @@
                                     "description": "return ok",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
                         }
@@ -718,18 +939,230 @@
             "/api/chat/save": {
                   "put": {
                         "tags": ["chat"],
-                        "description": "save a room chat to database",
+                        "description": "save a room chat to database chat",
                         "parameters": [{ "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0" }],
                         "requestBody": { "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody" },
                         "responses": {
                               "200": {
-                                    "description": "return ok",
+                                    "description": "chat is saved",
                                     "content": { "application/json": { "schema": { "$ref": "#/paths/~1api~1auth~1login/post/responses/200" } } }
                               },
-                              "400": { "$ref": "#/paths/~1api~1ttt~1pvp/post/responses/400" },
-                              "401": { "$ref": "#/paths/~1api~1admin~1users/get/responses/401" },
+                              "400": { "$ref": "#/paths/~1api~1auth~1login/post/responses/400" },
                               "403": { "$ref": "#/paths/~1api~1admin~1users/get/responses/403" },
                               "404": { "$ref": "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404" }
+                        }
+                  }
+            }
+      },
+      "components": {
+            "schemas": {
+                  "user": {
+                        "type": "object",
+                        "description": "chat object",
+                        "properties": {
+                              "id": { "type": "string", "description": "chat id use to join chat in socketId" },
+                              "createDate": { "type": "string", "description": "create new" },
+                              "users": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "public user without some sensitive information",
+                                          "properties": {
+                                                "id": { "type": "string" },
+                                                "username": { "type": "string" },
+                                                "avatarUrl": { "type": "array" },
+                                                "name": { "type": "array" },
+                                                "elo": { "type": "string" },
+                                                "createDate": { "type": "string" }
+                                          }
+                                    }
+                              },
+                              "messages": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "message in chat object",
+                                          "properties": {
+                                                "id": { "type": "string" },
+                                                "createDate": { "type": "string" },
+                                                "content": { "type": "array" },
+                                                "userId": { "description": "id of user who creates this message", "type": "string" }
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "chat": { "$ref": "#/components/schemas/user" },
+                  "chat-message": {
+                        "type": "object",
+                        "description": "message in chat object",
+                        "properties": {
+                              "id": { "type": "string" },
+                              "createDate": { "type": "string" },
+                              "content": { "type": "array" },
+                              "userId": { "description": "id of user who creates this message", "type": "string" }
+                        }
+                  },
+                  "apiResponse": {
+                        "type": "object",
+                        "properties": {
+                              "data": { "type": "object", "description": "it type any base on your api" },
+                              "details": {
+                                    "type": "object",
+                                    "properties": {
+                                          "field": {
+                                                "type": "string",
+                                                "description": "field will be the name of invalid field",
+                                                "example": "should not be empty"
+                                          },
+                                          "message": { "type": "string", "example": "this is an error message" },
+                                          "errorMessage": { "type": "string", "example": "this is an error message" }
+                                    }
+                              }
+                        }
+                  },
+                  "gamePlayerFlag": { "type": "string", "description": "Game Flag for user", "enum": ["EMPTY(-1)", "USER1(0)", "USER2(1)"] },
+                  "gameStatus": { "type": "string", "description": "Status of game", "enum": ["NOT_YET(-1)", "PLAYING(0)", "END(1)", "DRAW(2)"] },
+                  "publicUser": {
+                        "type": "object",
+                        "description": "public user without some sensitive information",
+                        "properties": {
+                              "id": { "type": "string" },
+                              "username": { "type": "string" },
+                              "avatarUrl": { "type": "array" },
+                              "name": { "type": "array" },
+                              "elo": { "type": "string" },
+                              "createDate": { "type": "string" }
+                        }
+                  },
+                  "gamePlayer": {
+                        "type": "object",
+                        "description": "information of player in game",
+                        "properties": {
+                              "id": { "type": "string" },
+                              "username": { "type": "string" },
+                              "avatarUrl": { "type": "string" },
+                              "name": { "type": "string" },
+                              "elo": { "type": "number" },
+                              "isDraw": { "type": "boolean" },
+                              "ready": { "type": "boolean" },
+                              "flag": { "type": "string", "description": "Game Flag for user", "enum": ["EMPTY(-1)", "USER1(0)", "USER2(1)"] },
+                              "currentTurn": { "type": "boolean" }
+                        }
+                  },
+                  "ticTacToeBoard": {
+                        "type": "object",
+                        "description": "tic tac toe information about a game",
+                        "properties": {
+                              "id": { "type": "string" },
+                              "startDate": { "type": "string" },
+                              "lastStep": { "type": "string" },
+                              "status": { "type": "string" },
+                              "board": {
+                                    "type": "array",
+                                    "items": { "type": "array", "items": { "$ref": "#/components/schemas/gamePlayer/properties/flag" } }
+                              },
+                              "currentTurn": { "type": "boolean" },
+                              "users": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "information of player in game",
+                                          "properties": {
+                                                "id": { "type": "string" },
+                                                "username": { "type": "string" },
+                                                "avatarUrl": { "type": "string" },
+                                                "name": { "type": "string" },
+                                                "elo": { "type": "number" },
+                                                "isDraw": { "type": "boolean" },
+                                                "ready": { "type": "boolean" },
+                                                "flag": { "$ref": "#/components/schemas/gamePlayer/properties/flag" },
+                                                "currentTurn": { "type": "boolean" }
+                                          }
+                                    }
+                              },
+                              "isBotMode": { "type": "boolean" },
+                              "winner": { "$ref": "#/components/schemas/gamePlayer/properties/flag" },
+                              "chatId": { "type": "string" }
+                        }
+                  },
+                  "chessRole": {
+                        "type": "string",
+                        "description": "Role of chess",
+                        "enum": ["KING(1)", "QUEEN(2)", "ROOK(3)", "KNIGHT(4)", "BISHOP(5)", "PAWN(6)", "EMPTY(-1)"]
+                  },
+                  "chessMoveRedis": {
+                        "type": "object",
+                        "description": "Information about move in chessBoard",
+                        "properties": {
+                              "chessRole": {
+                                    "type": "string",
+                                    "description": "Role of chess",
+                                    "enum": ["KING(1)", "QUEEN(2)", "ROOK(3)", "KNIGHT(4)", "BISHOP(5)", "PAWN(6)", "EMPTY(-1)"]
+                              },
+                              "flag": { "$ref": "#/components/schemas/gamePlayer/properties/flag" },
+                              "x": { "type": "number" },
+                              "y": { "type": "number" }
+                        }
+                  },
+                  "chessMove": {
+                        "type": "object",
+                        "description": "Information about move in database",
+                        "properties": {
+                              "chessRole": { "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole" },
+                              "flag": { "$ref": "#/components/schemas/gamePlayer/properties/flag" },
+                              "toX": { "type": "number" },
+                              "fromX": { "type": "number" },
+                              "toY": { "type": "number" },
+                              "fromY": { "type": "number" }
+                        }
+                  },
+                  "chessBoard": {
+                        "type": "object",
+                        "description": "information of chess board",
+                        "properties": {
+                              "id": { "type": "string" },
+                              "isBotMode": { "type": "boolean" },
+                              "turn": { "type": "boolean" },
+                              "users": { "type": "array", "items": { "$ref": "#/components/schemas/ticTacToeBoard/properties/users/items" } },
+                              "moves": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "Information about move in database",
+                                          "properties": {
+                                                "chessRole": { "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole" },
+                                                "flag": { "$ref": "#/components/schemas/gamePlayer/properties/flag" },
+                                                "toX": { "type": "number" },
+                                                "fromX": { "type": "number" },
+                                                "toY": { "type": "number" },
+                                                "fromY": { "type": "number" }
+                                          }
+                                    }
+                              },
+                              "winner": { "$ref": "#/components/schemas/gamePlayer/properties/flag" },
+                              "status": {
+                                    "type": "string",
+                                    "description": "Status of game",
+                                    "enum": ["NOT_YET(-1)", "PLAYING(0)", "END(1)", "DRAW(2)"]
+                              },
+                              "startDate": { "type": "string" },
+                              "chatId": { "type": "string" },
+                              "chessPiece": { "type": "object", "properties": { "x": { "type": "number" }, "y": { "type": "number" } } },
+                              "board": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "array",
+                                          "items": {
+                                                "type": "object",
+                                                "description": "Flag for chess",
+                                                "properties": {
+                                                      "chessRole": { "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole" },
+                                                      "flag": { "$ref": "#/components/schemas/gamePlayer/properties/flag" }
+                                                }
+                                          }
+                                    }
+                              }
                         }
                   }
             }
