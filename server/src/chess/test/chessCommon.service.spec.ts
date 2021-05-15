@@ -486,6 +486,44 @@ describe('chessCommonService', () => {
             });
       });
 
+      describe('getAllBoard', () => {
+            let user1: User, user2: User, user3: User;
+
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  user3 = await generateFakeUser();
+                  const boardId1 = await chessCommonService.createNewGame(user1);
+                  const boardId2 = await chessCommonService.createNewGame(user2);
+                  const boardId3 = await chessCommonService.createNewGame(user3);
+            });
+
+            it('Pass', async () => {
+                  const result = await chessCommonService.getAllBoard();
+                  expect(result).toBeDefined();
+                  expect(result.length).toBeGreaterThan(2);
+            });
+      });
+
+      describe('quickJoinRoom', () => {
+            let user1: User, user2: User, user3: User;
+
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  user2 = await generateFakeUser();
+                  user3 = await generateFakeUser();
+                  const boardId1 = await chessCommonService.createNewGame(user1);
+                  const boardId2 = await chessCommonService.createNewGame(user2);
+                  const boardId3 = await chessCommonService.createNewGame(user3);
+            });
+
+            it('Pass', async () => {
+                  const result = await chessCommonService.quickJoinRoom();
+
+                  expect(result).toBeDefined();
+            });
+      });
+
       afterAll(async () => {
             await resetDB();
             await app.close();

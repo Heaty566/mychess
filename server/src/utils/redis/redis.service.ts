@@ -84,4 +84,17 @@ export class RedisService {
                   });
             });
       }
+
+      getAllKeyWithPattern(pattern: string): Promise<string[]> {
+            return new Promise((res, rej) => {
+                  this.redisRepository.keys(pattern, (err, data) => {
+                        if (err) {
+                              this.logger.print(err, 'redis.service.ts', 'error');
+                              return rej(null);
+                        }
+
+                        res(data);
+                  });
+            });
+      }
 }
