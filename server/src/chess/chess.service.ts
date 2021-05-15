@@ -918,4 +918,27 @@ export class ChessService {
             if (chessBoard.board[desPos.x][desPos.y].flag === PlayerFlagEnum.BLACK && desPos.y === 0) return true;
             return false;
       }
+
+      async moveSymbol(curPos: ChessMoveCoordinates, desPos: ChessMoveCoordinates, boardId: string) {
+            const chessBoard = await this.chessCommonService.getBoard(boardId);
+            const X: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            const Y: string[] = ['1', '2', '3', '4', '5', '6', '7', '8'];
+            const P: string[] = ['', 'K', 'Q', 'R', 'N', 'B', ''];
+
+            const isCastleKingSite = await this.isCastleKingSite(curPos, desPos, boardId);
+            const isCaslteQueenSite = await this.isCaslteQueenSite(curPos, desPos, boardId);
+            if (isCastleKingSite) return 'O-O';
+            if (isCaslteQueenSite) return 'O-O-O';
+
+            let symbol =
+                  P[chessBoard.board[curPos.x][curPos.y].chessRole] +
+                  X[curPos.x] +
+                  Y[curPos.y] +
+                  '-' +
+                  P[chessBoard.board[curPos.x][curPos.y].chessRole] +
+                  X[desPos.x] +
+                  Y[desPos.y];
+
+            return symbol;
+      }
 }
