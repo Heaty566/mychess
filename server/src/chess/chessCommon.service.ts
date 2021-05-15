@@ -44,16 +44,6 @@ export class ChessCommonService {
             return { boards: result, count, totalWin };
       }
 
-      async getManyChessByQuery(where: string, parameters: ObjectLiteral) {
-            const res = await this.chessRepository.getManyChessByField(where, parameters);
-            return res;
-      }
-
-      async getOneChessByField(where: string, parameters: ObjectLiteral) {
-            const res = await this.chessRepository.getOneChessByFiled(where, parameters);
-            return res;
-      }
-
       async findUser(boardId: string, userId: string) {
             const board = await this.getBoard(boardId);
             if (board) {
@@ -317,7 +307,7 @@ export class ChessCommonService {
             }
 
             if (roomOneUserIds.length > 0) return roomOneUserIds[Math.floor(Math.random() * (roomOneUserIds.length - 1))];
-            if (emptyRoomIds.length > 0) return emptyRoomIds[Math.floor(Math.random() * (emptyRoomIds.length - 1))];
+            else if (emptyRoomIds.length > 0) return emptyRoomIds[Math.floor(Math.random() * (emptyRoomIds.length - 1))];
 
             return '';
       }
