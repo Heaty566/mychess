@@ -110,9 +110,12 @@ export class ChessGateway {
             if (client?.user?.games?.chessId) {
                   const boardId = client.user.games.chessId;
                   const user = await this.chessCommonService.findUser(boardId, client.user.id);
-                  await this.chessCommonService.leaveGame(boardId, user);
-                  await this.sendToRoom(boardId);
-                  await client.leave(`chess-${boardId}`);
+
+                  if (user) {
+                        await this.chessCommonService.leaveGame(boardId, user);
+                        await this.sendToRoom(boardId);
+                        await client.leave(`chess-${boardId}`);
+                  }
             }
       }
 }
