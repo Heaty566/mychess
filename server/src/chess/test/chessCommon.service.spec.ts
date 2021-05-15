@@ -443,15 +443,22 @@ describe('chessCommonService', () => {
             });
 
             it('Test 2', () => {
-                  player1.elo = 1600;
-                  player2.elo = 1800;
+                  player1.elo = 2100;
+                  player2.elo = 2200;
                   const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.BLACK, player1, player2);
                   expect(result).toBeDefined();
             });
 
             it('Test 3', () => {
-                  player1.elo = 1600;
-                  player2.elo = 1800;
+                  player1.elo = 2500;
+                  player2.elo = 2200;
+                  const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.EMPTY, player1, player2);
+                  expect(result).toBeDefined();
+            });
+
+            it('Test 4', () => {
+                  player1.elo = 2500;
+                  player2.elo = 2600;
                   const result: EloCalculator = chessCommonService.calculateElo(PlayerFlagEnum.EMPTY, player1, player2);
                   expect(result).toBeDefined();
             });

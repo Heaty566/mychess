@@ -209,6 +209,7 @@ export class ChessController {
             );
             if (!canMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
             // move chess
+            console.log(await this.chessService.moveSymbol(curPos, desPos, board.id));
             const isMove = await this.chessService.playAMove(player, curPos, desPos, board.id);
             if (!isMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wrong-turn' } } }, 'BadRequestException');
 
