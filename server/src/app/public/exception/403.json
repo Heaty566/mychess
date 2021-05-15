@@ -1,5 +1,4 @@
 {
-      "description": "user has to be an administrator",
       "content": {
             "application/json": {
                   "schema": {

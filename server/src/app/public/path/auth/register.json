@@ -7,11 +7,24 @@
             },
             "responses": {
                   "200": {
-                        "$ref": "../../schema/apiResponse.json"
+                        "description": "return cookie for authentication",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
                   "400": {
                         "description": "username is taken",
-                        "$ref": "../../exception/400.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

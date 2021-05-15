@@ -93,3 +93,23 @@
     animation: FadeIn 200ms;
     @apply bg-blue-700;
 }
+
+@keyframes Popup {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.pop-up {
+    animation: Popup 2s forwards;
+}

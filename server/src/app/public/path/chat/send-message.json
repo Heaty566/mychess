@@ -20,12 +20,25 @@
                   },
                   "404": {
                         "description": "chat with the given Id was not found",
-                        "$ref": "../../exception/404.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
-                  "400": {
-                        "$ref": "../../exception/400.json"
-                  },
-                  "403": { "description": "user does not belong to this room", "$ref": "../../exception/403.json" }
+
+                  "403": {
+                        "description": "user does not belong to this room",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
             }
       }
 }

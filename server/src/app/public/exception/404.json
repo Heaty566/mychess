@@ -1,5 +1,4 @@
 {
-      "description": "entity does not exist in database",
       "content": {
             "application/json": {
                   "schema": {

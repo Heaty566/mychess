@@ -1,23 +1,23 @@
-import { GetServerSidePropsResult, GetServerSidePropsContext } from 'next';
-import { useSelector } from 'react-redux';
 import * as React from 'react';
-import Link from 'next/link';
-import axios from 'axios';
 
-import { RootState } from '../../../store';
-import SeoHead from '../../../components/common/seoHead';
-import { capitalize } from '../../../common/helpers/string.helper';
 import { ApiState, ServerResponse } from '../../../common/interface/api.interface';
 import { AuthState, User } from '../../../common/interface/user.interface';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
+import CardGameReport from '../../../components/card/card-game-report';
 import EditIcons from '../../../public/asset/icons/edit';
-import routers from '../../../common/constants/router';
-import ticTacToeApi from '../../../api/tttApi';
+import { GamePlayerFlag } from '../../../common/interface/game.interface';
+import Link from 'next/link';
+import { RootState } from '../../../store';
+import SeoHead from '../../../components/common/seoHead';
 import { TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface';
 import WaveLoading from '../../../components/loading/wave-loading';
+import axios from 'axios';
+import { capitalize } from '../../../common/helpers/string.helper';
 import chessApi from '../../../api/chessApi';
-import CardGameReport from '../../../components/card/card-game-report';
-import { GamePlayerFlag } from '../../../common/interface/game.interface';
+import routers from '../../../common/constants/router';
+import ticTacToeApi from '../../../api/tttApi';
+import { useSelector } from 'react-redux';
 
 export interface ProfileProps {
     user: User | null;
@@ -135,6 +135,8 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
 
                                                 return (
                                                     <CardGameReport
+                                                        changeOne={item.changeOne}
+                                                        changeTwo={item.changeTwo}
                                                         currentPlayer={currentPlayer}
                                                         otherPlayer={otherPlayer}
                                                         time={{ mmHH, mmYY }}

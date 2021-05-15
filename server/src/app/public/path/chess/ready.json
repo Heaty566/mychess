@@ -20,11 +20,23 @@
                   },
                   "403": {
                         "description": "user does not belong to this game, or game is playing",
-                        "$ref": "../../exception/403.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
                   "404": {
                         "description": "chess game with the given id was not found",
-                        "$ref": "../../exception/404.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

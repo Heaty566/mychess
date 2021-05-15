@@ -219,8 +219,8 @@ export class TicTacToeCommonService {
             newTicTacToe.winner = board.winner;
             newTicTacToe.users = users;
             newTicTacToe.startDate = board.startDate;
-            newTicTacToe.blueElo = board.eloBlueUser;
-            newTicTacToe.redElo = board.eloRedUser;
+            newTicTacToe.changeTwo = board.eloBlueUser;
+            newTicTacToe.changeOne = board.eloRedUser;
             newTicTacToe.chatId = chat.id;
 
             const ttt = await this.ticTacToeRepository.save(newTicTacToe);

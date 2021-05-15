@@ -15,14 +15,25 @@
                         }
                   },
 
-                  "401": {
-                        "$ref": "../../exception/401.json"
-                  },
                   "403": {
-                        "$ref": "../../exception/403.json"
+                        "description": "user is not an admin",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
                   "404": {
-                        "$ref": "../../exception/404.json"
+                        "description": "user is not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

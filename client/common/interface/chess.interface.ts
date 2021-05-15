@@ -45,6 +45,8 @@ export interface ChessBoard {
     isBotMode: boolean;
     users: GamePlayer[];
     winner: GamePlayerFlag;
+    changeOne: number;
+    changeTwo: number;
     startDate: Date;
     status: GameStatus;
     chatId: string;

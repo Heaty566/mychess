@@ -1,0 +1,31 @@
+{
+      "get": {
+            "tags": ["chess"],
+            "description": "A quick join to chess room",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+
+            "responses": {
+                  "200": {
+                        "description": "return roomId which use socket to join",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "404": {
+                        "description": "No game is found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

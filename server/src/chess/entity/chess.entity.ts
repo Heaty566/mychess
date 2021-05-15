@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { ChessStatus, PlayerFlagEnum } from './chess.interface';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { ChessMove } from './chessMove.entity';
+import User from '../../user/entities/user.entity';
 
 //---- Entity
-import User from '../../user/entities/user.entity';
-import { ChessStatus, PlayerFlagEnum } from './chess.interface';
-import { ChessMove } from './chessMove.entity';
 
 @Entity()
 export class Chess {
@@ -18,10 +19,10 @@ export class Chess {
       winner: PlayerFlagEnum;
 
       @Column({ default: 0 })
-      eloBlackUser: number;
+      changeOne: number;
 
       @Column({ default: 0 })
-      eloWhiteUser: number;
+      changeTwo: number;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       startDate: Date;

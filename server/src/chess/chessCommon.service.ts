@@ -202,8 +202,8 @@ export class ChessCommonService {
             newChess.winner = board.winner;
             newChess.chatId = chat.id;
             newChess.moves = moves;
-            newChess.eloBlackUser = board.eloBlackUser;
-            newChess.eloWhiteUser = board.eloWhiteUser;
+            newChess.changeOne = board.eloBlackUser;
+            newChess.changeTwo = board.eloWhiteUser;
             newChess.endDate = new Date();
 
             const chess = await this.chessRepository.save(newChess);

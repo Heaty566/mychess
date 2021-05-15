@@ -1,22 +1,19 @@
 import * as React from 'react';
 
+import { ApiState } from '../../../common/interface/api.interface';
+import BtnForm from '../../../components/btn/btn-form';
 import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
-
-import routers from '../../../common/constants/router';
-
+import { RootState } from '../../../store';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-
 import SeoHead from '../../../components/common/seoHead';
-import { useRouter } from 'next/router';
-import { chessApi } from '../../../api/chessApi';
 import TextField from '../../../components/form/filed-textfield';
+import WaveLoading from '../../../components/loading/wave-loading';
+import { chessApi } from '../../../api/chessApi';
+import routers from '../../../common/constants/router';
 import { useForm } from 'react-hook-form';
 import useFormError from '../../../common/hooks/useFormError';
-import BtnForm from '../../../components/btn/btn-form';
+import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
-import { ApiState } from '../../../common/interface/api.interface';
-import WaveLoading from '../../../components/loading/wave-loading';
 
 export interface ChessForm {
     roomId: string;
@@ -42,8 +39,7 @@ const Chess: React.FunctionComponent = () => {
 
     const handleOnQuickJoin = async () => {
         chessApi.quickJoin().then((res) => {
-            console.log(res.data.data);
-            chessApi.joinRoom({ roomId: res.data.data.roomId }).then((res2) => {
+            chessApi.joinRoom({ roomId: res.data.data.roomId }).then(() => {
                 router.push(`${routers.chessPvP.link}/${res.data.data.roomId}`);
             });
         });

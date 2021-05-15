@@ -21,7 +21,13 @@
 
                   "404": {
                         "description": "chess game with the given id was not found, or it is playing",
-                        "$ref": "../../exception/404.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

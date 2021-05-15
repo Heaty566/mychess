@@ -1,27 +1,31 @@
 import * as React from 'react';
 
-import routers from '../../../common/constants/router';
-import SeoHead from '../../../components/common/seoHead';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { copy } from '../../../common/helpers/copy';
 
-import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import ToolTip from '../../../components/tooltip/tooltip-dropbox';
-import TTTBoard from '../../../components/game/ttt-board';
-import PlayerInfo from '../../../components/game/player-info';
-import TTTTurn from '../../../components/game/ttt-turn';
+import { ApiState } from '../../../common/interface/api.interface';
 import ChatBox from '../../../components/chat';
-import PanelRestart from '../../../components/game/panel-restart';
-import WaveLoading from '../../../components/loading/wave-loading';
-import PanelStart from '../../../components/game/panel-start';
-import PanelReady from '../../../components/game/panel-ready';
+import GameControlMenu from '../../../components/game/game-menu';
+import { GameStatus } from '../../../common/interface/game.interface';
+import GameTopMenu from '../../../components/game/game-top-menu';
+import LabelMessagePopup from '../../../components/form/label-message-popup';
 import PanelDraw from '../../../components/game/panel-draw';
+import PanelReady from '../../../components/game/panel-ready';
+import PanelRestart from '../../../components/game/panel-restart';
+import PanelStart from '../../../components/game/panel-start';
+import PlayerInfo from '../../../components/game/player-info';
+import { RootState } from '../../../store';
+import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
+import SeoHead from '../../../components/common/seoHead';
 import ShareIcon from '../../../public/asset/icons/share';
+import TTTBoard from '../../../components/game/ttt-board';
+import TTTTurn from '../../../components/game/ttt-turn';
+import ToolTip from '../../../components/tooltip/tooltip-dropbox';
+import WaveLoading from '../../../components/loading/wave-loading';
+import { copy } from '../../../common/helpers/copy';
+import routers from '../../../common/constants/router';
 import useChatIo from '../../../common/hooks/useChatIo';
 import useGameTTT from '../../../common/hooks/useGameTTT';
-import { GameStatus } from '../../../common/interface/game.interface';
-import GameControlMenu from '../../../components/game/game-menu';
-import GameTopMenu from '../../../components/game/game-top-menu';
+import { useSelector } from 'react-redux';
 
 export interface TicTacToePvPProps {
     roomId: string;
@@ -42,6 +46,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
         tttHandleOnSurrender,
     } = useGameTTT(roomId);
     const { chat, chatRegister, handleOnSendChatMessage, chatWrapperRef } = useChatIo(tttBoard?.chatId);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
 
     return (
         <>
@@ -64,6 +69,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         <PlayerInfo player={tttPlayers?.length ? tttPlayers[1] : tttBoard.users[1]} isReverse={true} />
                                     </div>
                                 </div>
+                                <LabelMessagePopup errorMessage={apiState.errorMessage} />
                                 <div className="relative m-auto ttt-board">
                                     <PanelStart
                                         handleOnClick={tttHandleOnStart}

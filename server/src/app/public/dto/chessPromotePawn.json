@@ -1,0 +1,31 @@
+{
+      "description": "provide roomId and x y for please tic-tac-toe",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "roomId": {
+                                    "type": "string",
+                                    "example": "123124215421"
+                              },
+                              "promotePos": {
+                                    "type": "object",
+                                    "properties": {
+                                          "x": {
+                                                "type": "number"
+                                          },
+                                          "y": {
+                                                "type": "number"
+                                          }
+                                    }
+                              },
+                              "promoteRole": {
+                                    "$ref": "../schema/chessRole.json"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

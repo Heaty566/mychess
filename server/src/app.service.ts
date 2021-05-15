@@ -1,4 +1,5 @@
 import { BeforeApplicationShutdown, Injectable } from '@nestjs/common';
+
 import { DatabaseService } from './utils/repository/database.service';
 
 //---- Service
@@ -11,6 +12,6 @@ export class AppService implements BeforeApplicationShutdown {
 
       async beforeApplicationShutdown() {
             //save database
-            if (process.env.NODE_ENV === 'development') await this.databaseService.cronBackupDatabase('shut-down-server');
+            if (process.env.NODE_ENV === 'production') await this.databaseService.cronBackupDatabase('shut-down-server');
       }
 }
