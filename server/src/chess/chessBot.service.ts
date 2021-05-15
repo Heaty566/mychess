@@ -75,43 +75,45 @@ export class ChessBotService {
 
       private async evaluateBoard(boardId: string, playerFlag: PlayerFlagEnum, move: ChessMove) {
             const board = await this.chessCommonService.getBoard(boardId);
-            board.board[move.fromX][move.fromY] = {
-                  chessRole: ChessRole.EMPTY,
-                  flag: PlayerFlagEnum.EMPTY,
-            };
-            board.board[move.toX][move.toY] = {
-                  chessRole: move.chessRole,
-                  flag: move.flag,
-            };
-
             let value = 0;
-            for (let i = 0; i <= 7; i++) {
-                  for (let j = 0; j <= 7; j++) {
-                        if (board.board[i][j].flag !== PlayerFlagEnum.EMPTY) {
-                              switch (board.board[i][j].chessRole) {
-                                    case ChessRole.PAWN: {
-                                          value += StandardPieceValue.PAWN * (board.board[i][j].flag === playerFlag ? 1 : -1);
-                                          break;
-                                    }
-                                    case ChessRole.BISHOP: {
-                                          value += StandardPieceValue.BISHOP * (board.board[i][j].flag === playerFlag ? 1 : -1);
-                                          break;
-                                    }
-                                    case ChessRole.KNIGHT: {
-                                          value += StandardPieceValue.KNIGHT * (board.board[i][j].flag === playerFlag ? 1 : -1);
-                                          break;
-                                    }
-                                    case ChessRole.ROOK: {
-                                          value += StandardPieceValue.ROOK * (board.board[i][j].flag === playerFlag ? 1 : -1);
-                                          break;
-                                    }
-                                    case ChessRole.QUEEN: {
-                                          value += StandardPieceValue.QUEEN * (board.board[i][j].flag === playerFlag ? 1 : -1);
-                                          break;
-                                    }
-                                    case ChessRole.KING: {
-                                          value += StandardPieceValue.KING * (board.board[i][j].flag === playerFlag ? 1 : -1);
-                                          break;
+            if (board) {
+                  board.board[move.fromX][move.fromY] = {
+                        chessRole: ChessRole.EMPTY,
+                        flag: PlayerFlagEnum.EMPTY,
+                  };
+                  board.board[move.toX][move.toY] = {
+                        chessRole: move.chessRole,
+                        flag: move.flag,
+                  };
+
+                  for (let i = 0; i <= 7; i++) {
+                        for (let j = 0; j <= 7; j++) {
+                              if (board.board[i][j].flag !== PlayerFlagEnum.EMPTY) {
+                                    switch (board.board[i][j].chessRole) {
+                                          case ChessRole.PAWN: {
+                                                value += StandardPieceValue.PAWN * (board.board[i][j].flag === playerFlag ? 1 : -1);
+                                                break;
+                                          }
+                                          case ChessRole.BISHOP: {
+                                                value += StandardPieceValue.BISHOP * (board.board[i][j].flag === playerFlag ? 1 : -1);
+                                                break;
+                                          }
+                                          case ChessRole.KNIGHT: {
+                                                value += StandardPieceValue.KNIGHT * (board.board[i][j].flag === playerFlag ? 1 : -1);
+                                                break;
+                                          }
+                                          case ChessRole.ROOK: {
+                                                value += StandardPieceValue.ROOK * (board.board[i][j].flag === playerFlag ? 1 : -1);
+                                                break;
+                                          }
+                                          case ChessRole.QUEEN: {
+                                                value += StandardPieceValue.QUEEN * (board.board[i][j].flag === playerFlag ? 1 : -1);
+                                                break;
+                                          }
+                                          case ChessRole.KING: {
+                                                value += StandardPieceValue.KING * (board.board[i][j].flag === playerFlag ? 1 : -1);
+                                                break;
+                                          }
                                     }
                               }
                         }
