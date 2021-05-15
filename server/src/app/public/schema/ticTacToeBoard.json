@@ -1,0 +1,45 @@
+{
+      "type": "object",
+      "description": "tic tac toe information about a game",
+      "properties": {
+            "id": {
+                  "type": "string"
+            },
+            "startDate": {
+                  "type": "string"
+            },
+            "lastStep": {
+                  "type": "string"
+            },
+            "status": {
+                  "type": "string"
+            },
+            "board": {
+                  "type": "array",
+                  "items": {
+                        "type": "array",
+                        "items": {
+                              "$ref": "./gamePlayerFlag.json"
+                        }
+                  }
+            },
+            "currentTurn": {
+                  "type": "boolean"
+            },
+            "users": {
+                  "type": "array",
+                  "items": {
+                        "$ref": "./gamePlayer.json"
+                  }
+            },
+            "isBotMode": {
+                  "type": "boolean"
+            },
+            "winner": {
+                  "$ref": "./gamePlayerFlag.json"
+            },
+            "chatId": {
+                  "type": "string"
+            }
+      }
+}

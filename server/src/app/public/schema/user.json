@@ -1,5 +1,6 @@
 {
       "type": "object",
+      "description": "get all information about user",
       "properties": {
             "username": {
                   "type": "string",

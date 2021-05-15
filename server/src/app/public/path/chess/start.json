@@ -1,15 +1,15 @@
 {
-      "post": {
-            "tags": ["tic-tac-toe"],
-            "description": "Create a tic-tac-toe game for player vs player and alert connecting user to push router to other room ",
+      "put": {
+            "tags": ["chess"],
+            "description": "send request to start chess game when two users are ready",
             "parameters": [{ "$ref": "../../parameter/token.json" }],
             "requestBody": {
-                  "description": "provide current roomId to server alert their players to change room when server create new room",
+                  "description": "provide room id for server to start game",
                   "$ref": "../../dto/roomId.json"
             },
             "responses": {
                   "200": {
-                        "description": "Restart game successfully",
+                        "description": "Game is playing",
                         "content": {
                               "application/json": {
                                     "schema": {
@@ -18,12 +18,9 @@
                               }
                         }
                   },
-                  "400": {
-                        "description": "the old game is playing",
-                        "$ref": "../../exception/400.json"
-                  },
+
                   "403": {
-                        "description": "user does not belong to this game, or this game is already played",
+                        "description": "user does not belong to this game",
                         "$ref": "../../exception/403.json"
                   },
                   "404": {

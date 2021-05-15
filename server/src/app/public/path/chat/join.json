@@ -1,7 +1,7 @@
 {
       "put": {
             "tags": ["chat"],
-            "description": "join a exist room",
+            "description": "join a exist room chat",
             "parameters": [{ "$ref": "../../parameter/token.json" }],
             "requestBody": {
                   "description": "the chatId you want to join",
@@ -9,7 +9,7 @@
             },
             "responses": {
                   "200": {
-                        "description": "return a chatId to user socket io to join",
+                        "description": "return a chatId to user socket io to join chat",
                         "content": {
                               "application/json": {
                                     "schema": {
@@ -21,13 +21,8 @@
                   "400": {
                         "$ref": "../../exception/400.json"
                   },
-                  "401": {
-                        "$ref": "../../exception/401.json"
-                  },
-                  "403": {
-                        "$ref": "../../exception/403.json"
-                  },
                   "404": {
+                        "description": "chat with the given Id was not found",
                         "$ref": "../../exception/404.json"
                   }
             }

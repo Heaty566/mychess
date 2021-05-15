@@ -11,7 +11,7 @@
                   "name": "Apache 2.0",
                   "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
             },
-            "version": "0.0.1"
+            "version": "2.1.1"
       },
       "tags": [
             {
@@ -32,11 +32,15 @@
             },
             {
                   "name": "tic-tac-toe",
-                  "description": "Service tic-tac-toe game"
+                  "description": "service tic-tac-toe game"
             },
             {
                   "name": "chat",
-                  "description": "Service chat box"
+                  "description": "service chat box"
+            },
+            {
+                  "name": "chess",
+                  "description": "service chess"
             }
       ],
       "servers": [
@@ -81,10 +85,67 @@
             "/api/ttt/ready": { "$ref": "./path/ttt/ready.json" },
             "/api/ttt/leave": { "$ref": "./path/ttt/leave.json" },
             "/api/ttt/add-move": { "$ref": "./path/ttt/add-move.json" },
+            "/api/ttt/surrender": { "$ref": "./path/ttt/surrender.json" },
+            "/api/ttt/draw": { "$ref": "./path/ttt/draw.json" },
+            "/api/ttt/:id": { "$ref": "./path/ttt/[id].json" },
+
+            "/api/chess/pvp": { "$ref": "./path/chess/pvp.json" },
+            "/api/chess/bot": { "$ref": "./path/chess/bot.json" },
+            "/api/chess/join-room": { "$ref": "./path/chess/join-room.json" },
+            "/api/chess/start": { "$ref": "./path/chess/start.json" },
+            "/api/chess/leave": { "$ref": "./path/chess/leave.json" },
+            "/api/chess/ready": { "$ref": "./path/chess/ready.json" },
+            "/api/chess/restart": { "$ref": "./path/chess/restart.json" },
+            "/api/chess/surrender": { "$ref": "./path/chess/surrender.json" },
+            "/api/chess/draw": { "$ref": "./path/chess/draw.json" },
+            "/api/chess/:id": { "$ref": "./path/chess/[id].json" },
 
             "/api/chat/new": { "$ref": "./path/chat/new.json" },
             "/api/chat/join": { "$ref": "./path/chat/join.json" },
             "/api/chat/send-message": { "$ref": "./path/chat/send-message.json" },
             "/api/chat/save": { "$ref": "./path/chat/save.json" }
+      },
+      "components": {
+            "schemas": {
+                  "user": {
+                        "$ref": "./schema/chat.json"
+                  },
+                  "chat": {
+                        "$ref": "./schema/chat.json"
+                  },
+                  "chat-message": {
+                        "$ref": "./schema/chat-message.json"
+                  },
+                  "apiResponse": {
+                        "$ref": "./schema/apiResponse.json"
+                  },
+                  "gamePlayerFlag": {
+                        "$ref": "./schema/gamePlayerFlag.json"
+                  },
+                  "gameStatus": {
+                        "$ref": "./schema/gameStatus.json"
+                  },
+                  "publicUser": {
+                        "$ref": "./schema/public-user.json"
+                  },
+                  "gamePlayer": {
+                        "$ref": "./schema/gamePlayer.json"
+                  },
+                  "ticTacToeBoard": {
+                        "$ref": "./schema/ticTacToeBoard.json"
+                  },
+                  "chessRole": {
+                        "$ref": "./schema/chessRole.json"
+                  },
+                  "chessMoveRedis": {
+                        "$ref": "./schema/chessMoveRedis.json"
+                  },
+                  "chessMove": {
+                        "$ref": "./schema/chessMove.json"
+                  },
+                  "chessBoard": {
+                        "$ref": "./schema/chessBoard.json"
+                  }
+            }
       }
 }

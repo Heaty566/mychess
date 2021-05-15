@@ -1,7 +1,7 @@
 {
       "put": {
             "tags": ["chat"],
-            "description": "add new message to room ",
+            "description": "add new message to room chat",
             "parameters": [{ "$ref": "../../parameter/token.json" }],
             "requestBody": {
                   "description": "give chat id and content to add",
@@ -18,19 +18,14 @@
                               }
                         }
                   },
-
+                  "404": {
+                        "description": "chat with the given Id was not found",
+                        "$ref": "../../exception/404.json"
+                  },
                   "400": {
                         "$ref": "../../exception/400.json"
                   },
-                  "401": {
-                        "$ref": "../../exception/401.json"
-                  },
-                  "403": {
-                        "$ref": "../../exception/403.json"
-                  },
-                  "404": {
-                        "$ref": "../../exception/404.json"
-                  }
+                  "403": { "description": "user does not belong to this room", "$ref": "../../exception/403.json" }
             }
       }
 }

@@ -52,7 +52,6 @@ export class TicTacToeController {
       }
 
       @Get('/:id')
-      @UseGuards(UserGuard)
       async handleOnGameByUserId(@Param('id') id: string) {
             const result = await this.ticTacToeCommonService.getAllBoardByUserId(id);
 

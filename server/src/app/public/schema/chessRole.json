@@ -1,0 +1,5 @@
+{
+      "type": "string",
+      "description": "Role of chess",
+      "enum": ["KING(1)", "QUEEN(2)", "ROOK(3)", "KNIGHT(4)", "BISHOP(5)", "PAWN(6)", "EMPTY(-1)"]
+}

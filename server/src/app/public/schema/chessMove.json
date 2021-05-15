@@ -1,0 +1,24 @@
+{
+      "type": "object",
+      "description": "Information about move in database",
+      "properties": {
+            "chessRole": {
+                  "$ref": "chessRole.json"
+            },
+            "flag": {
+                  "$ref": "gamePlayerFlag.json"
+            },
+            "toX": {
+                  "type": "number"
+            },
+            "fromX": {
+                  "type": "number"
+            },
+            "toY": {
+                  "type": "number"
+            },
+            "fromY": {
+                  "type": "number"
+            }
+      }
+}

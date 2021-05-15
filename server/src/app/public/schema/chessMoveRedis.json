@@ -1,0 +1,18 @@
+{
+      "type": "object",
+      "description": "Information about move in chessBoard",
+      "properties": {
+            "chessRole": {
+                  "$ref": "chessRole.json"
+            },
+            "flag": {
+                  "$ref": "gamePlayerFlag.json"
+            },
+            "x": {
+                  "type": "number"
+            },
+            "y": {
+                  "type": "number"
+            }
+      }
+}

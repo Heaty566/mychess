@@ -1,15 +1,15 @@
 {
       "put": {
-            "tags": ["tic-tac-toe"],
-            "description": "send request to toggle ready state to play, two user have to ready before sending a start request (send one more time to change to not ready)",
+            "tags": ["chess"],
+            "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
             "parameters": [{ "$ref": "../../parameter/token.json" }],
             "requestBody": {
-                  "description": "provide room id for server to know which room you are ready",
+                  "description": "provide room id for server to connect with that room",
                   "$ref": "../../dto/roomId.json"
             },
             "responses": {
                   "200": {
-                        "description": "user state change to ready",
+                        "description": "User status update successfully.",
                         "content": {
                               "application/json": {
                                     "schema": {
@@ -18,12 +18,9 @@
                               }
                         }
                   },
-                  "403": {
-                        "description": "user does not belong to this game, or game is playing",
-                        "$ref": "../../exception/403.json"
-                  },
+
                   "404": {
-                        "description": "ttt game with the given id was not found",
+                        "description": "chess game with the given id was not found, or it is playing",
                         "$ref": "../../exception/404.json"
                   }
             }

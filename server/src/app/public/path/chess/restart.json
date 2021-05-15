@@ -1,7 +1,7 @@
 {
       "post": {
-            "tags": ["tic-tac-toe"],
-            "description": "Create a tic-tac-toe game for player vs player and alert connecting user to push router to other room ",
+            "tags": ["chess"],
+            "description": "Create a chess game for player vs player and alert connecting user to push router to other room ",
             "parameters": [{ "$ref": "../../parameter/token.json" }],
             "requestBody": {
                   "description": "provide current roomId to server alert their players to change room when server create new room",
