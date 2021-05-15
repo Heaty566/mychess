@@ -15,13 +15,7 @@
                   },
                   "400": {
                         "description": "user with the given Id was not found",
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "$ref": "../../schema/apiResponse.json"
-                                    }
-                              }
-                        }
+                        "$ref": "../../exception/400.json"
                   }
             }
       }
