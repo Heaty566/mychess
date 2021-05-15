@@ -237,7 +237,7 @@ export class ChessController {
       @UseGuards(UserGuard)
       @UsePipes(new JoiValidatorPipe(vChessPromotePawnDto))
       async handleOnPromotePawn(@Req() req: Request, @Body() body: ChessPromotePawnDto) {
-            let board = await this.getGame(body.roomId);
+            const board = await this.getGame(body.roomId);
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
