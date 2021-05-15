@@ -177,7 +177,7 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
             const board = await this.getGame(body.roomId);
-            const enemyColor = board.board[body.curPos.x][body.curPos.y].flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+
             if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
