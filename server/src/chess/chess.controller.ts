@@ -12,7 +12,7 @@ import { UserGuard } from '../auth/auth.guard';
 import { ChessGateway } from './chess.gateway';
 
 //---- Entity
-import { ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './entity/chess.interface';
+import { ChessStatus, PlayerFlagEnum, ChessMoveCoordinates, ChessRole } from './entity/chess.interface';
 import { ChessBoard } from './entity/chessBoard.entity';
 
 //---- DTO
@@ -215,6 +215,10 @@ export class ChessController {
                   const bot = await this.chessCommonService.findUser(board.id, 'BOT');
                   const botMove = await this.chessBotService.findBestMove(board.id, enemyFlag);
                   await this.chessService.playAMove(bot, { x: botMove.fromX, y: botMove.fromY }, { x: botMove.toX, y: botMove.toY }, board.id);
+
+                  const isPromote = await this.chessService.isPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
+                  if (isPromote) await this.chessBotService.botPromotePawn({ x: botMove.toX, y: botMove.toY }, board.id);
+
                   await this.chessService.isWin(player.flag, board.id);
             }
 

@@ -39,6 +39,12 @@ export class ChessBotService {
             return bestMoveSoFar;
       }
 
+      async botPromotePawn(promotePos: ChessMoveCoordinates, boardId: string) {
+            const board = await this.chessCommonService.getBoard(boardId);
+            board.board[promotePos.x][promotePos.y].chessRole = ChessRole.QUEEN;
+            await this.chessCommonService.setBoard(board);
+      }
+
       private async getAllMoves(boardId: string, playerFlag: PlayerFlagEnum) {
             const board = await this.chessCommonService.getBoard(boardId);
             const moves: Array<ChessMove> = [];
