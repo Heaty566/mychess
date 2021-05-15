@@ -1,0 +1,17 @@
+{
+      "description": "give server the chat room you want to join",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "chatId": {
+                                    "type": "string",
+                                    "example": "123124215421"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

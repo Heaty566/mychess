@@ -1,0 +1,17 @@
+{
+      "content": {
+            "application/json": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "name": {
+                                    "type": "string",
+                                    "example": "who am i"
+                              }
+                        }
+                  }
+            }
+      },
+      "description": "user basic information is not include some sensitive fields",
+      "required": true
+}

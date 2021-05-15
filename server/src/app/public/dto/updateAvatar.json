@@ -1,0 +1,17 @@
+{
+      "description": "put avatar image here",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "avatar": {
+                                    "type": "string",
+                                    "example": "/hello.png"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

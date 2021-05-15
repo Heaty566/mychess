@@ -37,7 +37,7 @@ export class ChessCommonService {
                   .orderBy('chess.startDate', 'DESC');
 
             const boards = await board.getMany();
-            const totalWin = boards.filter((item) => item.winner !== PlayerFlagEnum.EMPTY && item.users[item.winner].id === userId).length;
+            const totalWin = boards.filter((item) => item.winner !== PlayerFlagEnum.EMPTY && item.users[item.winner]?.id === userId).length;
 
             const count = boards.length;
             const result = boards.splice(0, 6);
@@ -305,8 +305,8 @@ export class ChessCommonService {
 
       async quickJoinRoom(): Promise<string> {
             const boardIds = await this.getAllBoard();
-            let roomOneUserIds: string[] = [],
-                  emptyRoomIds: string[] = [];
+            const roomOneUserIds: string[] = [];
+            const emptyRoomIds: string[] = [];
 
             for (let i = 0; i < boardIds.length; i++) {
                   const board = await this.getBoard(boardIds[i]);

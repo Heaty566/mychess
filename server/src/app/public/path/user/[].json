@@ -1,0 +1,37 @@
+{
+      "get": {
+            "tags": ["user"],
+            "description": "This API get information of the current user from server and return it to client without some sensitive fields.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "responses": {
+                  "200": {
+                        "description": "The server returns user information without some sensitive fields.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      },
+      "put": {
+            "tags": ["user"],
+            "description": "User property values of the logged in users can be updated with this API operation.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": { "$ref": "../../dto/updateBasicUser.json" },
+            "responses": {
+                  "200": {
+                        "description": "User information update successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

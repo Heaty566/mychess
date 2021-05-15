@@ -51,16 +51,6 @@ export class ChessGateway {
             return this.socketServer().socketEmitToRoom(ChessGatewayAction.CHESS_RESTART, boardId, { data: board }, 'chess');
       }
 
-      async kingIsChecked(kingColor: PlayerFlagEnum, checkerId: string, boardId: string) {
-            const kingPosition = await this.chessService.getKing(kingColor, boardId);
-            return this.socketServer().socketEmitToRoom(
-                  ChessGatewayAction.CHESS_CHECK_KING,
-                  boardId,
-                  { data: { x: kingPosition.x, y: kingPosition.y, userId: checkerId } },
-                  'chess',
-            );
-      }
-
       @UseGuards(UserSocketGuard)
       @SubscribeMessage(ChessGatewayAction.CHESS_JOIN)
       async handleJoinMatch(@ConnectedSocket() client: SocketExtend, @MessageBody(new SocketJoiValidatorPipe(vChessRoomIdDto)) body: ChessRoomIdDTO) {
