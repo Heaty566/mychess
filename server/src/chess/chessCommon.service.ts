@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { ChessRepository } from './entity/chess.repository';
 import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from './entity/chess.interface';
-import { Chess } from './entity/chess.entity';
-import { User } from '../user/entities/user.entity';
-import { ChessBoard } from './entity/chessBoard.entity';
-import { RedisService } from '../utils/redis/redis.service';
-import { ObjectLiteral } from 'typeorm';
-import { UserService } from '../user/user.service';
-import { ChessMoveRepository } from './entity/chessMove.repository';
+
 import { ChatService } from '../chat/chat.service';
-import { TicTacToeStatus } from 'src/ticTacToe/entity/ticTacToe.interface';
+import { Chess } from './entity/chess.entity';
+import { ChessBoard } from './entity/chessBoard.entity';
+import { ChessMoveRepository } from './entity/chessMove.repository';
+import { ChessRepository } from './entity/chess.repository';
+import { Injectable } from '@nestjs/common';
+import { ObjectLiteral } from 'typeorm';
+import { RedisService } from '../utils/redis/redis.service';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ChessCommonService {
@@ -89,6 +89,15 @@ export class ChessCommonService {
       async getBoard(boardId: string) {
             const board = await this.redisService.getObjectByKey<ChessBoard>(`chess-${boardId}`);
             return board;
+      }
+
+      async getAllBoard() {
+            const keyBoards = await this.redisService.getAllKeyWithPattern('chess-[0-9]*');
+            const boardIds: string[] = [];
+            keyBoards.forEach((key) => {
+                  boardIds.push(key.split('-')[1]);
+            });
+            return boardIds;
       }
 
       async joinGame(boardId: string, user: User | ChessPlayer) {
@@ -292,5 +301,24 @@ export class ChessCommonService {
 
                   return newBoardId;
             }
+      }
+
+      async quickJoinRoom(): Promise<string> {
+            const boardIds = await this.getAllBoard();
+            let roomOneUserIds: string[] = [],
+                  emptyRoomIds: string[] = [];
+
+            for (let i = 0; i < boardIds.length; i++) {
+                  const board = await this.getBoard(boardIds[i]);
+                  if (board) {
+                        if (board.users.length === 1) roomOneUserIds.push(boardIds[i]);
+                        if (board.users.length === 0) emptyRoomIds.push(boardIds[i]);
+                  }
+            }
+
+            if (roomOneUserIds.length > 0) return roomOneUserIds[Math.floor(Math.random() * (roomOneUserIds.length - 1))];
+            if (emptyRoomIds.length > 0) return emptyRoomIds[Math.floor(Math.random() * (emptyRoomIds.length - 1))];
+
+            return '';
       }
 }

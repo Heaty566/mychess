@@ -73,6 +73,17 @@ export class ChessController {
 
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
       }
+      @Get('/quick-join-room')
+      @UseGuards(UserGuard)
+      async handleOnQuickJoinRoom(@Req() req: Request) {
+            const boardId = await this.chessCommonService.quickJoinRoom();
+            if (!boardId) throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(boardId);
+            const isExist = await this.chessCommonService.findUser(board.id, req.user.id);
+            if (!isExist) await this.chessCommonService.joinGame(board.id, req.user);
+
+            return apiResponse.send({ data: { roomId: board.id } });
+      }
 
       @Get('/:id')
       @UseGuards(UserGuard)
