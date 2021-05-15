@@ -50,15 +50,10 @@
                   "post": {
                         "tags": ["auth"],
                         "description": "Registered users can login to establish their identity with the application using the API below. The login operation requires two properties: username and password.",
-                        "requestBody": {
-                              "$ref": "#/components/requestBodies/LoginUserDto"
-                        },
+                        "requestBody": { "$ref": "./dto/loginUser.json" },
                         "responses": {
                               "200": {
                                     "$ref": "#/components/responses/reTokenKey"
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
                               }
                         }
                   }
@@ -78,10 +73,6 @@
                                                 }
                                           }
                                     }
-                              },
-
-                              "401": {
-                                    "$ref": "#/components/responses/401"
                               }
                         }
                   }
@@ -91,14 +82,11 @@
                         "tags": ["auth"],
                         "description": "The register API can be used to create user accounts in the application. A registration request must provide a user object as a collection of key/value properties.",
                         "requestBody": {
-                              "$ref": "#/components/requestBodies/RegisterUserDto"
+                              "$ref": "./dto/registerUser.json"
                         },
                         "responses": {
                               "200": {
                                     "$ref": "#/components/responses/reTokenKey"
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
                               }
                         }
                   }
@@ -107,9 +95,7 @@
                   "post": {
                         "tags": ["auth"],
                         "description": "Create an email is sent with a link to a webpage which contains a form where the user can enter the new password.",
-                        "requestBody": {
-                              "$ref": "#/components/requestBodies/UpdateEmailDto"
-                        },
+                        "requestBody": { "$ref": "./dto/updateEmail.json" },
                         "responses": {
                               "200": {
                                     "description": "The mail has been sent successfully.",
@@ -120,12 +106,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "500": {
-                                    "$ref": "#/components/responses/500"
                               }
                         }
                   }
@@ -135,14 +115,11 @@
                         "tags": ["common"],
                         "description": "The support API allows users to send their problem to our support team.",
                         "requestBody": {
-                              "$ref": "#/components/requestBodies/AboutUsDto"
+                              "$ref": "./dto/support.json"
                         },
                         "responses": {
                               "200": {
                                     "$ref": "#/components/responses/reTokenKey"
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
                               }
                         }
                   }
@@ -152,7 +129,7 @@
                         "tags": ["auth"],
                         "description": "Create an OTP code is sent to the user phone number. Users can use it to access a webpage which contains a form where the user can enter the new password.",
                         "requestBody": {
-                              "$ref": "#/components/requestBodies/OtpSmsDTO"
+                              "$ref": "./dto/otpSms.json"
                         },
                         "responses": {
                               "200": {
@@ -164,12 +141,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "500": {
-                                    "$ref": "#/components/responses/500"
                               }
                         }
                   }
@@ -189,10 +160,6 @@
                                                 }
                                           }
                                     }
-                              },
-
-                              "403": {
-                                    "$ref": "#/components/responses/403"
                               }
                         }
                   }
@@ -245,10 +212,6 @@
                                                 }
                                           }
                                     }
-                              },
-
-                              "401": {
-                                    "$ref": "#/components/responses/401"
                               }
                         }
                   }
@@ -268,10 +231,6 @@
                                                 }
                                           }
                                     }
-                              },
-
-                              "401": {
-                                    "$ref": "#/components/responses/401"
                               }
                         }
                   },
@@ -279,9 +238,7 @@
                         "tags": ["user"],
                         "description": "User property values of the logged in users can be updated with this API operation.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
-                        "requestBody": {
-                              "$ref": "#/components/requestBodies/UpdateBasicUserDto"
-                        },
+                        "requestBody": { "$ref": "./dto/updateBasicUser.json" },
                         "responses": {
                               "200": {
                                     "description": "User information update successfully",
@@ -292,12 +249,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
                               }
                         }
                   }
@@ -316,10 +267,6 @@
                                                 }
                                           }
                                     }
-                              },
-
-                              "401": {
-                                    "$ref": "#/components/responses/401"
                               }
                         }
                   }
@@ -329,9 +276,7 @@
                         "tags": ["user"],
                         "description": "This API allows user to upload their avatar image.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
-                        "requestBody": {
-                              "$ref": "#/components/requestBodies/UpdateAvatarDto"
-                        },
+                        "requestBody": { "$ref": "./dto/updateAvatar.json" },
                         "responses": {
                               "200": {
                                     "description": "User avatar update successfully",
@@ -342,15 +287,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "500": {
-                                    "$ref": "#/components/responses/500"
                               }
                         }
                   }
@@ -361,7 +297,7 @@
                         "description": "Changes the passwords of users in the native realm and built-in users.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
-                              "$ref": "#/components/requestBodies/ChangePasswordDTO"
+                              "$ref": "./dto/changePassword.json"
                         },
                         "responses": {
                               "200": {
@@ -373,9 +309,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
                               }
                         }
                   }
@@ -386,7 +319,7 @@
                         "description": "Allow user to enter new password with OTP code is provided.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }, { "$ref": "#/components/parameters/OTPkey" }],
                         "requestBody": {
-                              "$ref": "#/components/requestBodies/ResetPasswordDTO"
+                              "$ref": "./dto/resetPassword.json"
                         },
                         "responses": {
                               "200": {
@@ -398,12 +331,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
                               }
                         }
                   }
@@ -423,9 +350,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "403": {
-                                    "$ref": "#/components/responses/403"
                               }
                         }
                   }
@@ -435,9 +359,7 @@
                         "tags": ["user"],
                         "description": "Create an OTP code is sent to the user phone number. Users can use it to access a webpage which contains a form where the user can update phone number.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
-                        "requestBody": {
-                              "$ref": "#/components/requestBodies/OtpSmsDTO"
-                        },
+                        "requestBody": { "$ref": "./dto/otpSms.json" },
                         "responses": {
                               "200": {
                                     "description": "The OTP code has been sent successfully.",
@@ -448,15 +370,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              },
-                              "500": {
-                                    "$ref": "#/components/responses/500"
                               }
                         }
                   }
@@ -467,7 +380,7 @@
                         "description": "Create an email is sent with a link to a webpage which contains a form where the user can update email.",
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
-                              "$ref": "#/components/requestBodies/UpdateEmailDto"
+                              "$ref": "./dto/updateEmail.json"
                         },
                         "responses": {
                               "200": {
@@ -479,15 +392,6 @@
                                                 }
                                           }
                                     }
-                              },
-                              "400": {
-                                    "$ref": "#/components/responses/400"
-                              },
-                              "401": {
-                                    "$ref": "#/components/responses/401"
-                              },
-                              "500": {
-                                    "$ref": "#/components/responses/500"
                               }
                         }
                   }
@@ -529,10 +433,10 @@
                                     }
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               }
                         }
                   }
@@ -553,14 +457,15 @@
                                           }
                                     }
                               },
+
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -581,14 +486,15 @@
                                           }
                                     }
                               },
+
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -610,13 +516,13 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               }
                         }
                   }
@@ -638,13 +544,13 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               }
                         }
                   }
@@ -656,7 +562,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "provide current roomId to server alert their players to change room when server create new room",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -670,16 +576,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -691,7 +597,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "provide room id for server to connect with that room",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -705,16 +611,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -726,7 +632,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "provide room id for server to start game",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -740,16 +646,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -761,7 +667,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "provide room id for server to know which room you are ready",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -775,16 +681,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -796,7 +702,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "provide room id for server to know which room you want to leave",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -810,16 +716,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -831,7 +737,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "provide X Y and RoomId to server which cell you want to pick",
-                              "$ref": "#/components/requestBodies/AddMoveTTTDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -845,16 +751,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -886,7 +792,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "the chatId you want to join",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -900,16 +806,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -921,7 +827,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "give chat id and content to add",
-                              "$ref": "#/components/requestBodies/SendMessageDTO"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -934,17 +840,18 @@
                                           }
                                     }
                               },
+
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -956,7 +863,7 @@
                         "parameters": [{ "$ref": "#/components/parameters/token" }],
                         "requestBody": {
                               "description": "the chatId you want to save",
-                              "$ref": "#/components/requestBodies/RoomIdDto"
+                              "$ref": "./dto/roomId.json"
                         },
                         "responses": {
                               "200": {
@@ -970,16 +877,16 @@
                                     }
                               },
                               "400": {
-                                    "$ref": "#/components/responses/400"
+                                    "$ref": "./exception/400.json"
                               },
                               "401": {
-                                    "$ref": "#/components/responses/401"
+                                    "$ref": "./exception/401.json"
                               },
                               "403": {
-                                    "$ref": "#/components/responses/403"
+                                    "$ref": "./exception/403.json"
                               },
                               "404": {
-                                    "$ref": "#/components/responses/404"
+                                    "$ref": "./exception/404.json"
                               }
                         }
                   }
@@ -987,56 +894,6 @@
       },
       "components": {
             "responses": {
-                  "401": {
-                        "description": "user has not a re-token",
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "$ref": "#/components/schemas/CommonApiResponse"
-                                    }
-                              }
-                        }
-                  },
-                  "400": {
-                        "description": "invalid body input",
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "$ref": "#/components/schemas/CommonApiResponse"
-                                    }
-                              }
-                        }
-                  },
-                  "500": {
-                        "description": "some went wrong( 3rd shutdown or server errors)",
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "$ref": "#/components/schemas/CommonApiResponse"
-                                    }
-                              }
-                        }
-                  },
-                  "403": {
-                        "description": "user has to be an administrator",
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "$ref": "#/components/schemas/CommonApiResponse"
-                                    }
-                              }
-                        }
-                  },
-                  "404": {
-                        "description": "entity does not exist in database",
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "$ref": "#/components/schemas/CommonApiResponse"
-                                    }
-                              }
-                        }
-                  },
                   "reTokenKey": {
                         "description": "re-token key",
                         "content": {
@@ -1079,278 +936,7 @@
                         }
                   },
                   "UserEntity": {
-                        "$ref": "./user.json"
-                  }
-            },
-            "requestBodies": {
-                  "UpdateBasicUserDto": {
-                        "content": {
-                              "application/json": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "name": {
-                                                      "type": "string",
-                                                      "example": "who am i"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "description": "user basic information is not include some sensitive fields",
-                        "required": true
-                  },
-                  "UpdateAvatarDto": {
-                        "description": "put avatar image here",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "avatar": {
-                                                      "type": "string",
-                                                      "example": "/hello.png"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "OtpSmsDTO": {
-                        "description": "provide phone number to send an otp key",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "phoneNumber": {
-                                                      "type": "string",
-                                                      "example": "+20401230312"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "ResetPasswordDTO": {
-                        "description": "provide new password to reset password",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "newPassword": {
-                                                      "type": "string",
-                                                      "example": "123abcAbc"
-                                                },
-                                                "confirmNewPassword": {
-                                                      "type": "string",
-                                                      "example": "123abcAbc"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "ChangePasswordDTO": {
-                        "description": "provide new password and current password to change password by user",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "newPassword": {
-                                                      "type": "string",
-                                                      "example": "123abcAbc"
-                                                },
-                                                "confirmNewPassword": {
-                                                      "type": "string",
-                                                      "example": "123abcAbc"
-                                                },
-                                                "currentPassword": {
-                                                      "type": "string",
-                                                      "example": "1234abcAbc"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "UpdateEmailDto": {
-                        "description": "provide an email to send an otp key",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "phoneNumber": {
-                                                      "type": "string",
-                                                      "example": "hello@gmail.com"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "AboutUsDto": {
-                        "description": "basic user information",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "email": {
-                                                      "type": "string",
-                                                      "example": "hello@gmail.com"
-                                                },
-                                                "name": {
-                                                      "type": "string",
-                                                      "example": "pham vinh nhan"
-                                                },
-                                                "message": {
-                                                      "type": "string",
-                                                      "example": "hello world"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "LoginUserDto": {
-                        "description": "login user information",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "username": {
-                                                      "type": "string",
-                                                      "example": "username"
-                                                },
-                                                "password": {
-                                                      "type": "string",
-                                                      "example": "password"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "RoomIdDto": {
-                        "description": "provide roomId",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "roomId": {
-                                                      "type": "string",
-                                                      "example": "123124215421"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "AddMoveTTTDto": {
-                        "description": "provide roomId and x y for please tic-tac-toe",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "roomId": {
-                                                      "type": "string",
-                                                      "example": "123124215421"
-                                                },
-                                                "x": {
-                                                      "type": "number",
-                                                      "example": 1
-                                                },
-                                                "y": {
-                                                      "type": "number",
-                                                      "example": 1
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "RegisterUserDto": {
-                        "description": "register user information",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "name": {
-                                                      "type": "string",
-                                                      "example": "my name"
-                                                },
-                                                "username": {
-                                                      "type": "string",
-                                                      "example": "username"
-                                                },
-                                                "password": {
-                                                      "type": "string",
-                                                      "example": "password"
-                                                },
-                                                "confirmPassword": {
-                                                      "type": "string",
-                                                      "example": "password"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "RoomIdChatDTO": {
-                        "description": "give server the chat room you want to join",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "chatId": {
-                                                      "type": "string",
-                                                      "example": "123124215421"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
-                  },
-                  "SendMessageDTO": {
-                        "description": "add new message to chat room",
-                        "content": {
-                              "form-data": {
-                                    "schema": {
-                                          "type": "object",
-                                          "properties": {
-                                                "chatId": {
-                                                      "type": "string",
-                                                      "example": "123124215421"
-                                                },
-                                                "content": {
-                                                      "type": "string",
-                                                      "example": "hello world"
-                                                }
-                                          }
-                                    }
-                              }
-                        },
-                        "required": true
+                        "$ref": "./entity/user.json"
                   }
             },
 

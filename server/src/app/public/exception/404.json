@@ -1,0 +1,10 @@
+{
+      "description": "entity does not exist in database",
+      "content": {
+            "application/json": {
+                  "schema": {
+                        "$ref": "../schema/apiResponse.json"
+                  }
+            }
+      }
+}

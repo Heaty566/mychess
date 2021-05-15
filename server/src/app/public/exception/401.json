@@ -1,0 +1,10 @@
+{
+      "description": "user has not a re-token",
+      "content": {
+            "application/json": {
+                  "schema": {
+                        "$ref": "../schema/apiResponse.json"
+                  }
+            }
+      }
+}

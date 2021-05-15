@@ -1,0 +1,28 @@
+{
+      "type": "object",
+      "properties": {
+            "data": {
+                  "type": "object",
+                  "description": "it type any base on your api"
+            },
+
+            "details": {
+                  "type": "object",
+                  "properties": {
+                        "field": {
+                              "type": "string",
+                              "description": "field will be the name of invalid field",
+                              "example": "should not be empty"
+                        },
+                        "message": {
+                              "type": "string",
+                              "example": "this is an error message"
+                        },
+                        "errorMessage": {
+                              "type": "string",
+                              "example": "this is an error message"
+                        }
+                  }
+            }
+      }
+}
