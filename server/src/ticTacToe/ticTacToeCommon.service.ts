@@ -1,20 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { EloCalculator, TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from './entity/ticTacToe.interface';
 
-//---- Service
-import { RedisService } from '../utils/redis/redis.service';
-import { UserService } from '../user/user.service';
-
-//---- Entity
-import { TicTacToe } from './entity/ticTacToe.entity';
-import { User } from '../user/entities/user.entity';
 import { ChatService } from '../chat/chat.service';
-import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus, EloCalculator } from './entity/ticTacToe.interface';
+import { Injectable } from '@nestjs/common';
+import { RedisService } from '../utils/redis/redis.service';
+import { TicTacToe } from './entity/ticTacToe.entity';
 import { TicTacToeBoard } from './entity/ticTacToeBoard.entity';
 import { TicTacToeMove } from './entity/ticTacToeMove.entity';
+import { TicTacToeMoveRepository } from './entity/ticTacToeMove.repository';
+import { TicTacToeRepository } from './entity/ticTacToe.repository';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
+
+//---- Service
+
+//---- Entity
 
 //---- Repository
-import { TicTacToeRepository } from './entity/ticTacToe.repository';
-import { TicTacToeMoveRepository } from './entity/ticTacToeMove.repository';
 
 @Injectable()
 export class TicTacToeCommonService {
@@ -152,6 +153,7 @@ export class TicTacToeCommonService {
 
       async leaveGame(boardId: string, player: TicTacToePlayer) {
             const board = await this.getBoard(boardId);
+
             if (board) {
                   if (board.status === TicTacToeStatus.PLAYING) {
                         await this.surrender(boardId, player);
