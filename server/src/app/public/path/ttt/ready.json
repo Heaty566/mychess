@@ -1,0 +1,35 @@
+{
+      "put": {
+            "tags": ["tic-tac-toe"],
+            "description": "send request to toggle ready state to play, two user have to ready before sending a start request (send one more time to change to not ready)",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "provide room id for server to know which room you are ready",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "user state change to ready",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "$ref": "../../exception/400.json"
+                  },
+                  "401": {
+                        "$ref": "../../exception/401.json"
+                  },
+                  "403": {
+                        "$ref": "../../exception/403.json"
+                  },
+                  "404": {
+                        "$ref": "../../exception/404.json"
+                  }
+            }
+      }
+}

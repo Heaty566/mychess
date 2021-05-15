@@ -1,0 +1,23 @@
+{
+      "name": "searchUserQuery",
+      "in": "query",
+      "required": true,
+      "style": "form",
+      "schema": {
+            "type": "object",
+            "properties": {
+                  "name": {
+                        "type": "string",
+                        "example": "hello world"
+                  },
+                  "currentPage": {
+                        "type": "number",
+                        "example": 1
+                  },
+                  "pageSize": {
+                        "type": "number",
+                        "example": 1
+                  }
+            }
+      }
+}

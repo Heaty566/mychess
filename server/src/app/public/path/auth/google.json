@@ -1,0 +1,11 @@
+{
+      "get": {
+            "tags": ["auth"],
+            "description": "Mychess integrates with Google to support user authentication and login into a Mychess application with a Google account.",
+            "responses": {
+                  "200": {
+                        "$ref": "../../response/reTokenKey.json"
+                  }
+            }
+      }
+}

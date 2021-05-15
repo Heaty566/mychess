@@ -1,0 +1,14 @@
+{
+      "post": {
+            "tags": ["auth"],
+            "description": "The register API can be used to create user accounts in the application. A registration request must provide a user object as a collection of key/value properties.",
+            "requestBody": {
+                  "$ref": "../../dto/registerUser.json"
+            },
+            "responses": {
+                  "200": {
+                        "$ref": "../../schema/apiResponse.json"
+                  }
+            }
+      }
+}
