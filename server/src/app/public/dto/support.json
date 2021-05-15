@@ -1,0 +1,25 @@
+{
+      "description": "basic user information",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "email": {
+                                    "type": "string",
+                                    "example": "hello@gmail.com"
+                              },
+                              "name": {
+                                    "type": "string",
+                                    "example": "pham vinh nhan"
+                              },
+                              "message": {
+                                    "type": "string",
+                                    "example": "hello world"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

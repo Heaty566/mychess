@@ -1,0 +1,12 @@
+{
+      "post": {
+            "tags": ["auth"],
+            "description": "Registered users can login to establish their identity with the application using the API below. The login operation requires two properties: username and password.",
+            "requestBody": { "$ref": "../../dto/loginUser.json" },
+            "responses": {
+                  "200": {
+                        "$ref": "../../schema/apiResponse.json"
+                  }
+            }
+      }
+}

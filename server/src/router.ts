@@ -1,7 +1,7 @@
 import * as I18n from 'i18n';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import * as doc from './app/public/swagger.json';
+import * as doc from './app/public/doc.json';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import * as swagger from 'swagger-ui-express';
