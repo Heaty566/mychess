@@ -212,10 +212,6 @@ export class ChessController {
             const isMove = await this.chessService.playAMove(player, curPos, desPos, board.id);
             if (!isMove) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wrong-turn' } } }, 'BadRequestException');
 
-            // check king enemy
-            if (await this.chessService.kingIsChecked(await this.chessService.getKing(enemyColor, board.id), board.id))
-                  this.chessGateway.kingIsChecked(enemyColor, player.id, board.id);
-
             // check promote pawn
             if (await this.chessService.isPromotePawn(desPos, board.id)) this.chessGateway.promotePawn(board.id, player.id);
 

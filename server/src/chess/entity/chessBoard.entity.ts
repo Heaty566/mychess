@@ -15,6 +15,7 @@ export class ChessBoard {
       lastStep: Date;
       eloBlackUser: number;
       eloWhiteUser: number;
+      checkedPiece: ChessMoveCoordinates | undefined;
 
       constructor(readonly isBotMode: boolean) {
             const initCell: ChessFlag = {
@@ -39,6 +40,7 @@ export class ChessBoard {
             this.users = [];
             this.winner = PlayerFlagEnum.EMPTY;
             this.status = ChessStatus.NOT_YET;
+            this.checkedPiece = undefined;
       }
 
       initBoard() {
