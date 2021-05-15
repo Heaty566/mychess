@@ -1,13 +1,15 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { SocketExtend } from 'socket.io';
-import { ioResponse } from '../app/interface/socketResponse';
 import * as Cookie from 'cookie';
 
-//---- Service
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+
 import { RedisService } from '../utils/redis/redis.service';
+import { SocketExtend } from 'socket.io';
+import User from '../user/entities/user.entity';
+import { ioResponse } from '../app/interface/socketResponse';
+
+//---- Service
 
 //---- Entity
-import User from '../user/entities/user.entity';
 
 @Injectable()
 export class UserSocketGuard implements CanActivate {
@@ -30,7 +32,11 @@ export class UserSocketGuard implements CanActivate {
             //checking io-token
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
             if (!getUser) throw ioResponse.sendError({}, 'UnauthorizedException');
-            client.user = getUser;
+            client.user = {
+                  games: client?.user?.games ? client.user.games : { chessId: '', tttId: '' },
+                  id: getUser.id,
+                  username: getUser.username,
+            };
 
             return true;
       }
