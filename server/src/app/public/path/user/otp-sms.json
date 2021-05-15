@@ -14,6 +14,36 @@
                                     }
                               }
                         }
+                  },
+                  "400": {
+                        "description": "The user has requested too many times, please try again after 30 minutes",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "The user phone number is taken by another user",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "500": {
+                        "description": "Internal server error from sms server",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }
