@@ -82,7 +82,7 @@ export class ChessController {
             return apiResponse.send({ data: result });
       }
 
-      @Put('/quick-join-room')
+      @Post('/quick-join-room')
       @UseGuards(UserGuard)
       async handleOnQuickJoinRoom(@Req() req: Request) {
             const boardId = await this.chessCommonService.quickJoinRoom();
