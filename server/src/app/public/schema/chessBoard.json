@@ -49,9 +49,9 @@
             "board": {
                   "type": "array",
                   "items": {
-                        "types": "array",
+                        "type": "array",
                         "items": {
-                              "type": "chessFlag.json"
+                              "$ref": "./chessFlag.json"
                         }
                   }
             }
