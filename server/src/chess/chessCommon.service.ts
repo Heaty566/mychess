@@ -9,7 +9,6 @@ import { ObjectLiteral } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { ChessMoveRepository } from './entity/chessMove.repository';
 import { ChatService } from '../chat/chat.service';
-import { TicTacToeStatus } from 'src/ticTacToe/entity/ticTacToe.interface';
 
 @Injectable()
 export class ChessCommonService {
@@ -89,6 +88,15 @@ export class ChessCommonService {
       async getBoard(boardId: string) {
             const board = await this.redisService.getObjectByKey<ChessBoard>(`chess-${boardId}`);
             return board;
+      }
+
+      async getAllBoard() {
+            const keyBoards = await this.redisService.getAllKeyWithPattern('chess-[0-9]*');
+            const boardIds: string[] = [];
+            keyBoards.forEach((key) => {
+                  boardIds.push(key.split('-')[1]);
+            });
+            return boardIds;
       }
 
       async joinGame(boardId: string, user: User | ChessPlayer) {
@@ -292,5 +300,23 @@ export class ChessCommonService {
 
                   return newBoardId;
             }
+      }
+
+      async quickJoinRoom(): Promise<string> {
+            const boardIds = await this.getAllBoard();
+            let roomOneUserId, emptyRoomId;
+
+            for (let i = 0; i < boardIds.length; i++) {
+                  const board = await this.getBoard(boardIds[i]);
+                  if (board) {
+                        if (board.users.length === 1) roomOneUserId = boardIds[i];
+                        if (board.users.length === 0) emptyRoomId = boardIds[i];
+                  }
+            }
+
+            if (roomOneUserId) return roomOneUserId;
+            if (emptyRoomId) return emptyRoomId;
+
+            return '';
       }
 }
