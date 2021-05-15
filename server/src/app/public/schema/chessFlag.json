@@ -1,0 +1,12 @@
+{
+      "type": "object",
+      "description": "Flag for chess",
+      "properties": {
+            "chessRole": {
+                  "$ref": "chessRole.json"
+            },
+            "flag": {
+                  "$ref": "gamePlayerFlag.json"
+            }
+      }
+}
