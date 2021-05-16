@@ -99,6 +99,15 @@ export class TicTacToeCommonService {
             return newBoard.id;
       }
 
+      async getAllBoard() {
+            const keyBoards = await this.redisService.getAllKeyWithPattern('ttt-[0-9]*');
+            const boardIds: string[] = [];
+            keyBoards.forEach((key) => {
+                  boardIds.push(key.split('-')[1]);
+            });
+            return boardIds;
+      }
+
       async createDrawRequest(boardId: string, player: TicTacToePlayer) {
             const board = await this.getBoard(boardId);
             if (board) {
@@ -299,5 +308,24 @@ export class TicTacToeCommonService {
 
                   return newBoardId;
             }
+      }
+
+      async quickJoinRoom(): Promise<string> {
+            const boardIds = await this.getAllBoard();
+            const roomOneUserIds: string[] = [];
+            const emptyRoomIds: string[] = [];
+
+            for (let i = 0; i < boardIds.length; i++) {
+                  const board = await this.getBoard(boardIds[i]);
+                  if (board) {
+                        if (board.users.length === 1) roomOneUserIds.push(boardIds[i]);
+                        if (board.users.length === 0) emptyRoomIds.push(boardIds[i]);
+                  }
+            }
+
+            if (roomOneUserIds.length > 0) return roomOneUserIds[Math.floor(Math.random() * (roomOneUserIds.length - 1))];
+            else if (emptyRoomIds.length > 0) return emptyRoomIds[Math.floor(Math.random() * (emptyRoomIds.length - 1))];
+
+            return '';
       }
 }

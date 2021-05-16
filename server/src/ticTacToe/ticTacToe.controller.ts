@@ -51,6 +51,18 @@ export class TicTacToeController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
       }
 
+      @Get('/quick-join-room')
+      @UseGuards(UserGuard)
+      async handleOnQuickJoinRoom(@Req() req: Request) {
+            const boardId = await this.ticTacToeCommonService.quickJoinRoom();
+            if (!boardId) throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
+            const board = await this.getGame(boardId);
+            const isExist = await this.ticTacToeCommonService.findUser(board.id, req.user.id);
+            if (!isExist) await this.ticTacToeCommonService.joinGame(board.id, req.user);
+
+            return apiResponse.send({ data: { roomId: board.id } });
+      }
+
       @Get('/:id')
       async handleOnGameByUserId(@Param('id') id: string) {
             const result = await this.ticTacToeCommonService.getAllBoardByUserId(id);
