@@ -3,14 +3,14 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 
-import SeoHead from '../../../components/common/seoHead';
 import routers from '../../../common/constants/router';
 import { RootState } from '../../../store';
 import { ApiState } from '../../../common/interface/api.interface';
 import userAPI from '../../../api/userApi';
-
-import BtnLink from '../../../components/btn/btn-link';
 import useFormError from '../../../common/hooks/useFormError';
+
+import SeoHead from '../../../components/common/seoHead';
+import BtnLink from '../../../components/btn/btn-link';
 import TextField from '../../../components/form/filed-textfield';
 import BtnForm from '../../../components/btn/btn-form';
 import WaveLoading from '../../../components/loading/wave-loading';

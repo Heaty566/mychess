@@ -1,16 +1,17 @@
 import * as React from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 import routers from '../common/constants/router';
-import SeoHead from '../components/common/seoHead';
 import { ticTacToeApi } from '../api/tttApi';
+import SeoHead from '../components/common/seoHead';
+import chessApi from '../api/chessApi';
+
 import TicTacToeIcon from '../public/asset/icons/tictactoe';
 import RobotIcon from '../public/asset/icons/robot';
 import PlayerBlueIcon from '../public/asset/icons/player-blue';
 import PlayerIcon from '../public/asset/icons/player';
 import ChessBoardIcon from '../public/asset/icons/chess';
-import { useRouter } from 'next/router';
-import chessApi from '../api/chessApi';
 
 export interface HomeProps {}
 

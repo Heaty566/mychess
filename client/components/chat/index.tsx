@@ -1,7 +1,9 @@
 import * as React from 'react';
+
 import { UseFormRegister } from 'react-hook-form';
 import { Chat } from '../../common/interface/chat.interface';
 import { GamePlayer, GamePlayerFlag } from '../../common/interface/game.interface';
+
 import ChatMessage from './chat-message';
 
 export interface ChatProps {

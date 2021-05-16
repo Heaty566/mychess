@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import BlackKingIcon from '../../public/asset/icons/chess/black-king';
 import WhiteKingIcon from '../../public/asset/icons/chess/white-king';
 

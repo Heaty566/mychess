@@ -1,7 +1,9 @@
 import * as React from 'react';
+
 import { truncateContent } from '../../common/helpers/string.helper';
 import { convertTimeToNumber } from '../../common/helpers/timer.helper';
 import { GamePlayer } from '../../common/interface/game.interface';
+
 import TooltipDropBox from '../tooltip/tooltip-dropbox';
 
 export interface PlayerInfoProps {

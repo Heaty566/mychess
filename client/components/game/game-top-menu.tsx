@@ -1,7 +1,9 @@
 import * as React from 'react';
+
 import { copy } from '../../common/helpers/copy';
-import TooltipDropBox from '../tooltip/tooltip-dropbox';
+
 import ShareIcon from '../../public/asset/icons/share';
+import TooltipDropBox from '../tooltip/tooltip-dropbox';
 
 export interface GameTopMenuProps {
     boardId: string;

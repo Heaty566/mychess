@@ -1,23 +1,23 @@
 import * as React from 'react';
+import Link from 'next/link';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 import { ApiState, ServerResponse } from '../../../common/interface/api.interface';
 import { AuthState, User } from '../../../common/interface/user.interface';
-import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-
-import CardGameReport from '../../../components/card/card-game-report';
-import EditIcons from '../../../public/asset/icons/edit';
 import { GamePlayerFlag } from '../../../common/interface/game.interface';
-import Link from 'next/link';
 import { RootState } from '../../../store';
-import SeoHead from '../../../components/common/seoHead';
 import { TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface';
-import WaveLoading from '../../../components/loading/wave-loading';
-import axios from 'axios';
 import { capitalize } from '../../../common/helpers/string.helper';
 import chessApi from '../../../api/chessApi';
 import routers from '../../../common/constants/router';
 import ticTacToeApi from '../../../api/tttApi';
-import { useSelector } from 'react-redux';
+
+import SeoHead from '../../../components/common/seoHead';
+import WaveLoading from '../../../components/loading/wave-loading';
+import CardGameReport from '../../../components/card/card-game-report';
+import EditIcons from '../../../public/asset/icons/edit';
 
 export interface ProfileProps {
     user: User | null;

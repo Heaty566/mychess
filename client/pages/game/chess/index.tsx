@@ -1,19 +1,20 @@
 import * as React from 'react';
-
-import { ApiState } from '../../../common/interface/api.interface';
-import BtnForm from '../../../components/btn/btn-form';
-import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
-import { RootState } from '../../../store';
-import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import SeoHead from '../../../components/common/seoHead';
-import TextField from '../../../components/form/filed-textfield';
-import WaveLoading from '../../../components/loading/wave-loading';
-import { chessApi } from '../../../api/chessApi';
-import routers from '../../../common/constants/router';
 import { useForm } from 'react-hook-form';
-import useFormError from '../../../common/hooks/useFormError';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
+
+import { ApiState } from '../../../common/interface/api.interface';
+import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
+import { RootState } from '../../../store';
+import { chessApi } from '../../../api/chessApi';
+import routers from '../../../common/constants/router';
+import useFormError from '../../../common/hooks/useFormError';
+
+import TextField from '../../../components/form/filed-textfield';
+import BtnForm from '../../../components/btn/btn-form';
+import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
+import SeoHead from '../../../components/common/seoHead';
+import WaveLoading from '../../../components/loading/wave-loading';
 
 export interface ChessForm {
     roomId: string;

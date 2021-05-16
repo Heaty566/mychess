@@ -1,11 +1,16 @@
 import * as React from 'react';
-
+import { useSelector } from 'react-redux';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
 import { ApiState } from '../../../common/interface/api.interface';
+import { GameStatus } from '../../../common/interface/game.interface';
+import { RootState } from '../../../store';
+import routers from '../../../common/constants/router';
+import useChatIo from '../../../common/hooks/useChatIo';
+import useGameTTT from '../../../common/hooks/useGameTTT';
+
 import ChatBox from '../../../components/chat';
 import GameControlMenu from '../../../components/game/game-menu';
-import { GameStatus } from '../../../common/interface/game.interface';
 import GameTopMenu from '../../../components/game/game-top-menu';
 import LabelMessagePopup from '../../../components/form/label-message-popup';
 import PanelDraw from '../../../components/game/panel-draw';
@@ -13,19 +18,11 @@ import PanelReady from '../../../components/game/panel-ready';
 import PanelRestart from '../../../components/game/panel-restart';
 import PanelStart from '../../../components/game/panel-start';
 import PlayerInfo from '../../../components/game/player-info';
-import { RootState } from '../../../store';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import SeoHead from '../../../components/common/seoHead';
-import ShareIcon from '../../../public/asset/icons/share';
 import TTTBoard from '../../../components/game/ttt-board';
 import TTTTurn from '../../../components/game/ttt-turn';
-import ToolTip from '../../../components/tooltip/tooltip-dropbox';
 import WaveLoading from '../../../components/loading/wave-loading';
-import { copy } from '../../../common/helpers/copy';
-import routers from '../../../common/constants/router';
-import useChatIo from '../../../common/hooks/useChatIo';
-import useGameTTT from '../../../common/hooks/useGameTTT';
-import { useSelector } from 'react-redux';
 
 export interface TicTacToePvPProps {
     roomId: string;

@@ -1,7 +1,7 @@
-import { store } from '../store';
 import axios, { AxiosError } from 'axios';
-import Cookies from 'universal-cookie';
 
+import { store } from '../store';
+import Cookies from 'universal-cookie';
 import { ServerResponse } from '../common/interface/api.interface';
 import { apiActions } from '../store/api';
 

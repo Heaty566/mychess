@@ -1,5 +1,8 @@
 import * as React from 'react';
+
 import { ChessFlag, ChessMove, ChessRole } from '../../common/interface/chess.interface';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
+
 import BlackPawn from '../../public/asset/icons/chess/black-pawn-mini';
 import WhitePawn from '../../public/asset/icons/chess/white-pawn-mini';
 import BlackQueen from '../../public/asset/icons/chess/black-queen-mini';
@@ -12,7 +15,6 @@ import BlackRook from '../../public/asset/icons/chess/black-rook-mini';
 import WhiteRook from '../../public/asset/icons/chess/white-rook-mini';
 import BlackBishop from '../../public/asset/icons/chess/black-bishop-mini';
 import WhiteBishop from '../../public/asset/icons/chess/white-bishop-mini';
-import { GamePlayerFlag } from '../../common/interface/game.interface';
 
 export interface ChessStepProps {
     moves: ChessMove[];

@@ -51,6 +51,8 @@ const chessBoardDefault: ChessBoard = {
     chatId: '',
     id: '',
     isBotMode: false,
+    changeOne: 0,
+    changeTwo: 0,
     moves: [],
     startDate: new Date(),
     status: GameStatus.NOT_YET,
