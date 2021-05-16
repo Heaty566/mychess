@@ -10,6 +10,7 @@ import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/c
 import { ChessService } from '../chess.service';
 import { ChessCommonService } from '../chessCommon.service';
 import { AuthService } from '../../auth/auth.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- DTO
 import { ChessAddMoveDto } from '../dto/chessAddMoveDto';
@@ -29,6 +30,7 @@ describe('ChessController', () => {
       let authService: AuthService;
       let chessService: ChessService;
       let chessCommonService: ChessCommonService;
+      let redisService: RedisService;
 
       beforeAll(async () => {
             const { getApp, module, resetDatabase, getFakeUser } = await initTestModule();
@@ -38,7 +40,9 @@ describe('ChessController', () => {
             authService = module.get<AuthService>(AuthService);
             chessService = module.get<ChessService>(ChessService);
             chessCommonService = module.get<ChessCommonService>(ChessCommonService);
+            redisService = module.get<RedisService>(RedisService);
       });
+
       describe('POST /pvp', () => {
             let newUser: User;
             let newCookie: string[];
@@ -63,6 +67,7 @@ describe('ChessController', () => {
                   expect(res.status).toBe(201);
             });
       });
+
       describe('POST /bot', () => {
             let newUser: User;
             let newCookie: string[];
@@ -383,6 +388,7 @@ describe('ChessController', () => {
                   expect(res.status).toBe(403);
             });
       });
+
       describe('POST /draw', () => {
             let user1: User, user2: User;
             let newCookie: string[];
@@ -421,6 +427,7 @@ describe('ChessController', () => {
                   expect(res.status).toBe(403);
             });
       });
+
       describe('PUT /surrender', () => {
             let user1: User, user2: User;
             let newCookie: string[];
@@ -535,6 +542,7 @@ describe('ChessController', () => {
                   expect(res.status).toBe(403);
             });
       });
+
       describe('PUT /draw', () => {
             let user1: User, user2: User;
             let newCookie: string[];
@@ -593,7 +601,7 @@ describe('ChessController', () => {
             });
       });
 
-      describe('Put /leave', () => {
+      describe('PUT /leave', () => {
             let user1: User, user2: User;
             let newCookie: string[];
             let boardId: string;
@@ -842,6 +850,72 @@ describe('ChessController', () => {
                         },
                   });
                   expect(res.status).toBe(200);
+            });
+      });
+
+      describe('GET /quick-join-room', () => {
+            let user: User;
+            let cookie: string[];
+            let boardIds: string[];
+
+            beforeEach(async () => {
+                  user = await generateFakeUser();
+                  const boardId = await chessCommonService.createNewGame(user, false);
+                  const player = await chessCommonService.findUser(boardId, user.id);
+                  await chessCommonService.leaveGame(boardId, player);
+
+                  boardIds = await chessCommonService.getAllBoard();
+                  cookie = generateCookie(await authService.createReToken(user));
+            });
+
+            const reqApi = (cookie: string[]) => supertest(app.getHttpServer()).get('/api/chess/quick-join-room').set({ cookie });
+
+            it('room one user', async () => {
+                  for (let i = 0; i < boardIds.length; i++) {
+                        const board = await chessCommonService.getBoard(boardIds[i]);
+                        if (board) {
+                              if (board.users.length === 0) await redisService.deleteByKey(`chess-${board.id}`);
+                        }
+                  }
+                  const res = await reqApi(cookie);
+
+                  const getBoard = await chessCommonService.getBoard(res.body.data.roomId);
+                  const isExistUser = await chessCommonService.findUser(getBoard.id, user.id);
+
+                  expect(res.status).toBe(200);
+                  expect(isExistUser).toBeDefined();
+                  expect(getBoard).toBeDefined();
+                  expect(getBoard.users[1].id).toBe(user.id);
+            });
+
+            it('empty room', async () => {
+                  const boardIds = await chessCommonService.getAllBoard();
+
+                  for (let i = 0; i < boardIds.length; i++) {
+                        const board = await chessCommonService.getBoard(boardIds[i]);
+                        if (board) {
+                              if (board.users.length === 1) await redisService.deleteByKey(`chess-${board.id}`);
+                        }
+                  }
+
+                  const res = await reqApi(cookie);
+                  const getBoard = await chessCommonService.getBoard(res.body.data.roomId);
+                  const isExistUser = await chessCommonService.findUser(getBoard.id, user.id);
+
+                  expect(res.status).toBe(200);
+                  expect(isExistUser).toBeDefined();
+                  expect(getBoard).toBeDefined();
+                  expect(getBoard.users[0].id).toBe(user.id);
+            });
+
+            it('no room available', async () => {
+                  const boardIds = await chessCommonService.getAllBoard();
+                  for (const boardId of boardIds) {
+                        await redisService.deleteByKey(`chess-${boardId}`);
+                  }
+
+                  const res = await reqApi(cookie);
+                  expect(res.status).toBe(404);
             });
       });
 
