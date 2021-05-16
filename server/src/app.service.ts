@@ -1,10 +1,7 @@
 import { BeforeApplicationShutdown, Injectable } from '@nestjs/common';
 
-import { DatabaseService } from './utils/repository/database.service';
-
 //---- Service
-
-//---- Repository
+import { DatabaseService } from './utils/repository/database.service';
 
 @Injectable()
 export class AppService implements BeforeApplicationShutdown {

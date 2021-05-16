@@ -35,6 +35,12 @@
             "chatId": {
                   "type": "string"
             },
+            "changeOne": {
+                  "type": "number"
+            },
+            "changeTwo": {
+                  "type": "number"
+            },
             "chessPiece": {
                   "type": "object",
                   "properties": {
