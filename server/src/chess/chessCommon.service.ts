@@ -1,14 +1,19 @@
-import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from './entity/chess.interface';
+import { Injectable } from '@nestjs/common';
 
+//---- Service
+import { RedisService } from '../utils/redis/redis.service';
 import { ChatService } from '../chat/chat.service';
+import { UserService } from '../user/user.service';
+
+//---- Entity
 import { Chess } from './entity/chess.entity';
 import { ChessBoard } from './entity/chessBoard.entity';
-import { ChessMoveRepository } from './entity/chessMove.repository';
-import { ChessRepository } from './entity/chess.repository';
-import { Injectable } from '@nestjs/common';
-import { RedisService } from '../utils/redis/redis.service';
 import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
+import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from './entity/chess.interface';
+
+//---- Repository
+import { ChessRepository } from './entity/chess.repository';
+import { ChessMoveRepository } from './entity/chessMove.repository';
 
 @Injectable()
 export class ChessCommonService {

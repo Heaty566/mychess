@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
+
+//---- Service
 import { ChessCommonService } from './chessCommon.service';
+
+//---- Entity
 import { ChessMoveRedis, ChessMoveCoordinates, ChessRole, PlayerFlagEnum, ChessFlag, ChessStatus, ChessPlayer } from './entity/chess.interface';
 import { ChessMove } from './entity/chessMove.entity';
-
-//---- Repository
 
 @Injectable()
 export class ChessService {
@@ -905,14 +907,7 @@ export class ChessService {
                         await this.chessCommonService.setBoard(chessBoard);
 
                         const enemyColor = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
-                        const enemyKingPosition = await this.getKing(enemyColor, boardId);
-                        if (await this.kingIsChecked(enemyKingPosition, boardId)) {
-                              chessBoard.checkedPiece = {
-                                    x: enemyKingPosition.x,
-                                    y: enemyKingPosition.y,
-                              };
-                        } else chessBoard.checkedPiece = undefined;
-                        await this.chessCommonService.setBoard(chessBoard);
+                        await this.executeEnemyKingIsChecked(chessBoard.id, enemyColor);
                   } else return false;
 
                   return true;
@@ -927,13 +922,21 @@ export class ChessService {
             return false;
       }
 
+      // action promote move
       async promoteMove(promotePos: ChessMoveCoordinates, role: ChessRole, boardId: string) {
             const board = await this.chessCommonService.getBoard(boardId);
             board.board[promotePos.x][promotePos.y].chessRole = role;
             await this.chessCommonService.setBoard(board);
 
+            // check enemy king is checked or not
             const playerFlag = board.board[promotePos.x][promotePos.y].flag;
             const enemyColor = playerFlag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
+            await this.executeEnemyKingIsChecked(board.id, enemyColor);
+      }
+
+      // check enemy king is checked or not and execute
+      async executeEnemyKingIsChecked(boardId: string, enemyColor: PlayerFlagEnum.BLACK | PlayerFlagEnum.WHITE) {
+            const board = await this.chessCommonService.getBoard(boardId);
             const enemyKingPosition = await this.getKing(enemyColor, board.id);
 
             if (await this.kingIsChecked(enemyKingPosition, board.id)) {

@@ -5,14 +5,13 @@ import { initTestModule } from '../../test/initTest';
 
 //---- Service
 import { ChessService } from '../chess.service';
+import { ChessCommonService } from '../chessCommon.service';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
 import { ChessBoard } from '../entity/chessBoard.entity';
 import { ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum } from '../entity/chess.interface';
-import { ChessCommonService } from '../chessCommon.service';
 import { ChessMove } from '../entity/chessMove.entity';
-//---- Repository
 
 describe('ChessService', () => {
       let app: INestApplication;
@@ -1906,6 +1905,32 @@ describe('ChessService', () => {
 
                   expect(board.board[3][0].chessRole).toBe(ChessRole.QUEEN);
                   expect(board.checkedPiece).toBeDefined();
+            });
+      });
+
+      describe('promoteMove', () => {
+            let chessBoardId: string;
+            let user1: User;
+            beforeEach(async () => {
+                  user1 = await generateFakeUser();
+                  chessBoardId = await chessCommonService.createNewGame(user1);
+            });
+
+            it('check WHITE with king is checked', async () => {
+                  let board = await chessCommonService.getBoard(chessBoardId);
+                  board.board[3][0] = { chessRole: ChessRole.QUEEN, flag: PlayerFlagEnum.BLACK };
+                  await chessCommonService.setBoard(board);
+
+                  await chessService.executeEnemyKingIsChecked(chessBoardId, PlayerFlagEnum.WHITE);
+                  board = await chessCommonService.getBoard(chessBoardId);
+
+                  expect(board.checkedPiece).toBeDefined();
+            });
+
+            it('check WHITE with king is not checked', async () => {
+                  await chessService.executeEnemyKingIsChecked(chessBoardId, PlayerFlagEnum.WHITE);
+                  const board = await chessCommonService.getBoard(chessBoardId);
+                  expect(board.checkedPiece).toBeUndefined();
             });
       });
 

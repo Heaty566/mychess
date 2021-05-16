@@ -16,11 +16,11 @@ import { ChessAddMoveDto } from '../dto/chessAddMoveDto';
 import { ChessChooseAPieceDTO } from '../dto/chessChooseAPieceDTO';
 import { ChessRoomIdDTO } from '../dto/chessRoomIdDto';
 import { ChessPromotePawnDto } from '../dto/chessPromotePawnDto';
+import { DrawDto } from '../dto/drawDto';
 
 //---- Common
 import { initTestModule } from '../../test/initTest';
 import { generateCookie } from '../../test/test.helper';
-import { DrawDto } from 'src/ticTacToe/dto/drawDto';
 
 describe('ChessController', () => {
       let app: INestApplication;
