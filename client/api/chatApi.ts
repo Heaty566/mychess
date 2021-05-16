@@ -1,5 +1,6 @@
-import http from './axiosCommon';
 import { AxiosInstance } from 'axios';
+
+import http from './axiosCommon';
 import { RoomIdChatDto, SendMessageDTO } from '../common/interface/dto/chat.dto';
 import { ServerResponse } from '../common/interface/api.interface';
 

@@ -1,5 +1,4 @@
 {
-      "description": "invalid body input",
       "content": {
             "application/json": {
                   "schema": {

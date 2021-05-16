@@ -1,32 +1,30 @@
 import * as React from 'react';
-
-import routers from '../../../common/constants/router';
-import SeoHead from '../../../components/common/seoHead';
+import { useSelector } from 'react-redux';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
-import { copy } from '../../../common/helpers/copy';
 
-import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import ToolTip from '../../../components/tooltip/tooltip-dropbox';
-import TTTBoard from '../../../components/game/ttt-board';
-import PlayerInfo from '../../../components/game/player-info';
-import ChessTurn from '../../../components/game/chess-turn';
-import ChatBox from '../../../components/chat';
-import PanelRestart from '../../../components/game/panel-restart';
-import WaveLoading from '../../../components/loading/wave-loading';
-import PanelStart from '../../../components/game/panel-start';
-import PanelReady from '../../../components/game/panel-ready';
-
-import ShareIcon from '../../../public/asset/icons/share';
-import useChatIo from '../../../common/hooks/useChatIo';
-
-import { useGameChess } from '../../../common/hooks/useGameChess';
-import ChessBoard from '../../../components/game/chess-board';
-import PanelDraw from '../../../components/game/panel-draw';
-import ChessStep from '../../../components/game/chess-step';
-import GameControlMenu from '../../../components/game/game-menu';
-import PanelPromote from '../../../components/game/panel-promote';
 import { GamePlayerFlag, GameStatus } from '../../../common/interface/game.interface';
+import { ApiState } from '../../../common/interface/api.interface';
+import { RootState } from '../../../store';
+import routers from '../../../common/constants/router';
+import useChatIo from '../../../common/hooks/useChatIo';
+import { useGameChess } from '../../../common/hooks/useGameChess';
+
+import ChatBox from '../../../components/chat';
+import ChessBoard from '../../../components/game/chess-board';
+import ChessStep from '../../../components/game/chess-step';
+import ChessTurn from '../../../components/game/chess-turn';
+import GameControlMenu from '../../../components/game/game-menu';
 import GameTopMenu from '../../../components/game/game-top-menu';
+import LabelMessagePopup from '../../../components/form/label-message-popup';
+import PanelDraw from '../../../components/game/panel-draw';
+import PanelPromote from '../../../components/game/panel-promote';
+import PanelReady from '../../../components/game/panel-ready';
+import PanelRestart from '../../../components/game/panel-restart';
+import PanelStart from '../../../components/game/panel-start';
+import PlayerInfo from '../../../components/game/player-info';
+import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
+import SeoHead from '../../../components/common/seoHead';
+import WaveLoading from '../../../components/loading/wave-loading';
 
 export interface TicTacToePvPProps {
     roomId: string;
@@ -50,6 +48,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
         chessHandleOnClick,
     } = useGameChess(roomId);
     const { chat, chatRegister, chatWrapperRef, handleOnSendChatMessage } = useChatIo(chessBoard?.chatId);
+    const apiState = useSelector<RootState, ApiState>((state) => state.api);
 
     return (
         <>
@@ -72,6 +71,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         <PlayerInfo player={chessPlayers?.length ? chessPlayers[1] : chessBoard.users[1]} isReverse={true} />
                                     </div>
                                 </div>
+                                <LabelMessagePopup errorMessage={apiState.errorMessage} />
                                 <div className="relative m-auto chess-board">
                                     <PanelStart
                                         handleOnClick={chessHandleOnStart}
@@ -79,7 +79,6 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                             chessBoard.status === GameStatus.NOT_YET && chessBoard.users[0]?.ready && chessBoard.users[1]?.ready
                                         }
                                     />
-
                                     <PanelReady
                                         isReady={true}
                                         handleOnClick={chessHandleOnReady}
@@ -87,7 +86,6 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                             chessBoard.status === GameStatus.NOT_YET && (!chessBoard.users[0]?.ready || !chessBoard.users[1]?.ready)
                                         }
                                     />
-
                                     <PanelRestart
                                         handleOnClick={chessHandleOnRestart}
                                         winner={chessBoard.winner}
@@ -106,6 +104,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         handleOnClick={chessHandleOnPromote}
                                         isAppear={isChessPromote}
                                     />
+
                                     <ChessBoard
                                         board={chessBoard.board}
                                         handleOnClick={chessHandleOnClick}
@@ -130,6 +129,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         users={chessBoard.users}
                                     />
                                 )}
+
                                 <ChessStep moves={chessBoard.moves} />
                             </div>
                         </div>

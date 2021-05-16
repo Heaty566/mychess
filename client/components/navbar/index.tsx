@@ -1,18 +1,18 @@
 import Link from 'next/link';
 import * as React from 'react';
 import Cookies from 'universal-cookie';
-
-import LogoDesktop from '../../public/asset/icons/navbar-logo';
-import LogoMdIcons from '../../public/asset/icons/navbar-logo-md';
+import { useSelector } from 'react-redux';
 
 import router from '../../common/constants/router';
-import NavbarMenu from './navbar-menu';
-import NavbarUser from './navbar-user';
-import NavbarMobile from './navbar-mobile';
-import { useSelector } from 'react-redux';
 import { RootState, store } from '../../store';
 import { AuthState } from '../../common/interface/user.interface';
 import authThunk from '../../store/auth/thunk';
+
+import LogoDesktop from '../../public/asset/icons/navbar-logo';
+import LogoMdIcons from '../../public/asset/icons/navbar-logo-md';
+import NavbarMenu from './navbar-menu';
+import NavbarUser from './navbar-user';
+import NavbarMobile from './navbar-mobile';
 
 const Navbar: React.FunctionComponent = () => {
     const [isOpenSideMenu, setIsOpenSideMenu] = React.useState(false);

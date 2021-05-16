@@ -1,6 +1,6 @@
-import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
+import { RoomIdDto } from '../common/interface/dto/ttt.dto';
 import { ChessChooseAPieceDTO, DrawDTO, PromoteChessDto } from '../common/interface/dto/chess.dto';
-import { ChessMoveRedis, ChessRole } from '../common/interface/chess.interface';
+import { ChessMoveRedis } from '../common/interface/chess.interface';
 
 import { AxiosInstance } from 'axios';
 import { ServerResponse } from '../common/interface/api.interface';

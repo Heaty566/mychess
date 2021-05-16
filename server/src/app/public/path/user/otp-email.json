@@ -18,16 +18,25 @@
                         }
                   },
                   "400": {
-                        "description": "The user has requested too many times, please try again after 30 minutes",
-                        "$ref": "../../exception/400.json"
+                        "description": "The user has requested too many times, please try again after 30 minutes, The user email is taken by another user",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
-                  "400,": {
-                        "description": "The user email is taken by another user",
-                        "$ref": "../../exception/400.json"
-                  },
+
                   "500": {
                         "description": "Internal server error from email server",
-                        "$ref": "../../exception/500.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

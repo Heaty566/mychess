@@ -15,12 +15,14 @@
                         }
                   },
                   "403": {
-                        "description": "OTP code is not correct",
-                        "$ref": "../../exception/403.json"
-                  },
-                  "403,": {
-                        "description": "OTP code is invalid",
-                        "$ref": "../../exception/403.json"
+                        "description": "OTP code is not correct, OTP code is invalid",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

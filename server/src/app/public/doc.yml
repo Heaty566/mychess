@@ -1,7 +1,9 @@
 openapi: 3.0.0
 info:
-  title: MyGame-V1
-  description: a board game build base on NestJs and NextJs
+  title: MyGame-V2
+  description: My chess is an online web games allow people can play chess or tic
+    tac toe and share their happiness across the world. This website is inspired
+    by Chess.com and Steam.
   contact:
     name: Pham Vinh Nhan
     email: heaty566@gmail.com
@@ -56,12 +58,28 @@ paths:
             application/json:
               schema: {}
         "400":
-          description: invalid body input
+          description: user is not found or wrong password
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: it type any base on your api
+                  details:
+                    type: object
+                    properties:
+                      field:
+                        type: string
+                        description: field will be the name of invalid field
+                        example: should not be empty
+                      message:
+                        type: string
+                        example: this is an error message
+                      errorMessage:
+                        type: string
+                        example: this is an error message
   /api/auth/logout:
     post:
       tags:
@@ -87,24 +105,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    description: it type any base on your api
-                  details:
-                    type: object
-                    properties:
-                      field:
-                        type: string
-                        description: field will be the name of invalid field
-                        example: should not be empty
-                      message:
-                        type: string
-                        example: this is an error message
-                      errorMessage:
-                        type: string
-                        example: this is an error message
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/auth/register:
     post:
       tags:
@@ -134,10 +136,19 @@ paths:
         required: true
       responses:
         "200":
-          $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-            /schema"
+          description: return cookie for authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+          description: username is taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/auth/otp-email:
     post:
       tags:
@@ -161,10 +172,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+          description: too many request, mail does not exist, or server cannot send
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/auth/otp-sms:
     post:
       tags:
@@ -189,11 +205,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
-  /api/auth/check-otp?key=:
+          description: too many request, phoneNumber does not exist, or server cannot send
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/auth/check-otp:
     post:
       tags:
         - auth
@@ -213,8 +234,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/auth/google:
     get:
       tags:
@@ -260,10 +281,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+          description: client is not a user
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/support:
     post:
       tags:
@@ -288,8 +314,8 @@ paths:
         required: true
       responses:
         "200":
-          $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-            /schema"
+          $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+            schema"
   /api/user:
     get:
       tags:
@@ -304,8 +330,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
     put:
       tags:
         - user
@@ -330,8 +356,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/user/:id:
     get:
       tags:
@@ -345,8 +371,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: user with the given Id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/user/avatar:
     put:
       tags:
@@ -371,8 +404,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: The avatar file is required, The avatar file couldn't be uploaded.
+            Photos should be smaller than {{size}} MB, The avatar file couldn't
+            be uploaded. Photos should be saved as JPEG, JPG, PNG, BMP files
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "500":
+          description: Internal server error from aws server, upload failed to aws server
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/user/password:
     put:
       tags:
@@ -403,16 +452,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-  /api/user/reset-password?key=:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: The user password is not correct
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/user/reset-password:
     put:
       tags:
         - user
       description: Allow user to enter new password with OTP code is provided.
       parameters:
         - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-        - $ref: "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0"
+        - $ref: "#/paths/~1api~1auth~1check-otp/post/parameters/0"
       requestBody:
         description: provide new password to reset password
         content:
@@ -433,24 +489,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-  /api/user/update-with-otp?key=:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: OTP code is not correct, OTP code is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/user/update-with-otp:
     put:
       tags:
         - user
       description: Allow user to update information with OTP code is provided.
       parameters:
         - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-        - $ref: "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0"
+        - $ref: "#/paths/~1api~1auth~1check-otp/post/parameters/0"
       responses:
         "200":
           description: User information update successfully.
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: OTP code is not correct, OTP code is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/user/otp-sms:
     post:
       tags:
@@ -468,8 +538,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: The user has requested too many times, please try again after 30
+            minutes, The user phone number is taken by another user
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "500":
+          description: Internal server error from sms server
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/user/otp-email:
     post:
       tags:
@@ -486,9 +571,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-  /api/user/search?name=&currentPage=&pageSize=:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: The user has requested too many times, please try again after 30
+            minutes, The user email is taken by another user
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "500":
+          description: Internal server error from email server
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/user/search:
     post:
       tags:
         - user
@@ -517,8 +617,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/admin/users:
     get:
       tags:
@@ -532,22 +632,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-        "401":
-          description: user has not a re-token
-          content:
-            application/json:
-              schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          description: user has to be an administrator
+          description: user is not an admin
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: user is not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/admin/user-admin/:id:
     put:
       tags:
@@ -555,26 +655,29 @@ paths:
       description: Toggle user role from USER to ADMIN and vice versa.
       parameters:
         - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-        - $ref: "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0"
+        - $ref: "#/paths/~1api~1auth~1check-otp/post/parameters/0"
       responses:
         "200":
           description: User role update successfully.
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-        "401":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/401"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
-        "404":
-          description: entity does not exist in database
+          description: user is not an admin
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: user is not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/admin/user-status/:id:
     put:
       tags:
@@ -582,21 +685,51 @@ paths:
       description: Toggle user status from true to false and vice versa (block user).
       parameters:
         - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-        - $ref: "#/paths/~1api~1auth~1check-otp%3Fkey%3D/post/parameters/0"
+        - $ref: "#/paths/~1api~1auth~1check-otp/post/parameters/0"
       responses:
         "200":
           description: User status update successfully.
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-        "401":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/401"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user is not an admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: user is not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/ttt/:id:
+    get:
+      tags:
+        - tic-tac-toe
+      description: get tic tac toe summary of a user
+      parameters:
+        - name: userId
+          description: user id
+          in: query
+          required: true
+          style: form
+          schema:
+            type: string
+            example: 123456789aa
+      responses:
+        "200":
+          description: return tic tac toe summary of a user
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/pvp:
     post:
       tags:
@@ -611,24 +744,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-  /api/ttt/bot:
-    post:
-      tags:
-        - tic-tac-toe
-      description: Create a tic-tac-toe game for player vs bot return roomId to
-        connect socket.io
-      parameters:
-        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-      responses:
-        "200":
-          description: Create new game with bot successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/restart:
     post:
       tags:
@@ -654,14 +771,45 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+          description: the old game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or this game is already played
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/ttt/bot:
+    post:
+      tags:
+        - tic-tac-toe
+      description: Create a tic-tac-toe game for player vs bot return roomId to
+        connect socket.io
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      responses:
+        "200":
+          description: Create new game with bot successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/join-room:
     put:
       tags:
@@ -678,10 +826,37 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found, or it is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/ttt/quick-join-room:
+    get:
+      tags:
+        - chess
+      description: A quick join to ttt room
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      responses:
+        "200":
+          description: return roomId which use socket to join
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: No game is found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/start:
     put:
       tags:
@@ -697,12 +872,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/ready:
     put:
       tags:
@@ -720,12 +905,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/leave:
     put:
       tags:
@@ -743,12 +938,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/add-move:
     put:
       tags:
@@ -757,42 +962,51 @@ paths:
       parameters:
         - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
       requestBody:
-        $ref: "#/paths/~1api~1ttt~1restart/post/requestBody"
+        description: provide roomId and x y for please tic-tac-toe
+        content:
+          form-data:
+            schema:
+              type: object
+              properties:
+                roomId:
+                  type: string
+                  example: "123124215421"
+                x:
+                  type: number
+                  example: 1
+                y:
+                  type: number
+                  example: 1
+        required: true
       responses:
         "200":
           description: leave room successfully
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
-        "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
-        "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
-  /api/ttt/surrender:
-    put:
-      tags:
-        - tic-tac-toe
-      description: Surrender a game
-      parameters:
-        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-      requestBody:
-        $ref: "#/paths/~1api~1ttt~1restart/post/requestBody"
-      responses:
-        "200":
-          description: surrender game ok
+          description: is not your turn
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game is not playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/ttt/draw:
     post:
       tags:
@@ -808,12 +1022,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game not playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
     put:
       tags:
         - tic-tac-toe
@@ -839,34 +1063,54 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
-        "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
-  /api/ttt/:id:
-    get:
-      tags:
-        - tic-tac-toe
-      description: get tic tac toe summary of a user
-      parameters:
-        - name: userId
-          description: user id
-          in: query
-          required: true
-          style: form
-          schema:
-            type: string
-            example: 123456789aa
-      responses:
-        "200":
-          description: return tic tac toe summary of a user
+          description: user does not belong to this game, or game not playing, other user
+            does not create draw request
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/ttt/surrender:
+    put:
+      tags:
+        - tic-tac-toe
+      description: Surrender a game
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      requestBody:
+        $ref: "#/paths/~1api~1ttt~1restart/post/requestBody"
+      responses:
+        "200":
+          description: surrender game ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: user does not belong to this game, or game not playing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/pvp:
     post:
       tags:
@@ -877,12 +1121,12 @@ paths:
         - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
       responses:
         "200":
-          description: Create a game with player successfully
+          description: Restart game successfully
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/bot:
     post:
       tags:
@@ -896,8 +1140,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/join-room:
     put:
       tags:
@@ -914,10 +1158,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chess game with the given id was not found, or it is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/start:
     put:
       tags:
@@ -933,12 +1182,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/leave:
     put:
       tags:
@@ -956,12 +1215,237 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/chess/restart:
+    post:
+      tags:
+        - chess
+      description: "Create a chess game for player vs player and alert connecting user
+        to push router to other room "
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      requestBody:
+        $ref: "#/paths/~1api~1ttt~1restart/post/requestBody"
+      responses:
+        "200":
+          description: Restart game successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: the old game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: user does not belong to this game, or this game is already played
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/chess/add-move:
+    put:
+      tags:
+        - chess
+      description: This router receive position of a piece - which user want to move
+        and move it to potistion user want. Play bot move in bot mode.
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      requestBody:
+        description: provide roomId and x y for please tic-tac-toe
+        content:
+          form-data:
+            schema:
+              type: object
+              properties:
+                roomId:
+                  type: string
+                  example: "123124215421"
+                curPos:
+                  type: object
+                  properties:
+                    x:
+                      type: number
+                    y:
+                      type: number
+                y:
+                  type: number
+                  example: 1
+        required: true
+      responses:
+        "200":
+          description: move piece successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: the piece user want to pickup is enemy piece, or wrong turn, or
+            destination position is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: user does not belong to this game, or game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: chess game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/chess/promote-pawn:
+    put:
+      tags:
+        - chess
+      description: This router receive position and role user want to promote
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      requestBody:
+        description: provide roomId and x y for please tic-tac-toe
+        content:
+          form-data:
+            schema:
+              type: object
+              properties:
+                roomId:
+                  type: string
+                  example: "123124215421"
+                promotePos:
+                  type: object
+                  properties:
+                    x:
+                      type: number
+                    y:
+                      type: number
+                promoteRole:
+                  $ref: "#/components/schemas/chessMoveRedis/properties/chessRole"
+        required: true
+      responses:
+        "200":
+          description: promote pawn successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: the piece user want to pickup is enemy piece, or wrong turn, or
+            destination position is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: user does not belong to this game, or game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: chess game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/chess/quick-join-room:
+    get:
+      tags:
+        - chess
+      description: A quick join to chess room
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      responses:
+        "200":
+          description: return roomId which use socket to join
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: No game is found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+  /api/chess/choose-piece:
+    post:
+      tags:
+        - chess
+      description: This router pickup position of a piece - which user want to move
+      parameters:
+        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
+      requestBody:
+        $ref: "#/paths/~1api~1ttt~1restart/post/requestBody"
+      responses:
+        "200":
+          description: choose piece successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "400":
+          description: the piece user want to pickup is enemy piece
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "403":
+          description: user does not belong to this game, or game is playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
+        "404":
+          description: chess game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/ready:
     put:
       tags:
@@ -979,36 +1463,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
-        "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
-  /api/chess/restart:
-    post:
-      tags:
-        - chess
-      description: "Create a chess game for player vs player and alert connecting user
-        to push router to other room "
-      parameters:
-        - $ref: "#/paths/~1api~1auth~1logout/post/parameters/0"
-      requestBody:
-        $ref: "#/paths/~1api~1ttt~1restart/post/requestBody"
-      responses:
-        "200":
-          description: Restart game successfully
+          description: user does not belong to this game, or game is playing
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-        "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
-        "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chess game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/surrender:
     put:
       tags:
@@ -1024,12 +1494,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game not playing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: ttt game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/draw:
     post:
       tags:
@@ -1045,12 +1525,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game not playing
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chess game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
     put:
       tags:
         - chess
@@ -1065,12 +1555,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this game, or game not playing, other user
+            does not create draw request
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chess game with the given id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chess/:id:
     get:
       tags:
@@ -1084,8 +1585,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chat/new:
     post:
       tags:
@@ -1099,8 +1600,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chat/join:
     put:
       tags:
@@ -1116,12 +1617,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+          description: wrong format
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chat with the given Id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chat/send-message:
     put:
       tags:
@@ -1137,14 +1648,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-        "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this room
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chat with the given Id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
   /api/chat/save:
     put:
       tags:
@@ -1160,14 +1679,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json\
-                  /schema"
-        "400":
-          $ref: "#/paths/~1api~1auth~1login/post/responses/400"
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "403":
-          $ref: "#/paths/~1api~1admin~1users/get/responses/403"
+          description: user does not belong to this room
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
         "404":
-          $ref: "#/paths/~1api~1admin~1user-admin~1%3Aid/put/responses/404"
+          description: chat with the given Id was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/\
+                  schema"
 components:
   schemas:
     user:
@@ -1191,11 +1718,11 @@ components:
               username:
                 type: string
               avatarUrl:
-                type: array
-              name:
-                type: array
-              elo:
                 type: string
+              name:
+                type: string
+              elo:
+                type: number
               createDate:
                 type: string
         messages:
@@ -1209,7 +1736,7 @@ components:
               createDate:
                 type: string
               content:
-                type: array
+                type: string
               userId:
                 description: id of user who creates this message
                 type: string
@@ -1224,7 +1751,7 @@ components:
         createDate:
           type: string
         content:
-          type: array
+          type: string
         userId:
           description: id of user who creates this message
           type: string
@@ -1271,11 +1798,11 @@ components:
         username:
           type: string
         avatarUrl:
-          type: array
-        name:
-          type: array
-        elo:
           type: string
+        name:
+          type: string
+        elo:
+          type: number
         createDate:
           type: string
     gamePlayer:

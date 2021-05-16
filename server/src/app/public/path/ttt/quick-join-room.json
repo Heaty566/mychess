@@ -1,10 +1,12 @@
 {
       "get": {
-            "tags": ["user"],
-            "description": "This API get user information base on id parameter is provided and return it to client without some sensitive fields.",
+            "tags": ["chess"],
+            "description": "A quick join to ttt  room",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+
             "responses": {
                   "200": {
-                        "description": "The server returns any user information without some sensitive fields.",
+                        "description": "return roomId which use socket to join",
                         "content": {
                               "application/json": {
                                     "schema": {
@@ -13,8 +15,9 @@
                               }
                         }
                   },
-                  "400": {
-                        "description": "user with the given Id was not found",
+
+                  "404": {
+                        "description": "No game is found",
                         "content": {
                               "application/json": {
                                     "schema": {

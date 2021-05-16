@@ -1,9 +1,10 @@
-import http from './axiosCommon';
 import { AxiosInstance } from 'axios';
+
 import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
+import { DrawDTO } from '../common/interface/dto/chess.dto';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
-import { DrawDTO } from '../common/interface/dto/chess.dto';
+import http from './axiosCommon';
 
 export class TicTacToeAPI {
     constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
@@ -43,6 +44,12 @@ export class TicTacToeAPI {
     async startGame(input: RoomIdDto) {
         const url = `${this.prefix}/start`;
         const res = await this.apiCall.put<ServerResponse<null>>(url, input);
+        return res;
+    }
+
+    async quickJoin() {
+        const url = `${this.prefix}/quick-join-room`;
+        const res = await this.apiCall.get<ServerResponse<RoomIdDto>>(url);
         return res;
     }
 

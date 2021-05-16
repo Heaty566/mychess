@@ -1,10 +1,11 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-//---- Entity
-import User from '../../user/entities/user.entity';
-import { TicTacToeStatus } from './ticTacToe.interface';
 import { TicTacToeFlag } from './ticTacToe.interface';
 import { TicTacToeMove } from './ticTacToeMove.entity';
+import { TicTacToeStatus } from './ticTacToe.interface';
+import User from '../../user/entities/user.entity';
+
+//---- Entity
 
 @Entity()
 export class TicTacToe {
@@ -19,10 +20,10 @@ export class TicTacToe {
       winner: TicTacToeFlag;
 
       @Column({ default: 0 })
-      redElo: number;
+      changeOne: number;
 
       @Column({ default: 0 })
-      blueElo: number;
+      changeTwo: number;
 
       @Column({ default: new Date().toISOString().slice(0, 19).replace('T', ' ') })
       startDate: Date;

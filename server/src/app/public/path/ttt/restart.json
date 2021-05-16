@@ -20,15 +20,33 @@
                   },
                   "400": {
                         "description": "the old game is playing",
-                        "$ref": "../../exception/400.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
                   "403": {
                         "description": "user does not belong to this game, or this game is already played",
-                        "$ref": "../../exception/403.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   },
                   "404": {
                         "description": "ttt game with the given id was not found",
-                        "$ref": "../../exception/404.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

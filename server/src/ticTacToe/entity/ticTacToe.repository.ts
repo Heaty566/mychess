@@ -1,10 +1,11 @@
 import { EntityRepository, ObjectLiteral } from 'typeorm';
 
-//---- Entity
+import { RepositoryService } from '../../utils/repository/repository.service';
 import { TicTacToe } from './ticTacToe.entity';
 
+//---- Entity
+
 //---- Repository
-import { RepositoryService } from '../../utils/repository/repository.service';
 
 @EntityRepository(TicTacToe)
 export class TicTacToeRepository extends RepositoryService<TicTacToe> {
@@ -35,6 +36,8 @@ export class TicTacToeRepository extends RepositoryService<TicTacToe> {
                   .select([
                         'tic.id',
                         'tic.winner',
+                        'tic.changeOne',
+                        'tic.changeTwo',
                         'tic.startDate',
                         'tic.endDate',
                         'user.id',

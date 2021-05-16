@@ -1,23 +1,20 @@
 import * as React from 'react';
-
-import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
-
-import routers from '../../../common/constants/router';
-
-import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-
-import SeoHead from '../../../components/common/seoHead';
-import { useRouter } from 'next/router';
-import { ticTacToeApi } from '../../../api/tttApi';
-import TextField from '../../../components/form/filed-textfield';
-import { useForm } from 'react-hook-form';
-import useFormError from '../../../common/hooks/useFormError';
-import BtnForm from '../../../components/btn/btn-form';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
-import { ApiState } from '../../../common/interface/api.interface';
-import WaveLoading from '../../../components/loading/wave-loading';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
 
+import { ApiState } from '../../../common/interface/api.interface';
+import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
+import { RootState } from '../../../store';
+import { ticTacToeApi } from '../../../api/tttApi';
+import routers from '../../../common/constants/router';
+import useFormError from '../../../common/hooks/useFormError';
+
+import BtnForm from '../../../components/btn/btn-form';
+import TextField from '../../../components/form/filed-textfield';
+import SeoHead from '../../../components/common/seoHead';
+import WaveLoading from '../../../components/loading/wave-loading';
+import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 export interface TicTacToeForm {
     roomId: string;
 }
@@ -39,6 +36,15 @@ const TicTacToe: React.FunctionComponent = () => {
             router.push(`${routers.ticTacToePvP.link}/${res.data.data.roomId}`);
         });
     };
+
+    const handleOnQuickJoin = async () => {
+        ticTacToeApi.quickJoin().then((res) => {
+            ticTacToeApi.joinRoom({ roomId: res.data.data.roomId }).then(() => {
+                router.push(`${routers.ticTacToePvP.link}/${res.data.data.roomId}`);
+            });
+        });
+    };
+
     return (
         <>
             <SeoHead {...routers.ticTacToePvP.header} />
@@ -52,6 +58,7 @@ const TicTacToe: React.FunctionComponent = () => {
                             {!apiState.isLoading && <BtnForm label="Join Room" />}
                         </form>
                         <p className="my-2 text-center text-mercury">Or Create New Room</p>
+                        <BtnForm label="Quick Join" type="button" handleOnClick={handleOnQuickJoin} />
                         <BtnForm label="Create New Room" type="button" handleOnClick={handleOnCreateNewRoom} />
                     </div>
                 </div>

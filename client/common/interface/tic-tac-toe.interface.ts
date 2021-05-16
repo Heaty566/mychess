@@ -1,4 +1,4 @@
-import { GameStatus, GamePlayerFlag, GamePlayer } from './game.interface';
+import { GamePlayer, GamePlayerFlag, GameStatus } from './game.interface';
 
 export enum TTTGatewayAction {
     TTT_JOIN = 'ttt-join',
@@ -12,6 +12,8 @@ export interface TicTacToeBoard {
     startDate: Date;
     lastStep: Date;
     status: GameStatus;
+    changeOne: number;
+    changeTwo: number;
     board: Array<Array<GamePlayerFlag>>;
     currentTurn: boolean;
     users: GamePlayer[];

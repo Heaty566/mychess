@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Head from 'next/head';
+
 import { capitalize } from '../../common/helpers/string.helper';
 export interface SeoHeadProps {
     title: string;

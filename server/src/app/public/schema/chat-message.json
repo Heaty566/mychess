@@ -9,7 +9,7 @@
                   "type": "string"
             },
             "content": {
-                  "type": "array"
+                  "type": "string"
             },
             "userId": {
                   "description": "id of user who creates this message",

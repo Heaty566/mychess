@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import { GamePlayerFlag } from '../../common/interface/game.interface';
+
 import BtnFunc from '../btn/btn-func';
 import ModalWrapper from '../modal/modal-wrapper';
 export interface PanelRestartProps {

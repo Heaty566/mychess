@@ -14,7 +14,13 @@
                   },
                   "400": {
                         "description": "user is not found or wrong password",
-                        "$ref": "../../exception/400.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

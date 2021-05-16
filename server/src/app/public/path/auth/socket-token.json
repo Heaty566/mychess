@@ -16,7 +16,13 @@
                   },
                   "403": {
                         "description": "client is not a user",
-                        "$ref": "../../exception/400.json"
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
                   }
             }
       }

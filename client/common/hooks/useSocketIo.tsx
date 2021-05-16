@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
+import * as socketIo from 'socket.io-client';
+
 import { RootState, store } from '../../store';
 import { AuthState } from '../interface/user.interface';
-import * as socketIo from 'socket.io-client';
 import authThunk from '../../store/auth/thunk';
 
 interface UseSocketIoProps {

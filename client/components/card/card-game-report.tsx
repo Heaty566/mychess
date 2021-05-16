@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { GamePlayer, GamePlayerFlag } from '../../common/interface/game.interface';
 
 export interface CardGameReportProps {
@@ -8,11 +9,13 @@ export interface CardGameReportProps {
         mmYY: string;
         mmHH: string;
     };
+    changeOne: number;
+    changeTwo: number;
     isWin: boolean;
     winner: GamePlayerFlag;
 }
 
-const CardGameReport: React.FunctionComponent<CardGameReportProps> = ({ currentPlayer, otherPlayer, time, isWin, winner }) => {
+const CardGameReport: React.FunctionComponent<CardGameReportProps> = ({ currentPlayer, otherPlayer, time, isWin, winner, changeOne, changeTwo }) => {
     return (
         <div className="flex items-stretch text-mercury bg-woodsmoke fade-in ">
             <div className={`w-2  ${winner === -1 ? 'bg-yellow-500' : isWin ? 'bg-green-600' : 'bg-red-500'} `}></div>
@@ -27,6 +30,10 @@ const CardGameReport: React.FunctionComponent<CardGameReportProps> = ({ currentP
                 <div className="text-center">
                     <p>{time.mmYY}</p>
                     <p>{time.mmHH}</p>
+                </div>
+                <div className="text-center">
+                    <p className={`${changeOne === 0 ? 'text-yellow-500' : changeOne > 0 ? 'text-green-500' : 'text-red-500'}`}>{changeOne}</p>
+                    <p className={`${changeTwo === 0 ? 'text-yellow-500' : changeTwo > 0 ? 'text-green-500' : 'text-red-500'}`}>{changeTwo}</p>
                 </div>
 
                 <div className="flex flex-row-reverse ">
