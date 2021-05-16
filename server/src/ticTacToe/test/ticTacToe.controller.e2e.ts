@@ -10,6 +10,7 @@ import { TicTacToeFlag, TicTacToePlayer, TicTacToeStatus } from '../entity/ticTa
 import { TicTacToeService } from '../ticTacToe.service';
 import { TicTacToeCommonService } from '../ticTacToeCommon.service';
 import { AuthService } from '../../auth/auth.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- DTO
 import { TTTRoomIdDTO } from '../dto/tttRoomIdDto';
@@ -28,6 +29,7 @@ describe('TicTacToeController', () => {
       let generateFakeUser: () => Promise<User>;
       let authService: AuthService;
       let ticTacToeService: TicTacToeService;
+      let redisService: RedisService;
 
       beforeAll(async () => {
             const { getApp, module, resetDatabase, getFakeUser } = await initTestModule();
@@ -37,6 +39,7 @@ describe('TicTacToeController', () => {
             ticTacToeService = module.get<TicTacToeService>(TicTacToeService);
             ticTacToeCommonService = module.get<TicTacToeCommonService>(TicTacToeCommonService);
             authService = module.get<AuthService>(AuthService);
+            redisService = module.get<RedisService>(RedisService);
       });
 
       describe('GET /:id', () => {
@@ -498,6 +501,72 @@ describe('TicTacToeController', () => {
                   const res = await reqApi({ roomId: boardId });
 
                   expect(res.status).toBe(403);
+            });
+      });
+
+      describe('GET /quick-join-room', () => {
+            let user: User;
+            let cookie: string[];
+            let boardIds: string[];
+
+            beforeEach(async () => {
+                  user = await generateFakeUser();
+                  const boardId = await ticTacToeCommonService.createNewGame(user, false);
+                  const player = await ticTacToeCommonService.findUser(boardId, user.id);
+                  await ticTacToeCommonService.leaveGame(boardId, player);
+
+                  boardIds = await ticTacToeCommonService.getAllBoard();
+                  cookie = generateCookie(await authService.createReToken(user));
+            });
+
+            const reqApi = (cookie: string[]) => supertest(app.getHttpServer()).get('/api/ttt/quick-join-room').set({ cookie });
+
+            it('room one user', async () => {
+                  for (let i = 0; i < boardIds.length; i++) {
+                        const board = await ticTacToeCommonService.getBoard(boardIds[i]);
+                        if (board) {
+                              if (board.users.length === 0) await redisService.deleteByKey(`ttt-${board.id}`);
+                        }
+                  }
+                  const res = await reqApi(cookie);
+
+                  const getBoard = await ticTacToeCommonService.getBoard(res.body.data.roomId);
+                  const isExistUser = await ticTacToeCommonService.findUser(getBoard.id, user.id);
+
+                  expect(res.status).toBe(200);
+                  expect(isExistUser).toBeDefined();
+                  expect(getBoard).toBeDefined();
+                  expect(getBoard.users[1].id).toBe(user.id);
+            });
+
+            it('empty room', async () => {
+                  const boardIds = await ticTacToeCommonService.getAllBoard();
+
+                  for (let i = 0; i < boardIds.length; i++) {
+                        const board = await ticTacToeCommonService.getBoard(boardIds[i]);
+                        if (board) {
+                              if (board.users.length === 1) await redisService.deleteByKey(`ttt-${board.id}`);
+                        }
+                  }
+
+                  const res = await reqApi(cookie);
+                  const getBoard = await ticTacToeCommonService.getBoard(res.body.data.roomId);
+                  const isExistUser = await ticTacToeCommonService.findUser(getBoard.id, user.id);
+
+                  expect(res.status).toBe(200);
+                  expect(isExistUser).toBeDefined();
+                  expect(getBoard).toBeDefined();
+                  expect(getBoard.users[0].id).toBe(user.id);
+            });
+
+            it('no room available', async () => {
+                  const boardIds = await ticTacToeCommonService.getAllBoard();
+                  for (const boardId of boardIds) {
+                        await redisService.deleteByKey(`ttt-${boardId}`);
+                  }
+
+                  const res = await reqApi(cookie);
+                  expect(res.status).toBe(404);
             });
       });
 
