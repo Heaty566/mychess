@@ -6,8 +6,6 @@ import { User } from '../../../user/entities/user.entity';
 
 export function userJoiSchema(field: keyof User) {
       switch (field) {
-            case 'id':
-                  return Joi.string().trim().required();
             case 'name':
                   return Joi.string().min(5).max(40).trim().lowercase().required();
             case 'password':

@@ -77,6 +77,7 @@ export class ChessController {
 
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: newGameId } });
       }
+
       @Get('/quick-join-room')
       @UseGuards(UserGuard)
       async handleOnQuickJoinRoom(@Req() req: Request) {
