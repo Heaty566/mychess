@@ -1,11 +1,9 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { TicTacToeFlag } from './ticTacToe.interface';
-import { TicTacToeMove } from './ticTacToeMove.entity';
-import { TicTacToeStatus } from './ticTacToe.interface';
-import User from '../../user/entities/user.entity';
-
 //---- Entity
+import { TicTacToeFlag, TicTacToeStatus } from './ticTacToe.interface';
+import { TicTacToeMove } from './ticTacToeMove.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class TicTacToe {

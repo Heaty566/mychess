@@ -1,11 +1,10 @@
 import { EntityRepository, ObjectLiteral } from 'typeorm';
 
-import { Chess } from './chess.entity';
-import { RepositoryService } from '../../utils/repository/repository.service';
-
 //---- Entity
+import { Chess } from './chess.entity';
 
-//---- Repository
+//---- Service
+import { RepositoryService } from '../../utils/repository/repository.service';
 
 @EntityRepository(Chess)
 export class ChessRepository extends RepositoryService<Chess> {

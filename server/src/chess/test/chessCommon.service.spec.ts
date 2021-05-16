@@ -7,10 +7,12 @@ import { initTestModule } from '../../test/initTest';
 import { ChessCommonService } from '../chessCommon.service';
 
 //---- Entity
-import User from '../../user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { ChessBoard } from '../../chess/entity/chessBoard.entity';
 import { ChessPlayer, ChessStatus, EloCalculator, PlayerFlagEnum } from '../entity/chess.interface';
 import { Chess } from '../entity/chess.entity';
+
+//---- Repository
 import { ChessRepository } from '../entity/chess.repository';
 
 describe('chessCommonService', () => {

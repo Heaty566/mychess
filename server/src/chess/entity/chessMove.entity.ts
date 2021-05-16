@@ -1,4 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+//---- Entity
 import { Chess } from './chess.entity';
 import { ChessRole, PlayerFlagEnum } from './chess.interface';
 

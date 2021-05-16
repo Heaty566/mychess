@@ -1,10 +1,9 @@
-import { ChessStatus, PlayerFlagEnum } from './chess.interface';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { ChessMove } from './chessMove.entity';
-import User from '../../user/entities/user.entity';
-
 //---- Entity
+import { PlayerFlagEnum } from './chess.interface';
+import { ChessMove } from './chessMove.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Chess {

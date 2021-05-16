@@ -6,11 +6,11 @@ import { generatorString } from '../../app/helpers/stringGenerator';
 
 //---- Service
 import { ChessCommonService } from '../chessCommon.service';
+import { ChessBotService } from '../chessBot.service';
 
 //---- Entity
 import { User } from '../../user/entities/user.entity';
 import { PlayerFlagEnum, ChessMove, ChessMoveCoordinates, ChessRole } from '../entity/chess.interface';
-import { ChessBotService } from '../chessBot.service';
 
 describe('chessBotService', () => {
       let app: INestApplication;

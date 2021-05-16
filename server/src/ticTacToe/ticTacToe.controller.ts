@@ -20,10 +20,10 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 //---- Dto
 import { TTTRoomIdDTO, vTTTRoomIdDto } from './dto/tttRoomIdDto';
 import { TTTAddMoveDto, vTTTAddMoveDto } from './dto/tttAddMoveDto';
+import { DrawDto, vDrawDto } from './dto/drawDto';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { DrawDto, vDrawDto } from './dto/drawDto';
 
 @Controller('ttt')
 export class TicTacToeController {
