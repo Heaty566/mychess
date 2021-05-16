@@ -1,11 +1,10 @@
 import { EntityRepository, ObjectLiteral } from 'typeorm';
 
-import { RepositoryService } from '../../utils/repository/repository.service';
+//---- Entity
 import { TicTacToe } from './ticTacToe.entity';
 
-//---- Entity
-
-//---- Repository
+//---- Service
+import { RepositoryService } from '../../utils/repository/repository.service';
 
 @EntityRepository(TicTacToe)
 export class TicTacToeRepository extends RepositoryService<TicTacToe> {

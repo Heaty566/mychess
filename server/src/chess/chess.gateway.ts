@@ -11,14 +11,14 @@ import { ChessService } from './chess.service';
 import { ChessCommonService } from './chessCommon.service';
 
 //---- Entity
-import { ChessRole, PlayerFlagEnum } from './entity/chess.interface';
+import { ChessRole, ChessStatus } from './entity/chess.interface';
+
 //---- Dto
 import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 
 //---- Common
 import { ioResponse } from '../app/interface/socketResponse';
 import { ChessGatewayAction } from './chessGateway.action';
-import { ChessStatus } from './entity/chess.interface';
 
 @WebSocketGateway({ namespace: 'chess' })
 export class ChessGateway {

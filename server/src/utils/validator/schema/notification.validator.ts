@@ -6,14 +6,11 @@ import { NotificationConnectType } from '../../../notifications/entities/notific
 
 export function notificationJoiSchema(field: keyof Notification | keyof NotificationConnectType) {
       switch (field) {
-            case 'id':
-                  return Joi.string().trim().required();
             case 'receiver':
                   return Joi.string().trim().required();
             case 'notificationType':
                   return Joi.string().valid(...Object.values(NotificationType));
-            case 'sender':
-                  return Joi.string().trim().required();
+
             case 'link':
                   return Joi.string().trim().required();
       }

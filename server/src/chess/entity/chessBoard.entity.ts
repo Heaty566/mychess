@@ -1,4 +1,7 @@
+//---- Helper
 import { generatorString } from '../../app/helpers/stringGenerator';
+
+//---- Entity
 import { ChessFlag, ChessPlayer, ChessRole, ChessStatus, PlayerFlagEnum, ChessMoveCoordinates } from './chess.interface';
 import { ChessMove } from './chessMove.entity';
 

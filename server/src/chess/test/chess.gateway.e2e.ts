@@ -5,23 +5,20 @@ import { getIoClient } from '../../test/test.helper';
 import { initTestModule } from '../../test/initTest';
 
 //---- Entity
-
+import { ChessBoard } from '../entity/chessBoard.entity';
+import { ChessPlayer } from '../entity/chess.interface';
 import { User } from '../../user/entities/user.entity';
 
 //---- Service
-
+import { ChessCommonService } from '../chessCommon.service';
 import { AuthService } from '../../auth/auth.service';
 
 //---- Gateway
+import { ChessGateway } from '../chess.gateway';
 
 //---- Common
-
 import { SocketServerResponse } from '../../app/interface/socketResponse';
-import { ChessGateway } from '../chess.gateway';
 import { ChessGatewayAction } from '../chessGateway.action';
-import { ChessBoard } from '../entity/chessBoard.entity';
-import { ChessCommonService } from '../chessCommon.service';
-import { ChessPlayer } from '../entity/chess.interface';
 
 describe('ChessGateway ', () => {
       let app: INestApplication;

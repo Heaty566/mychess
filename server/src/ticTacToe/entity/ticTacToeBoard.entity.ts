@@ -1,8 +1,7 @@
 //---- Entity
-import { TicTacToeFlag, TicTacToeStatus } from './ticTacToe.interface';
-import { TicTacToePlayer } from './ticTacToe.interface';
+import { TicTacToeFlag, TicTacToeStatus, TicTacToePlayer } from './ticTacToe.interface';
 
-//---- Common
+//---- Helper
 import { generatorString } from '../../app/helpers/stringGenerator';
 
 export class TicTacToeBoard {

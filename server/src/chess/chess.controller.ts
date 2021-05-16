@@ -19,13 +19,13 @@ import { ChessRoomIdDTO, vChessRoomIdDto } from './dto/chessRoomIdDto';
 import { ChessAddMoveDto, vChessAddMoveDto } from './dto/chessAddMoveDto';
 import { ChessChooseAPieceDTO, vChessChooseAPieceDTO } from './dto/chessChooseAPieceDTO';
 import { ChessPromotePawnDto, vChessPromotePawnDto } from './dto/chessPromotePawnDto';
+import { DrawDto, vDrawDto } from './dto/drawDto';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 
 //---- Common
 import { apiResponse } from '../app/interface/apiResponse';
-import { DrawDto, vDrawDto } from './dto/drawDto';
 
 @Controller('chess')
 export class ChessController {
@@ -38,6 +38,11 @@ export class ChessController {
 
       private async isPlaying(board: ChessBoard) {
             if (board.status === ChessStatus.PLAYING)
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+      }
+
+      private async isNotPlaying(board: ChessBoard) {
+            if (board.status !== ChessStatus.PLAYING)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
       }
 
@@ -99,6 +104,7 @@ export class ChessController {
             const board = await this.getGame(body.roomId);
             if (board.status != ChessStatus.NOT_YET)
                   throw apiResponse.sendError({ details: { roomId: { type: 'field.not-found' } } }, 'NotFoundException');
+
             const isExist = await this.chessCommonService.findUser(board.id, req.user.id);
             if (!isExist && board.users.length < 2) await this.chessCommonService.joinGame(board.id, req.user);
 
@@ -115,6 +121,7 @@ export class ChessController {
 
             const isStart = await this.chessCommonService.startGame(board.id);
             if (!isStart) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.wait-ready-player' } } }, 'BadRequestException');
+
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
@@ -124,8 +131,8 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnLeaveGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
-
             const player = await this.getPlayer(board.id, req.user.id);
+
             await this.chessCommonService.leaveGame(board.id, player);
 
             await this.chessGateway.sendToRoom(board.id);
@@ -137,10 +144,9 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnReadyGame(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
-            //
             await this.isPlaying(board);
-
             const player = await this.getPlayer(board.id, req.user.id);
+
             await this.chessCommonService.toggleReadyStatePlayer(board.id, player);
 
             await this.chessGateway.sendToRoom(board.id);
@@ -152,22 +158,14 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessChooseAPieceDTO))
       async handleOnChooseAPiece(@Req() req: Request, @Body() body: ChessChooseAPieceDTO) {
             const board = await this.getGame(body.roomId);
-
-            if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
-
+            await this.isNotPlaying(board);
             const player = await this.getPlayer(board.id, req.user.id);
 
-            // pick enemy piece
             if (board.board[body.x][body.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } }, data: [] }, 'BadRequestException');
 
-            const currentPosition: ChessMoveCoordinates = {
-                  x: body.x,
-                  y: body.y,
-            };
+            const legalMoves = await this.chessService.legalMove({ x: body.x, y: body.y }, board.id);
 
-            const legalMoves = await this.chessService.legalMove(currentPosition, board.id);
             return apiResponse.send<Array<ChessMoveCoordinates>>({ data: legalMoves });
       }
 
@@ -176,10 +174,7 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessAddMoveDto))
       async handleOnAddMoveGame(@Req() req: Request, @Body() body: ChessAddMoveDto) {
             const board = await this.getGame(body.roomId);
-
-            if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
-
+            await this.isNotPlaying(board);
             const player = await this.getPlayer(board.id, req.user.id);
             const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
 
@@ -225,14 +220,12 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessPromotePawnDto))
       async handleOnPromotePawn(@Req() req: Request, @Body() body: ChessPromotePawnDto) {
             const board = await this.getGame(body.roomId);
-            if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
+            await this.isNotPlaying(board);
+            const player = await this.getPlayer(board.id, req.user.id);
+            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
 
             if (!(await this.chessService.isPromotePawn(body.promotePos, board.id)))
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-position' } } }, 'BadRequestException');
-
-            const player = await this.getPlayer(board.id, req.user.id);
-            const enemyFlag = player.flag === PlayerFlagEnum.WHITE ? PlayerFlagEnum.BLACK : PlayerFlagEnum.WHITE;
 
             if (board.board[body.promotePos.x][body.promotePos.y].flag !== player.flag)
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.is-not-your-piece' } } }, 'BadRequestException');
@@ -264,14 +257,11 @@ export class ChessController {
       @UsePipes(new JoiValidatorPipe(vChessRoomIdDto))
       async handleOnDrawCreate(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
+            await this.isNotPlaying(board);
             const player = await this.getPlayer(board.id, req.user.id);
 
-            await this.getPlayer(board.id, req.user.id);
-
-            if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
-
             await this.chessCommonService.createDrawRequest(board.id, player);
+
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
@@ -292,6 +282,7 @@ export class ChessController {
                   throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } }, data: [] }, 'ForbiddenException');
 
             await this.chessCommonService.draw(board.id, body.isAccept);
+
             await this.chessGateway.sendToRoom(board.id);
             return apiResponse.send<ChessRoomIdDTO>({ data: { roomId: board.id } });
       }
@@ -300,11 +291,8 @@ export class ChessController {
       @UseGuards(UserGuard)
       async handleOnSurrender(@Req() req: Request, @Body() body: ChessRoomIdDTO) {
             const board = await this.getGame(body.roomId);
-
-            if (board.status !== ChessStatus.PLAYING)
-                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.user-is-not-in-room' } } }, 'ForbiddenException');
-
             const player = await this.getPlayer(board.id, req.user.id);
+            await this.isNotPlaying(board);
 
             await this.chessCommonService.surrender(board.id, player);
 
