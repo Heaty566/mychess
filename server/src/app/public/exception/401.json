@@ -1,0 +1,9 @@
+{
+      "content": {
+            "application/json": {
+                  "schema": {
+                        "$ref": "../schema/apiResponse.json"
+                  }
+            }
+      }
+}

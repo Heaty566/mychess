@@ -1,0 +1,19 @@
+{
+      "post": {
+            "tags": ["tic-tac-toe"],
+            "description": "Create a tic-tac-toe game for player vs player return roomId to connect socket.io",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "responses": {
+                  "200": {
+                        "description": "Create a game with player successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

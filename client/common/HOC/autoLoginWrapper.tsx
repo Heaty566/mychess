@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import userThunk from '../../store/auth/userThunk';
 import { RootState, store } from '../../store';
-import { AuthState } from '../../store/auth/interface';
+import { AuthState } from '../../common/interface/user.interface';
 
 const AutoLoginWrapper: React.FunctionComponent = ({ children }) => {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);

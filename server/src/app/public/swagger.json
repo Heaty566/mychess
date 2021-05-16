@@ -1,0 +1,130 @@
+{
+      "openapi": "3.0.0",
+      "info": {
+            "title": "MyGame-V2",
+            "description": "My chess is an online web games allow people can play chess or tic tac toe and share their happiness across the world. This website is inspired by Chess.com and Steam.",
+            "contact": {
+                  "name": "Pham Vinh Nhan",
+                  "email": "heaty566@gmail.com"
+            },
+            "license": {
+                  "name": "Apache 2.0",
+                  "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            },
+            "version": "2.1.1"
+      },
+      "tags": [
+            {
+                  "name": "auth",
+                  "description": "handle authentication"
+            },
+            {
+                  "name": "user",
+                  "description": "service for user"
+            },
+            {
+                  "name": "admin",
+                  "description": "service for administrator, have to login and with role is ADMIN"
+            },
+            {
+                  "name": "common",
+                  "description": "service for basic request"
+            },
+            {
+                  "name": "tic-tac-toe",
+                  "description": "service tic-tac-toe game"
+            },
+            {
+                  "name": "chat",
+                  "description": "service chat box"
+            },
+            {
+                  "name": "chess",
+                  "description": "service chess"
+            }
+      ],
+      "servers": [
+            {
+                  "url": "http://localhost:4000",
+                  "description": "Development server"
+            }
+      ],
+      "paths": {
+            "/api/auth/login": { "$ref": "./path/auth/login.json" },
+            "/api/auth/logout": { "$ref": "./path/auth/logout.json" },
+            "/api/auth/register": { "$ref": "./path/auth/register.json" },
+            "/api/auth/otp-email": { "$ref": "./path/auth/otp-email.json" },
+            "/api/auth/otp-sms": { "$ref": "./path/auth/otp-sms.json" },
+            "/api/auth/check-otp": { "$ref": "./path/auth/check-otp.json" },
+            "/api/auth/google": { "$ref": "./path/auth/google.json" },
+            "/api/auth/github": { "$ref": "./path/auth/github.json" },
+            "/api/auth/facebook": { "$ref": "./path/auth/facebook.json" },
+            "/api/auth/socket-token": { "$ref": "./path/auth/socket-token.json" },
+
+            "/api/support": { "$ref": "./path/root/support.json" },
+
+            "/api/user": { "$ref": "./path/user/[].json" },
+            "/api/user/:id": { "$ref": "./path/user/[id].json" },
+            "/api/user/avatar": { "$ref": "./path/user/avatar.json" },
+            "/api/user/password": { "$ref": "./path/user/password.json" },
+            "/api/user/reset-password": { "$ref": "./path/user/reset-password.json" },
+            "/api/user/update-with-otp": { "$ref": "./path/user/update-with-otp.json" },
+            "/api/user/otp-sms": { "$ref": "./path/user/otp-sms.json" },
+            "/api/user/otp-email": { "$ref": "./path/user/otp-email.json" },
+            "/api/user/search": { "$ref": "./path/user/search.json" },
+
+            "/api/admin/users": { "$ref": "./path/admin/users.json" },
+            "/api/admin/user-admin/:id": { "$ref": "./path/admin/user-admin.json" },
+            "/api/admin/user-status/:id": { "$ref": "./path/admin/user-status.json" },
+
+            "/api/ttt/:id": { "$ref": "./path/ttt/[id].json" },
+            "/api/ttt/pvp": { "$ref": "./path/ttt/pvp.json" },
+            "/api/ttt/restart": { "$ref": "./path/ttt/restart.json" },
+            "/api/ttt/bot": { "$ref": "./path/ttt/bot.json" },
+            "/api/ttt/join-room": { "$ref": "./path/ttt/join-room.json" },
+            "/api/ttt/quick-join-room": { "$ref": "./path/ttt/quick-join-room.json" },
+            "/api/ttt/start": { "$ref": "./path/ttt/start.json" },
+            "/api/ttt/ready": { "$ref": "./path/ttt/ready.json" },
+            "/api/ttt/leave": { "$ref": "./path/ttt/leave.json" },
+            "/api/ttt/add-move": { "$ref": "./path/ttt/add-move.json" },
+            "/api/ttt/draw": { "$ref": "./path/ttt/draw.json" },
+            "/api/ttt/surrender": { "$ref": "./path/ttt/surrender.json" },
+
+            "/api/chess/pvp": { "$ref": "./path/chess/pvp.json" },
+            "/api/chess/bot": { "$ref": "./path/chess/bot.json" },
+            "/api/chess/join-room": { "$ref": "./path/chess/join-room.json" },
+            "/api/chess/start": { "$ref": "./path/chess/start.json" },
+            "/api/chess/leave": { "$ref": "./path/chess/leave.json" },
+            "/api/chess/restart": { "$ref": "./path/chess/restart.json" },
+            "/api/chess/add-move": { "$ref": "./path/chess/add-move.json" },
+            "/api/chess/promote-pawn": { "$ref": "./path/chess/promote-pawn.json" },
+            "/api/chess/quick-join-room": { "$ref": "./path/chess/quick-join-room.json" },
+            "/api/chess/choose-piece": { "$ref": "./path/chess/choose-piece.json" },
+            "/api/chess/ready": { "$ref": "./path/chess/ready.json" },
+            "/api/chess/surrender": { "$ref": "./path/chess/surrender.json" },
+            "/api/chess/draw": { "$ref": "./path/chess/draw.json" },
+            "/api/chess/:id": { "$ref": "./path/chess/[id].json" },
+
+            "/api/chat/new": { "$ref": "./path/chat/new.json" },
+            "/api/chat/join": { "$ref": "./path/chat/join.json" },
+            "/api/chat/send-message": { "$ref": "./path/chat/send-message.json" },
+            "/api/chat/save": { "$ref": "./path/chat/save.json" }
+      },
+      "components": {
+            "schemas": {
+                  "user": { "$ref": "./schema/chat.json" },
+                  "chat": { "$ref": "./schema/chat.json" },
+                  "chat-message": { "$ref": "./schema/chat-message.json" },
+                  "apiResponse": { "$ref": "./schema/apiResponse.json" },
+                  "gamePlayerFlag": { "$ref": "./schema/gamePlayerFlag.json" },
+                  "gameStatus": { "$ref": "./schema/gameStatus.json" },
+                  "publicUser": { "$ref": "./schema/public-user.json" },
+                  "gamePlayer": { "$ref": "./schema/gamePlayer.json" },
+                  "ticTacToeBoard": { "$ref": "./schema/ticTacToeBoard.json" },
+                  "chessRole": { "$ref": "./schema/chessRole.json" },
+                  "chessMoveRedis": { "$ref": "./schema/chessMoveRedis.json" },
+                  "chessMove": { "$ref": "./schema/chessMove.json" },
+                  "chessBoard": { "$ref": "./schema/chessBoard.json" }
+            }
+      }
+}

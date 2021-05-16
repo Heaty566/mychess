@@ -1,0 +1,24 @@
+{
+      "type": "object",
+      "description": "public user without some sensitive information",
+      "properties": {
+            "id": {
+                  "type": "string"
+            },
+            "username": {
+                  "type": "string"
+            },
+            "avatarUrl": {
+                  "type": "string"
+            },
+            "name": {
+                  "type": "string"
+            },
+            "elo": {
+                  "type": "number"
+            },
+            "createDate": {
+                  "type": "string"
+            }
+      }
+}

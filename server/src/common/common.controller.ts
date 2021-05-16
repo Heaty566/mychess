@@ -10,7 +10,7 @@ import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { SupportDTO, vSupportDto } from './dto/aboutUsDto';
 
 //---- Common
-import { apiResponse } from '../app/interface/ApiResponse';
+import { apiResponse } from '../app/interface/apiResponse';
 
 @Controller('/')
 export class CommonController {
@@ -20,6 +20,6 @@ export class CommonController {
       @UsePipes(new JoiValidatorPipe(vSupportDto))
       async cSupport(@Body() body: SupportDTO) {
             //* need to add more function
-            return apiResponse.send<void>({ body: { message: { type: 'server.thank-you-feedback' } } });
+            return apiResponse.send({ details: { message: { type: 'message.thank-you-feedback' } } });
       }
 }

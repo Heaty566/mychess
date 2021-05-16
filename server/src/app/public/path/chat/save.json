@@ -1,0 +1,44 @@
+{
+      "put": {
+            "tags": ["chat"],
+            "description": "save a room chat to database chat",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "the chatId you want to save",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "chat is saved",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "chat with the given Id was not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "403": {
+                        "description": "user does not belong to this room",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

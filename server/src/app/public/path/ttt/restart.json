@@ -1,0 +1,53 @@
+{
+      "post": {
+            "tags": ["tic-tac-toe"],
+            "description": "Create a tic-tac-toe game for player vs player and alert connecting user to push router to other room ",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "provide current roomId to server alert their players to change room when server create new room",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "Restart game successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "the old game is playing",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "403": {
+                        "description": "user does not belong to this game, or this game is already played",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "ttt game with the given id was not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

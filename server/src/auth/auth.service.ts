@@ -4,18 +4,18 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { ReToken } from './entities/re-token.entity';
 
 //---- Repository
-import { UserRepository } from '../users/entities/user.repository';
+import { UserRepository } from '../user/entities/user.repository';
 import { ReTokenRepository } from './entities/re-token.repository';
 
 //---- Helper
-import { spawnOtpCode } from '../app/Helpers/otp.helper';
+import { generatorString } from '../app/helpers/stringGenerator';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +29,7 @@ export class AuthService {
       //-------------------------------OTP Service --------------------------------------
 
       createOTP(user: User, expired: number, type: 'sms' | 'email') {
-            const otpKey = spawnOtpCode(type === 'email' ? 50 : 6, type);
+            const otpKey = generatorString(type === 'email' ? 50 : 6, type === 'email' ? 'lettersLowerCase' : 'number');
 
             this.redisService.setObjectByKey(otpKey, user, expired);
             return otpKey;
@@ -63,6 +63,7 @@ export class AuthService {
 
       private async createAuthToken(user: User) {
             const encryptUser = this.encryptToken(user);
+            if (!encryptUser) return null;
             const authTokenId = String(uuidv4());
 
             this.redisService.setByValue(authTokenId, encryptUser, 5);
@@ -84,6 +85,7 @@ export class AuthService {
             if (!isStillExit) {
                   const user = await this.userRepository.findOneByField('id', reToken.userId);
                   const newReToken = await this.createAuthToken(user);
+                  if (!newReToken) return null;
                   reToken.data = newReToken;
                   const updateReToken = await this.reTokenRepository.save(reToken);
                   return updateReToken.data;
@@ -96,7 +98,7 @@ export class AuthService {
             const authToken = await this.redisService.getByKey(authTokenId);
             if (!authToken) return null;
 
-            return await this.decodeToken<User>(authToken);
+            return await this.verifyToken<User>(authToken);
       }
 
       async clearToken(userId: string) {
@@ -106,11 +108,19 @@ export class AuthService {
       //--------------------------------Encrypt Decrypt Service -------------------------------
 
       encryptToken(tokenData: Record<any, any>) {
-            return this.jwtService.sign(JSON.stringify(tokenData));
+            try {
+                  return this.jwtService.sign(JSON.stringify(tokenData));
+            } catch (err) {
+                  return null;
+            }
       }
 
-      decodeToken<T>(tokenData: string) {
-            return this.jwtService.decode(tokenData) as T;
+      verifyToken<T>(tokenData: string) {
+            try {
+                  return this.jwtService.verify<any>(tokenData) as T;
+            } catch (err) {
+                  return null;
+            }
       }
 
       async encryptString(data: string): Promise<string> {

@@ -1,0 +1,29 @@
+{
+      "put": {
+            "tags": ["user"],
+            "description": "Allow user to update information with OTP code is provided.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }, { "$ref": "../../parameter/oTPkey.json" }],
+            "responses": {
+                  "200": {
+                        "description": "User information update successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "403": {
+                        "description": "OTP code is not correct, OTP code is invalid",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

@@ -1,0 +1,21 @@
+{
+      "description": "add new message to chat room",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "chatId": {
+                                    "type": "string",
+                                    "example": "123124215421"
+                              },
+                              "content": {
+                                    "type": "string",
+                                    "example": "hello world"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

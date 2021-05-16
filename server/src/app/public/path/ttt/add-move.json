@@ -1,0 +1,53 @@
+{
+      "put": {
+            "tags": ["tic-tac-toe"],
+            "description": "you the x y in the board which you want to choose",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "provide X Y and RoomId to server which cell you want to pick",
+                  "$ref": "../../dto/addMoveTTT.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "leave room successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "is not your turn",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "403": {
+                        "description": "user does not belong to this game, or game is not playing",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "ttt game with the given id was not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

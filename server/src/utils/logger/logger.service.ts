@@ -15,7 +15,8 @@ export class LoggerService {
                         content,
                         where,
                   };
-                  return this.winstonLogger[type](message);
+                  this.winstonLogger[type](message);
+                  return this.winstonLogger[type](message.content);
             }
       }
 }

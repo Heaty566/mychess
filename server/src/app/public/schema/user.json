@@ -1,0 +1,58 @@
+{
+      "type": "object",
+      "description": "get all information about user",
+      "properties": {
+            "username": {
+                  "type": "string",
+                  "example": "username"
+            },
+            "name": {
+                  "type": "string",
+                  "example": "my name"
+            },
+            "password": {
+                  "type": "string",
+                  "example": "my password"
+            },
+            "_id": {
+                  "type": "string",
+                  "example": "1321r3121421421res"
+            },
+            "avatarUrl": {
+                  "type": "string",
+                  "example": "/user/2132132132/hello.png"
+            },
+            "googleId": {
+                  "type": "string",
+                  "example": "1232142142"
+            },
+            "facebookId": {
+                  "type": "string",
+                  "example": "1232142142"
+            },
+            "githubId": {
+                  "type": "string",
+                  "example": "1232142142"
+            },
+            "createDate": {
+                  "type": "string",
+                  "example": "10/20/2000"
+            },
+            "elo": {
+                  "type": "integer",
+                  "example": 1000
+            },
+            "isDisabled": {
+                  "type": "string",
+                  "example": "username"
+            },
+            "email": {
+                  "type": "string",
+                  "example": "username"
+            },
+            "phoneNumber": {
+                  "type": "string",
+                  "example": "username"
+            }
+      }
+}

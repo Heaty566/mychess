@@ -6,17 +6,17 @@ import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
 import { RootState, store } from '../../store';
 import { useTimer } from '../../common/hooks/useTimer';
-import { ForgotPasswordEmailDto } from '../../api/auth/dto';
-import { ApiState } from '../../store/api/interface';
+import { ForgotPasswordEmailDto } from '../../common/interface/dto/auth.dto';
+import { ApiState } from '../../common/interface/api.interface';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
 import authThunk from '../../store/auth/thunk';
 
-import TextField from '../../components/form/textField';
-import SideLink from '../../components/link/sidelink';
-import BtnForm from '../../components/btn/btnForm';
-import WaveLoading from '../../components/loading/waveLoading';
-import MsgSuccess from '../../components/form/msgSuccess';
+import TextField from '../../components/form/filed-textfield';
+import BtnSideLink from '../../components/btn/btn-side-link';
+import BtnForm from '../../components/btn/btn-form';
+import WaveLoading from '../../components/loading/wave-loading';
+import LabelMessage from '../../components/form/label-message';
 import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: ForgotPasswordEmailDto = {
@@ -53,7 +53,7 @@ const ResetEmail: React.FunctionComponent = () => {
                 <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
-                        <MsgSuccess message={apiState.message} />
+                        <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
 
                         <p className="py-2 text-mercury-800">
                             Please enter your email address. you will receive a link to create a new password via email.
@@ -91,7 +91,7 @@ const ResetEmail: React.FunctionComponent = () => {
                         </div>
                     </form>
                     <div>
-                        <SideLink label="Or Reset By Phone Number?" position="text-center" href={routers.forgotPasswordPhone.link} />
+                        <BtnSideLink label="Or Reset By Phone Number?" position="text-center" href={routers.forgotPasswordPhone.link} />
                     </div>
                 </div>
             </div>

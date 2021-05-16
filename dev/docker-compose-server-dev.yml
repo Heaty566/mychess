@@ -8,7 +8,3 @@ services:
                 image: heaty566/my-chess-client:latest
                 ports:
                         - 3000:3000
-        admin:
-                image: heaty566/my-chess-admin:latest
-                ports:
-                        - 3001:3001

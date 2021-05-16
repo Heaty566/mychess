@@ -1,0 +1,40 @@
+{
+      "get": {
+            "tags": ["admin"],
+            "description": "Get all users information except some sensitive information.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "responses": {
+                  "200": {
+                        "description": "The server returns array of user information.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "403": {
+                        "description": "user is not an admin",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "user is not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

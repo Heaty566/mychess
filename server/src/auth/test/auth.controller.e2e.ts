@@ -21,21 +21,21 @@ import { fakeUser } from '../../test/fakeEntity';
 import { fakeData, defuse } from '../../test/test.helper';
 
 //---- Repository
-import { UserRepository } from '../../users/entities/user.repository';
+import { UserRepository } from '../../user/entities/user.repository';
 import { ReTokenRepository } from '../entities/re-token.repository';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 //---- Service
 import { SmailService } from '../../providers/smail/smail.service';
 import { AuthService } from '../auth.service';
-import { UserService } from '../../users/user.service';
+import { UserService } from '../../user/user.service';
 
 //---- DTO
 import { LoginUserDTO } from '../dto/loginUser.dto';
 import { RegisterUserDTO } from '../dto/registerUser.dto';
-import { UpdateEmailDTO } from '../../users/dto/updateEmail.dto';
+import { UpdateEmailDTO } from '../../user/dto/updateEmail.dto';
 import { OtpSmsDTO } from '../dto/otpSms.dto';
 
 jest.mock('twilio', () => {
@@ -228,6 +228,15 @@ describe('AuthController', () => {
                               await reqApi(otpSmsDTO);
                         } catch (err) {
                               expect(err.status).toBe(500);
+                        }
+                  });
+
+                  it('Failed (phone does not exist)', async () => {
+                        otpSmsDTO.phoneNumber = '+84904233099';
+                        try {
+                              await reqApi(otpSmsDTO);
+                        } catch (err) {
+                              expect(err.status).toBe(400);
                         }
                   });
 

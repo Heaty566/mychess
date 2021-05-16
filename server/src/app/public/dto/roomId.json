@@ -1,0 +1,17 @@
+{
+      "description": "provide roomId",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "roomId": {
+                                    "type": "string",
+                                    "example": "123124215421"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

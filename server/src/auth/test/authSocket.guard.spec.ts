@@ -3,7 +3,7 @@ import * as Cookie from 'cookie';
 import { createMock } from 'ts-auto-mock';
 
 //---- Service
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- Pipe
 import { UserSocketGuard } from '../authSocket.guard';
@@ -63,22 +63,29 @@ describe('UserSocketGuard', () => {
                         expect(res).toBeTruthy();
                         cookieSpy.mockClear();
                   });
-                  it('Pass', async () => {
+                  it('Failed wrong token', async () => {
                         redisService.setObjectByKey('1234', { username: '123' });
                         cookieSpy.mockReturnValue({ 'io-token': '1234' });
                         headerCookieMock = '';
 
-                        const res = await userSocketGuard.canActivate(context());
-                        expect(res).toBeFalsy();
+                        try {
+                              await userSocketGuard.canActivate(context());
+                        } catch ({ error }) {
+                              expect(error.statusCode).toBe(401);
+                        }
+
                         cookieSpy.mockClear();
                   });
 
                   it('Failed redis key does not exist', async () => {
                         headerCookieMock = 'io=1;';
                         cookieSpy.mockReturnValue({ 'io-token': '124' });
+                        try {
+                              await userSocketGuard.canActivate(context());
+                        } catch ({ error }) {
+                              expect(error.statusCode).toBe(401);
+                        }
 
-                        const res = await userSocketGuard.canActivate(context());
-                        expect(res).toBeFalsy();
                         cookieSpy.mockClear();
                   });
 
@@ -86,8 +93,12 @@ describe('UserSocketGuard', () => {
                         headerCookieMock = 'io=1;';
                         cookieSpy.mockReturnValue({ 'io-token': '' });
 
-                        const res = await userSocketGuard.canActivate(context());
-                        expect(res).toBeFalsy();
+                        try {
+                              await userSocketGuard.canActivate(context());
+                        } catch ({ error }) {
+                              expect(error.statusCode).toBe(401);
+                        }
+
                         cookieSpy.mockClear();
                   });
             });

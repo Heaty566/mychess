@@ -1,0 +1,31 @@
+{
+      "post": {
+            "tags": ["auth"],
+            "description": "Create an OTP code is sent to the user phone number. Users can use it to access a webpage which contains a form where the user can enter the new password.",
+            "requestBody": {
+                  "$ref": "../../dto/otpSms.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "The OTP code has been sent successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "too many request, phoneNumber does not exist, or server cannot send",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

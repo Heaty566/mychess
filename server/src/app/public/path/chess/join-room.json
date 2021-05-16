@@ -1,0 +1,34 @@
+{
+      "put": {
+            "tags": ["chess"],
+            "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "provide room id for server to connect with that room",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "User status update successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "404": {
+                        "description": "chess game with the given id was not found, or it is playing",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

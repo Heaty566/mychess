@@ -1,0 +1,20 @@
+{
+      "post": {
+            "tags": ["chat"],
+            "description": "create new chat room chat",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+
+            "responses": {
+                  "200": {
+                        "description": "return a chatId to user socket io to join chat",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

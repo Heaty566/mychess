@@ -4,14 +4,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { router } from '../router';
 import { AppModule } from '../app.module';
 import { fakeUser } from './fakeEntity';
-import { UserRepository } from '../users/entities/user.repository';
 import { AuthService } from '../auth/auth.service';
-import { UserRole } from '../users/entities/user.userRole.enum';
-import { NotificationRepository } from '../notifications/entities/notification.repository';
+import { UserRole } from '../user/entities/user.userRole.enum';
+
+//---- Entity
+import { ChatRepository } from '../chat/entities/chat.repository';
+
+//---- Repository
+import { UserRepository } from '../user/entities/user.repository';
 import { ReTokenRepository } from '../auth/entities/re-token.repository';
+import { NotificationRepository } from '../notifications/entities/notification.repository';
+import { TicTacToeRepository } from '../ticTacToe/entity/ticTacToe.repository';
 
 export const initUsers = async (repository: UserRepository, authService: AuthService) => {
-      return Array.from(Array(5)).map(async (_) => {
+      return Array.from(Array(5)).map(async () => {
             const dummyUser = fakeUser();
 
             const user = await repository.save(dummyUser);
@@ -30,11 +36,21 @@ const resetDatabase = async (module: TestingModule) => {
       const userRepository = module.get<UserRepository>(UserRepository);
       const notificationRepository = module.get<NotificationRepository>(NotificationRepository);
       const reTokenRepository = module.get<ReTokenRepository>(ReTokenRepository);
+      const chatRepository = module.get<ChatRepository>(ChatRepository);
+      const ticTacToeRepository = module.get<TicTacToeRepository>(TicTacToeRepository);
 
-      await reTokenRepository.clear();
+      await ticTacToeRepository.createQueryBuilder().delete().execute();
+      await ticTacToeRepository.clear();
+
       await reTokenRepository.createQueryBuilder().delete().execute();
-      await notificationRepository.clear();
+      await reTokenRepository.clear();
+
       await notificationRepository.createQueryBuilder().delete().execute();
+      await notificationRepository.clear();
+
+      await chatRepository.createQueryBuilder().delete().execute();
+      await chatRepository.clear();
+
       await userRepository.createQueryBuilder().delete().execute();
       await userRepository.clear();
 };
@@ -66,6 +82,7 @@ export const initTestModule = async () => {
             configModule,
             users,
             resetDatabase: async () => await resetDatabase(module),
+            getFakeUser: async () => await userRepository.save(fakeUser()),
             getAdmin: {
                   user: adminUser,
                   reToken: adminReToken,

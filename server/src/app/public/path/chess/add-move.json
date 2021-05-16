@@ -1,0 +1,53 @@
+{
+      "put": {
+            "tags": ["chess"],
+            "description": "This router receive position of a piece - which user want to move and move it to potistion user want. Play bot move in bot mode.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "provide X Y of current position, destination, and RoomId to server which cell you want to move",
+                  "$ref": "../../dto/addMoveChess.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "move piece successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "the piece user want to pickup is enemy piece, or wrong turn, or destination position is invalid",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "403": {
+                        "description": "user does not belong to this game, or game is playing",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "chess game with the given id was not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

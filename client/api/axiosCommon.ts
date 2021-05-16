@@ -1,12 +1,12 @@
-import { store } from '../store';
 import axios, { AxiosError } from 'axios';
-import Cookies from 'universal-cookie';
 
-import { ApiResponse } from '../store/api/interface';
+import { store } from '../store';
+import Cookies from 'universal-cookie';
+import { ServerResponse } from '../common/interface/api.interface';
 import { apiActions } from '../store/api';
 
 const axiosClient = axios.create({
-    baseURL: process.env.SERVER_URL,
+    baseURL: process.env.SERVER_URL + '/api',
     withCredentials: true,
 });
 
@@ -18,16 +18,17 @@ axiosClient.interceptors.request.use(function (req) {
 axiosClient.interceptors.response.use(
     function (response) {
         store.dispatch(apiActions.resetState());
-        if (response.data.message) store.dispatch(apiActions.updateSuccessMessage(response.data));
+        if (response?.data?.details?.message) store.dispatch(apiActions.updateSuccessMessage(response.data));
 
         return response;
     },
-    function (error: AxiosError<ApiResponse<null>>) {
+    function (error: AxiosError<ServerResponse<null>>) {
         store.dispatch(apiActions.resetState());
         if (error.response?.status === 401) {
             const cookies = new Cookies();
             cookies.set('re-token', '', { maxAge: -999 });
             cookies.set('auth-token', '', { maxAge: -999 });
+            cookies.set('io-token', '', { maxAge: -999 });
         }
 
         if (error.response?.status) store.dispatch(apiActions.updateErrorDetails(error.response.data.details));

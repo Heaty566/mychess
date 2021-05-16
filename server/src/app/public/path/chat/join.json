@@ -1,0 +1,43 @@
+{
+      "put": {
+            "tags": ["chat"],
+            "description": "join a exist room chat",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "description": "the chatId you want to join",
+                  "$ref": "../../dto/roomId.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "return a chatId to user socket io to join chat",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "wrong format",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "chat with the given Id was not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

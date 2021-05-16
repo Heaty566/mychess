@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import Cookies from 'universal-cookie';
 
-import { AuthState } from './interface';
+import { AuthState } from '../../common/interface/user.interface';
 import { authThunk } from './thunk';
 import { userThunk } from './userThunk';
 
@@ -15,6 +15,7 @@ const initialState: AuthState = {
     avatarUrl: '',
     createDate: Date(),
     isLogin: false,
+    isSocketLogin: false,
 };
 
 const reducer = createSlice({
@@ -39,16 +40,19 @@ const reducer = createSlice({
         });
         builder.addCase(authThunk.loginUser.fulfilled, (state) => ({ ...state, isLogin: true }));
         builder.addCase(authThunk.registerUser.fulfilled, (state) => ({ ...state, isLogin: true }));
+        builder.addCase(authThunk.getSocketToken.fulfilled, (state) => ({ ...state, isSocketLogin: true }));
         builder.addCase(authThunk.logoutUser.fulfilled, () => ({ ...initialState }));
 
         builder.addCase(userThunk.getCurrentUser.rejected, (state) => {
             const cookies = new Cookies();
-            cookies.remove('re-token');
-            cookies.remove('auth-token');
+            cookies.set('re-token', '', { maxAge: -999 });
+            cookies.set('auth-token', '', { maxAge: -999 });
+            cookies.set('io-token', '', { maxAge: -999 });
 
             return {
                 ...state,
                 isLogin: false,
+                isSocketLogin: false,
             };
         });
     },

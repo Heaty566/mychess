@@ -6,10 +6,10 @@ import { fakeData } from '../../test/test.helper';
 
 //---- Service
 import { AuthService } from '../auth.service';
-import { RedisService } from '../../providers/redis/redis.service';
+import { RedisService } from '../../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 //---- Repository
 import { ReTokenRepository } from '../entities/re-token.repository';
@@ -37,27 +37,6 @@ describe('UserGuard', () => {
       });
 
       describe('OTP Service', () => {
-            // describe('generateOtpKey', () => {
-            //       let length: number;
-
-            //       it('Pass by Sms', () => {
-            //             length = 6;
-            //             const otp = authService[`generateOtpKey`](length, 'sms');
-
-            //             expect(otp).toBeDefined();
-            //             expect(otp.length).toBe(length);
-            //             expect(otp).not.toContain('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
-            //       });
-
-            //       it('Pass by email', () => {
-            //             length = 10;
-            //             const otp = authService[`generateOtpKey`](length, 'email');
-
-            //             expect(otp).toBeDefined();
-            //             expect(otp.length).toBe(length);
-            //       });
-            // });
-
             describe('createOTP', () => {
                   it('Pass by sms', async () => {
                         const otp = authService.createOTP(userDb, 5, 'sms');
@@ -115,7 +94,7 @@ describe('UserGuard', () => {
                   it('Pass', async () => {
                         const refreshToken = await reTokenRepository.findOneByField('id', reToken);
                         const encryptedUser = await redisService.getByKey(refreshToken.data);
-                        const userInformation = await authService.decodeToken<User>(encryptedUser);
+                        const userInformation = await authService.verifyToken<User>(encryptedUser);
 
                         expect(userInformation).toBeDefined();
                         expect(userInformation.username).toBe(userInformation.username);
@@ -126,7 +105,7 @@ describe('UserGuard', () => {
                   it('Pass', async () => {
                         const authToken = await authService[`createAuthToken`](userDb);
                         const encryptedUser = await redisService.getByKey(authToken);
-                        const userInformation = await authService.decodeToken<User>(encryptedUser);
+                        const userInformation = await authService.verifyToken<User>(encryptedUser);
 
                         expect(userInformation).toBeDefined();
                         expect(userInformation.username).toBe(userInformation.username);
@@ -159,7 +138,7 @@ describe('UserGuard', () => {
                         getReToken = await reTokenRepository.save(getReToken);
                         const authToken = await authService.getAuthTokenByReToken(reToken);
                         const isExist = await redisService.getByKey(authToken);
-                        const decodeUser = authService.decodeToken<User>(isExist);
+                        const decodeUser = authService.verifyToken<User>(isExist);
 
                         expect(userDb.username).toBe(decodeUser.username);
                         expect(isExist).toBeDefined();

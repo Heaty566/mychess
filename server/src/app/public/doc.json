@@ -1,0 +1,2861 @@
+{
+      "openapi": "3.0.0",
+      "info": {
+            "title": "MyGame-V2",
+            "description": "My chess is an online web games allow people can play chess or tic tac toe and share their happiness across the world. This website is inspired by Chess.com and Steam.",
+            "contact": {
+                  "name": "Pham Vinh Nhan",
+                  "email": "heaty566@gmail.com"
+            },
+            "license": {
+                  "name": "Apache 2.0",
+                  "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            },
+            "version": "2.1.7"
+      },
+      "tags": [
+            {
+                  "name": "auth",
+                  "description": "handle authentication"
+            },
+            {
+                  "name": "user",
+                  "description": "service for user"
+            },
+            {
+                  "name": "admin",
+                  "description": "service for administrator, have to login and with role is ADMIN"
+            },
+            {
+                  "name": "common",
+                  "description": "service for basic request"
+            },
+            {
+                  "name": "tic-tac-toe",
+                  "description": "service tic-tac-toe game"
+            },
+            {
+                  "name": "chat",
+                  "description": "service chat box"
+            },
+            {
+                  "name": "chess",
+                  "description": "service chess"
+            }
+      ],
+      "servers": [
+            {
+                  "url": "http://localhost:4000",
+                  "description": "Development server"
+            }
+      ],
+      "paths": {
+            "/api/auth/login": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "Registered users can login to establish their identity with the application using the API below. The login operation requires two properties: username and password.",
+                        "requestBody": {
+                              "description": "login user information",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "username": {
+                                                            "type": "string",
+                                                            "example": "username"
+                                                      },
+                                                      "password": {
+                                                            "type": "string",
+                                                            "example": "password"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return token cookie",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {}
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "user is not found or wrong password",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "type": "object",
+                                                      "properties": {
+                                                            "data": {
+                                                                  "type": "object",
+                                                                  "description": "it type any base on your api"
+                                                            },
+                                                            "details": {
+                                                                  "type": "object",
+                                                                  "properties": {
+                                                                        "field": {
+                                                                              "type": "string",
+                                                                              "description": "field will be the name of invalid field",
+                                                                              "example": "should not be empty"
+                                                                        },
+                                                                        "message": {
+                                                                              "type": "string",
+                                                                              "example": "this is an error message"
+                                                                        },
+                                                                        "errorMessage": {
+                                                                              "type": "string",
+                                                                              "example": "this is an error message"
+                                                                        }
+                                                                  }
+                                                            }
+                                                      }
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/logout": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "The Logout operation terminates user session.",
+                        "parameters": [
+                              {
+                                    "name": "token",
+                                    "in": "cookie",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "re-token": {
+                                                      "type": "string",
+                                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                                },
+                                                "auth-token": {
+                                                      "type": "string",
+                                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                                }
+                                          }
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Access token removed successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/register": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "The register API can be used to create user accounts in the application. A registration request must provide a user object as a collection of key/value properties.",
+                        "requestBody": {
+                              "description": "register user information",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "name": {
+                                                            "type": "string",
+                                                            "example": "my name"
+                                                      },
+                                                      "username": {
+                                                            "type": "string",
+                                                            "example": "username"
+                                                      },
+                                                      "password": {
+                                                            "type": "string",
+                                                            "example": "password"
+                                                      },
+                                                      "confirmPassword": {
+                                                            "type": "string",
+                                                            "example": "password"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return cookie for authentication",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "username is taken",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/otp-email": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "Create an email is sent with a link to a webpage which contains a form where the user can enter the new password.",
+                        "requestBody": {
+                              "description": "provide an email to send an otp key",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "phoneNumber": {
+                                                            "type": "string",
+                                                            "example": "hello@gmail.com"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "The mail has been sent successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "too many request, mail does not exist, or server cannot send",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/otp-sms": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "Create an OTP code is sent to the user phone number. Users can use it to access a webpage which contains a form where the user can enter the new password.",
+                        "requestBody": {
+                              "description": "provide phone number to send an otp key",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "phoneNumber": {
+                                                            "type": "string",
+                                                            "example": "+20401230312"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "The OTP code has been sent successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "too many request, phoneNumber does not exist, or server cannot send",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/check-otp": {
+                  "post": {
+                        "tags": ["auth"],
+                        "description": "Check-otp API is user to check a OTP code is exist or not.",
+                        "parameters": [
+                              {
+                                    "name": "key",
+                                    "description": "otp key",
+                                    "in": "query",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": {
+                                          "type": "string",
+                                          "example": "123456789aa"
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "OTP code is existed.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/google": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Mychess integrates with Google to support user authentication and login into a Mychess application with a Google account.",
+                        "responses": {
+                              "200": {
+                                    "description": "re-token key",
+                                    "content": {
+                                          "header": {
+                                                "schema": {
+                                                      "type": "string",
+                                                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/auth/github": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Mychess integrates with Github to support user authentication and login into a Mychess application with a Github account.",
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/paths/~1api~1auth~1google/get/responses/200"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/facebook": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Mychess integrates with Facebook to support user authentication and login into a Mychess application with a Facebook account.",
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/paths/~1api~1auth~1google/get/responses/200"
+                              }
+                        }
+                  }
+            },
+            "/api/auth/socket-token": {
+                  "get": {
+                        "tags": ["auth"],
+                        "description": "Create an io cookie and return it to clients.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "The server creates io cookie successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "client is not a user",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/support": {
+                  "post": {
+                        "tags": ["common"],
+                        "description": "The support API allows users to send their problem to our support team.",
+                        "requestBody": {
+                              "description": "basic user information",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "email": {
+                                                            "type": "string",
+                                                            "example": "hello@gmail.com"
+                                                      },
+                                                      "name": {
+                                                            "type": "string",
+                                                            "example": "pham vinh nhan"
+                                                      },
+                                                      "message": {
+                                                            "type": "string",
+                                                            "example": "hello world"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                              }
+                        }
+                  }
+            },
+            "/api/user": {
+                  "get": {
+                        "tags": ["user"],
+                        "description": "This API get information of the current user from server and return it to client without some sensitive fields.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "The server returns user information without some sensitive fields.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "put": {
+                        "tags": ["user"],
+                        "description": "User property values of the logged in users can be updated with this API operation.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "content": {
+                                    "application/json": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "name": {
+                                                            "type": "string",
+                                                            "example": "who am i"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "description": "user basic information is not include some sensitive fields",
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User information update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/:id": {
+                  "get": {
+                        "tags": ["user"],
+                        "description": "This API get user information base on id parameter is provided and return it to client without some sensitive fields.",
+                        "responses": {
+                              "200": {
+                                    "description": "The server returns any user information without some sensitive fields.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "user with the given Id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/avatar": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "This API allows user to upload their avatar image.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "put avatar image here",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "avatar": {
+                                                            "type": "string",
+                                                            "example": "/hello.png"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User avatar update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "The avatar file is required, The avatar file couldn't be uploaded. Photos should be smaller than {{size}} MB, The avatar file couldn't be uploaded. Photos should be saved as JPEG, JPG, PNG, BMP files",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal server error from aws server, upload failed to aws server",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/password": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "Changes the passwords of users in the native realm and built-in users.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "provide new password and current password to change password by user",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "newPassword": {
+                                                            "type": "string",
+                                                            "example": "123abcAbc"
+                                                      },
+                                                      "confirmNewPassword": {
+                                                            "type": "string",
+                                                            "example": "123abcAbc"
+                                                      },
+                                                      "currentPassword": {
+                                                            "type": "string",
+                                                            "example": "1234abcAbc"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User password update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "The user password is not correct",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/reset-password": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "Allow user to enter new password with OTP code is provided.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              },
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1check-otp/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "provide new password to reset password",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "newPassword": {
+                                                            "type": "string",
+                                                            "example": "123abcAbc"
+                                                      },
+                                                      "confirmNewPassword": {
+                                                            "type": "string",
+                                                            "example": "123abcAbc"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User password update successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "OTP code is not correct, OTP code is invalid",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/update-with-otp": {
+                  "put": {
+                        "tags": ["user"],
+                        "description": "Allow user to update information with OTP code is provided.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              },
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1check-otp/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "User information update successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "OTP code is not correct, OTP code is invalid",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/otp-sms": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "Create an OTP code is sent to the user phone number. Users can use it to access a webpage which contains a form where the user can update phone number.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1auth~1otp-sms/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "The OTP code has been sent successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "The user has requested too many times, please try again after 30 minutes, The user phone number is taken by another user",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal server error from sms server",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/otp-email": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "Create an email is sent with a link to a webpage which contains a form where the user can update email.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1auth~1otp-email/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "The mail has been sent successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "The user has requested too many times, please try again after 30 minutes, The user email is taken by another user",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal server error from email server",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/user/search": {
+                  "post": {
+                        "tags": ["user"],
+                        "description": "This API allows user enter a name of another user to find out their information.",
+                        "parameters": [
+                              {
+                                    "name": "searchUserQuery",
+                                    "in": "query",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "name": {
+                                                      "type": "string",
+                                                      "example": "hello world"
+                                                },
+                                                "currentPage": {
+                                                      "type": "number",
+                                                      "example": 1
+                                                },
+                                                "pageSize": {
+                                                      "type": "number",
+                                                      "example": 1
+                                                }
+                                          }
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Get user information successfully. {user[], count}",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/admin/users": {
+                  "get": {
+                        "tags": ["admin"],
+                        "description": "Get all users information except some sensitive information.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "The server returns array of user information.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user is not an admin",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "user is not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/admin/user-admin/:id": {
+                  "put": {
+                        "tags": ["admin"],
+                        "description": "Toggle user role from USER to ADMIN and vice versa.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              },
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1check-otp/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "User role update successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user is not an admin",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "user is not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/admin/user-status/:id": {
+                  "put": {
+                        "tags": ["admin"],
+                        "description": "Toggle user status from true to false and vice versa (block user).",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              },
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1check-otp/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "User status update successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user is not an admin",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "user is not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/:id": {
+                  "get": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "get tic tac toe summary of a user",
+                        "parameters": [
+                              {
+                                    "name": "userId",
+                                    "description": "user id",
+                                    "in": "query",
+                                    "required": true,
+                                    "style": "form",
+                                    "schema": {
+                                          "type": "string",
+                                          "example": "123456789aa"
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "return tic tac toe summary of a user",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/pvp": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Create a tic-tac-toe game for player vs player return roomId to connect socket.io",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Create a game with player successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/restart": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Create a tic-tac-toe game for player vs player and alert connecting user to push router to other room ",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "provide roomId",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "roomId": {
+                                                            "type": "string",
+                                                            "example": "123124215421"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "Restart game successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "the old game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or this game is already played",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/bot": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Create a tic-tac-toe game for player vs bot return roomId to connect socket.io",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Create new game with bot successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/join-room": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User status update successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found, or it is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/quick-join-room": {
+                  "get": {
+                        "tags": ["chess"],
+                        "description": "A quick join to ttt room",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "return roomId which use socket to join",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "No game is found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/start": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "send request to start tic-tac-toe game when two users are ready",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "Game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/ready": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "send request to toggle ready state to play, two user have to ready before sending a start request (send one more time to change to not ready)",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "user state change to ready",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/leave": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "send this request when user leave the game, user is leave safely if the game is not start, and count as lose when the game is playing. user can not play any game until they complete leave other game",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "leave room successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/add-move": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "you the x y in the board which you want to choose",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "provide roomId and x y for please tic-tac-toe",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "roomId": {
+                                                            "type": "string",
+                                                            "example": "123124215421"
+                                                      },
+                                                      "x": {
+                                                            "type": "number",
+                                                            "example": 1
+                                                      },
+                                                      "y": {
+                                                            "type": "number",
+                                                            "example": 1
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "leave room successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "is not your turn",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is not playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/draw": {
+                  "post": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "create a draw request to current board",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game not playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Accept draw game in ttt",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "draw information",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "roomId": {
+                                                            "type": "string",
+                                                            "example": "username"
+                                                      },
+                                                      "isAccept": {
+                                                            "type": "boolean"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game not playing, other user does not create draw request",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/ttt/surrender": {
+                  "put": {
+                        "tags": ["tic-tac-toe"],
+                        "description": "Surrender a game",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "surrender game ok",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game not playing.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/pvp": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "Create a chess game for player vs player return roomId to connect socket.io",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Restart game successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/bot": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "Create a chess game for player vs bot return roomId to connect socket.io",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Create new game with bot successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/join-room": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "Provide room id which user want to join, redirect roomId in response body when return 200",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "User status update successfully.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found, or it is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/start": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "send request to start chess game when two users are ready",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "Game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/leave": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "send this request when user leave the game, user is leave safely if the game is not start, and count as lose when the game is playing. user can not play any game until they complete leave other game",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "leave room successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/restart": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "Create a chess game for player vs player and alert connecting user to push router to other room ",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "Restart game successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "the old game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or this game is already played",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/add-move": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "This router receive position of a piece - which user want to move and move it to potistion user want. Play bot move in bot mode.",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "provide roomId and x y for please tic-tac-toe",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "roomId": {
+                                                            "type": "string",
+                                                            "example": "123124215421"
+                                                      },
+                                                      "curPos": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                  "x": {
+                                                                        "type": "number"
+                                                                  },
+                                                                  "y": {
+                                                                        "type": "number"
+                                                                  }
+                                                            }
+                                                      },
+                                                      "y": {
+                                                            "type": "number",
+                                                            "example": 1
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "move piece successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "the piece user want to pickup is enemy piece, or wrong turn, or destination position is invalid",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/promote-pawn": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "This router receive position and role user want to promote",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "description": "provide roomId and x y for please tic-tac-toe",
+                              "content": {
+                                    "form-data": {
+                                          "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "roomId": {
+                                                            "type": "string",
+                                                            "example": "123124215421"
+                                                      },
+                                                      "promotePos": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                  "x": {
+                                                                        "type": "number"
+                                                                  },
+                                                                  "y": {
+                                                                        "type": "number"
+                                                                  }
+                                                            }
+                                                      },
+                                                      "promoteRole": {
+                                                            "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "required": true
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "promote pawn successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "the piece user want to pickup is enemy piece, or wrong turn, or destination position is invalid",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/quick-join-room": {
+                  "get": {
+                        "tags": ["chess"],
+                        "description": "A quick join to chess room",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "return roomId which use socket to join",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "No game is found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/choose-piece": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "This router pickup position of a piece - which user want to move",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "choose piece successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "the piece user want to pickup is enemy piece",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/ready": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "send request to toggle ready state to play, two user have to ready before sending a start request (send one more time to change to not ready)",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "user state change to ready",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game is playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/surrender": {
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "Surrender a game",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "surrender game ok",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game not playing.",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "ttt game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/draw": {
+                  "post": {
+                        "tags": ["chess"],
+                        "description": "create a draw request to current board",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game not playing",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "put": {
+                        "tags": ["chess"],
+                        "description": "Accept draw game in chess",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1draw/put/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "create new draw successfully",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this game, or game not playing, other user does not create draw request",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chess game with the given id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chess/:id": {
+                  "get": {
+                        "tags": ["chess"],
+                        "description": "get chess summary of a user",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1ttt~1%3Aid/get/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "return chess summary of a user",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chat/new": {
+                  "post": {
+                        "tags": ["chat"],
+                        "description": "create new chat room chat",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "return a chatId to user socket io to join chat",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chat/join": {
+                  "put": {
+                        "tags": ["chat"],
+                        "description": "join a exist room chat",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return a chatId to user socket io to join chat",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "wrong format",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chat with the given Id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chat/send-message": {
+                  "put": {
+                        "tags": ["chat"],
+                        "description": "add new message to room chat",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "return ok",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this room",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chat with the given Id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/api/chat/save": {
+                  "put": {
+                        "tags": ["chat"],
+                        "description": "save a room chat to database chat",
+                        "parameters": [
+                              {
+                                    "$ref": "#/paths/~1api~1auth~1logout/post/parameters/0"
+                              }
+                        ],
+                        "requestBody": {
+                              "$ref": "#/paths/~1api~1ttt~1restart/post/requestBody"
+                        },
+                        "responses": {
+                              "200": {
+                                    "description": "chat is saved",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "403": {
+                                    "description": "user does not belong to this room",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              },
+                              "404": {
+                                    "description": "chat with the given Id was not found",
+                                    "content": {
+                                          "application/json": {
+                                                "schema": {
+                                                      "$ref": "#/paths/~1api~1auth~1login/post/responses/400/content/application~1json/schema"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            }
+      },
+      "components": {
+            "schemas": {
+                  "user": {
+                        "type": "object",
+                        "description": "chat object",
+                        "properties": {
+                              "id": {
+                                    "type": "string",
+                                    "description": "chat id use to join chat in socketId"
+                              },
+                              "createDate": {
+                                    "type": "string",
+                                    "description": "create new"
+                              },
+                              "users": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "public user without some sensitive information",
+                                          "properties": {
+                                                "id": {
+                                                      "type": "string"
+                                                },
+                                                "username": {
+                                                      "type": "string"
+                                                },
+                                                "avatarUrl": {
+                                                      "type": "string"
+                                                },
+                                                "name": {
+                                                      "type": "string"
+                                                },
+                                                "elo": {
+                                                      "type": "number"
+                                                },
+                                                "createDate": {
+                                                      "type": "string"
+                                                }
+                                          }
+                                    }
+                              },
+                              "messages": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "message in chat object",
+                                          "properties": {
+                                                "id": {
+                                                      "type": "string"
+                                                },
+                                                "createDate": {
+                                                      "type": "string"
+                                                },
+                                                "content": {
+                                                      "type": "string"
+                                                },
+                                                "userId": {
+                                                      "description": "id of user who creates this message",
+                                                      "type": "string"
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "chat": {
+                        "$ref": "#/components/schemas/user"
+                  },
+                  "chat-message": {
+                        "type": "object",
+                        "description": "message in chat object",
+                        "properties": {
+                              "id": {
+                                    "type": "string"
+                              },
+                              "createDate": {
+                                    "type": "string"
+                              },
+                              "content": {
+                                    "type": "string"
+                              },
+                              "userId": {
+                                    "description": "id of user who creates this message",
+                                    "type": "string"
+                              }
+                        }
+                  },
+                  "apiResponse": {
+                        "type": "object",
+                        "properties": {
+                              "data": {
+                                    "type": "object",
+                                    "description": "it type any base on your api"
+                              },
+                              "details": {
+                                    "type": "object",
+                                    "properties": {
+                                          "field": {
+                                                "type": "string",
+                                                "description": "field will be the name of invalid field",
+                                                "example": "should not be empty"
+                                          },
+                                          "message": {
+                                                "type": "string",
+                                                "example": "this is an error message"
+                                          },
+                                          "errorMessage": {
+                                                "type": "string",
+                                                "example": "this is an error message"
+                                          }
+                                    }
+                              }
+                        }
+                  },
+                  "gamePlayerFlag": {
+                        "type": "string",
+                        "description": "Game Flag for user",
+                        "enum": ["EMPTY(-1)", "USER1(0)", "USER2(1)"]
+                  },
+                  "gameStatus": {
+                        "type": "string",
+                        "description": "Status of game",
+                        "enum": ["NOT_YET(-1)", "PLAYING(0)", "END(1)", "DRAW(2)"]
+                  },
+                  "publicUser": {
+                        "type": "object",
+                        "description": "public user without some sensitive information",
+                        "properties": {
+                              "id": {
+                                    "type": "string"
+                              },
+                              "username": {
+                                    "type": "string"
+                              },
+                              "avatarUrl": {
+                                    "type": "string"
+                              },
+                              "name": {
+                                    "type": "string"
+                              },
+                              "elo": {
+                                    "type": "number"
+                              },
+                              "createDate": {
+                                    "type": "string"
+                              }
+                        }
+                  },
+                  "gamePlayer": {
+                        "type": "object",
+                        "description": "information of player in game",
+                        "properties": {
+                              "id": {
+                                    "type": "string"
+                              },
+                              "username": {
+                                    "type": "string"
+                              },
+                              "avatarUrl": {
+                                    "type": "string"
+                              },
+                              "name": {
+                                    "type": "string"
+                              },
+                              "elo": {
+                                    "type": "number"
+                              },
+                              "isDraw": {
+                                    "type": "boolean"
+                              },
+                              "ready": {
+                                    "type": "boolean"
+                              },
+                              "flag": {
+                                    "type": "string",
+                                    "description": "Game Flag for user",
+                                    "enum": ["EMPTY(-1)", "USER1(0)", "USER2(1)"]
+                              },
+                              "currentTurn": {
+                                    "type": "boolean"
+                              }
+                        }
+                  },
+                  "ticTacToeBoard": {
+                        "type": "object",
+                        "description": "tic tac toe information about a game",
+                        "properties": {
+                              "id": {
+                                    "type": "string"
+                              },
+                              "startDate": {
+                                    "type": "string"
+                              },
+                              "lastStep": {
+                                    "type": "string"
+                              },
+                              "status": {
+                                    "type": "string"
+                              },
+                              "board": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "array",
+                                          "items": {
+                                                "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                                          }
+                                    }
+                              },
+                              "currentTurn": {
+                                    "type": "boolean"
+                              },
+                              "users": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "information of player in game",
+                                          "properties": {
+                                                "id": {
+                                                      "type": "string"
+                                                },
+                                                "username": {
+                                                      "type": "string"
+                                                },
+                                                "avatarUrl": {
+                                                      "type": "string"
+                                                },
+                                                "name": {
+                                                      "type": "string"
+                                                },
+                                                "elo": {
+                                                      "type": "number"
+                                                },
+                                                "isDraw": {
+                                                      "type": "boolean"
+                                                },
+                                                "ready": {
+                                                      "type": "boolean"
+                                                },
+                                                "flag": {
+                                                      "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                                                },
+                                                "currentTurn": {
+                                                      "type": "boolean"
+                                                }
+                                          }
+                                    }
+                              },
+                              "isBotMode": {
+                                    "type": "boolean"
+                              },
+                              "winner": {
+                                    "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                              },
+                              "chatId": {
+                                    "type": "string"
+                              }
+                        }
+                  },
+                  "chessRole": {
+                        "type": "string",
+                        "description": "Role of chess",
+                        "enum": ["KING(1)", "QUEEN(2)", "ROOK(3)", "KNIGHT(4)", "BISHOP(5)", "PAWN(6)", "EMPTY(-1)"]
+                  },
+                  "chessMoveRedis": {
+                        "type": "object",
+                        "description": "Information about move in chessBoard",
+                        "properties": {
+                              "chessRole": {
+                                    "type": "string",
+                                    "description": "Role of chess",
+                                    "enum": ["KING(1)", "QUEEN(2)", "ROOK(3)", "KNIGHT(4)", "BISHOP(5)", "PAWN(6)", "EMPTY(-1)"]
+                              },
+                              "flag": {
+                                    "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                              },
+                              "x": {
+                                    "type": "number"
+                              },
+                              "y": {
+                                    "type": "number"
+                              }
+                        }
+                  },
+                  "chessMove": {
+                        "type": "object",
+                        "description": "Information about move in database",
+                        "properties": {
+                              "chessRole": {
+                                    "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole"
+                              },
+                              "flag": {
+                                    "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                              },
+                              "toX": {
+                                    "type": "number"
+                              },
+                              "fromX": {
+                                    "type": "number"
+                              },
+                              "toY": {
+                                    "type": "number"
+                              },
+                              "fromY": {
+                                    "type": "number"
+                              }
+                        }
+                  },
+                  "chessBoard": {
+                        "type": "object",
+                        "description": "information of chess board",
+                        "properties": {
+                              "id": {
+                                    "type": "string"
+                              },
+                              "isBotMode": {
+                                    "type": "boolean"
+                              },
+                              "turn": {
+                                    "type": "boolean"
+                              },
+                              "users": {
+                                    "type": "array",
+                                    "items": {
+                                          "$ref": "#/components/schemas/ticTacToeBoard/properties/users/items"
+                                    }
+                              },
+                              "moves": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "object",
+                                          "description": "Information about move in database",
+                                          "properties": {
+                                                "chessRole": {
+                                                      "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole"
+                                                },
+                                                "flag": {
+                                                      "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                                                },
+                                                "toX": {
+                                                      "type": "number"
+                                                },
+                                                "fromX": {
+                                                      "type": "number"
+                                                },
+                                                "toY": {
+                                                      "type": "number"
+                                                },
+                                                "fromY": {
+                                                      "type": "number"
+                                                }
+                                          }
+                                    }
+                              },
+                              "winner": {
+                                    "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                              },
+                              "status": {
+                                    "type": "string",
+                                    "description": "Status of game",
+                                    "enum": ["NOT_YET(-1)", "PLAYING(0)", "END(1)", "DRAW(2)"]
+                              },
+                              "startDate": {
+                                    "type": "string"
+                              },
+                              "chatId": {
+                                    "type": "string"
+                              },
+                              "chessPiece": {
+                                    "type": "object",
+                                    "properties": {
+                                          "x": {
+                                                "type": "number"
+                                          },
+                                          "y": {
+                                                "type": "number"
+                                          }
+                                    }
+                              },
+                              "board": {
+                                    "type": "array",
+                                    "items": {
+                                          "type": "array",
+                                          "items": {
+                                                "type": "object",
+                                                "description": "Flag for chess",
+                                                "properties": {
+                                                      "chessRole": {
+                                                            "$ref": "#/components/schemas/chessMoveRedis/properties/chessRole"
+                                                      },
+                                                      "flag": {
+                                                            "$ref": "#/components/schemas/gamePlayer/properties/flag"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

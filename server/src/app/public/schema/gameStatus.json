@@ -1,0 +1,5 @@
+{
+      "type": "string",
+      "description": "Status of game",
+      "enum": ["NOT_YET(-1)", "PLAYING(0)", "END(1)", "DRAW(2)"]
+}

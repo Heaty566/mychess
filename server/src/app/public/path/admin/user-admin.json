@@ -1,0 +1,40 @@
+{
+      "put": {
+            "tags": ["admin"],
+            "description": "Toggle user role from USER to ADMIN and vice versa.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }, { "$ref": "../../parameter/oTPkey.json" }],
+            "responses": {
+                  "200": {
+                        "description": "User role update successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "403": {
+                        "description": "user is not an admin",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "user is not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

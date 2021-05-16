@@ -1,0 +1,40 @@
+{
+      "put": {
+            "tags": ["admin"],
+            "description": "Toggle user status from true to false and vice versa (block user).",
+            "parameters": [{ "$ref": "../../parameter/token.json" }, { "$ref": "../../parameter/oTPkey.json" }],
+            "responses": {
+                  "200": {
+                        "description": "User status update successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "403": {
+                        "description": "user is not an admin",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "404": {
+                        "description": "user is not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

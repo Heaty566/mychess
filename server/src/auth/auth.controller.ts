@@ -5,25 +5,25 @@ import { Response, Request } from 'express';
 //---- Service
 import { SmailService } from '../providers/smail/smail.service';
 import { SmsService } from '../providers/sms/sms.service';
-import { UserService } from '../users/user.service';
+import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import { RedisService } from '../providers/redis/redis.service';
+import { RedisService } from '../utils/redis/redis.service';
 
 //---- Entity
-import { User } from '../users/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 
 //---- Pipe
 import { JoiValidatorPipe } from '../utils/validator/validator.pipe';
 import { UserGuard } from './auth.guard';
 
 //---- DTO
-import { UpdateEmailDTO, vUpdateEmailDTO } from '../users/dto/updateEmail.dto';
+import { UpdateEmailDTO, vUpdateEmailDTO } from '../user/dto/updateEmail.dto';
 import { RegisterUserDTO, vRegisterUserDto } from './dto/registerUser.dto';
 import { LoginUserDTO, vLoginUserDto } from './dto/loginUser.dto';
 import { OtpSmsDTO, vOtpSmsDTO } from './dto/otpSms.dto';
 
 //---- Common
-import { apiResponse } from '../app/interface/ApiResponse';
+import { apiResponse } from '../app/interface/apiResponse';
 import { config } from '../config';
 
 @Controller('auth')
@@ -44,16 +44,12 @@ export class AuthController {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
             if (!isUserExist)
-                  throw apiResponse.sendError({
-                        body: { details: { username: { type: 'user.auth-failed' } } },
-                  });
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-password-username' } } }, 'BadRequestException');
 
             //checking hash password
             const isCorrect = await this.authService.decryptString(body.password, isUserExist.password);
             if (!isCorrect)
-                  throw apiResponse.sendError({
-                        body: { details: { username: { type: 'user.auth-failed' } } },
-                  });
+                  throw apiResponse.sendError({ details: { errorMessage: { type: 'error.invalid-password-username' } } }, 'BadRequestException');
 
             //return token
             const reToken = await this.authService.createReToken(isUserExist);
@@ -65,10 +61,7 @@ export class AuthController {
       async cRegisterUser(@Body() body: RegisterUserDTO, @Res() res: Response) {
             //checking user is exist or not
             const isUserExist = await this.userService.findOneUserByField('username', body.username);
-            if (isUserExist)
-                  throw apiResponse.sendError({
-                        body: { details: { username: { type: 'user.field-taken' } } },
-                  });
+            if (isUserExist) throw apiResponse.sendError({ details: { username: { type: 'field.field-taken' } } }, 'BadRequestException');
 
             //create and insert new user
             const newUser = new User();
@@ -88,11 +81,7 @@ export class AuthController {
       async cGetSocketToken(@Req() req: Request, @Res() res: Response) {
             //checking user is exist
             const user = await this.userService.findOneUserByField('id', req.user.id);
-            if (!user)
-                  throw apiResponse.sendError({
-                        body: { message: { type: 'user.invalid-input' } },
-                        type: 'UnauthorizedException',
-                  });
+            if (!user) throw apiResponse.sendError({}, 'UnauthorizedException');
 
             //create socket io token
             const socketId = await this.authService.getSocketToken(user);
@@ -121,16 +110,14 @@ export class AuthController {
                   config.authController.OTPMailBlockTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { errorMessage: { type: 'error.request-many-time', context: { time: '30' } } } },
+                        'BadRequestException',
+                  );
 
             //checking email is exist
             const user = await this.userService.findOneUserByField('email', body.email);
-            if (!user)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.field.not-found' } } },
-                  });
+            if (!user) throw apiResponse.sendError({ details: { email: { type: 'field.not-found' } } }, 'BadRequestException');
 
             //checking amount of time which user request before by email
             canSendMore = await this.authService.isRateLimitKey(
@@ -139,22 +126,17 @@ export class AuthController {
                   config.authController.OTPMailBlockTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'user.request-many-time', context: { time: '30' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { errorMessage: { type: 'error.request-many-time', context: { time: '30' } } } },
+                        'BadRequestException',
+                  );
 
             //generate otp key
             const redisKey = await this.authService.createOTP(user, config.authController.OTPMailValidTime, 'email');
             const isSent = await this.smailService.sendOTP(user.email, redisKey);
-            if (!isSent)
-                  throw apiResponse.sendError({
-                        body: { details: { email: { type: 'server.some-wrong' } } },
-                        type: 'BadGatewayException',
-                  });
+            if (!isSent) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.some-wrong' } } }, 'BadGatewayException');
 
-            return apiResponse.send({
-                  body: { message: { type: 'server.send-email-otp' } },
-            });
+            return apiResponse.send({ details: { message: { type: 'message.send-email' } } });
       }
 
       @Post('/otp-sms')
@@ -168,16 +150,14 @@ export class AuthController {
                   config.authController.OTPPhoneBlockTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { errorMessage: { type: 'error.request-many-time', context: { time: '60' } } } },
+                        'BadRequestException',
+                  );
 
             //checking phone is exist
             const user = await this.userService.findOneUserByField('phoneNumber', body.phoneNumber);
-            if (!user)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.field.not-found' } } },
-                  });
+            if (!user) throw apiResponse.sendError({ details: { phoneNumber: { type: 'field.not-found' } } }, 'BadRequestException');
 
             //checking amount of time which user request before by phone
             canSendMore = await this.authService.isRateLimitKey(
@@ -186,54 +166,29 @@ export class AuthController {
                   config.authController.OTPPhoneBlockTime,
             );
             if (!canSendMore)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'user.request-many-time', context: { time: '60' } } } },
-                  });
+                  throw apiResponse.sendError(
+                        { details: { errorMessage: { type: 'error.request-many-time', context: { time: '60' } } } },
+                        'BadRequestException',
+                  );
 
             //generate otp
             const otpKey = this.authService.createOTP(user, config.authController.OTPPhoneValidTime, 'sms');
             const isSent = await this.smsService.sendOTP(user.phoneNumber, otpKey);
-            if (!isSent)
-                  throw apiResponse.sendError({
-                        body: { details: { phoneNumber: { type: 'server.some-wrong' } } },
-                        type: 'InternalServerErrorException',
-                  });
+            if (!isSent) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.some-wrong' } } }, 'InternalServerErrorException');
 
-            return apiResponse.send({
-                  body: { message: { type: 'server.send-phone-otp' } },
-            });
+            return apiResponse.send({ details: { message: { type: 'message.send-phone-otp' } } });
       }
 
       @Post('/check-otp')
       async cCheckOTP(@Query('key') key: string) {
             //checking is valid otp
-            if (!key)
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: {
-                              details: {
-                                    otp: { type: 'user.not-allow-action' },
-                              },
-                        },
-                  });
+            if (!key) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
             //checking otp is exist
             const isExist = await this.redisService.getObjectByKey<User>(key);
-            if (!isExist)
-                  throw apiResponse.sendError({
-                        type: 'ForbiddenException',
-                        body: {
-                              details: {
-                                    otp: { type: 'user.not-allow-action' },
-                              },
-                        },
-                  });
+            if (!isExist) throw apiResponse.sendError({ details: { errorMessage: { type: 'error.not-allow-action' } } }, 'ForbiddenException');
 
-            return apiResponse.send<void>({
-                  body: {
-                        message: { type: '' },
-                  },
-            });
+            return apiResponse.send<void>({});
       }
 
       //---------------------------------- 3rd authentication -----------------------------------------------------------

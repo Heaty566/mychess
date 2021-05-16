@@ -9,7 +9,6 @@ type TRouters =
     | 'login'
     | 'home'
     | 'community'
-    | 'about'
     | 'support'
     | 'forgotPasswordEmail'
     | 'forgotPasswordPhone'
@@ -17,7 +16,10 @@ type TRouters =
     | 'userEdit'
     | 'resetPassword'
     | '404'
-    | 'updateWithOTP';
+    | 'updateWithOTP'
+    | 'ticTacToeBot'
+    | 'ticTacToePvP'
+    | 'chessPvP';
 
 const config: Record<TRouters, IRouter> = {
     home: {
@@ -37,14 +39,7 @@ const config: Record<TRouters, IRouter> = {
             description: 'My Game',
         },
     },
-    about: {
-        link: '/about',
-        header: {
-            title: 'About Us',
-            canonical: '/about',
-            description: 'My Game',
-        },
-    },
+
     support: {
         link: '/support',
         header: {
@@ -115,6 +110,30 @@ const config: Record<TRouters, IRouter> = {
             title: 'Update User',
             canonical: '/user/update-with-otp',
             description: 'Send an OTP to your phone number',
+        },
+    },
+    ticTacToeBot: {
+        link: '/game/tic-tac-toe-bot',
+        header: {
+            title: 'Tic Tac Toe Bot',
+            canonical: '/game/tic-tac-toe-bot',
+            description: 'Please Tic Tac Toe with bot',
+        },
+    },
+    ticTacToePvP: {
+        link: '/game/tic-tac-toe',
+        header: {
+            title: 'Tic Tac Toe',
+            canonical: '/game/tic-tac-toe',
+            description: 'play Tic Tac Toe with other player',
+        },
+    },
+    chessPvP: {
+        link: '/game/chess',
+        header: {
+            title: 'Chess',
+            canonical: '/game/chess',
+            description: 'play Tic Tac Toe with other player',
         },
     },
     '404': {

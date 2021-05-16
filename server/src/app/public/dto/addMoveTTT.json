@@ -1,0 +1,25 @@
+{
+      "description": "provide roomId and x y for please tic-tac-toe",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "roomId": {
+                                    "type": "string",
+                                    "example": "123124215421"
+                              },
+                              "x": {
+                                    "type": "number",
+                                    "example": 1
+                              },
+                              "y": {
+                                    "type": "number",
+                                    "example": 1
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

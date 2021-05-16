@@ -1,0 +1,19 @@
+{
+      "get": {
+            "tags": ["tic-tac-toe"],
+            "description": "get tic tac toe summary of a user",
+            "parameters": [{ "$ref": "../../parameter/userId.json" }],
+            "responses": {
+                  "200": {
+                        "description": "return tic tac toe summary of a user",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

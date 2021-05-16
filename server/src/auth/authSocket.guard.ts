@@ -1,12 +1,15 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { SocketExtend } from 'socket.io';
 import * as Cookie from 'cookie';
 
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+
+import { RedisService } from '../utils/redis/redis.service';
+import { SocketExtend } from 'socket.io';
+import User from '../user/entities/user.entity';
+import { ioResponse } from '../app/interface/socketResponse';
+
 //---- Service
-import { RedisService } from '../providers/redis/redis.service';
 
 //---- Entity
-import User from '../users/entities/user.entity';
 
 @Injectable()
 export class UserSocketGuard implements CanActivate {
@@ -20,16 +23,20 @@ export class UserSocketGuard implements CanActivate {
 
       async canActivate(context: ExecutionContext) {
             const client = await this.cookieParserSocket(context);
-            if (!client.cookies) return false;
+            if (!client.cookies) throw ioResponse.sendError({}, 'UnauthorizedException');
 
             //get io-token
             const ioToken = client.cookies['io-token'] || '';
-            if (!ioToken) return false;
+            if (!ioToken) throw ioResponse.sendError({}, 'UnauthorizedException');
 
             //checking io-token
             const getUser = await this.redisService.getObjectByKey<User>(ioToken);
-            if (!getUser) return false;
-            client.user = getUser;
+            if (!getUser) throw ioResponse.sendError({}, 'UnauthorizedException');
+            client.user = {
+                  games: client?.user?.games ? client.user.games : { chessId: '', tttId: '' },
+                  id: getUser.id,
+                  username: getUser.username,
+            };
 
             return true;
       }

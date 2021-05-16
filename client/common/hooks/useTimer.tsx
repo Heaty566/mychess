@@ -4,6 +4,7 @@ export function useTimer(resetTime: number, initIsRunning: boolean, circle = fal
     const [time, setTime] = React.useState<number>(0);
     const [startTime, setStartTime] = React.useState(0);
     const [isRunning, setIsRunning] = React.useState(initIsRunning);
+
     React.useEffect(() => {
         if (isRunning || circle) setStartTime(Date.now());
     }, [isRunning]);
@@ -19,7 +20,7 @@ export function useTimer(resetTime: number, initIsRunning: boolean, circle = fal
                 }
 
                 setTime(((Date.now() - startTime) / 1000) % resetTime);
-            }, 300);
+            }, 500);
         }
         return () => {
             clearInterval(intervalId);

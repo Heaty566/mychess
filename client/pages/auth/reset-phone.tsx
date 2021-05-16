@@ -4,20 +4,20 @@ import { useForm } from 'react-hook-form';
 
 import SeoHead from '../../components/common/seoHead';
 import routers from '../../common/constants/router';
-import { ForgotPasswordPhoneDto } from '../../api/auth/dto';
+import { ForgotPasswordPhoneDto } from '../../common/interface/dto/auth.dto';
 import { useTimer } from '../../common/hooks/useTimer';
-import { ApiState } from '../../store/api/interface';
+import { ApiState } from '../../common/interface/api.interface';
 import { RootState, store } from '../../store';
 import useFormError from '../../common/hooks/useFormError';
 import { apiActions } from '../../store/api';
 
 import authThunk from '../../store/auth/thunk';
 
-import TextField from '../../components/form/textField';
-import SideLink from '../../components/link/sidelink';
-import BtnForm from '../../components/btn/btnForm';
-import WaveLoading from '../../components/loading/waveLoading';
-import MsgSuccess from '../../components/form/msgSuccess';
+import TextField from '../../components/form/filed-textfield';
+import BtnSideLink from '../../components/btn/btn-side-link';
+import BtnForm from '../../components/btn/btn-form';
+import WaveLoading from '../../components/loading/wave-loading';
+import LabelMessage from '../../components/form/label-message';
 import RouteProtectedWrapper from '../../common/HOC/routeProtectedWrapper';
 import Link from 'next/link';
 
@@ -55,7 +55,7 @@ const ResetPhone: React.FunctionComponent = () => {
                 <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Reset Password</h1>
-                        <MsgSuccess message={apiState.message} />
+                        <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                         <p className="py-2 text-mercury-800">
                             Please enter your phone number, we will send an OTP code, This may take a little while and don't share it with others.
                         </p>
@@ -97,7 +97,7 @@ const ResetPhone: React.FunctionComponent = () => {
                         </div>
                     </form>
                     <div>
-                        <SideLink label="Or Reset By Email?" position="text-center" href={routers.forgotPasswordEmail.link} />
+                        <BtnSideLink label="Or Reset By Email?" position="text-center" href={routers.forgotPasswordEmail.link} />
                     </div>
                 </div>
             </div>

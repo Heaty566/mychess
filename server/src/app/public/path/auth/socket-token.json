@@ -1,0 +1,29 @@
+{
+      "get": {
+            "tags": ["auth"],
+            "description": "Create an io cookie and return it to clients.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "responses": {
+                  "200": {
+                        "description": "The server creates io cookie successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "403": {
+                        "description": "client is not a user",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

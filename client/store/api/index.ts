@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { JoiError, ApiState, ApiResponse } from './interface';
-import { authThunk } from '../auth/thunk';
+import { JoiError, ApiState, ServerResponse } from '../../common/interface/api.interface';
 
 const initialState: ApiState = {
     isLoading: false,
     errorDetails: {},
     isError: false,
     message: '',
+    errorMessage: '',
 };
 
 const reducer = createSlice({
@@ -19,11 +19,13 @@ const reducer = createSlice({
         resetState: (_) => ({ ...initialState }),
         updateErrorDetails: (state, { payload }: PayloadAction<JoiError>) => {
             const newState = { ...state };
+            if (payload?.errorMessage) newState.errorMessage = payload.errorMessage;
+
             newState.errorDetails = payload;
             newState.isError = true;
             return newState;
         },
-        updateSuccessMessage: (state, { payload }: PayloadAction<ApiResponse<any>>) => ({ ...state, message: payload.message || '' }),
+        updateSuccessMessage: (state, { payload }: PayloadAction<ServerResponse<any>>) => ({ ...state, message: payload.details.message || '' }),
     },
     extraReducers: (builder) => {},
 });

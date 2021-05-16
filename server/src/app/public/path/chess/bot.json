@@ -1,0 +1,19 @@
+{
+      "post": {
+            "tags": ["chess"],
+            "description": "Create a chess game for player vs bot return roomId to connect socket.io",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "responses": {
+                  "200": {
+                        "description": "Create new game with bot successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

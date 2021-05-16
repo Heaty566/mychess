@@ -3,18 +3,18 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 
-import SeoHead from '../../../components/common/seoHead';
 import routers from '../../../common/constants/router';
 import { RootState } from '../../../store';
-import { ApiState } from '../../../store/api/interface';
-import userAPI from '../../../api/user';
-
-import BtnLink from '../../../components/link/btnLink';
+import { ApiState } from '../../../common/interface/api.interface';
+import userAPI from '../../../api/userApi';
 import useFormError from '../../../common/hooks/useFormError';
-import TextField from '../../../components/form/textField';
-import BtnForm from '../../../components/btn/btnForm';
-import WaveLoading from '../../../components/loading/waveLoading';
-import MsgSuccess from '../../../components/form/msgSuccess';
+
+import SeoHead from '../../../components/common/seoHead';
+import BtnLink from '../../../components/btn/btn-link';
+import TextField from '../../../components/form/filed-textfield';
+import BtnForm from '../../../components/btn/btn-form';
+import WaveLoading from '../../../components/loading/wave-loading';
+import LabelMessage from '../../../components/form/label-message';
 
 interface RestUserPasswordWithKey {
     otp: string;
@@ -64,7 +64,7 @@ const UpdateWithOTP: React.FunctionComponent<ResetPasswordProps> = () => {
                     <div className="w-full max-w-md px-4 py-12 bg-gray-800 rounded-sm md:px-10 fade-in ">
                         <h1 className="text-4xl text-center text-white mb-7">Update Phone Number</h1>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-                            <MsgSuccess message={apiState.message} />
+                            <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
 
                             <p className="py-2 text-mercury-800">Please enter your OTP, and do not share it with anybody.</p>
                             <div className="space-y-2">

@@ -1,0 +1,29 @@
+{
+      "description": "register user information",
+      "content": {
+            "form-data": {
+                  "schema": {
+                        "type": "object",
+                        "properties": {
+                              "name": {
+                                    "type": "string",
+                                    "example": "my name"
+                              },
+                              "username": {
+                                    "type": "string",
+                                    "example": "username"
+                              },
+                              "password": {
+                                    "type": "string",
+                                    "example": "password"
+                              },
+                              "confirmPassword": {
+                                    "type": "string",
+                                    "example": "password"
+                              }
+                        }
+                  }
+            }
+      },
+      "required": true
+}

@@ -1,0 +1,28 @@
+{
+      "get": {
+            "tags": ["user"],
+            "description": "This API get user information base on id parameter is provided and return it to client without some sensitive fields.",
+            "responses": {
+                  "200": {
+                        "description": "The server returns any user information without some sensitive fields.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "user with the given Id was not found",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

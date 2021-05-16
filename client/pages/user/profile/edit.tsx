@@ -3,21 +3,21 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../../../store';
-import { AuthState } from '../../../store/auth/interface';
-import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../api/user/dto';
+import { AuthState } from '../../../common/interface/user.interface';
+import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../../../common/interface/dto/user.dto';
 import { useUploadFile } from '../../../common/hooks/useUploadFile';
 import useFormError from '../../../common/hooks/useFormError';
-import { ApiState } from '../../../store/api/interface';
-import userAPI from '../../../api/user';
+import { ApiState } from '../../../common/interface/api.interface';
+import userAPI from '../../../api/userApi';
 import routers from '../../../common/constants/router';
 import { useRouter } from 'next/router';
 
-import FileUpload from '../../../components/form/fileUpload';
-import TextField from '../../../components/form/textField';
+import FieldUploadFile from '../../../components/form/filed-upload-file';
+import TextField from '../../../components/form/filed-textfield';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import BtnForm from '../../../components/btn/btnForm';
-import MsgSuccess from '../../../components/form/msgSuccess';
-import WaveLoading from '../../../components/loading/waveLoading';
+import BtnForm from '../../../components/btn/btn-form';
+import LabelMessage from '../../../components/form/label-message';
+import WaveLoading from '../../../components/loading/wave-loading';
 import SeoHead from '../../../components/common/seoHead';
 
 interface EditUserForm extends UpdateUserInfoDto, UpdateUserEmailDto, UpdateUserPhoneDto {
@@ -84,12 +84,12 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                                         alt={authState.name}
                                         className="object-cover w-40 h-40"
                                     />
-                                    <FileUpload name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
+                                    <FieldUploadFile name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
                                 </div>
                             </div>
                             <div className="w-full space-y-2 md:w-64">
                                 <h1 className="text-3xl text-white ">Update User</h1>
-                                <MsgSuccess message={apiState.message} />
+                                <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                                 <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
                                 <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
                                 <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />

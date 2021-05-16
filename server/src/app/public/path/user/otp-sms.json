@@ -1,0 +1,41 @@
+{
+      "post": {
+            "tags": ["user"],
+            "description": "Create an OTP code is sent to the user phone number. Users can use it to access a webpage which contains a form where the user can update phone number.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": { "$ref": "../../dto/otpSms.json" },
+            "responses": {
+                  "200": {
+                        "description": "The OTP code has been sent successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "The user has requested too many times, please try again after 30 minutes, The user phone number is taken by another user",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "500": {
+                        "description": "Internal server error from sms server",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

@@ -1,0 +1,29 @@
+{
+      "post": {
+            "tags": ["auth"],
+            "description": "Create an email is sent with a link to a webpage which contains a form where the user can enter the new password.",
+            "requestBody": { "$ref": "../../dto/updateEmail.json" },
+            "responses": {
+                  "200": {
+                        "description": "The mail has been sent successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "too many request, mail does not exist, or server cannot send",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

@@ -4,14 +4,14 @@ import { useForm } from 'react-hook-form';
 
 import { store } from '../store';
 import { useFormError } from '../common/hooks/useFormError';
-import { SupportDto } from '../api/common/dto';
+import { SupportDto } from '../common/interface/dto/common.dto';
 import routers from '../common/constants/router';
-import SeoHead from '../components/common/seoHead';
 import commonThunk from '../store/api/thunk';
 
-import TextareaField from '../components/form/textareaField';
-import TextField from '../components/form/textField';
-import BtnForm from '../components/btn/btnForm';
+import SeoHead from '../components/common/seoHead';
+import TextareaField from '../components/form/field-textarea';
+import TextField from '../components/form/filed-textfield';
+import BtnForm from '../components/btn/btn-form';
 
 const defaultValues: SupportDto = {
     message: '',

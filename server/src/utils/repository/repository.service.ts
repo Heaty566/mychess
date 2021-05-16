@@ -2,12 +2,12 @@ import { Repository } from 'typeorm';
 
 export class RepositoryService<T> extends Repository<T> {
       public async findOneByField(field: keyof T, value: any): Promise<T> {
-            const results = await this.createQueryBuilder().select('*').where(`${field} = :value`, { value }).execute();
-            return results[0];
+            const results = await this.createQueryBuilder().where(`${field} = :value`, { value }).getOne();
+            return results;
       }
 
       public async findManyByField(field: keyof T, value: any) {
-            return await this.createQueryBuilder().select('*').where(`${field} = :value`, { value }).execute();
+            return await this.createQueryBuilder().where(`${field} = :value`, { value }).getMany();
       }
 
       /**
@@ -22,6 +22,6 @@ export class RepositoryService<T> extends Repository<T> {
             if (!values.length) return [];
             if (isUnique) values = values.filter(this.onlyUnique);
 
-            return await this.createQueryBuilder().select('*').where(`${field} IN (:...values)`, { values }).execute();
+            return await this.createQueryBuilder().where(`${field} IN (:...values)`, { values }).getMany();
       }
 }

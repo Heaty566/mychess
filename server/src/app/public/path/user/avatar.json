@@ -1,0 +1,40 @@
+{
+      "put": {
+            "tags": ["user"],
+            "description": "This API allows user to upload their avatar image.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": { "$ref": "../../dto/updateAvatar.json" },
+            "responses": {
+                  "200": {
+                        "description": "User avatar update successfully",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "The avatar file is required, The avatar file couldn't be uploaded. Photos should be smaller than {{size}} MB, The avatar file couldn't be uploaded. Photos should be saved as JPEG, JPG, PNG, BMP files",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "500": {
+                        "description": "Internal server error from aws server, upload failed to aws server",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}

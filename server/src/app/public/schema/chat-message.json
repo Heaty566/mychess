@@ -1,0 +1,19 @@
+{
+      "type": "object",
+      "description": "message in chat object",
+      "properties": {
+            "id": {
+                  "type": "string"
+            },
+            "createDate": {
+                  "type": "string"
+            },
+            "content": {
+                  "type": "string"
+            },
+            "userId": {
+                  "description": "id of user who creates this message",
+                  "type": "string"
+            }
+      }
+}

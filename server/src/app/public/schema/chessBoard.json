@@ -1,0 +1,65 @@
+{
+      "type": "object",
+      "description": "information of chess board",
+      "properties": {
+            "id": {
+                  "type": "string"
+            },
+            "isBotMode": {
+                  "type": "boolean"
+            },
+            "turn": {
+                  "type": "boolean"
+            },
+            "users": {
+                  "type": "array",
+                  "items": {
+                        "$ref": "gamePlayer.json"
+                  }
+            },
+            "moves": {
+                  "type": "array",
+                  "items": {
+                        "$ref": "chessMove.json"
+                  }
+            },
+            "winner": {
+                  "$ref": "gamePlayerFlag.json"
+            },
+            "status": {
+                  "$ref": "gameStatus.json"
+            },
+            "startDate": {
+                  "type": "string"
+            },
+            "chatId": {
+                  "type": "string"
+            },
+            "changeOne": {
+                  "type": "number"
+            },
+            "changeTwo": {
+                  "type": "number"
+            },
+            "chessPiece": {
+                  "type": "object",
+                  "properties": {
+                        "x": {
+                              "type": "number"
+                        },
+                        "y": {
+                              "type": "number"
+                        }
+                  }
+            },
+            "board": {
+                  "type": "array",
+                  "items": {
+                        "type": "array",
+                        "items": {
+                              "$ref": "./chessFlag.json"
+                        }
+                  }
+            }
+      }
+}

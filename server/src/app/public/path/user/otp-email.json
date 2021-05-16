@@ -1,0 +1,43 @@
+{
+      "post": {
+            "tags": ["user"],
+            "description": "Create an email is sent with a link to a webpage which contains a form where the user can update email.",
+            "parameters": [{ "$ref": "../../parameter/token.json" }],
+            "requestBody": {
+                  "$ref": "../../dto/updateEmail.json"
+            },
+            "responses": {
+                  "200": {
+                        "description": "The mail has been sent successfully.",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+                  "400": {
+                        "description": "The user has requested too many times, please try again after 30 minutes, The user email is taken by another user",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  },
+
+                  "500": {
+                        "description": "Internal server error from email server",
+                        "content": {
+                              "application/json": {
+                                    "schema": {
+                                          "$ref": "../../schema/apiResponse.json"
+                                    }
+                              }
+                        }
+                  }
+            }
+      }
+}
