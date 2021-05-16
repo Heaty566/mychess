@@ -1,7 +1,9 @@
 import * as React from 'react';
+
+import { GamePlayerFlag } from '../../common/interface/game.interface';
+
 import XPlayerIcon from '../../public/asset/icons/x-player';
 import OPlayerIcon from '../../public/asset/icons/o-player';
-import { GamePlayerFlag } from '../../common/interface/game.interface';
 
 export interface TTTCellProps {
     cellFlag: GamePlayerFlag;

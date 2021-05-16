@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { ChessFlag, ChessRole } from '../../common/interface/chess.interface';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
 
 import BlackBishop from '../../public/asset/icons/chess/black-bishop';
 import BlackKing from '../../public/asset/icons/chess/black-king';
@@ -8,7 +9,6 @@ import BlackKnight from '../../public/asset/icons/chess/black-knight';
 import BlackPawn from '../../public/asset/icons/chess/black-pawn';
 import BlackQueen from '../../public/asset/icons/chess/black-queen';
 import BlackRook from '../../public/asset/icons/chess/black-rook';
-import { GamePlayerFlag } from '../../common/interface/game.interface';
 import WhiteBishop from '../../public/asset/icons/chess/white-bishop';
 import WhiteKing from '../../public/asset/icons/chess/white-king';
 import WhiteKnight from '../../public/asset/icons/chess/white-knight';

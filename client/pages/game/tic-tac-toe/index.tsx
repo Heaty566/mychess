@@ -1,20 +1,20 @@
 import * as React from 'react';
+import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
 
 import { ApiState } from '../../../common/interface/api.interface';
-import BtnForm from '../../../components/btn/btn-form';
 import { RoomIdDto } from '../../../common/interface/dto/ttt.dto';
 import { RootState } from '../../../store';
-import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
-import SeoHead from '../../../components/common/seoHead';
-import TextField from '../../../components/form/filed-textfield';
-import WaveLoading from '../../../components/loading/wave-loading';
-import routers from '../../../common/constants/router';
 import { ticTacToeApi } from '../../../api/tttApi';
-import { useForm } from 'react-hook-form';
+import routers from '../../../common/constants/router';
 import useFormError from '../../../common/hooks/useFormError';
-import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
 
+import BtnForm from '../../../components/btn/btn-form';
+import TextField from '../../../components/form/filed-textfield';
+import SeoHead from '../../../components/common/seoHead';
+import WaveLoading from '../../../components/loading/wave-loading';
+import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 export interface TicTacToeForm {
     roomId: string;
 }
@@ -40,7 +40,7 @@ const TicTacToe: React.FunctionComponent = () => {
     const handleOnQuickJoin = async () => {
         ticTacToeApi.quickJoin().then((res) => {
             ticTacToeApi.joinRoom({ roomId: res.data.data.roomId }).then(() => {
-                router.push(`${routers.chessPvP.link}/${res.data.data.roomId}`);
+                router.push(`${routers.ticTacToePvP.link}/${res.data.data.roomId}`);
             });
         });
     };

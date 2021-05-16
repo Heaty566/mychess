@@ -1,8 +1,9 @@
 import * as React from 'react';
 
+import { AuthState } from '../../common/interface/user.interface';
+
 import NavbarSideMenu from './navbar-side-menu';
 import NavbarMenuBtn from './navbar-menu-btn';
-import { AuthState } from '../../common/interface/user.interface';
 
 export interface NavbarMobileProps {
     handleChangeActive(): void;

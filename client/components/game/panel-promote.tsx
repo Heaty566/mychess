@@ -1,20 +1,18 @@
 import * as React from 'react';
-import BlackPawn from '../../public/asset/icons/chess/black-pawn';
-import WhitePawn from '../../public/asset/icons/chess/white-pawn';
+
+import { ChessRole } from '../../common/interface/chess.interface';
+import { PromoteChessRole } from '../../common/interface/dto/chess.dto';
+import { GamePlayerFlag } from '../../common/interface/game.interface';
+
 import BlackQueen from '../../public/asset/icons/chess/black-queen';
 import WhiteQueen from '../../public/asset/icons/chess/white-queen';
 import BlackKnight from '../../public/asset/icons/chess/black-knight';
 import WhiteKnight from '../../public/asset/icons/chess/white-knight';
-import BlackKing from '../../public/asset/icons/chess/black-king';
-import WhiteKing from '../../public/asset/icons/chess/white-king';
 import BlackRook from '../../public/asset/icons/chess/black-rook';
 import WhiteRook from '../../public/asset/icons/chess/white-rook';
 import BlackBishop from '../../public/asset/icons/chess/black-bishop';
 import WhiteBishop from '../../public/asset/icons/chess/white-bishop';
 import ModalWrapper from '../modal/modal-wrapper';
-import { ChessFlag, ChessRole } from '../../common/interface/chess.interface';
-import { PromoteChessRole } from '../../common/interface/dto/chess.dto';
-import { GamePlayerFlag } from '../../common/interface/game.interface';
 export interface PanelPromoteProps {
     handleOnClick: (role: PromoteChessRole) => void;
     isAppear: boolean;

@@ -1,14 +1,15 @@
-import { useRouter } from 'next/router';
 import * as React from 'react';
-import { useSelector } from 'react-redux';
-import ticTacToeApi from '../../api/tttApi';
+
+import { GamePlayer, GamePlayerFlag, GameStatus } from '../interface/game.interface';
+import { TTTGatewayAction, TicTacToeBoard } from '../interface/tic-tac-toe.interface';
+import { AuthState } from '../interface/user.interface';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
-import { TicTacToeBoard, TTTGatewayAction } from '../interface/tic-tac-toe.interface';
-import { AuthState } from '../interface/user.interface';
-import useSocketIo from './useSocketIo';
 import routers from '../constants/router';
-import { GamePlayer, GamePlayerFlag, GameStatus } from '../interface/game.interface';
+import ticTacToeApi from '../../api/tttApi';
+import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import useSocketIo from './useSocketIo';
 
 const playerDefault: GamePlayer = {
     avatarUrl: '/asset/images/default-avatar.png',
@@ -45,6 +46,8 @@ const ticTacToeBoardDefault: TicTacToeBoard = {
     chatId: '',
     currentTurn: false,
     id: '',
+    changeOne: 0,
+    changeTwo: 0,
     isBotMode: false,
     lastStep: new Date(),
     startDate: new Date(),

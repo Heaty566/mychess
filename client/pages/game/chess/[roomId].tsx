@@ -1,16 +1,20 @@
 import * as React from 'react';
-
-import { GamePlayerFlag, GameStatus } from '../../../common/interface/game.interface';
+import { useSelector } from 'react-redux';
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 
+import { GamePlayerFlag, GameStatus } from '../../../common/interface/game.interface';
 import { ApiState } from '../../../common/interface/api.interface';
+import { RootState } from '../../../store';
+import routers from '../../../common/constants/router';
+import useChatIo from '../../../common/hooks/useChatIo';
+import { useGameChess } from '../../../common/hooks/useGameChess';
+
 import ChatBox from '../../../components/chat';
 import ChessBoard from '../../../components/game/chess-board';
 import ChessStep from '../../../components/game/chess-step';
 import ChessTurn from '../../../components/game/chess-turn';
 import GameControlMenu from '../../../components/game/game-menu';
 import GameTopMenu from '../../../components/game/game-top-menu';
-import LabelMessage from '../../../components/form/label-message';
 import LabelMessagePopup from '../../../components/form/label-message-popup';
 import PanelDraw from '../../../components/game/panel-draw';
 import PanelPromote from '../../../components/game/panel-promote';
@@ -18,15 +22,9 @@ import PanelReady from '../../../components/game/panel-ready';
 import PanelRestart from '../../../components/game/panel-restart';
 import PanelStart from '../../../components/game/panel-start';
 import PlayerInfo from '../../../components/game/player-info';
-import { RootState } from '../../../store';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import SeoHead from '../../../components/common/seoHead';
 import WaveLoading from '../../../components/loading/wave-loading';
-import authApi from '../../../api/authApi';
-import routers from '../../../common/constants/router';
-import useChatIo from '../../../common/hooks/useChatIo';
-import { useGameChess } from '../../../common/hooks/useGameChess';
-import { useSelector } from 'react-redux';
 
 export interface TicTacToePvPProps {
     roomId: string;

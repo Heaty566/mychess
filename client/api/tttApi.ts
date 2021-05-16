@@ -1,6 +1,6 @@
-import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
-
 import { AxiosInstance } from 'axios';
+
+import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
 import { DrawDTO } from '../common/interface/dto/chess.dto';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
