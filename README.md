@@ -1,6 +1,6 @@
 [![MyChess Logo](doc/images/logo.svg)](https://mychess.website)
 
-## [Live Demo](https://mychess.website) - [Live Api Document]() - [Live Test Coverage Result]()
+## [Live Demo](https://mychess.website) - [Live Api Document](https://mychessdoc.herokuapp.com/doc) - [Live Test Coverage Result](https://mychessdoc.herokuapp.com/test)
 
 ## What is MyChess?
 
