@@ -3,7 +3,7 @@ import React from 'react';
 function Icon() {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <g clipPath="url(#clip0)">
+            <g>
                 <path
                     fill="#FEFEFE"
                     stroke="#000"
@@ -11,7 +11,7 @@ function Icon() {
                 ></path>
             </g>
             <defs>
-                <clipPath id="clip0">
+                <clipPath>
                     <path fill="#fff" d="M0 0H24V24H0z"></path>
                 </clipPath>
             </defs>
