@@ -191,8 +191,8 @@ describe('ChessGateway ', () => {
             beforeEach(async () => {
                   user1 = await generateFakeUser();
                   user2 = await generateFakeUser();
-                  boardId = await chessCommonService.createNewGame(user1, false);
-                  await chessCommonService.joinGame(boardId, user2);
+                  boardId = await chessCommonService.createNewGame(user1, true);
+
                   const getBoard = await chessCommonService.getBoard(boardId);
                   await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
                   await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
