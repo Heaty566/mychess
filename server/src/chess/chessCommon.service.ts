@@ -216,6 +216,11 @@ export class ChessCommonService {
             await this.userService.saveUser(users[0]);
             await this.userService.saveUser(users[1]);
 
+            users[0].elo += board.eloWhiteUser;
+            users[1].elo += board.eloWhiteUser;
+            await this.userService.saveUser(users[0]);
+            await this.userService.saveUser(users[1]);
+
             const chess = await this.chessRepository.save(newChess);
             return chess;
       }

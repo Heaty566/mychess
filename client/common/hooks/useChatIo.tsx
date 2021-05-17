@@ -2,9 +2,9 @@ import * as React from 'react';
 import chatApi from '../../api/chatApi';
 import { ServerResponse } from '../interface/api.interface';
 import { Chat, ChatGatewayAction } from '../interface/chat.interface';
-import useSocketIo from './useSocketIo';
-import { useForm, UseFormRegister } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { MessageDTO } from '../interface/dto/chat.dto';
+import * as socketIo from 'socket.io-client';
 
 const chatDefault: Chat = {
     createDate: new Date(),
@@ -17,18 +17,15 @@ const defaultValues: MessageDTO = {
     content: '',
 };
 
+const clientChatIo = socketIo.connect(`${process.env.SERVER_URL}/chat`, { path: process.env.SOCKET_PATH });
 export function useChatIo(chatId: string | undefined) {
-    const clientChatIo = useSocketIo({ namespace: 'chat' });
     const { register, handleSubmit, reset } = useForm<MessageDTO>({ defaultValues });
     const wrapperRef = React.useRef<HTMLElement>();
     const [chat, setChat] = React.useState<Chat>(chatDefault);
 
     const handleOnSendMessage = (data: MessageDTO) => {
         if (chatId && data.content) {
-            chatApi
-                .sendMessageChat({ chatId, content: data.content })
-                .then(() => reset(defaultValues))
-                .catch((error) => console.log(error));
+            chatApi.sendMessageChat({ chatId, content: data.content }).then(() => reset(defaultValues));
         }
     };
 
