@@ -313,7 +313,7 @@ export class ChessCommonService {
             for (let i = 0; i < boardIds.length; i++) {
                   const board = await this.getBoard(boardIds[i]);
                   if (board) {
-                        if (board.users.length === 1) roomOneUserIds.push(boardIds[i]);
+                        if (board.users.length === 1 && board.users[0].id !== 'BOT') roomOneUserIds.push(boardIds[i]);
                         if (board.users.length === 0) emptyRoomIds.push(boardIds[i]);
                   }
             }
