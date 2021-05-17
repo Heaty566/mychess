@@ -192,18 +192,21 @@ export class ChessCommonService {
             const board = await this.getBoard(boardId);
 
             if (board && board.status === ChessStatus.END) {
-                  const chess = await this.saveChess(board);
+                  const chess = await this.saveChess(boardId);
                   return chess;
             }
       }
 
-      async saveChess(board: ChessBoard) {
-            const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
+      async saveChess(boardId: string) {
+            const board = await this.getBoard(boardId);
+            const user0 = await this.userService.findOneUserByField('id', board.users[0].id);
+            const user1 = await this.userService.findOneUserByField('id', board.users[1].id);
+
             const chat = await this.chatService.saveChat(board.chatId);
             const moves = await this.saveChessMove(board);
 
             const newChess = new Chess();
-            newChess.users = users;
+            newChess.users = [user0, user1];
             newChess.winner = board.winner;
             newChess.chatId = chat.id;
             newChess.moves = moves;
@@ -211,15 +214,10 @@ export class ChessCommonService {
             newChess.changeOne = board.eloBlackUser;
             newChess.changeTwo = board.eloWhiteUser;
 
-            users[0].elo = board.eloWhiteUser;
-            users[1].elo = board.eloBlackUser;
-            await this.userService.saveUser(users[0]);
-            await this.userService.saveUser(users[1]);
-
-            users[0].elo += board.eloWhiteUser;
-            users[1].elo += board.eloWhiteUser;
-            await this.userService.saveUser(users[0]);
-            await this.userService.saveUser(users[1]);
+            user0.elo += board.eloWhiteUser;
+            user1.elo += board.eloBlackUser;
+            await this.userService.saveUser(user0);
+            await this.userService.saveUser(user1);
 
             const chess = await this.chessRepository.save(newChess);
             return chess;
