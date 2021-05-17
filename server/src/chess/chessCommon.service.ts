@@ -211,6 +211,11 @@ export class ChessCommonService {
             newChess.changeTwo = board.eloWhiteUser;
             newChess.endDate = new Date();
 
+            users[0].elo += board.eloWhiteUser;
+            users[1].elo += board.eloWhiteUser;
+            await this.userService.saveUser(users[0]);
+            await this.userService.saveUser(users[1]);
+
             const chess = await this.chessRepository.save(newChess);
             return chess;
       }

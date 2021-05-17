@@ -232,6 +232,10 @@ export class TicTacToeCommonService {
             newTicTacToe.changeOne = board.eloRedUser;
             newTicTacToe.chatId = chat.id;
 
+            users[0].elo += board.eloBlueUser;
+            users[1].elo += board.eloRedUser;
+            await this.userService.saveUser(users[0]);
+            await this.userService.saveUser(users[1]);
             const ttt = await this.ticTacToeRepository.save(newTicTacToe);
 
             return ttt;

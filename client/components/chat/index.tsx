@@ -16,7 +16,7 @@ export interface ChatProps {
 
 const ChatBox: React.FunctionComponent<ChatProps> = ({ chat: chatInfo, handleOnSendMessage, users, register, wrapperRef }) => {
     return (
-        <div className="box-border flex flex-col p-2 m-2 space-y-2 overflow-hidden rounded-sm md:m-0 h-72 md:max-w-xs bg-woodsmoke fade-in ">
+        <div className="box-border flex flex-col p-2 m-2 space-y-2 overflow-auto rounded-sm md:m-0 h-72 md:max-w-xs bg-woodsmoke fade-in">
             <div className="flex-1 space-y-1 overflow-auto" ref={wrapperRef}>
                 {chatInfo.messages.map((item) => {
                     const player = users.find((user) => user.id === item.userId);
