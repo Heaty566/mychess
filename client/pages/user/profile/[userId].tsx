@@ -127,9 +127,9 @@ const Profile: React.FunctionComponent<ProfileProps> = ({ user }) => {
                                         {!Boolean(boards.length) && <p className="text-xl text-mercury">No match is found</p>}
                                         {Boolean(boards.length) &&
                                             boards.map((item) => {
-                                                const isWin = item.winner !== GamePlayerFlag.EMPTY && item.users[item.winner].id === user.id;
-                                                const currentPlayer = item.users.find((item) => item.id === user.id);
-                                                const otherPlayer = item.users.find((item) => item.id !== user.id);
+                                                const isWin = item.winner !== GamePlayerFlag.EMPTY && item.users[item.winner]?.id === user?.id;
+                                                const currentPlayer = item.users.find((item) => item?.id === user?.id);
+                                                const otherPlayer = item.users.find((item) => item?.id !== user?.id);
                                                 const mmYY = new Date(item.startDate).toLocaleDateString();
                                                 const mmHH = new Date(item.startDate).toLocaleTimeString();
 

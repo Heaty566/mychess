@@ -9,7 +9,7 @@ import routers from '../constants/router';
 import ticTacToeApi from '../../api/tttApi';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import useSocketIo from './useSocketIo';
+import * as socketIo from 'socket.io-client';
 
 const playerDefault: GamePlayer = {
     avatarUrl: '/asset/images/default-avatar.png',
@@ -56,8 +56,8 @@ const ticTacToeBoardDefault: TicTacToeBoard = {
     winner: GamePlayerFlag.EMPTY,
 };
 
+const clientIoTTT = socketIo.connect(`${process.env.SERVER_URL}/tic-tac-toe`, { path: process.env.SOCKET_PATH });
 export function useGameTTT(roomId: string) {
-    const clientIoTTT = useSocketIo({ namespace: 'tic-tac-toe' });
     const router = useRouter();
     const tttBoardRef = React.useRef<HTMLDivElement>(null);
     const [tttBoard, setTTTBoard] = React.useState<TicTacToeBoard>(ticTacToeBoardDefault);

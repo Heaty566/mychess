@@ -228,10 +228,19 @@ export class TicTacToeCommonService {
             newTicTacToe.winner = board.winner;
             newTicTacToe.users = users;
             newTicTacToe.startDate = board.startDate;
+            newTicTacToe.chatId = chat.id;
             newTicTacToe.changeTwo = board.eloBlueUser;
             newTicTacToe.changeOne = board.eloRedUser;
-            newTicTacToe.chatId = chat.id;
 
+            users[0].elo = board.eloBlueUser;
+            users[1].elo = board.eloRedUser;
+            await this.userService.saveUser(users[0]);
+            await this.userService.saveUser(users[1]);
+
+            users[0].elo += board.eloBlueUser;
+            users[1].elo += board.eloRedUser;
+            await this.userService.saveUser(users[0]);
+            await this.userService.saveUser(users[1]);
             const ttt = await this.ticTacToeRepository.save(newTicTacToe);
 
             return ttt;

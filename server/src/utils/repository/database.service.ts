@@ -13,33 +13,36 @@ export class DatabaseService {
 
       @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
       cronBackupDatabase(filename = 'backup') {
-            exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${filename}.sql`, (err) => {
-                  if (err) this.logger.print('Create a backup database failed', 'database.service.ts', 'error');
-                  this.logger.print(`Create a backup database in ${new Date()}`, 'database.service.ts', 'info');
+            return new Promise((res, rej) => {
+                  exec(` mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${filename}.sql`, (err) => {
+                        if (err) this.logger.print('Create a backup database failed', 'database.service.ts', 'error');
+                        this.logger.print(`Create a backup database in ${new Date()}`, 'database.service.ts', 'info');
 
-                  fs.readFile(`${filename}.sql`, async (err, data) => {
-                        if (err) {
-                              this.logger.print('Read a backup database failed', 'database.service.ts', 'error');
-                              return;
-                        }
+                        fs.readFile(`${filename}.sql`, async (err, data) => {
+                              if (err) {
+                                    console.log('upload');
+                                    this.logger.print('Read a backup database failed', 'database.service.ts', 'error');
+                                    rej();
+                              }
 
-                        const fileName = `${Date.now()}-${filename}`;
+                              const fileName = `${Date.now()}-${filename}`;
+                              const databaseFile: Express.Multer.File = {
+                                    buffer: data,
+                                    originalname: `${fileName}.sql`,
+                                    fieldname: filename,
+                                    mimetype: 'application/x-sql',
+                                    encoding: '7bit',
+                                    destination: '',
+                                    filename: fileName,
+                                    path: './',
+                                    size: null,
+                                    stream: null,
+                              };
 
-                        const databaseFile: Express.Multer.File = {
-                              buffer: data,
-                              originalname: fileName,
-                              fieldname: filename,
-                              mimetype: 'application/x-sql',
-                              encoding: '7bit',
-                              destination: '',
-                              filename: fileName,
-                              path: './',
-                              size: null,
-                              stream: null,
-                        };
-
-                        await this.awsService.uploadFile(databaseFile, 'database', 'system');
-                        this.logger.print(`Upload to aws backup database in ${new Date()}`, 'database.service.ts', 'info');
+                              this.logger.print(`Upload to aws backup database in ${new Date()}`, 'database.service.ts', 'info');
+                              const file = await this.awsService.uploadFile(databaseFile, 'database', 'system');
+                              res(file);
+                        });
                   });
             });
       }
