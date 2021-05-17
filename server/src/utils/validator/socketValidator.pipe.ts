@@ -1,5 +1,4 @@
-import { Injectable, PipeTransform, UseFilters } from '@nestjs/common';
-import { ConnectedSocket } from '@nestjs/websockets';
+import { Injectable, PipeTransform } from '@nestjs/common';
 import { ObjectSchema } from 'joi';
 import { ioResponse } from '../../app/interface/socketResponse';
 import { LocalesService } from '../locales/locales.service';
@@ -7,7 +6,6 @@ import { LocalesService } from '../locales/locales.service';
 //---- Common
 
 @Injectable()
-// @UseFilters(new AllExceptionsFilter())
 export class SocketJoiValidatorPipe implements PipeTransform {
       constructor(private readonly schema: ObjectSchema) {}
 

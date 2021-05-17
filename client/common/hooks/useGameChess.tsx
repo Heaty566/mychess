@@ -11,7 +11,7 @@ import { chessApi } from '../../api/chessApi';
 import routers from '../constants/router';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import useSocketIo from './useSocketIo';
+import * as socketIo from 'socket.io-client';
 
 const playerDefault: GamePlayer = {
     avatarUrl: '/asset/images/default-avatar.png',
@@ -68,10 +68,9 @@ const chessMoveRedisDefault: ChessMoveRedis = {
     x: 0,
     y: 0,
 };
-
+const clientIoChess = socketIo.connect(`${process.env.SERVER_URL}/chess`, { path: process.env.SOCKET_PATH });
 export function useGameChess(roomId: string) {
     const authState = useSelector<RootState, AuthState>((state) => state.auth);
-    const clientIoChess = useSocketIo({ namespace: 'chess' });
     const router = useRouter();
     const chessBoardRef = React.useRef<HTMLDivElement>(null);
     const [chessBoard, setChessBoard] = React.useState<ChessBoard>(chessBoardDefault);
@@ -85,7 +84,7 @@ export function useGameChess(roomId: string) {
         if (chessBoard.isBotMode)
             chessApi.createNewBotRoom().then((res) => {
                 const roomId = res.data.data.roomId;
-                router.push(`${routers.ticTacToePvP.link}/${roomId}`);
+                router.push(`${routers.chessPvP.link}/${roomId}`);
             });
         else chessApi.restartGame({ roomId });
     };
