@@ -196,7 +196,7 @@ export class TicTacToeCommonService {
       async saveTTTFromCacheToDb(boardId: string) {
             const board = await this.getBoard(boardId);
             if (board && !board.isBotMode && board.status === TicTacToeStatus.END) {
-                  const ttt = await this.saveTTT(board);
+                  const ttt = await this.saveTTT(boardId);
                   return ttt;
             }
       }
@@ -217,8 +217,10 @@ export class TicTacToeCommonService {
             return await this.ticTacToeMoveRepository.save(moves);
       }
 
-      async saveTTT(board: TicTacToeBoard) {
-            const users = await this.userService.findManyUserByArrayField('id', [board.users[0].id, board.users[1].id]);
+      async saveTTT(boardId: string) {
+            const board = await this.getBoard(boardId);
+            const user0 = await this.userService.findOneUserByField('id', board.users[0].id);
+            const user1 = await this.userService.findOneUserByField('id', board.users[1].id);
             const chat = await this.chatService.saveChat(board.chatId);
             const moves = await this.saveTTTMove(board);
 
@@ -226,21 +228,16 @@ export class TicTacToeCommonService {
             newTicTacToe.endDate = new Date();
             newTicTacToe.moves = moves;
             newTicTacToe.winner = board.winner;
-            newTicTacToe.users = users;
+            newTicTacToe.users = [user0, user1];
             newTicTacToe.startDate = board.startDate;
             newTicTacToe.chatId = chat.id;
             newTicTacToe.changeTwo = board.eloBlueUser;
             newTicTacToe.changeOne = board.eloRedUser;
 
-            users[0].elo = board.eloBlueUser;
-            users[1].elo = board.eloRedUser;
-            await this.userService.saveUser(users[0]);
-            await this.userService.saveUser(users[1]);
-
-            users[0].elo += board.eloBlueUser;
-            users[1].elo += board.eloRedUser;
-            await this.userService.saveUser(users[0]);
-            await this.userService.saveUser(users[1]);
+            user0.elo += board.eloBlueUser;
+            user1.elo += board.eloRedUser;
+            await this.userService.saveUser(user0);
+            await this.userService.saveUser(user1);
             const ttt = await this.ticTacToeRepository.save(newTicTacToe);
 
             return ttt;
