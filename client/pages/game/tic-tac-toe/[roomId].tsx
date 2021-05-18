@@ -91,7 +91,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         isAppear={tttBoard.status === GameStatus.DRAW}
                                         isDraw={currentTTTPlayer.isDraw}
                                     />
-                                    <TTTBoard board={tttBoard.board} handleOnClick={tttHandleOnAddMove} register={tttBoardRef} />
+                                    <TTTBoard board={tttBoard} handleOnClick={tttHandleOnAddMove} register={tttBoardRef} />
                                 </div>
                             </div>
                             <div className="flex flex-col flex-1 space-y-2 md:m-0 md:max-w-xs">

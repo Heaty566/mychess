@@ -1,5 +1,5 @@
 //---- Entity
-import { TicTacToeFlag, TicTacToeStatus, TicTacToePlayer } from './ticTacToe.interface';
+import { TicTacToeFlag, TicTacToeStatus, TicTacToePlayer, TTTMoveRedis } from './ticTacToe.interface';
 
 //---- Helper
 import { generatorString } from '../../app/helpers/stringGenerator';
@@ -14,6 +14,7 @@ export class TicTacToeBoard {
       users: TicTacToePlayer[];
       winner: TicTacToeFlag;
       chatId: string;
+      moves: Array<TTTMoveRedis>;
       eloRedUser: number;
       eloBlueUser: number;
 
@@ -37,6 +38,7 @@ export class TicTacToeBoard {
             ];
 
             this.users = [];
+            this.moves = [];
             this.winner = TicTacToeFlag.EMPTY;
             this.id = generatorString(8, 'number');
             this.status = TicTacToeStatus['NOT-YET'];
