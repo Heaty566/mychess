@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { ChessFlag, ChessMoveRedis } from '../../common/interface/chess.interface';
+import { GamePlayer, GamePlayerFlag } from '../../common/interface/game.interface';
 
 import ChessCell from './chess-cell';
 
@@ -10,14 +11,15 @@ export interface TTTBoardProps {
     register: React.LegacyRef<HTMLDivElement> | undefined;
     suggestion: ChessMoveRedis[];
     kingCheck: { x: number; y: number } | undefined;
+    currentPlayer: GamePlayer;
 }
 
-const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnClick, register, suggestion, kingCheck }) => {
+const ChessBoard: React.FunctionComponent<TTTBoardProps> = ({ board, handleOnClick, register, suggestion, kingCheck, currentPlayer }) => {
     return (
-        <div className={`flex overflow-x-auto bg-asparagus-500 `} ref={register}>
+        <div className={`flex  overflow-x-auto bg-asparagus-500 `} ref={register}>
             {board.map((item, index) => {
                 return (
-                    <div key={index}>
+                    <div key={index} className={`flex ${currentPlayer.flag === GamePlayerFlag.USER1 ? 'flex-col-reverse' : 'flex-col'} `}>
                         {item.map((item2, index2) => {
                             const isEven = 1 === (index + index2) % 2;
                             const isSuggestion = Boolean(suggestion.find((item) => item.x === index && item.y === index2));

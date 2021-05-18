@@ -110,6 +110,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         handleOnClick={chessHandleOnClick}
                                         kingCheck={chessBoard.checkedPiece}
                                         register={chessBoardRef}
+                                        currentPlayer={currentChessPlayer}
                                         suggestion={chessSuggestion}
                                     />
                                 </div>
