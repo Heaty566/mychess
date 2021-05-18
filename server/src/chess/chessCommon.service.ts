@@ -199,29 +199,30 @@ export class ChessCommonService {
 
       async saveChess(boardId: string) {
             const board = await this.getBoard(boardId);
+            if (!board.isBotMode) {
+                  const user0 = await this.userService.findOneUserByField('id', board.users[0].id);
+                  const user1 = await this.userService.findOneUserByField('id', board.users[1].id);
 
-            const user0 = await this.userService.findOneUserByField('id', board.users[0].id);
-            const user1 = await this.userService.findOneUserByField('id', board.users[1].id);
+                  const chat = await this.chatService.saveChat(board.chatId);
+                  const moves = await this.saveChessMove(board);
 
-            const chat = await this.chatService.saveChat(board.chatId);
-            const moves = await this.saveChessMove(board);
+                  const newChess = new Chess();
+                  newChess.users = [user0, user1];
+                  newChess.winner = board.winner;
+                  newChess.chatId = chat.id;
+                  newChess.moves = moves;
+                  newChess.endDate = new Date();
+                  newChess.changeOne = board.eloBlackUser;
+                  newChess.changeTwo = board.eloWhiteUser;
 
-            const newChess = new Chess();
-            newChess.users = [user0, user1];
-            newChess.winner = board.winner;
-            newChess.chatId = chat.id;
-            newChess.moves = moves;
-            newChess.endDate = new Date();
-            newChess.changeOne = board.eloBlackUser;
-            newChess.changeTwo = board.eloWhiteUser;
+                  user0.elo += board.eloWhiteUser;
+                  user1.elo += board.eloBlackUser;
+                  await this.userService.saveUser(user0);
+                  await this.userService.saveUser(user1);
 
-            user0.elo += board.eloWhiteUser;
-            user1.elo += board.eloBlackUser;
-            await this.userService.saveUser(user0);
-            await this.userService.saveUser(user1);
-
-            const chess = await this.chessRepository.save(newChess);
-            return chess;
+                  const chess = await this.chessRepository.save(newChess);
+                  return chess;
+            }
       }
 
       async saveChessMove(board: ChessBoard) {
