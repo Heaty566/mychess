@@ -26,7 +26,7 @@ This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](http
 ## Team Member
 
 - Cao Chí Hải - Backend + Tester + Document
-- Trương Bĩnh Tân - Backend + Tester + Document
+- Trương Bỉnh Tân - Backend + Tester + Document
 - Phạm Vĩnh Nhân - Full-Stack + Planner
 
 ## How to run?
