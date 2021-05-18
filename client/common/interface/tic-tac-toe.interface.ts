@@ -6,6 +6,11 @@ export enum TTTGatewayAction {
     TTT_COUNTER = 'ttt-counter',
     TTT_GET = 'ttt-get',
 }
+export interface TTTMoveRedis {
+    x: number;
+    y: number;
+    flag: GamePlayerFlag;
+}
 
 export interface TicTacToeBoard {
     id: string;
@@ -20,4 +25,5 @@ export interface TicTacToeBoard {
     isBotMode: boolean;
     winner: GamePlayerFlag;
     chatId: string;
+    moves: Array<TTTMoveRedis>;
 }

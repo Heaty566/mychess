@@ -32,3 +32,8 @@ export interface EloCalculator {
       redElo: number;
       blueElo: number;
 }
+export interface TTTMoveRedis {
+      x: number;
+      y: number;
+      flag: TicTacToeFlag;
+}

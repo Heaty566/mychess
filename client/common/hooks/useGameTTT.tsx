@@ -47,6 +47,7 @@ const ticTacToeBoardDefault: TicTacToeBoard = {
     currentTurn: false,
     id: '',
     changeOne: 0,
+    moves: [],
     changeTwo: 0,
     isBotMode: false,
     lastStep: new Date(),
