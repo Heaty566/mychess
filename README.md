@@ -10,7 +10,7 @@ This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](http
 ## Technology
 
 - Frontend
-     - NextJS - Server side Rendering
+     - NextJS - Server Side Rendering
      - React-Hook-Form - Flexible and extensible forms
      - Tailwind - Styling
 - Backend
@@ -33,7 +33,7 @@ This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](http
 
 This app is required a complex configuration to run, In case you need to run and build this application please contact us for our support.
 
-## Example
+## Images of project
 
 ![MyChess Home Page](doc/images/index.jpg)
 ![MyChess Community Page](doc/images/community.jpg)
@@ -46,7 +46,7 @@ This app is required a complex configuration to run, In case you need to run and
 
 ## Bug Report
 
-Feel free to create an issue request anytime we will check it out and fix it as soon as possible.
+Feel free to create an issue request anytime we will check it out and fix it as soon as possible. Thank You So Much.
 
 ## Reference
 
