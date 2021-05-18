@@ -26,9 +26,9 @@ describe('ChessGateway ', () => {
       let authService: AuthService;
 
       let resetDB: any;
-      let ticTacToeGateWay: ChessGateway;
+      let chessGateway: ChessGateway;
       let generateFakeUser: () => Promise<User>;
-      let ticTacToeCommonService: ChessCommonService;
+      let chessCommonService: ChessCommonService;
 
       beforeAll(async () => {
             const { configModule, resetDatabase, getFakeUser } = await initTestModule();
@@ -38,24 +38,24 @@ describe('ChessGateway ', () => {
             await app.listen(port);
 
             authService = app.get<AuthService>(AuthService);
-            ticTacToeGateWay = app.get<ChessGateway>(ChessGateway);
-            ticTacToeCommonService = app.get<ChessCommonService>(ChessCommonService);
-            jest.spyOn(ticTacToeGateWay.server, 'to').mockImplementation().mockReturnThis();
+            chessGateway = app.get<ChessGateway>(ChessGateway);
+            chessCommonService = app.get<ChessCommonService>(ChessCommonService);
+            jest.spyOn(chessGateway.server, 'to').mockImplementation().mockReturnThis();
       });
 
       describe(`${ChessGatewayAction.CHESS_GET}`, () => {
             let client1: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;
             let user1: User;
-            let tttId: string;
+            let boardId: string;
 
             beforeEach(async () => {
                   user1 = await generateFakeUser();
-                  tttId = await ticTacToeCommonService.createNewGame(user1, true);
-                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[0]);
-                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
-                  await ticTacToeCommonService.startGame(tttId);
+                  boardId = await chessCommonService.createNewGame(user1, true);
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+                  await chessCommonService.startGame(boardId);
 
                   const socketToken1 = await authService.getSocketToken(user1);
                   client1 = await getIoClient(port, 'chess', socketToken1);
@@ -81,7 +81,7 @@ describe('ChessGateway ', () => {
                         done();
                   });
 
-                  client1.emit(ChessGatewayAction.CHESS_GET, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_GET, { roomId: boardId });
             });
 
             it('Failed Not Found', async (done) => {
@@ -98,20 +98,22 @@ describe('ChessGateway ', () => {
             let client1: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;
             let user1: User;
-            let tttId: string;
+            let user2: User;
+            let boardId: string;
             let player1: ChessPlayer;
 
             beforeEach(async () => {
                   user1 = await generateFakeUser();
-                  tttId = await ticTacToeCommonService.createNewGame(user1, true);
-                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[0]);
-                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
-                  await ticTacToeCommonService.startGame(tttId);
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1, false);
+                  await chessCommonService.joinGame(boardId, user2);
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+                  await chessCommonService.startGame(boardId);
 
                   const socketToken1 = await authService.getSocketToken(user1);
                   client1 = await getIoClient(port, 'chess', socketToken1);
-                  const user2 = await generateFakeUser();
                   const socketToken2 = await authService.getSocketToken(user2);
                   client2 = await getIoClient(port, 'chess', socketToken2);
 
@@ -127,9 +129,9 @@ describe('ChessGateway ', () => {
             });
 
             it('Pass user1', async (done) => {
-                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = false;
-                  await ticTacToeCommonService.setBoard(getBoard);
+                  await chessCommonService.setBoard(getBoard);
 
                   client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<Array<ChessPlayer>>) => {
                         expect(data.data[0].time).not.toBe(900000);
@@ -137,12 +139,12 @@ describe('ChessGateway ', () => {
                         done();
                   });
 
-                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: boardId });
             });
             it('Pass user2', async (done) => {
-                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = true;
-                  await ticTacToeCommonService.setBoard(getBoard);
+                  await chessCommonService.setBoard(getBoard);
 
                   client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<Array<ChessPlayer>>) => {
                         expect(data.data[1].time).not.toBe(900000);
@@ -150,11 +152,11 @@ describe('ChessGateway ', () => {
                         done();
                   });
 
-                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: boardId });
             });
 
             it('Failed game is end', async (done) => {
-                  await ticTacToeCommonService.surrender(tttId, player1);
+                  await chessCommonService.surrender(boardId, player1);
 
                   client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<Array<ChessPlayer>>) => {
                         expect(data.data[0].time).toBe(900000);
@@ -162,20 +164,20 @@ describe('ChessGateway ', () => {
                         done();
                   });
 
-                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: boardId });
             });
             it('Failed user time out', async (done) => {
-                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
+                  const getBoard = await chessCommonService.getBoard(boardId);
                   getBoard.turn = false;
                   getBoard.users[0].time = 0;
-                  await ticTacToeCommonService.setBoard(getBoard);
+                  await chessCommonService.setBoard(getBoard);
 
                   client1.on(ChessGatewayAction.CHESS_COUNTER, async (data: SocketServerResponse<ChessBoard>) => {
                         expect(data.statusCode).toBe(200);
                         done();
                   });
 
-                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_COUNTER, { roomId: boardId });
             });
       });
 
@@ -183,19 +185,22 @@ describe('ChessGateway ', () => {
             let client1: SocketIOClient.Socket;
             let client2: SocketIOClient.Socket;
             let user1: User;
-            let tttId: string;
+            let user2: User;
+            let boardId: string;
 
             beforeEach(async () => {
                   user1 = await generateFakeUser();
-                  tttId = await ticTacToeCommonService.createNewGame(user1, true);
-                  const getBoard = await ticTacToeCommonService.getBoard(tttId);
-                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[0]);
-                  await ticTacToeCommonService.toggleReadyStatePlayer(tttId, getBoard.users[1]);
-                  await ticTacToeCommonService.startGame(tttId);
+                  user2 = await generateFakeUser();
+                  boardId = await chessCommonService.createNewGame(user1, true);
+
+                  const getBoard = await chessCommonService.getBoard(boardId);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[0]);
+                  await chessCommonService.toggleReadyStatePlayer(boardId, getBoard.users[1]);
+                  await chessCommonService.startGame(boardId);
 
                   const socketToken1 = await authService.getSocketToken(user1);
                   client1 = await getIoClient(port, 'chess', socketToken1);
-                  const user2 = await generateFakeUser();
+
                   const socketToken2 = await authService.getSocketToken(user2);
                   client2 = await getIoClient(port, 'chess', socketToken2);
                   await client2.connect();
@@ -213,15 +218,16 @@ describe('ChessGateway ', () => {
                         done();
                   });
 
-                  client1.emit(ChessGatewayAction.CHESS_JOIN, { roomId: tttId });
+                  client1.emit(ChessGatewayAction.CHESS_JOIN, { roomId: boardId });
             });
+
             it('Failed wrong user', async (done) => {
                   client2.on('exception', async (data: SocketServerResponse<null>) => {
                         expect(data.statusCode).toBe(401);
                         done();
                   });
 
-                  client2.emit(ChessGatewayAction.CHESS_JOIN, { roomId: tttId });
+                  client2.emit(ChessGatewayAction.CHESS_JOIN, { roomId: boardId });
             });
       });
 

@@ -199,6 +199,7 @@ export class ChessCommonService {
 
       async saveChess(boardId: string) {
             const board = await this.getBoard(boardId);
+
             const user0 = await this.userService.findOneUserByField('id', board.users[0].id);
             const user1 = await this.userService.findOneUserByField('id', board.users[1].id);
 
@@ -313,7 +314,7 @@ export class ChessCommonService {
             for (let i = 0; i < boardIds.length; i++) {
                   const board = await this.getBoard(boardIds[i]);
                   if (board) {
-                        if (board.users.length === 1) roomOneUserIds.push(boardIds[i]);
+                        if (board.users.length === 1 && !board.isBotMode) roomOneUserIds.push(boardIds[i]);
                         if (board.users.length === 0) emptyRoomIds.push(boardIds[i]);
                   }
             }
