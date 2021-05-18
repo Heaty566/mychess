@@ -121,6 +121,7 @@ export class TicTacToeService {
                   if (currentFlag === player.flag && board.board[x][y] === -1) {
                         board.board[x][y] = player.flag;
                         board.currentTurn = !board.currentTurn;
+                        board.moves.push({ x, y, flag: player.flag });
                         const currentTime = new Date();
                         const stepTime = currentTime.getTime() - new Date(board.lastStep).getTime();
                         board.users[player.flag].time -= stepTime;

@@ -97,7 +97,7 @@ export class ChessGateway {
       }
 
       async handleDisconnect(@ConnectedSocket() client: SocketExtend) {
-            if (process.env.NODE_ENV === 'production' && client?.user?.games?.chessId) {
+            if (client?.user?.games?.chessId) {
                   const boardId = client.user.games.chessId;
                   const user = await this.chessCommonService.findUser(boardId, client.user.id);
 
