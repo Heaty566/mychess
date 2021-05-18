@@ -35,8 +35,14 @@ This app is required a complex configuration to run, In case you need to run and
 
 ## Example
 
-![MyChess Home Page](doc/images/home-page.jpg)
+![MyChess Home Page](doc/images/index.jpg)
 ![MyChess Community Page](doc/images/community.jpg)
+![MyChess Chess Bot](doc/images/chess-bot.jpg)
+![MyChess Tic Tac Toe Page](doc/images/ttt-bot.png)
+![MyChess Chess PvP](doc/images/chess-game.jpg)
+![MyChess Tic Tac Toe PvP](doc/images/ttt-game.jpg)
+![MyChess Profile 1](doc/images/profile-1.jpg)
+![MyChess Profile 2](doc/images/profile-2.jpg)
 
 ## Bug Report
 
