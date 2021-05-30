@@ -11,6 +11,7 @@ This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](http
 
 - Frontend
      - NextJS - Server Side Rendering
+     - Redux-toolkit - State management
      - React-Hook-Form - Flexible and extensible forms
      - Tailwind - Styling
 - Backend
