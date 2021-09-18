@@ -3,7 +3,7 @@ name: auto-build-deploy
 on:
         push:
                 branches:
-                        - "main"
+                        - "deploy"
 jobs:
         build-check:
                 runs-on: ubuntu-latest
