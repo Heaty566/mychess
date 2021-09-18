@@ -1,8 +1,10 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ba88ef5717f042b7a15ce7432f853ad7)](https://app.codacy.com/gh/Heaty566/mychess?utm_source=github.com&utm_medium=referral&utm_content=Heaty566/mychess&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/578b01e6d0954a928a06a1b121c8a66c)](https://www.codacy.com/gh/Heaty566/mychess/dashboard?utm_source=github.com&utm_medium=referral&utm_content=Heaty566/mychess&utm_campaign=Badge_Coverage)
+[![GitHub license](https://img.shields.io/github/license/Heaty566/mychess)](https://github.com/Heaty566/mychess/blob/main/LICENSE)
 
-[![MyChess Logo](doc/images/logo.svg)](https://mychess.website)
+[![MyChess Logo](doc/images/logo.svg)](https://mychess.vinhnhan.com)
 
-## [Live Demo](https://mychess.website) - [Live Api Document](https://mychessdoc.herokuapp.com/doc) - [Live Test Coverage Result](https://mychessdoc.herokuapp.com/test)
+## [Live Demo](https://mychess.vinhnhan.com) - [Live Api Document](https://mychessdoc.herokuapp.com/doc) - [Live Test Coverage Result](https://mychessdoc.herokuapp.com/test)
 
 ## What is MyChess?
 
@@ -28,13 +30,18 @@ This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](http
 
 ## Team Member
 
-- Cao Chí Hải - Backend + Tester + Document
-- Trương Bỉnh Tân - Backend + Tester + Document
-- Phạm Vĩnh Nhân - Full-Stack + Planner
-
-## How to run?
-
-This app is required a complex configuration to run, In case you need to run and build this application please contact us for our support.
+- Phạm Vĩnh Nhân | Full-Stack - Leader
+     - Gmail: heaty566@gmail.com
+     - Linkedin: https://www.linkedin.com/in/heaty566
+     - Github: https://github.com/Heaty566
+- Cao Chí Hải | Backend
+     - Gmail: haicao2805@gmail.com
+     - Linkedin: https://www.linkedin.com/in/cao-chi-hai
+     - Github: https://github.com/haicao2805
+- Trương Bỉnh Tân | Backend
+     - Gmail: tantruong2303@gmail.com
+     - Linkedin: linkedin.com/in/truongbinhtan
+     - Github: github.com/tantruong2303
 
 ## Images of project
 
@@ -47,6 +54,10 @@ This app is required a complex configuration to run, In case you need to run and
 ![MyChess Profile 1](doc/images/profile-1.jpg)
 ![MyChess Profile 2](doc/images/profile-2.jpg)
 
+## How to run?
+
+This app is required a complex configuration to run, In case you need to run and build this application please contact us for our support.
+
 ## Bug Report
 
 Feel free to create an issue request anytime we will check it out and fix it as soon as possible. Thank You So Much.
@@ -56,3 +67,5 @@ Feel free to create an issue request anytime we will check it out and fix it as 
 - [Steam](https://steampowered.com/) - UI and UX
 - [Chess.com](https://www.chess.com/) - Tic-Tac-Toe Bot and Chess Bot
 - [Wiki](https://en.wikipedia.org/wiki/Chess) - Rule for chess
+
+### Mono Infinity © 2021
