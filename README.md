@@ -40,8 +40,8 @@ This website is inspired by [Chess.com](https://www.chess.com/) and [Steam](http
      - Github: https://github.com/haicao2805
 - Trương Bỉnh Tân | Backend
      - Gmail: tantruong2303@gmail.com
-     - Linkedin: linkedin.com/in/truongbinhtan
-     - Github: github.com/tantruong2303
+     - Linkedin: https://linkedin.com/in/truongbinhtan
+     - Github: https://github.com/tantruong2303
 
 ## Images of project
 
