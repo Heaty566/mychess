@@ -1,5 +1,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ba88ef5717f042b7a15ce7432f853ad7)](https://app.codacy.com/gh/Heaty566/mychess?utm_source=github.com&utm_medium=referral&utm_content=Heaty566/mychess&utm_campaign=Badge_Grade_Settings)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/578b01e6d0954a928a06a1b121c8a66c)](https://www.codacy.com/gh/Heaty566/mychess/dashboard?utm_source=github.com&utm_medium=referral&utm_content=Heaty566/mychess&utm_campaign=Badge_Coverage)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Heaty566/mychess/codacy-coverage-reporter)
 [![GitHub license](https://img.shields.io/github/license/Heaty566/mychess)](https://github.com/Heaty566/mychess/blob/main/LICENSE)
 
 [![MyChess Logo](doc/images/logo.svg)](https://mychess.vinhnhan.com)
