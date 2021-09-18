@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ba88ef5717f042b7a15ce7432f853ad7)](https://app.codacy.com/gh/Heaty566/mychess?utm_source=github.com&utm_medium=referral&utm_content=Heaty566/mychess&utm_campaign=Badge_Grade_Settings)
 [![MyChess Logo](doc/images/logo.svg)](https://mychess.website)
 
 ## [Live Demo](https://mychess.website) - [Live Api Document](https://mychessdoc.herokuapp.com/doc) - [Live Test Coverage Result](https://mychessdoc.herokuapp.com/test)
