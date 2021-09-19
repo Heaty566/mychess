@@ -1,23 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-
 import { User } from '../../common/interface/user.interface';
-import { UserAPI, userAPI } from '../../api/userApi';
-import authApi from '../../api/authApi';
-import authThunk from './thunk';
+import { userAPI } from '../../api/userApi';
+import { authThunk } from './thunk';
 
-class UserThunk {
-    constructor(private readonly apiCall: UserAPI) {}
-
-    getCurrentUser = createAsyncThunk<User, void>('getCurrentUser', async (_, { dispatch }) => {
-        const res = await this.apiCall.getCurrentUser();
+export const userThunk = {
+    getCurrentUser: createAsyncThunk<User, void>('getCurrentUser', async (_, { dispatch }) => {
+        const res = await userAPI.getCurrentUser();
         await dispatch(authThunk.getSocketToken());
         return res.data.data;
-    });
-    updateUserAvatar = createAsyncThunk<void, File>('updateUserAvatar', async (file) => {
-        await this.apiCall.updateUserAvatar(file);
+    }),
+    updateUserAvatar: createAsyncThunk<void, File>('updateUserAvatar', async (file) => {
+        await userAPI.updateUserAvatar(file);
         return;
-    });
-}
-
-export const userThunk = new UserThunk(userAPI);
-export default userThunk;
+    }),
+};

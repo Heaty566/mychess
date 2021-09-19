@@ -5,7 +5,7 @@ import Link from 'next/link';
 import routers from '../common/constants/router';
 import { ticTacToeApi } from '../api/tttApi';
 import SeoHead from '../components/common/seoHead';
-import chessApi from '../api/chessApi';
+import { chessApi } from '../api/chessApi';
 import TicTacToeIcon from '../public/asset/icons/tictactoe';
 import RobotIcon from '../public/asset/icons/robot';
 import PlayerBlueIcon from '../public/asset/icons/player-blue';

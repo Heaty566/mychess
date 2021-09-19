@@ -6,7 +6,7 @@ import config from './config';
 
 export interface LoginSocialProps {}
 
-const FormSocialLogin: React.FunctionComponent<LoginSocialProps> = () => {
+export const FormSocialLogin: React.FunctionComponent<LoginSocialProps> = () => {
     const cookies = new Cookies();
     const [openNewWindow, newWindow] = usePopUpNewWindow(() => {
         const reToken = cookies.get('re-token');
@@ -20,18 +20,16 @@ const FormSocialLogin: React.FunctionComponent<LoginSocialProps> = () => {
     return (
         <div className="space-y-4">
             {config.map((item) => (
-                <div
+                <a
                     aria-hidden
                     key={item.label}
-                    onClick={() => openNewWindow(process.env.SERVER_URL + item.url)}
+                    href={process.env.SERVER_URL + item.url}
                     className="flex px-4 py-2 space-x-4 font-semibold duration-300 bg-gray-700 rounded-sm cursor-pointer text-mercury hover:bg-gray-600"
                 >
                     <item.Icon />
                     <span>{item.label}</span>
-                </div>
+                </a>
             ))}
         </div>
     );
 };
-
-export default FormSocialLogin;

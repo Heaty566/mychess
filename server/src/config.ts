@@ -53,12 +53,12 @@ export const config: Config = {
       },
       userService: {
             avatarDefaultImages: [
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-bishop.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-king.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-pawn.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-queen.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-rook.png',
-                  'https://my-quiz-v2.s3-ap-southeast-1.amazonaws.com/system/share/default-avatar-knight.png',
+                  'https://picsum.photos/160/160',
+                  'https://picsum.photos/160/160',
+                  'https://picsum.photos/160/160',
+                  'https://picsum.photos/160/160',
+                  'https://picsum.photos/160/160',
+                  'https://picsum.photos/160/160',
             ],
       },
 };

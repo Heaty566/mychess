@@ -30,7 +30,7 @@ export function router(app: INestApplication) {
       app.use(I18n.init);
       app.setGlobalPrefix('/api');
       app.use(cookieParser());
-      app.enableCors({ origin: [process.env.CLIENT_URL, process.env.ADMIN_URL], credentials: true });
+      app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
 
       //global filter
       app.useGlobalFilters(new SocketExceptionsFilter());

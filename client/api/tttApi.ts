@@ -1,87 +1,79 @@
-import { AxiosInstance } from 'axios';
-
 import { AddMoveDto, RoomIdDto } from '../common/interface/dto/ttt.dto';
 import { DrawDTO } from '../common/interface/dto/chess.dto';
 import { ServerResponse } from '../common/interface/api.interface';
 import { TicTacToeBoard } from '../common/interface/tic-tac-toe.interface';
 import http from './axiosCommon';
 
-export class TicTacToeAPI {
-    constructor(private readonly apiCall: AxiosInstance, readonly prefix: string) {}
+export const ticTacToeApi = {
+    createNewPvPRoom: async () => {
+        const url = `/ttt/pvp`;
+        const res = await http.post<ServerResponse<RoomIdDto>>(url);
+        return res;
+    },
+    getAllGameByUserId: async (userId: string) => {
+        const url = `/ttt/${userId}`;
+        const res = await http.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number; totalWin: number }>>(url);
+        return res;
+    },
+    createNewBotRoom: async () => {
+        const url = `/ttt/bot`;
+        const res = await http.post<ServerResponse<RoomIdDto>>(url);
+        return res;
+    },
+    addMovePvP: async (input: AddMoveDto) => {
+        const url = `/ttt/add-move`;
+        const res = await http.put<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    },
+    readyGame: async (input: RoomIdDto) => {
+        const url = `/ttt/ready`;
+        const res = await http.put<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    },
+    leaveGame: async (input: RoomIdDto) => {
+        const url = `/ttt/leave`;
+        const res = await http.put<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    },
 
-    async createNewPvPRoom() {
-        const url = `${this.prefix + '/pvp'}`;
-        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
+    startGame: async (input: RoomIdDto) => {
+        const url = `/ttt/start`;
+        const res = await http.put<ServerResponse<null>>(url, input);
         return res;
-    }
-    async getAllGameByUserId(userId: string) {
-        const url = `${this.prefix}/${userId}`;
-        const res = await this.apiCall.get<ServerResponse<{ boards: TicTacToeBoard[]; count: number; totalWin: number }>>(url);
-        return res;
-    }
-    async createNewBotRoom() {
-        const url = `${this.prefix}/bot`;
-        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url);
-        return res;
-    }
-    async addMovePvP(input: AddMoveDto) {
-        const url = `${this.prefix}/add-move`;
-        const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
-        return res;
-    }
-    async readyGame(input: RoomIdDto) {
-        const url = `${this.prefix}/ready`;
-        const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
-        return res;
-    }
+    },
 
-    async leaveGame(input: RoomIdDto) {
-        const url = `${this.prefix}/leave`;
-        const res = await this.apiCall.put<ServerResponse<RoomIdDto>>(url, input);
+    quickJoin: async () => {
+        const url = `/ttt/quick-join-room`;
+        const res = await http.get<ServerResponse<RoomIdDto>>(url);
         return res;
-    }
+    },
+    restartGame: async (input: RoomIdDto) => {
+        const url = `/ttt/restart`;
+        const res = await http.post<ServerResponse<RoomIdDto>>(url, input);
+        return res;
+    },
 
-    async startGame(input: RoomIdDto) {
-        const url = `${this.prefix}/start`;
-        const res = await this.apiCall.put<ServerResponse<null>>(url, input);
+    joinRoom: async (input: RoomIdDto) => {
+        const url = `/ttt/join-room`;
+        const res = await http.put<ServerResponse<TicTacToeBoard>>(url, input);
         return res;
-    }
+    },
 
-    async quickJoin() {
-        const url = `${this.prefix}/quick-join-room`;
-        const res = await this.apiCall.get<ServerResponse<RoomIdDto>>(url);
+    drawGameCreate: async (input: RoomIdDto) => {
+        const url = `/ttt/draw`;
+        const res = await http.post<ServerResponse<RoomIdDto>>(url, input);
         return res;
-    }
+    },
 
-    async restartGame(input: RoomIdDto) {
-        const url = `${this.prefix}/restart`;
-        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url, input);
+    drawGameAccept: async (input: DrawDTO) => {
+        const url = `/ttt/draw`;
+        const res = await http.put<ServerResponse<DrawDTO>>(url, input);
         return res;
-    }
+    },
 
-    async joinRoom(input: RoomIdDto) {
-        const url = `${this.prefix}/join-room`;
-        const res = await this.apiCall.put<ServerResponse<TicTacToeBoard>>(url, input);
+    surrender: async (input: RoomIdDto) => {
+        const url = `/ttt/surrender`;
+        const res = await http.put<ServerResponse<void>>(url, input);
         return res;
-    }
-
-    async drawGameCreate(input: RoomIdDto) {
-        const url = `${this.prefix}/draw`;
-        const res = await this.apiCall.post<ServerResponse<RoomIdDto>>(url, input);
-        return res;
-    }
-
-    async drawGameAccept(input: DrawDTO) {
-        const url = `${this.prefix}/draw`;
-        const res = await this.apiCall.put<ServerResponse<DrawDTO>>(url, input);
-        return res;
-    }
-
-    async surrender(input: RoomIdDto) {
-        const url = `${this.prefix}/surrender`;
-        const res = await this.apiCall.put<ServerResponse<void>>(url, input);
-        return res;
-    }
-}
-export const ticTacToeApi = new TicTacToeAPI(http, '/ttt');
-export default ticTacToeApi;
+    },
+};

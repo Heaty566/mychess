@@ -1,6 +1,7 @@
 {
         "dependencies": {
-                "husky": "^6.0.0"
+                "husky": "^6.0.0",
+                "joi-password": "1.6.0"
         },
         "scripts": {
                 "test": "yarn run server:dev && cd server && yarn install && yarn run test",

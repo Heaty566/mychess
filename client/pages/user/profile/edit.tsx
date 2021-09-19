@@ -8,15 +8,15 @@ import { UpdateUserEmailDto, UpdateUserPhoneDto, UpdateUserInfoDto } from '../..
 import { useUploadFile } from '../../../common/hooks/useUploadFile';
 import useFormError from '../../../common/hooks/useFormError';
 import { ApiState } from '../../../common/interface/api.interface';
-import userAPI from '../../../api/userApi';
+import { userAPI } from '../../../api/userApi';
 import routers from '../../../common/constants/router';
 import { useRouter } from 'next/router';
 
-import FieldUploadFile from '../../../components/form/filed-upload-file';
-import TextField from '../../../components/form/filed-textfield';
+import { Form } from '../../../components/form';
+
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import BtnForm from '../../../components/btn/btn-form';
-import LabelMessage from '../../../components/form/label-message';
+
 import WaveLoading from '../../../components/loading/wave-loading';
 import SeoHead from '../../../components/common/seoHead';
 
@@ -84,17 +84,17 @@ const EditUserProfile: React.FunctionComponent<AutoLoginProps> = () => {
                                         alt={authState.name}
                                         className="object-cover w-40 h-40"
                                     />
-                                    <FieldUploadFile name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
+                                    <Form.File name="avatar" handleOnChange={handleOnChangeFile} label="Avatar" error={errors.avatar} />
                                 </div>
                             </div>
                             <div className="w-full space-y-2 md:w-64">
                                 <h1 className="text-3xl text-white ">Update User</h1>
-                                <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
-                                <TextField name="name" type="text" error={errors.name} label="Name" register={register} />
-                                <TextField name="email" type="text" error={errors.email} label="Email" register={register} />
-                                <TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />
+                                <Form.LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
+                                <Form.TextField name="name" type="text" error={errors.name} label="Name" register={register} />
+                                <Form.TextField name="email" type="text" error={errors.email} label="Email" register={register} />
+                                <Form.TextField name="phoneNumber" type="text" error={errors.phoneNumber} label="Phone" register={register} />
                                 {Boolean(authState.username) && (
-                                    <TextField name="username" type="text" error="" label="Username" register={register} isDisable />
+                                    <Form.TextField name="username" type="text" error="" label="Username" register={register} isDisable />
                                 )}
 
                                 {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Update" />}

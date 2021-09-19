@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import ImageIcon from '../../public/asset/icons/image';
-import LabelMessage from './label-message';
+import { LabelMessage } from './label-message';
 
 export interface FileUploadProps {
     name: string;
@@ -10,7 +10,7 @@ export interface FileUploadProps {
     error: string;
 }
 
-const FieldUploadFile: React.FunctionComponent<FileUploadProps> = ({ handleOnChange, name, error, label }) => {
+export const FieldUploadFile: React.FunctionComponent<FileUploadProps> = ({ handleOnChange, name, error, label }) => {
     const [nameFile, setFileName] = React.useState('Chose File');
 
     const handleChangFileName = ({ currentTarget }: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,5 +41,3 @@ const FieldUploadFile: React.FunctionComponent<FileUploadProps> = ({ handleOnCha
         </div>
     );
 };
-
-export default FieldUploadFile;

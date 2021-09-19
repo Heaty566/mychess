@@ -6,7 +6,7 @@ import { AuthState } from '../interface/user.interface';
 import { RootState } from '../../store';
 import { ServerResponse } from '../interface/api.interface';
 import routers from '../constants/router';
-import ticTacToeApi from '../../api/tttApi';
+import { ticTacToeApi } from '../../api/tttApi';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import * as socketIo from 'socket.io-client';

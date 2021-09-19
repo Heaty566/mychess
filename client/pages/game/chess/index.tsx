@@ -10,7 +10,7 @@ import { chessApi } from '../../../api/chessApi';
 import routers from '../../../common/constants/router';
 import useFormError from '../../../common/hooks/useFormError';
 
-import TextField from '../../../components/form/filed-textfield';
+import { Form } from '../../../components/form';
 import BtnForm from '../../../components/btn/btn-form';
 import RouteProtectedWrapper from '../../../common/HOC/routeProtectedWrapper';
 import SeoHead from '../../../components/common/seoHead';
@@ -54,7 +54,7 @@ const Chess: React.FunctionComponent = () => {
                     <div className="w-full max-w-md px-4 py-12 space-y-4 bg-gray-800 rounded-sm shadow-sm fade-iw-full md:px-10 fade-in">
                         <form className="space-y-2" onSubmit={handleSubmit(handleOnSubmit)}>
                             <h1 className="text-4xl text-center text-white mb-7">Chess Lobby</h1>
-                            <TextField name="roomId" type="text" label="Room ID" error={errors.roomId} register={register} />
+                            <Form.TextField name="roomId" type="text" label="Room ID" error={errors.roomId} register={register} />
                             {apiState.isLoading && <WaveLoading />}
                             {!apiState.isLoading && <BtnForm label="Join Room" />}
                         </form>

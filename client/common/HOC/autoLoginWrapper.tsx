@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import userThunk from '../../store/auth/userThunk';
+import { userThunk } from '../../store/auth/userThunk';
 import { RootState, store } from '../../store';
 import { AuthState } from '../../common/interface/user.interface';
 

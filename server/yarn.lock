@@ -4649,12 +4649,10 @@ jmespath@0.15.0:
   resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
-joi-password@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/joi-password/-/joi-password-1.1.0.tgz#8aaefd97039c5780f6e774c0e60fc445b4fb1579"
-  integrity sha512-hVBNOC1m1X04mP9JuSeeP5ORILxqzq2Yaw6vqH7iRMNkcT9qXkIPF903i3E2leRNBpD2clZehzCnMwsOLuhvng==
-  dependencies:
-    joi "^17.4.0"
+joi-password@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/joi-password/-/joi-password-1.6.0.tgz#aacdf72b1d0ad47446154d3ba7923b1e5993f72d"
+  integrity sha512-TwpH/5iyuC8d7vroJKPCLNIGPvKghTPCOJEH4NT9d00s3FLFENKs6x8qLna21M97d79S1EWJutnxhIk4X5MECQ==
 
 joi-phone-validation@^1.0.7:
   version "1.0.7"

@@ -10,9 +10,9 @@ import { GamePlayerFlag } from '../../../common/interface/game.interface';
 import { RootState } from '../../../store';
 import { TicTacToeBoard } from '../../../common/interface/tic-tac-toe.interface';
 import { capitalize } from '../../../common/helpers/string.helper';
-import chessApi from '../../../api/chessApi';
+import { chessApi } from '../../../api/chessApi';
 import routers from '../../../common/constants/router';
-import ticTacToeApi from '../../../api/tttApi';
+import { ticTacToeApi } from '../../../api/tttApi';
 
 import SeoHead from '../../../components/common/seoHead';
 import WaveLoading from '../../../components/loading/wave-loading';

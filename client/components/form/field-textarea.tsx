@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 
-import LabelMessage from './label-message';
+import { LabelMessage } from './label-message';
 
 export interface TextFieldProps {
     name: string;
@@ -10,7 +10,7 @@ export interface TextFieldProps {
     register: UseFormRegister<any>;
 }
 
-const FieldTextarea: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register }) => (
+export const FieldTextarea: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register }) => (
     <div className="space-y-1.5 text-sm">
         <label htmlFor={name} className="block text-cotton-seed ">
             {label}
@@ -23,5 +23,3 @@ const FieldTextarea: React.FunctionComponent<TextFieldProps> = ({ label, name, e
         <LabelMessage label={label} errorMessage={error} successMessage="" />
     </div>
 );
-
-export default FieldTextarea;

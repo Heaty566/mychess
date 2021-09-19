@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 
-import LabelMessage from './label-message';
+import { LabelMessage } from './label-message';
 
 export interface TextFieldProps {
     name: string;
@@ -12,7 +12,7 @@ export interface TextFieldProps {
     isDisable?: boolean;
 }
 
-const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register, type, isDisable = false }) => (
+export const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error, register, type, isDisable = false }) => (
     <div className="space-y-1.5 text-sm">
         <label htmlFor={name} className="block text-cotton-seed ">
             {label}
@@ -28,5 +28,3 @@ const TextField: React.FunctionComponent<TextFieldProps> = ({ label, name, error
         <LabelMessage label={label} errorMessage={error} successMessage="" />
     </div>
 );
-
-export default TextField;

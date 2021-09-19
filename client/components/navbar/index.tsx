@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import router from '../../common/constants/router';
 import { RootState, store } from '../../store';
 import { AuthState } from '../../common/interface/user.interface';
-import authThunk from '../../store/auth/thunk';
+import { authThunk } from '../../store/auth/thunk';
 
 import LogoDesktop from '../../public/asset/icons/navbar-logo';
 import LogoMdIcons from '../../public/asset/icons/navbar-logo-md';

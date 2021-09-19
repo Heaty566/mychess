@@ -12,7 +12,7 @@ import useGameTTT from '../../../common/hooks/useGameTTT';
 import ChatBox from '../../../components/chat';
 import GameControlMenu from '../../../components/game/game-menu';
 import GameTopMenu from '../../../components/game/game-top-menu';
-import LabelMessagePopup from '../../../components/form/label-message-popup';
+import { Form } from '../../../components/form';
 import PanelDraw from '../../../components/game/panel-draw';
 import PanelReady from '../../../components/game/panel-ready';
 import PanelRestart from '../../../components/game/panel-restart';
@@ -66,7 +66,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         <PlayerInfo player={tttPlayers?.length ? tttPlayers[1] : tttBoard.users[1]} isReverse={true} />
                                     </div>
                                 </div>
-                                <LabelMessagePopup errorMessage={apiState.errorMessage} />
+                                <Form.LabelMessagePopup errorMessage={apiState.errorMessage} />
                                 <div className="relative m-auto ttt-board">
                                     <PanelStart
                                         handleOnClick={tttHandleOnStart}

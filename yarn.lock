@@ -6,3 +6,8 @@ husky@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/husky/-/husky-6.0.0.tgz#810f11869adf51604c32ea577edbc377d7f9319e"
   integrity sha512-SQS2gDTB7tBN486QSoKPKQItZw97BMOd+Kdb6ghfpBc0yXyzrddI0oDV5MkDAbuB4X2mO3/nj60TRMcYxwzZeQ==
+
+joi-password@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/joi-password/-/joi-password-1.6.0.tgz#aacdf72b1d0ad47446154d3ba7923b1e5993f72d"
+  integrity sha512-TwpH/5iyuC8d7vroJKPCLNIGPvKghTPCOJEH4NT9d00s3FLFENKs6x8qLna21M97d79S1EWJutnxhIk4X5MECQ==

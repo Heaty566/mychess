@@ -1,5 +1,5 @@
 import * as React from 'react';
-import chatApi from '../../api/chatApi';
+import { chatApi } from '../../api/chatApi';
 import { ServerResponse } from '../interface/api.interface';
 import { Chat, ChatGatewayAction } from '../interface/chat.interface';
 import { useForm } from 'react-hook-form';

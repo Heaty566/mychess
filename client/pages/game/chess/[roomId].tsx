@@ -15,7 +15,7 @@ import ChessStep from '../../../components/game/chess-step';
 import ChessTurn from '../../../components/game/chess-turn';
 import GameControlMenu from '../../../components/game/game-menu';
 import GameTopMenu from '../../../components/game/game-top-menu';
-import LabelMessagePopup from '../../../components/form/label-message-popup';
+import { Form } from '../../../components/form';
 import PanelDraw from '../../../components/game/panel-draw';
 import PanelPromote from '../../../components/game/panel-promote';
 import PanelReady from '../../../components/game/panel-ready';
@@ -71,7 +71,7 @@ const TicTacToePvP: React.FunctionComponent<TicTacToePvPProps> = ({ roomId }) =>
                                         <PlayerInfo player={chessPlayers?.length ? chessPlayers[1] : chessBoard.users[1]} isReverse={true} />
                                     </div>
                                 </div>
-                                <LabelMessagePopup errorMessage={apiState.errorMessage} />
+                                <Form.LabelMessagePopup errorMessage={apiState.errorMessage} />
                                 <div className="relative m-auto chess-board">
                                     <PanelStart
                                         handleOnClick={chessHandleOnStart}

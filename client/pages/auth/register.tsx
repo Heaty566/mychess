@@ -8,14 +8,14 @@ import { RootState, store } from '../../store';
 import { UserRegisterDto } from '../../common/interface/dto/auth.dto';
 import { ApiState } from '../../common/interface/api.interface';
 import useFormError from '../../common/hooks/useFormError';
-import authThunk from '../../store/auth/thunk';
+import { authThunk } from '../../store/auth/thunk';
+import { Form } from '../../components/form';
 
-import TextField from '../../components/form/filed-textfield';
 import BtnSideLink from '../../components/btn/btn-side-link';
 import BtnForm from '../../components/btn/btn-form';
-import FormSocialLogin from '../../components/form/form-social-login';
+
 import WaveLoading from '../../components/loading/wave-loading';
-import LabelMessage from '../../components/form/label-message';
+
 import { RouteProtectedWrapper } from '../../common/HOC/routeProtectedWrapper';
 
 const defaultValues: UserRegisterDto = {
@@ -40,12 +40,12 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                 <div className="w-full max-w-md px-4 py-16 bg-gray-800 rounded-sm md:px-10 fade-in ">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <h1 className="text-4xl text-center text-white mb-7">Register Account</h1>
-                        <LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
+                        <Form.LabelMessage successMessage={apiState.message} errorMessage={apiState.errorMessage} />
                         <div className="space-y-2">
-                            <TextField name="name" label="Name" error={errors.name} register={register} type="text" />
-                            <TextField name="username" label="Username" error={errors.username} register={register} type="text" />
-                            <TextField name="password" label="Password" error={errors.password} register={register} type="password" />
-                            <TextField
+                            <Form.TextField name="name" label="Name" error={errors.name} register={register} type="text" />
+                            <Form.TextField name="username" label="Username" error={errors.username} register={register} type="text" />
+                            <Form.TextField name="password" label="Password" error={errors.password} register={register} type="password" />
+                            <Form.TextField
                                 name="confirmPassword"
                                 label="Confirm Password"
                                 error={errors.confirmPassword}
@@ -59,7 +59,7 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
                         {apiState.isLoading ? <WaveLoading /> : <BtnForm label="Sign Up" />}
                     </form>
                     <p className="my-4 text-center text-mercury">Or continue with</p>
-                    <FormSocialLogin />
+                    <Form.LoginSocial />
                 </div>
             </div>
         </RouteProtectedWrapper>
